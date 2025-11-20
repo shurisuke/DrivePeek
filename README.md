@@ -140,3 +140,7 @@
 - AI連携 : OpenAI API
 - タグ機能 : gem 'ActsAsTaggableOn'
 - SNS共有 : navigator.share API
+
+
+## 画面遷移図
+Figma : https://www.figma.com/design/zVyh2Km9Ee9HdvpGK358XV/%E7%84%A1%E9%A1%8C?node-id=0-1&p=f&t=TO17KMhxaIgG2UjN-0
