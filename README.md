@@ -147,3 +147,6 @@ AIがスポットを提案する機能やプラン・スポットの曖昧検索
 
 ## 画面遷移図
 Figma : https://www.figma.com/design/zVyh2Km9Ee9HdvpGK358XV/%E7%84%A1%E9%A1%8C?node-id=0-1&p=f&t=TO17KMhxaIgG2UjN-0
+
+## ER図
+Gyazo : https://gyazo.com/4a3303abf555dfa506b27c614f31b870
