@@ -4,7 +4,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   # ステータス管理
-  enum status: { public: 0, private: 1 }
+  enum status: { active: 0, private: 1 }
 
   # バリデーション
   validates :name, presence: true, length: { maximum: 50 }
