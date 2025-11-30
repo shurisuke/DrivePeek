@@ -43,7 +43,7 @@ gem "thruster", require: false
 gem "image_processing", "~> 1.2"
 
 # フォーム支援
-gem 'simple_form'
+gem "simple_form"
 
 group :development, :test do
   # See https://guides.rubyonrails.org/debugging_rails_applications.html#debugging-with-the-debug-gem
@@ -59,7 +59,7 @@ group :development, :test do
   gem "rubocop-rails-omakase", require: false
 
   # 環境変数の管理
-  gem 'dotenv-rails', groups: [:development, :test]
+  gem "dotenv-rails", groups: [ :development, :test ]
 end
 
 group :development do
@@ -67,7 +67,7 @@ group :development do
   gem "web-console"
 
   # モデルファイルにスキーマ情報を自動追記
-  gem 'annotate'
+  gem "annotate"
 end
 
 group :test do
