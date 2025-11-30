@@ -1,0 +1,27 @@
+ja:
+  errors:
+    messages:
+      taken: "はすでに使用されています"
+      already_confirmed: "は既に確認済みです。ログインしてください。"
+      confirmation_period_expired: "確認の有効期限が切れました。新しくリクエストしてください。"
+      expired: "期限が切れています。新しくリクエストしてください。"
+      not_found: "が見つかりませんでした。"
+      not_locked: "はロックされていません。"
+      not_saved:
+        one: "エラーのため%{resource}を保存できませんでした："
+        other: "%{count}件のエラーのため%{resource}を保存できませんでした："
+  devise:
+    sessions:
+      signed_in: 'ログインしました。'
+      signed_out: 'ログアウトしました。'
+    registrations:
+      signed_up: 'アカウント登録が完了しました。'
+      updated: 'アカウント情報を更新しました。'
+      destroyed: 'アカウントを削除しました。'
+    passwords:
+      send_instructions: "パスワード再設定の案内を送信しました。"
+      updated: "パスワードを変更しました。"
+    confirmations:
+      confirmed: "メールアドレスが確認されました。"
+    failure:
+      already_authenticated: "すでにログインしています。"

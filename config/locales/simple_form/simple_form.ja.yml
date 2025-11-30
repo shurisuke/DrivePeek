@@ -1,0 +1,20 @@
+ja:
+  simple_form:
+    "yes": 'はい'
+    "no": 'いいえ'
+    required:
+      text: '必須'
+      mark: '*'
+    error_notification:
+      default_message: '入力に誤りがあります。内容を確認してください。'
+    hints:
+      email: '有効なメールアドレスを入力してください'
+      password: '8文字以上のパスワードを設定してください'
+      password_confirmation: 'パスワードをもう一度入力してください'
+    labels:
+      user:
+        email: 'メールアドレス'
+        password: 'パスワード'
+        password_confirmation: 'パスワード(確認)'
+        remember_me: 'ログインを保持する'
+        name: 'ユーザーネーム'
