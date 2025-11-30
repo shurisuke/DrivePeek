@@ -28,7 +28,15 @@
     <%= javascript_importmap_tags %>
   </head>
 
-  <body>
-    <%= yield %>
-  </body>
+<body>
+  <% if notice %>
+    <p class="alert alert-info"><%= notice %></p>
+  <% end %>
+
+  <% if alert %>
+    <p class="alert alert-danger"><%= alert %></p>
+  <% end %>
+
+  <%= yield %>
+</body>
 </html>
