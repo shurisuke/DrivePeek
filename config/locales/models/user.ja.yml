@@ -1,0 +1,28 @@
+ja:
+  activerecord:
+    models:
+      user: ユーザー
+    attributes:
+      user:
+        name: ユーザーネーム
+        email: メールアドレス
+        password: パスワード
+        password_confirmation: パスワード（確認）
+    errors:
+      models:
+        user:
+          attributes:
+            name:
+              blank: "を入力してください"
+            email:
+              invalid: "は有効なメールアドレスではありません"
+            password:
+              too_short: "%{count}文字以上で入力してください"
+            password_confirmation:
+              confirmation: "がパスワードと一致しません"
+
+  errors:
+    messages:
+      blank: "を入力してください"
+      invalid: "は正しい形式ではありません"
+      confirmation: "が一致しません"
