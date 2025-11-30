@@ -1,10 +1,10 @@
 class User < ApplicationRecord
-  # Deviseのモジュール（必要に応じて調整）
+  # Deviseのモジュール
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  # ステータス管理
-  enum status: { active: 0, private: 1 }
+  # 正しいenumの書き方（Rails 8.1以降）
+  enum :status, { active: 0, hidden: 1 }
 
   # バリデーション
   validates :name, presence: true, length: { maximum: 50 }
