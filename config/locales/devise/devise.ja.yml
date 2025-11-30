@@ -1,6 +1,7 @@
 ja:
   errors:
     messages:
+      taken: "はすでに使用されています"
       already_confirmed: "は既に確認済みです。ログインしてください。"
       confirmation_period_expired: "確認の有効期限が切れました。新しくリクエストしてください。"
       expired: "期限が切れています。新しくリクエストしてください。"
@@ -22,3 +23,5 @@ ja:
       updated: "パスワードを変更しました。"
     confirmations:
       confirmed: "メールアドレスが確認されました。"
+    failure:
+      already_authenticated: "すでにログインしています。"
