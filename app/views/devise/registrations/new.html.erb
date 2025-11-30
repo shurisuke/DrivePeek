@@ -3,34 +3,45 @@
     <h2 class="mb-4 text-center text-primary">新規登録</h2>
 
     <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <%= f.error_notification %>
+      <% if resource.errors.any? %>
+        <div class="mb-3 text-danger small">
+          <ul class="mb-0 ps-3">
+            <% resource.errors.full_messages.uniq.each do |message| %>
+              <li><%= message %></li>
+            <% end %>
+          </ul>
+        </div>
+      <% end %>
 
       <div class="form-group mb-3">
         <%= f.input :name,
                     label: 'ユーザーネーム',
                     required: true,
-                    input_html: { class: "form-control", autocomplete: "username" } %>
+                    error: false,
+                    input_html: { class: "form-control placeholder-light", autocomplete: "name" } %>
       </div>
 
       <div class="form-group mb-3">
         <%= f.input :email,
                     label: 'メールアドレス',
                     required: true,
-                    input_html: { class: "form-control placeholder-light", autocomplete: "email", placeholder: "example@example.com" } %>
+                    error: false,
+                    input_html: { class: "form-control placeholder-light", autocomplete: "email" } %>
       </div>
 
       <div class="form-group mb-3">
         <%= f.input :password,
                     label: 'パスワード',
                     required: true,
-                    hint: ("→#{@minimum_password_length}文字以上で入力してください" if @minimum_password_length),
-                    input_html: { class: "form-control", autocomplete: "new-password" } %>
+                    error: false,
+                    input_html: { class: "form-control", autocomplete: "new-password", placeholder: "半角英数字 6文字以上" } %>
       </div>
 
       <div class="form-group mb-4">
         <%= f.input :password_confirmation,
-                    label: 'パスワード(確認)',
+                    label: 'パスワード(確認用)',
                     required: true,
+                    error: false,
                     input_html: { class: "form-control", autocomplete: "new-password" } %>
       </div>
 
@@ -42,8 +53,8 @@
     <hr class="my-4">
 
     <div class="text-center">
-      <%= link_to "すでにアカウントをお持ちの方はこちら", new_user_session_path, class: "text-decoration-none text-muted" %>
+      <%= link_to "すでにアカウントをお持ちの方はこちら", new_user_session_path, class: "d-block text-decoration-none text-muted mb-2" %>
+      <%= link_to "パスワードをお忘れの方はこちら", new_user_password_path, class: "d-block text-decoration-none text-muted" %>
     </div>
   </div>
 </div>
-<%= render "devise/shared/links" %>

@@ -1,5 +1,5 @@
 <% if user_signed_in? %>
-  <p><%= current_user.email %> さん、ようこそ！</p>
+  <p><%= current_user.name %>さん、ようこそ！</p>
 <% else %>
   <p>ログインしていません</p>
 <% end %>
