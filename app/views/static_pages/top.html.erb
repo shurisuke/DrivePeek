@@ -9,5 +9,10 @@
 <p>行きたい場所がすぐに見つかる</p>
 <p>ドライブプランアプリです</p>
 <div class="text-center mt-4">
-  <%= link_to '新規登録はこちら', new_user_registration_path, class: 'btn btn-primary' %>
+  <%= link_to '新規登録', new_user_registration_path, class: 'btn btn-primary' %>
+  <%= link_to 'ログイン', new_user_session_path, class: 'btn btn-primary' %>
+  <%= link_to "ログアウト",
+            destroy_user_session_path,
+            data: { turbo_method: :delete },
+            class: "btn btn-danger" %>
 </div>
