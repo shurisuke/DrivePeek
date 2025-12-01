@@ -1,0 +1,61 @@
+// app/assets/stylesheets/custom.scss
+
+// ----------------------------------
+// カラーベース変数
+// ----------------------------------
+$base-color: #4ab4ab;
+$navbar-bg: #1e9a7f; // ナビバーの背景色（ユーザー指定）
+$hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い）
+
+// ----------------------------------
+// ナビゲーションバー
+// ----------------------------------
+.navbar {
+  background-color: $navbar-bg;
+
+  .navbar-brand {
+    color: white;
+    font-weight: 600;
+    font-size: 1.2rem;
+    text-decoration: none;
+  }
+
+  .nav-link {
+    color: white !important;
+    text-decoration: none;
+    font-weight: 500;
+
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.1);
+      border-radius: 0.25rem;
+      color: white;
+    }
+  }
+
+  .nav-divider {
+    color: white;
+    opacity: 0.7;
+    padding: 0 0.5rem;
+  }
+
+  .navbar-toggler {
+    background-color: $hamburger-bg;
+    border: none;
+    padding: 6px 10px;
+    border-radius: 6px;
+    transition: background-color 0.2s;
+
+    &:hover {
+      background-color: darken($base-color, 12%);
+    }
+  }
+}
+
+// ----------------------------------
+// 共通レイアウト用ユーティリティ
+// ----------------------------------
+.container-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}

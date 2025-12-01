@@ -1,2 +1,7 @@
-@import 'bootstrap/scss/bootstrap';
-@import 'bootstrap-icons/font/bootstrap-icons';
+@use "bootstrap/scss/bootstrap" with (
+  $primary: #0f766e,
+  $enable-rounded: false
+);
+@use "bootstrap-icons/font/bootstrap-icons";
+
+@use "custom";
