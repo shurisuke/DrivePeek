@@ -25,3 +25,5 @@ ja:
       confirmed: "メールアドレスが確認されました。"
     failure:
       already_authenticated: "すでにログインしています。"
+      not_found_in_database: "メールアドレスまたはパスワードが違います。"
+      invalid: "メールアドレスまたはパスワードが違います。"
