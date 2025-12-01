@@ -4,7 +4,7 @@ class Users::RegistrationsController < Devise::RegistrationsController
 
   # サインアップ後のリダイレクト先を変更したい場合
   def after_sign_up_path_for(resource)
-    root_path # 例：サインアップ後はトップページへ
+    authenticated_root_path # 例：サインアップ後はログイン後トップページへ
   end
 
   protected
