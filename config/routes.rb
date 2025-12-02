@@ -6,6 +6,10 @@ Rails.application.routes.draw do
     passwords: "users/passwords" # パスワード再設定リクエスト画面
   }
 
+  devise_scope :user do
+    get '/users/sign_out' => 'devise/sessions#destroy'
+  end
+
   # ログイン時のルート
   authenticated :user do
     root to: 'dashboard#top', as: :authenticated_root
