@@ -1,45 +1,37 @@
-<nav class="navbar navbar-expand-sm px-4 py-2 mb-3 position-relative">
-  <a class="navbar-brand" href="/">DrivePeek</a>
-
-  <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav4" aria-controls="navbarNav4" aria-expanded="false" aria-label="Toggle navigation">
-    <span class="navbar-toggler-icon"></span>
-  </button>
-
-  <div class="collapse navbar-collapse" id="navbarNav4">
-    <!-- 中央 -->
-    <div class="position-absolute start-50 translate-middle-x">
-      <ul class="navbar-nav">
-        <li class="nav-item">
-          <%= link_to raw('<i class="fa-solid fa-car me-1"></i>みんなのドライブプラン'), "#", class: "nav-link", data: { turbo: false } %>
-        </li>
-        <% if user_signed_in? %>
-          <li class="nav-item">
-            <%= link_to raw('<i class="fa-solid fa-map me-1"></i>ドライブプランを作成'), "#", class: "nav-link", data: { turbo: false } %>
-          </li>
-        <% end %>
-      </ul>
+<header class="header">
+  <div class="header__inner">
+    <!-- 右：ハンバーガーメニュー -->
+    <div class="hamburger hamburger-single" id="Hamburger">
+      <div class="hamburger__container">
+        <span class="hamburger__top"></span>
+        <span class="hamburger__middle"></span>
+        <span class="hamburger__bottom"></span>
+      </div>
     </div>
-
-    <!-- 右 -->
-    <ul class="navbar-nav ms-auto">
-      <% if user_signed_in? %>
-        <li class="nav-item">
-          <!-- ハンバーガーメニューアイコン（ここに dropdown など拡張可能） -->
-          <%= link_to "#", class: "nav-link" do %>
-            <i class="fa-solid fa-bars"></i>
-          <% end %>
-        </li>
-      <% else %>
-        <li class="nav-item">
-          <%= link_to "新規登録", new_user_registration_path, class: "nav-link", data: { turbo: false } %>
-        </li>
-        <li class="nav-item d-flex align-items-center">
-          <span class="nav-divider">|</span>
-        </li>
-        <li class="nav-item">
-          <%= link_to "ログイン", new_user_session_path, class: "nav-link", data: { turbo: false } %>
-        </li>
-      <% end %>
-    </ul>
   </div>
-</nav>
+
+  <!-- 展開メニュー -->
+  <div class="sp__menu">
+    <div class="sp__menu__container">
+      <div class="sp__menu__nav">
+        <ul id="menu__hamburger__nav" class="sp__menu__ul">
+          <% if current_user.present? %>
+            <li><%= link_to "TOP", authenticated_root_path %></li>
+            <li><%= link_to "みんなのドライブプラン", authenticated_root_path %></li>
+            <li><%= link_to "ドライブプラン作成", authenticated_root_path %></li>
+            <li><%= link_to "スポット検索", authenticated_root_path %></li>
+            <li><%= link_to "マイドライブプラン", authenticated_root_path %></li>
+            <li><%= link_to "アカウント管理", authenticated_root_path %></li>
+            <li><%= link_to "ログアウト", users_sign_out_path, data: { turbo_method: :delete, turbo_confirm: "ログアウトしますか？" }, id: "logout-link" %></li>
+          <% else %>
+            <li><%= link_to "TOP", unauthenticated_root_path %></li>
+            <li><%= link_to "新規登録", new_user_registration_path %></li>
+            <li><%= link_to "ログイン", new_user_session_path %></li>
+            <li><%= link_to "みんなのドライブプラン", unauthenticated_root_path %></li>
+            <li><%= link_to "DrivePeekの使い方", unauthenticated_root_path %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+</header>

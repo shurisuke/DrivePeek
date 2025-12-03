@@ -1,7 +1,10 @@
-<h1>Dashboard#top</h1>
-<%= current_user.name  %>
-<p>Find me in app/views/dashboard/top.html.erb</p>
+<div class="top-after-login">
+  <h2>次の休日、どこ行く？</h2>
 
-<div class="text-center mt-4">
-  <%= link_to "ログアウト", destroy_user_session_path, data: { turbo_method: :delete }, class: "btn btn-danger" %>
+  <div class="card mb- mt-4">
+    <div class="d-grid gap-4 col-12 col-md-10 mx-auto">
+      <%= link_to raw('→ ドライブプランを作る'), authenticated_root_path, class: 'btn btn-brand btn-xl fw-bold rounded-pill' %>
+      <%= link_to raw('→ みんなのドライブプランを見る'), authenticated_root_path, class: 'btn btn-brand btn-xl fw-bold rounded-pill' %>
+    </div>
+  </div>
 </div>
