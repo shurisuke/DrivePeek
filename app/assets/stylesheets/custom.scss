@@ -91,19 +91,16 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
     position: absolute;
     top: 50%;
     left: 50%;
-    width: 700px;
-    height: 700px;
-    background-image: url(top_content_bg.png);
-    background-size: contain;
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 600px;
+    height: 500px;
+    background-color: #494949;
     transform: translate(-50%, -50%);
     z-index: 0;
-    opacity: 0.95;
+    opacity: 0.9;
   }
 
   h1 {
-    font-size: 4.0rem;
+    font-size: 70px;
     font-weight: bold;
     margin-bottom: 1rem;
     position: relative;
@@ -115,15 +112,71 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
     position: relative;
     z-index: 1;
   }
+
+  .lead-first {
+    margin: 0;
+  }
+
+  .lead-last {
+    font-size: 23px;
+  }
+
   .hero-logo {
     width: 40px;
     height: 40px;
     object-fit: contain;
   }
 
-  .btn {
+  .btn,
+  .top-main-btn,
+  .sub-btn {
     position: relative;
     z-index: 1;
+  }
+
+  .fixed-btn {
+    min-width: 220px;
+    text-align: center;
+  }
+}
+
+/* 上段メインボタン（白背景・黒文字） */
+.top-main-btn {
+  background-color: #494949;
+  color: #ffffff;
+  font-weight: bold;
+  font-size: 1.1rem;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  padding: 0.75rem 1.5rem;
+
+  &:hover {
+    background-color: #ffffff;
+    color: #000000;
+    border: 2px solid #ffffff;
+    text-decoration: none;
+    opacity: 0.9;
+  }
+}
+
+/* 下段の2つのボタン（白背景・黒文字） */
+.sub-btn {
+  background-color: #444444;
+  color: #ffffff;
+  font-weight: bold;
+  border: 2px solid #ffffff;
+  border-radius: 10px;
+  margin: 0 8px;
+  padding: 0.75rem 1.5rem;
+
+  &:hover {
+    background-color: #f0f0f0;
+    color: #000;
+    text-decoration: none;
   }
 }
 
@@ -137,7 +190,7 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
   padding: 2rem;
 }
 
-// ブランド用ボタン
+// 既存の .btn-brand （下層セクション用ボタン）
 .btn-brand {
   background-color: #00aa7f;
   color: #fff;
@@ -158,7 +211,7 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
 
 .top-after-login {
   position: relative;
-  z-index: 1; // header より下になるように調整
+  z-index: 1;
   height: 100vh;
   width: 100%;
   background-image: url(top_bg2.jpg);
@@ -167,7 +220,6 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
   background-repeat: no-repeat;
 
   display: flex;
-
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -182,13 +234,12 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
   }
 
   .card {
-    background-color: rgba(255, 255, 255, 0.7); // ← 背景だけ透ける
+    background-color: rgba(255, 255, 255, 0.7);
     border-radius: 2rem;
     box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
     padding: 3rem;
     max-width: 700px;
     width: 90%;
-    // opacity: 0.5; ← 消す！！
   }
 
   .btn-brand {
@@ -202,8 +253,6 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
     border-radius: 0.75rem;
   }
 }
-
-
 
 // ----------------------------------
 // ヘッダーハンバーガーメニュー関連

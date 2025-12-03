@@ -1,22 +1,5 @@
 <header class="header">
   <div class="header__inner">
-  <!-- 左：ロゴ（ログイン時のみ＆非ログインTOPを除外） -->
-    <% unless controller_name == "static_pages" && action_name == "top" %>
-      <div class="logo">
-        <% if current_user.present? %>
-          <%= link_to authenticated_root_path do %>
-            <%= image_tag "drivepeek_icon.png", width: 40, height: 40, alt: "DrivePeek", class: "logo__image" %>
-            <span class="logo__text">DrivePeek</span>
-          <% end %>
-        <% else %>
-          <%= link_to unauthenticated_root_path do %>
-            <%= image_tag "drivepeek_icon.png", width: 100, height: 100, alt: "DrivePeek", class: "logo__image" %>
-            <span class="logo__text">DrivePeek</span>
-          <% end %>
-        <% end %>
-      </div>
-    <% end %>
-
     <!-- 右：ハンバーガーメニュー -->
     <div class="hamburger hamburger-single" id="Hamburger">
       <div class="hamburger__container">
