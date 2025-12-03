@@ -4,20 +4,22 @@
     DrivePeek
   </a>
 
+  <!-- ハンバーガーメニューのトグルボタン（構文修正） -->
   <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav4" aria-controls="navbarNav4" aria-expanded="false" aria-label="Toggle navigation">
     <span class="navbar-toggler-icon"></span>
   </button>
 
+  <!-- メニュー全体（トグル対象） -->
   <div class="collapse navbar-collapse" id="navbarNav4">
     <!-- 中央 -->
     <div class="position-absolute start-50 translate-middle-x">
       <ul class="navbar-nav">
         <li class="nav-item">
-          <%= link_to raw('<i class="fa-solid fa-car me-1"></i>みんなのドライブプラン'), "#", class: "nav-link", data: { turbo: false } %>
+          <%= link_to raw('<i class="fa-solid fa-car me-1"></i>みんなのドライブプラン'), authenticated_root_path, class: "nav-link", data: { turbo: false } %>
         </li>
         <% if user_signed_in? %>
           <li class="nav-item">
-            <%= link_to raw('<i class="fa-solid fa-map me-1"></i>ドライブプランを作成'), "#", class: "nav-link", data: { turbo: false } %>
+            <%= link_to raw('<i class="fa-solid fa-map me-1"></i>ドライブプランを作成'), authenticated_root_path, class: "nav-link", data: { turbo: false } %>
           </li>
         <% end %>
       </ul>
@@ -26,11 +28,32 @@
     <!-- 右 -->
     <ul class="navbar-nav ms-auto">
       <% if user_signed_in? %>
-        <li class="nav-item">
-          <!-- ハンバーガーメニューアイコン（ここに dropdown など拡張可能） -->
-          <%= link_to "#", class: "nav-link" do %>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" id="navbarDropdown" role="button" data-bs-toggle="dropdown" aria-expanded="false">
             <i class="fa-solid fa-bars"></i>
-          <% end %>
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end" aria-labelledby="navbarDropdown">
+            <li>
+              <%= link_to raw('&#9733; お気に入りプラン一覧'), authenticated_root_path, class: "dropdown-item" %>
+            </li>
+            <li>
+              <%= link_to raw('&#10084; お気に入りスポット一覧'), authenticated_root_path, class: "dropdown-item" %>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <%= link_to '気ままにスポット検索', authenticated_root_path, class: "dropdown-item" %>
+            </li>
+            <li>
+              <%= link_to '作ったドライブプラン', authenticated_root_path, class: "dropdown-item" %>
+            </li>
+            <li><hr class="dropdown-divider"></li>
+            <li>
+              <%= link_to 'アカウント管理', authenticated_root_path, class: "dropdown-item" %>
+            </li>
+            <li>
+              <%= link_to 'ログアウト', destroy_user_session_path, method: :delete, class: "dropdown-item" %>
+            </li>
+          </ul>
         </li>
       <% else %>
         <li class="nav-item">
