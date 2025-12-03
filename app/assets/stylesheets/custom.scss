@@ -110,29 +110,11 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
     z-index: 1;
   }
 
-  h2 {
-    font-size: 2.0rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    position: relative;
-    z-index: 1;
-  }
-
   p {
     font-size: 1.2rem;
     position: relative;
     z-index: 1;
   }
-
-  span {
-    font-size: 2.0rem;
-    font-weight: bold;
-    margin-bottom: 1rem;
-    margin-left: 1rem;
-    padding-top: 40px;
-    margin-left: 5px;
-  }
-
   .hero-logo {
     width: 40px;
     height: 40px;
@@ -176,6 +158,7 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
 
 .top-after-login {
   position: relative;
+  z-index: 1; // header より下になるように調整
   height: 100vh;
   width: 100%;
   background-image: url(top_bg2.jpg);
@@ -184,7 +167,7 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
   background-repeat: no-repeat;
 
   display: flex;
-  
+
   justify-content: center;
   align-items: center;
   flex-direction: column;
@@ -217,5 +200,227 @@ $hamburger-bg: darken($base-color, 7%); // ハンバーガー用（少し濃い�
     font-size: 1.4rem;
     font-weight: bold;
     border-radius: 0.75rem;
+  }
+}
+
+
+
+// ----------------------------------
+// ヘッダーハンバーガーメニュー関連
+// ----------------------------------
+
+body {
+  background-color: #F8F9FA;
+}
+
+
+.header {
+  position: relative;
+}
+
+
+/*ハンバーガーメニュー*/
+.hamburger {
+  width: 80px;
+  height: 70px;
+  position: fixed;
+  top: 20px;
+  right: 30px;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  // ★白い枠
+  background-color: rgba(255, 255, 255, 0.9);
+  border: 2px solid #fff;
+  border-radius: 8px;
+  padding: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  transition: all 0.3s ease;
+
+  &:hover {
+    background-color: rgba(255, 255, 255, 1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+  }
+
+  &__container {
+    display: block;
+  }
+
+  &__top,
+  &__middle,
+  &__bottom {
+    display: block;
+    width: 35px;
+    height: 2px;
+    background-color: #1e9a7f;
+    border-radius: 2px;
+  }
+
+  &__middle {
+    margin: 12px 0 12px 0;
+    opacity: 1;
+    transition: margin 300ms ease-in-out, opacity 0s ease-in-out;
+  }
+
+  &__top,
+  &__bottom {
+    transform: rotate(0);
+    transition: transform 300ms ease-in-out, background-color 300ms ease-in-out;
+  }
+
+  &.js-menu-open {
+    background-color: rgba(30, 154, 127, 0.9);
+    border-color: rgba(30, 154, 127, 0.9);
+
+    .hamburger__top,
+    .hamburger__middle,
+    .hamburger__bottom {
+      background-color: #fff;
+    }
+
+    .hamburger__middle {
+      margin: -2px 0 -2px 0;
+      opacity: 0;
+    }
+
+    .hamburger__top {
+      transform: rotate(45deg);
+    }
+
+    .hamburger__bottom {
+      transform: rotate(-45deg);
+    }
+  }
+}
+
+
+/*スマホナビメニュー*/
+.sp__menu {
+  width: 100%;
+  height: 100vh;
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: -10;
+  background-color: #506d53;
+  visibility: hidden;
+  opacity: 0.5;
+  transition: .3s cubic-bezier(.11,.24,.64,1);
+  &.js-open {
+    z-index: 100;
+    opacity: 1;
+    visibility: visible;
+    transition: .3s cubic-bezier(.11,.24,.64,1);
+  }
+  &__container {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+  }
+  &__nav {
+    ul {
+      li {
+        text-align: center;
+        overflow: hidden;
+        padding-bottom: 3px;
+        &:nth-child(even) {
+          margin: 35px 0;
+        }
+        /*ひとつずつ.05秒ずつずらして表示する*/
+        @for $i from 1 through 6 {
+          &:nth-child(#{$i}) {
+            a {
+              transition-delay: 50ms * $i;
+            }
+            a::before {
+              transition-delay: 130ms * $i;
+            }
+          }
+        }
+        a {
+          font-size: 18px;
+          color: #fff;
+          text-decoration: none;
+          display: inline-block;
+          letter-spacing: 1.3px;
+          opacity: 0;
+          transform: translate3d(0, 100%, 0);
+          transition: all .3s cubic-bezier(0.25, 0.1, 0.25, 1);
+          position: relative;
+          &::before {
+            content: '';
+            position: absolute;
+            z-index: -1;
+            bottom: -3px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background-color: #fff;
+            transform-origin: 100% 0;
+            transform: scaleX(0);
+            transition: transform 0.6s cubic-bezier(0.55, 0.05, 0.22, 0.99);
+          }
+          &.js-menu-open {
+            opacity: 1;
+            transform: translate3d(0,0,0);
+            &::before {
+              transform-origin: 0 0;
+              transform: scaleX(1);
+            }
+          }
+        }
+      }
+    }
+  }
+}
+
+// ----------------------------------
+// ヘッダー（上書き）
+// ----------------------------------
+// app/assets/stylesheets/header.scss
+
+.logo {
+  position: fixed;
+  top: 20px;
+  left: 20px;
+  z-index: 1001;
+
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  opacity: 0.95;
+
+  a {
+    text-decoration: none !important;
+    display: flex;
+    align-items: center;
+
+    background-color: rgba(30, 154, 127, 0.5); // 背景色
+    padding: 8px 8px 8px 4px;
+    border-radius: 8px;
+    transition: background-color 0.3s ease;
+
+    &:hover {
+      background-color: rgba(30, 154, 127, 0.7);
+    }
+  }
+
+  &__image {
+    margin-right: 5px;
+    width: 40px;
+    height: 40px;
+    object-fit: contain;
+  }
+
+  &__text {
+    font-size: 30px;
+    font-weight: 800;
+    color: #fff;
+    text-decoration: none !important; // ← 確実に下線を消す
+    line-height: 1;
   }
 }

@@ -1,10 +1,10 @@
-import "@hotwired/turbo-rails"
-import "controllers"
-import "bootstrap"
-import "@popperjs/core"
-import $ from 'jquery'
-window.$ = $
-window.jQuery = $
+import Rails from "@rails/ujs"
+Rails.start()
+
+import jquery from "jquery"
+window.$ = window.jQuery = jquery
+window.bootstrap = require("bootstrap")
+
 $(function() {
   $("#Hamburger").click(function(){
     $(this).toggleClass('js-menu-open');
