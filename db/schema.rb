@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_074757) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_075257) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -32,6 +32,25 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_074757) do
     t.index ["spot_id"], name: "index_like_spots_on_spot_id"
     t.index ["user_id", "spot_id"], name: "index_like_spots_on_user_id_and_spot_id", unique: true
     t.index ["user_id"], name: "index_like_spots_on_user_id"
+  end
+
+  create_table "plan_spots", force: :cascade do |t|
+    t.datetime "arrival_time"
+    t.datetime "created_at", null: false
+    t.datetime "departure_time"
+    t.integer "move_cost", default: 0, null: false
+    t.float "move_distance", default: 0.0, null: false
+    t.integer "move_time", default: 0, null: false
+    t.bigint "plan_id", null: false
+    t.integer "position", null: false
+    t.bigint "spot_id", null: false
+    t.integer "stay_duration"
+    t.boolean "toll_used", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id", "position"], name: "index_plan_spots_on_plan_id_and_position"
+    t.index ["plan_id", "spot_id"], name: "index_plan_spots_on_plan_id_and_spot_id", unique: true
+    t.index ["plan_id"], name: "index_plan_spots_on_plan_id"
+    t.index ["spot_id"], name: "index_plan_spots_on_spot_id"
   end
 
   create_table "plans", force: :cascade do |t|
@@ -109,6 +128,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_074757) do
   add_foreign_key "like_plans", "users"
   add_foreign_key "like_spots", "spots"
   add_foreign_key "like_spots", "users"
+  add_foreign_key "plan_spots", "plans"
+  add_foreign_key "plan_spots", "spots"
   add_foreign_key "plans", "users"
   add_foreign_key "user_spot_tags", "tags"
   add_foreign_key "user_spot_tags", "user_spots"
