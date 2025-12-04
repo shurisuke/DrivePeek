@@ -16,9 +16,9 @@ class CreatePlanSpots < ActiveRecord::Migration[8.1]
     end
 
     # プラン内での同一スポット登録の重複防止
-    add_index :plan_spots, [:plan_id, :spot_id], unique: true
+    add_index :plan_spots, [ :plan_id, :spot_id ], unique: true
 
     # plan内のpositionの重複防止
-    add_index :plan_spots, [:plan_id, :position]
+    add_index :plan_spots, [ :plan_id, :position ]
   end
 end

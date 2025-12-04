@@ -8,6 +8,6 @@ class CreateLikePlans < ActiveRecord::Migration[8.1]
     end
 
     # 同じユーザーが同じプランを複数回お気に入りできないように制限
-    add_index :like_plans, [:user_id, :plan_id], unique: true
+    add_index :like_plans, [ :user_id, :plan_id ], unique: true
   end
 end
