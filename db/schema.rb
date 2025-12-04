@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_070040) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_071312) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -28,6 +28,13 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_070040) do
     t.index ["city"], name: "index_spots_on_city"
     t.index ["place_id"], name: "index_spots_on_place_id", unique: true
     t.index ["prefecture"], name: "index_spots_on_prefecture"
+  end
+
+  create_table "tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "tag_name", null: false
+    t.datetime "updated_at", null: false
+    t.index ["tag_name"], name: "index_tags_on_tag_name", unique: true
   end
 
   create_table "users", force: :cascade do |t|
