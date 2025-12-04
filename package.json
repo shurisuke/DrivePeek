@@ -3,10 +3,9 @@
   "private": true,
   "type": "module",
   "scripts": {
-    "build:css:compile": "sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
-    "build:css:prefix": "postcss ./app/assets/builds/application.css --use autoprefixer -o ./app/assets/builds/application.css",
-    "build:css": "yarn run build:css:compile && yarn run build:css:prefix",
-    "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"yarn run build:css\""
+      "build:css:compile": "bunx sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
+      "build:css:prefix": "bunx postcss ./app/assets/builds/application.css --use autoprefixer -o ./app/assets/builds/application.css",
+      "build:css": "bun run build:css:compile && bun run build:css:prefix"
   },
   "dependencies": {
     "@fortawesome/fontawesome-free": "^7.1.0",
