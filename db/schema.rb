@@ -10,9 +10,24 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_075814) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_082626) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "end_points", force: :cascade do |t|
+    t.string "address"
+    t.datetime "arrival_time"
+    t.datetime "created_at", null: false
+    t.float "lat"
+    t.float "lng"
+    t.integer "move_cost"
+    t.float "move_distance"
+    t.integer "move_time"
+    t.bigint "plan_id", null: false
+    t.boolean "toll_used", default: false, null: false
+    t.datetime "updated_at", null: false
+    t.index ["plan_id"], name: "index_end_points_on_plan_id"
+  end
 
   create_table "like_plans", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -139,6 +154,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_075814) do
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
   end
 
+  add_foreign_key "end_points", "plans"
   add_foreign_key "like_plans", "plans"
   add_foreign_key "like_plans", "users"
   add_foreign_key "like_spots", "spots"
