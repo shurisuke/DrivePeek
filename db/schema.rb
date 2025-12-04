@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_071616) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_073303) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -49,6 +49,27 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_071616) do
     t.index ["tag_name"], name: "index_tags_on_tag_name", unique: true
   end
 
+  create_table "user_spot_tags", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "tag_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_spot_id", null: false
+    t.index ["tag_id"], name: "index_user_spot_tags_on_tag_id"
+    t.index ["user_spot_id", "tag_id"], name: "index_user_spot_tags_on_user_spot_id_and_tag_id", unique: true
+    t.index ["user_spot_id"], name: "index_user_spot_tags_on_user_spot_id"
+  end
+
+  create_table "user_spots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.text "memo"
+    t.bigint "spot_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["spot_id"], name: "index_user_spots_on_spot_id"
+    t.index ["user_id", "spot_id"], name: "index_user_spots_on_user_id_and_spot_id", unique: true
+    t.index ["user_id"], name: "index_user_spots_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "email", default: "", null: false
@@ -65,4 +86,8 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_071616) do
   end
 
   add_foreign_key "plans", "users"
+  add_foreign_key "user_spot_tags", "tags"
+  add_foreign_key "user_spot_tags", "user_spots"
+  add_foreign_key "user_spots", "spots"
+  add_foreign_key "user_spots", "users"
 end
