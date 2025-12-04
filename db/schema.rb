@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_04_075257) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_04_075814) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -81,6 +81,21 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_075257) do
     t.index ["prefecture"], name: "index_spots_on_prefecture"
   end
 
+  create_table "start_points", force: :cascade do |t|
+    t.string "address"
+    t.string "city"
+    t.datetime "created_at", null: false
+    t.datetime "departure_time"
+    t.float "lat"
+    t.float "lng"
+    t.bigint "plan_id", null: false
+    t.string "prefecture"
+    t.datetime "updated_at", null: false
+    t.index ["city"], name: "index_start_points_on_city"
+    t.index ["plan_id"], name: "index_start_points_on_plan_id"
+    t.index ["prefecture"], name: "index_start_points_on_prefecture"
+  end
+
   create_table "tags", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "tag_name", null: false
@@ -131,6 +146,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_04_075257) do
   add_foreign_key "plan_spots", "plans"
   add_foreign_key "plan_spots", "spots"
   add_foreign_key "plans", "users"
+  add_foreign_key "start_points", "plans"
   add_foreign_key "user_spot_tags", "tags"
   add_foreign_key "user_spot_tags", "user_spots"
   add_foreign_key "user_spots", "spots"
