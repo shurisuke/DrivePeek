@@ -473,36 +473,3 @@ body {
     line-height: 1;
   }
 }
-
-
-
-
-
-// ----------------------------------
-// マイページ
-// ----------------------------------
-// app/assets/stylesheets/header.scss
-
-.text-teal {
-  color: #1e9a7f;
-}
-
-.btn-teal {
-  background-color: #1e9a7f;
-  color: #fff;
-  border: none;
-}
-.btn-teal:hover {
-  background-color: #17806a;
-  color: #fff;
-}
-
-.btn-outline-teal {
-  background-color: transparent;
-  color: #1e9a7f;
-  border: 2px solid #1e9a7f;
-}
-.btn-outline-teal:hover {
-  background-color: #1e9a7f;
-  color: #fff;
-}
