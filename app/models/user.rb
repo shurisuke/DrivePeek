@@ -4,7 +4,7 @@ class User < ApplicationRecord
          :recoverable, :rememberable, :validatable
 
   # Enum（アカウントの公開状態）
-  enum :status, { public: 0, private: 1, deactivated: 2 }
+  enum :status, { active: 0, hidden: 1 }
 
   # Associations
   has_many :plans, dependent: :destroy
