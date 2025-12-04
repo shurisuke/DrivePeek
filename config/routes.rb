@@ -19,5 +19,13 @@ Rails.application.routes.draw do
     root to: "static_pages#top", as: :unauthenticated_root
   end
 
+  # 非ログイン時のルート
+  namespace :account do
+    get "profiles/show"
+    get "profiles/edit"
+    get "profiles/update"
+    resource :profile, only: [ :show, :edit, :update ]
+  end
+
   get "up" => "rails/health#show", as: :rails_health_check
 end
