@@ -24,7 +24,7 @@ Rails.application.routes.draw do
     get "profiles/show"
     get "profiles/edit"
     get "profiles/update"
-    resource :profile, only: [:show, :edit, :update]
+    resource :profile, only: [ :show, :edit, :update ]
   end
 
   get "up" => "rails/health#show", as: :rails_health_check
