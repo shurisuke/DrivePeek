@@ -17,7 +17,7 @@
   },
   "scripts": {
     "build:css:compile": "bun x sass ./app/assets/stylesheets/application.bootstrap.scss:./app/assets/builds/application.css --no-source-map --load-path=node_modules",
-    "build:css:prefix": "bun run postcss ./app/assets/builds/application.css --use autoprefixer -o ./app/assets/builds/application.css",
+    "build:css:prefix": "bun x postcss-cli ./app/assets/builds/application.css --use autoprefixer -o ./app/assets/builds/application.css",
     "build:css": "bun run build:css:compile && bun run build:css:prefix",
     "watch:css": "nodemon --watch ./app/assets/stylesheets/ --ext scss --exec \"bun run build:css\"",
     "build": "esbuild app/javascript/*.* --bundle --sourcemap --format=esm --outdir=app/assets/builds --public-path=/assets"
