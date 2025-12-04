@@ -15,20 +15,4 @@ test:
   database: drive_peek_test
 
 production:
-  primary: &primary_production
-    <<: *default
-    database: drive_peek_production
-    username: drive_peek
-    password: <%= ENV["DRIVE_PEEK_DATABASE_PASSWORD"] %>
-  cache:
-    <<: *primary_production
-    database: drive_peek_production_cache
-    migrations_paths: db/cache_migrate
-  queue:
-    <<: *primary_production
-    database: drive_peek_production_queue
-    migrations_paths: db/queue_migrate
-  cable:
-    <<: *primary_production
-    database: drive_peek_production_cable
-    migrations_paths: db/cable_migrate
+  url: <%= ENV['DATABASE_URL'] %>
