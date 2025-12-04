@@ -1,0 +1,25 @@
+# Read about fixtures at https://api.rubyonrails.org/classes/ActiveRecord/FixtureSet.html
+
+one:
+  plan: one
+  spot: one
+  position: 1
+  move_time: 1
+  move_distance: 1.5
+  move_cost: 1
+  toll_used: false
+  arrival_time: 2025-12-04 16:52:57
+  stay_duration: 1
+  departure_time: 2025-12-04 16:52:57
+
+two:
+  plan: two
+  spot: two
+  position: 1
+  move_time: 1
+  move_distance: 1.5
+  move_cost: 1
+  toll_used: false
+  arrival_time: 2025-12-04 16:52:57
+  stay_duration: 1
+  departure_time: 2025-12-04 16:52:57

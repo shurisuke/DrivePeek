@@ -1,12 +1,21 @@
 class User < ApplicationRecord
-  # Deviseのモジュール
+  # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable
 
-  # 正しいenumの書き方（Rails 8.1以降）
+  # Enum（アカウントの公開状態）
   enum :status, { active: 0, hidden: 1 }
 
-  # バリデーション
+  # Associations
+  has_many :plans, dependent: :destroy
+  has_many :user_spots, dependent: :destroy
+  has_many :spots, through: :user_spots
+  has_many :like_spots, dependent: :destroy
+  has_many :liked_spots, through: :like_spots, source: :spot
+  has_many :like_plans, dependent: :destroy
+  has_many :liked_plans, through: :like_plans, source: :plan
+
+  # Validations
   validates :name, presence: true, length: { maximum: 50 }
 
   validates :email, presence: true, uniqueness: true,
