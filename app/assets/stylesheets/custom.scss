@@ -1,6 +1,17 @@
 // app/assets/stylesheets/custom.scss
 
 // ----------------------------------
+// CSS変数の定義
+// ----------------------------------
+:root {
+  --gray-bg: #f8f9fa;
+  --teal-main: #1e9a7f;
+  --title: #187a65;
+  --content: #1e9a7f;
+}
+
+
+// ----------------------------------
 // カラーベース変数
 // ----------------------------------
 $base-color: #4ab4ab;
@@ -472,4 +483,137 @@ body {
     text-decoration: none !important; // ← 確実に下線を消す
     line-height: 1;
   }
+}
+
+
+/* ------------------------------
+   マイページ専用セクション
+------------------------------ */
+.mypage-container {
+  background-color: --gray-bg; // 背景：グレー
+  padding-top: 3rem;
+}
+
+.mypage-title {
+  font-size: 35px;
+  color: #187a65; // 緑文字に変更
+  border-bottom: 2px solid #1e9a7f;
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mypage-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mypage-card h3 {
+  color: #187a65; 
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mypage-form .form-label {
+  font-weight: 600;
+  color: #1e9a7f; 
+}
+
+.mypage-form .form-control,
+.mypage-form .form-select {
+  border-radius: 6px;
+  border-color: #1e9a7f;
+  background-color: #ffffff;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.mypage-note {
+  font-size: 1rem;
+  color: #1e9a7f;
+  margin-left: 6rem;
+  margin-top: 3rem;
+}
+
+.mypage-buttons {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .btn-teal {
+    background-color: #ffffff;
+    color: #1e9a7f;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #1e9a7f;
+    border-radius: 50px;
+    width: 100%;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+
+    &:hover {
+      background-color: #1e9a7f;
+      color: #ffffff;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
+    &:active {
+      background-color: #157d67;
+      transform: translateY(1px);
+      color: #ffffff;
+    }
+  }
+}
+
+/* ------------------------------
+   アラートメッセージ
+------------------------------ */
+
+.alert {
+  position: fixed;
+  top: 1rem;
+  left: 50%;
+  transform: translateX(-50%);
+  max-width: 600px;
+  padding: 1rem 1.5rem;
+  border-radius: 1rem;
+  background-color: rgba(255, 255, 255, 0.3);
+  color: inherit;
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px);
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.2);
+  z-index: 90;
+  text-align: center;
+  border: 1px solid rgba(255, 255, 255, 0.4);
+  font-weight: 500;
+  transition: all 0.3s ease;
+}
+
+/* 共通の見た目 */
+.alert.alert-info,
+.alert.alert-danger {
+  background-color: rgb(255, 255, 255);
+  backdrop-filter: blur(8px);
+  -webkit-backdrop-filter: blur(8px);
+  border: 1px solid rgba(255, 255, 255, 0.3);
+  border-radius: 12px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.1);
+  margin: 1.5rem auto;
+  opacity: 0.7;
+}
+
+/* 左寄せ（info用） */
+.alert.alert-info {
+  margin-top: 5px;
+  left: 1.5rem;
+  transform: none;
+  text-align: left;
 }
