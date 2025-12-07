@@ -1,40 +1,46 @@
-<div class="container py-5">
-  <h2 class="text-center fw-bold border-bottom pb-2 mb-5 text-teal mt-4">アカウント管理</h2>
+<div class="mypage-container">
+  <h2 class="mypage-title">アカウント設定</h2>
 
-  <div class="bg-white p-5 mx-auto shadow rounded" style="max-width: 700px;">
-    <h3 class="text-center mb-4 text-teal">プロフィール</h3>
-
-    <form>
+  <div class="mypage-card">
+    <h3>アカウント情報</h3>
+    <form class="mypage-form">
       <div class="mb-3 row">
-        <label class="col-sm-4 col-form-label">ユーザー名</label>
+        <label class="col-sm-4 col-form-label form-label">ユーザー名</label>
         <div class="col-sm-8">
           <input type="text" class="form-control">
         </div>
       </div>
 
       <div class="mb-3 row">
-        <label class="col-sm-4 col-form-label">登録メールアドレス</label>
+        <label class="col-sm-4 col-form-label form-label">登録メールアドレス</label>
         <div class="col-sm-8">
           <input type="email" class="form-control">
         </div>
       </div>
 
       <div class="mb-1 row">
-        <label class="col-sm-4 col-form-label">公開・非公開設定</label>
+        <label class="col-sm-4 col-form-label form-label">公開・非公開設定</label>
         <div class="col-sm-8">
           <select class="form-select">
-            <option>公開</option>
-            <option selected>非公開（デフォルト）</option>
+            <option selected>公開</option>
+            <option>非公開</option>
           </select>
         </div>
       </div>
-      <p class="text-muted small ms-3 mt-1">公開時に、ユーザー名は表示されません。</p>
-
-      <div class="d-grid gap-2 mt-4">
-        <button type="submit" class="btn btn-teal btn-dark">基本情報を変更</button>
-        <button type="submit" class="btn btn-outline-teal btn-dark">登録メールアドレスを変更</button>
-        <button type="submit" class="btn btn-dark">パスワードの変更</button>
-      </div>
+      <p class="mypage-note">※ 出発場所・帰宅場所・ユーザー名・メモは公開されません。</p>
     </form>
   </div>
+
+  <div class="mypage-card">
+    <h3>設定</h3>
+    <div class="mypage-buttons">
+      <%= link_to '基本情報を変更', account_profile_path, class: 'btn-teal' %>
+      <%= link_to '登録メールアドレスを変更', account_profile_path, class: 'btn-teal' %>
+      <%= link_to 'パスワードの変更', account_profile_path, class: 'btn-teal' %>
+    </div>
+  </div>
+
+  <%= link_to users_sign_out_path, class: 'btn-logout' do %>
+    <i class="fas fa-right-from-bracket"></i> ログアウト
+  <% end %>
 </div>

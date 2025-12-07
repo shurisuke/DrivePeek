@@ -1,0 +1,134 @@
+/* ==========================================
+     pages/_plan_form.scss
+     プラン作成画面レイアウト
+========================================== */
+
+body.no-footer {
+  .plan-form {
+    position: relative;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+
+    .map {
+      background-image: url(map_sample.png);
+      background-size: cover;
+      background-position: center;
+      position: absolute;
+      width: 100%;
+      height: 100%;
+      top: 0;
+      left: 0;
+      z-index: 1;
+    }
+
+    .planber {
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 25%;
+      min-width: 300px; // 小さすぎる画面への対応
+      max-width: 500px; // 広がりすぎ防止（お好みで）
+      height: 100%;
+      background: rgba(255, 255, 255, 0.95);
+      backdrop-filter: blur(10px);
+      z-index: 2;
+      box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+      display: flex;
+      flex-direction: column;
+
+      &__tabs {
+        display: flex;
+        justify-content: space-around;
+        border-bottom: 1px solid #ccc;
+        background: #fff;
+
+        .tab {
+          flex: 1;
+          padding: 1rem;
+          border: none;
+          background: none;
+          font-weight: bold;
+          cursor: pointer;
+
+          &.active {
+            border-bottom: 3px solid var(--personal);
+            color: var(--personal);
+          }
+        }
+      }
+
+      &__content {
+        flex: 1;
+        overflow-y: auto;
+        padding: 1rem;
+      }
+    }
+
+    .plan-save {
+      position: absolute;
+      bottom: 2rem;
+      left: 58%;
+      transform: translateX(-50%);
+      z-index: 3;
+
+      .btn-save {
+        background-color: var(--personal);
+        color: #fff;
+        font-size: 1.2rem;
+        padding: 0.8rem 2rem;
+        border-radius: 8px;
+        font-weight: bold;
+        border: none;
+        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
+        transition: all 0.2s;
+
+        &:hover {
+          background-color: color-mix(in srgb, var(--personal) 70%, black);
+        }
+      }
+    }
+
+    .plan-info {
+      position: absolute;
+      bottom: 2rem;
+      right: 2rem;
+      background: rgba(255, 255, 255, 0.95);
+      padding: 1rem 1.5rem;
+      border-radius: 10px;
+      box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+      z-index: 3;
+
+      p {
+        margin: 0;
+        font-size: 0.9rem;
+        color: #333;
+      }
+    }
+
+    .map-controls {
+      position: absolute;
+      top: 42%;
+      right: 1.5rem;
+      display: flex;
+      flex-direction: column;
+      gap: 0.5rem;
+      z-index: 3;
+
+      .zoom-btn {
+        background-color: #fff;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        width: 40px;
+        height: 40px;
+        font-size: 1.5rem;
+        font-weight: bold;
+        cursor: pointer;
+
+        &:hover {
+          background-color: #f0f0f0;
+        }
+      }
+    }
+  }
+}

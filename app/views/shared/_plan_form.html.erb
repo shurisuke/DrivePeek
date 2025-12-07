@@ -1,0 +1,39 @@
+<% content_for :body_class, "no-footer" %>
+
+<div class="main-content plan-form">
+  <!-- 地図 -->
+  <div id="map" class="map"></div>
+
+  <!-- 左ナビバー -->
+  <aside class="planber">
+    <nav class="planber__tabs">
+      <button class="tab" data-tab="plan">プラン</button>
+      <button class="tab active" data-tab="search">検索</button>
+      <button class="tab" data-tab="ai">AI提案</button>
+    </nav>
+
+    <div class="planber__content">
+      <%# render "plans/partials/search_tab" %>
+      <%# render "plans/partials/plan_tab" %>
+      <%# render "plans/partials/ai_tab" %>
+    </div>
+  </aside>
+
+  <!-- プラン保存ボタン -->
+  <div class="plan-save">
+    <%= button_to "プランを保存", plans_path, method: :post, class: "btn btn-save" %>
+  </div>
+
+  <!-- 右下: プラン情報 -->
+  <div class="plan-info">
+    <p>走行距離: 120km</p>
+    <p>EC料金: ¥3,200</p>
+    <p>移動時間: 2時間30分</p>
+  </div>
+
+  <!-- 右ズームボタン -->
+  <div class="map-controls">
+    <button class="zoom-btn in">＋</button>
+    <button class="zoom-btn out">−</button>
+  </div>
+</div>

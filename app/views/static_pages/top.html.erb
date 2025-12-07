@@ -1,25 +1,33 @@
 <div class="main-content">
   <div class="hero-image">
     <div class="hero-overlay">
-      <p class="lead-first">ドライブプラン作成アプリ</p>
-      <h1 class="display-4 fw-bold first d-flex align-items-center">
-        <%= image_tag "drivepeek_icon.png", width: 100, height: 100 %>
-        DrivePeek
-      </h1>
-      <p class="lead-last">誰かの旅×地図×AIで、理想のプランを作ろう</p>
+      <div class="hero-title">
+        <p class="lead-first">ドライブプラン作成アプリ</p>
+        <h1 class="display-4 fw-bold first d-flex align-items-center">
+          <%= image_tag "drivepeek_icon.png", width: 100, height: 100 %>
+          DrivePeek
+        </h1>
+        <p class="lead-last">地図×AI×誰かの旅で、理想のプランを作ろう</p>
+      </div>
 
       <div class="text-center mt-5">
-        <%= link_to new_user_registration_path, class: "btn top-main-btn px-5 py-3" do %>
-          <i class="fa-solid fa-book-open me-2"></i>
-          みんなのドライブプランをみる
+        <%= link_to new_user_registration_path, class: "btn top-main-btn rounded-pill" do %>
+          <i class="fa-solid fa-globe me-2"></i>
+          みんなのドライブプランを見る
         <% end %>
       </div>
 
       <div class="text-center mt-4">
-        <%= link_to '新規登録', new_user_registration_path, class: 'btn sub-btn px-5 py-3' %>
-        <%= link_to 'ログイン', new_user_session_path, class: 'btn sub-btn px-5 py-3' %>
-      </div>
+        <%= link_to new_user_registration_path, class: 'btn sub-btn rounded-pill' do %>
+          <i class="fa-solid fa-user-plus me-2"></i>
+          会員登録
+        <% end %>
 
+        <%= link_to new_user_session_path, class: 'btn sub-btn rounded-pill' do %>
+          <i class="fa-solid fa-right-to-bracket me-2"></i>
+          ログイン
+        <% end %>
+      </div>
     </div>
   </div>
 </div>

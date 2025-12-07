@@ -1,10 +1,17 @@
 <div class="top-after-login">
-  <h2>次の休日、どこ行く？</h2>
+  <div class="top-after-logincard">
+    <h1>次の休日、どこ行く？</h1>
 
-  <div class="card mb- mt-4">
-    <div class="d-grid gap-4 col-12 col-md-10 mx-auto">
-      <%= link_to raw('→ ドライブプランを作る'), authenticated_root_path, class: 'btn btn-brand btn-xl fw-bold rounded-pill' %>
-      <%= link_to raw('→ みんなのドライブプランを見る'), authenticated_root_path, class: 'btn btn-brand btn-xl fw-bold rounded-pill' %>
+    <div class="card mb- mt-4">
+      <div class="d-grid gap-4 col-12 col-md-10 mx-auto">
+        <%= link_to new_plan_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
+          <i class="fa-solid fa-pen me-2"></i> ドライブプランを作る
+        <% end %>
+
+        <%= link_to plans_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
+          <i class="fa-solid fa-globe me-2"></i> みんなのドライブプランを見る
+        <% end %>
+      </div>
     </div>
   </div>
 </div>
