@@ -1,5 +1,5 @@
 <div class="mypage-container">
-  <h2 class="mypage-title">マイページ</h2>
+  <h2 class="mypage-title">アカウント設定</h2>
 
   <div class="mypage-card">
     <h3>アカウント情報</h3>
@@ -34,9 +34,13 @@
   <div class="mypage-card">
     <h3>設定</h3>
     <div class="mypage-buttons">
-      <button type="submit" class="btn-teal">基本情報を変更</button>
-      <button type="submit" class="btn-teal">登録メールアドレスを変更</button>
-      <button type="submit" class="btn-teal">パスワードの変更</button>
+      <%= link_to '基本情報を変更', account_profile_path, class: 'btn-teal' %>
+      <%= link_to '登録メールアドレスを変更', account_profile_path, class: 'btn-teal' %>
+      <%= link_to 'パスワードの変更', account_profile_path, class: 'btn-teal' %>
     </div>
   </div>
+
+  <%= link_to users_sign_out_path, class: 'btn-logout' do %>
+    <i class="fas fa-right-from-bracket"></i> ログアウト
+  <% end %>
 </div>

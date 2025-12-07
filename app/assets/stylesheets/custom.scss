@@ -575,6 +575,38 @@ body {
 .mypage-container {
   background-color: --gray-bg; // 背景：グレー
   padding-top: 3rem;
+
+  .btn-logout {
+    background-color: #ffffff;
+    color: #b35c00; /* 濃いオレンジ */
+    margin: 0 auto;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #b35c00;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    width: 200px;
+    text-decoration: none;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    text-align: center;
+
+    &:hover {
+      background-color: #b35c00;
+      color: #ffffff;
+      transform: translateY(-1px);
+      text-decoration: none;
+    }
+
+    &:active {
+      background-color: #b35c00;
+      transform: translateY(1px);
+      color: #ffffff;
+    }
+  }
 }
 
 .mypage-title {
@@ -637,9 +669,15 @@ body {
     padding: 0.75rem 1.5rem;
     border: 2px solid #506d53;
     border-radius: 50px;
-    width: 100%;
+    margin: 0 auto;
+    width: 600px;
     box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
     transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    text-decoration: none;         // 🔸← 下線を常時消す
+    display: flex;                 // 🔸← 横中央
+    align-items: center;          // 🔸← 縦中央
+    justify-content: center;      // 🔸← 横中央
+    text-align: center;
 
     &:hover {
       background-color: #506d53;
