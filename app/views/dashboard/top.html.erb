@@ -4,11 +4,11 @@
 
     <div class="card mb- mt-4">
       <div class="d-grid gap-4 col-12 col-md-10 mx-auto">
-        <%= link_to authenticated_root_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
+        <%= link_to new_plan_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
           <i class="fa-solid fa-pen me-2"></i> ドライブプランを作る
         <% end %>
 
-        <%= link_to authenticated_root_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
+        <%= link_to plans_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
           <i class="fa-solid fa-globe me-2"></i> みんなのドライブプランを見る
         <% end %>
       </div>
