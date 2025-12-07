@@ -58,8 +58,8 @@ body {
   }
 
   &.js-menu-open {
-    background-color: color-mix(in srgb, var(--personal) 90%, black);
-    border-color: color-mix(in srgb, var(--personal) 90%, black);
+    background-color: color-mix(in srgb, var(--personal) 75%, rgb(255, 255, 255));
+    border-color: color-mix(in srgb, var(--personal) 90%, rgb(255, 255, 255));
 
     .hamburger__top,
     .hamburger__middle,
