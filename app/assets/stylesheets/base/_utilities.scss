@@ -1,0 +1,14 @@
+/* ==========================================
+     base/_utilities.scss
+     共通ユーティリティ
+========================================== */
+.container-main {
+  max-width: 960px;
+  margin: 0 auto;
+  padding: 1.5rem;
+}
+
+.alert-info,
+.alert-danger {
+  margin-bottom: 0 !important;
+}

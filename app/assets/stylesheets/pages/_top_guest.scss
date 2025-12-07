@@ -1,0 +1,162 @@
+/* ==========================================
+     pages/_top_guest.scss
+     ログイン前トップページ（ヒーロー）
+========================================== */
+.hero-image {
+  background: url(top_bg.jpg) center center / cover no-repeat;
+  height: 100vh;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+}
+
+.hero-overlay {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  width: 100%;
+  height: 100%;
+  position: relative;
+  text-align: center;
+  color: #fff;
+  text-shadow: 0 4px 8px rgba(0, 0, 0, 0.6);
+}
+
+.hero-title {
+  position: relative;
+  padding: 3rem 2rem 3rem 2rem;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+
+  z-index: 1;
+  width: 100%;
+  max-width: 100vw;
+  margin: 0 auto;
+  overflow: hidden;
+}
+
+.hero-title::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 100vw;
+  height: 100%;
+  background: color-mix(in srgb, var(--personal) 92%, transparent);
+  backdrop-filter: blur(6px);
+  -webkit-backdrop-filter: blur(6px);
+  border-radius: 0.5rem;
+  z-index: -1;
+  pointer-events: none;
+}
+
+.hero-title h1 {
+  font-size: 70px;
+  font-weight: bold;
+  margin-bottom: 1rem;
+  position: relative;
+  z-index: 1;
+  letter-spacing: 1.8px
+}
+
+.hero-title p {
+  font-size: 1.2rem;
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title .lead-first { margin: 0; }
+.hero-title .lead-last { font-size: 23px; }
+
+.hero-title .hero-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.hero-title .btn,
+.hero-title .top-main-btn,
+.hero-title .sub-btn {
+  position: relative;
+  z-index: 1;
+}
+
+.hero-title .fixed-btn {
+  min-width: 220px;
+  text-align: center;
+}
+
+/* 上段メインボタン */
+.top-main-btn {
+  background-color: #fffffff1;
+  color: color-mix(in srgb, var(--personal) 60%, black);
+  font-weight: bold;
+  font-size: 1.5rem;
+  border: 5px solid #ffffffe8;
+  border-radius: 10px;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  text-shadow: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  padding: 1.2rem 2rem 1.2rem 1.8rem;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--personal) 60%, black);
+    color: #fffffff1;
+    border-color: #fffffff1;
+  }
+}
+
+/* 下段ボタン */
+.sub-btn {
+  background-color: #fffffff1;
+  color: color-mix(in srgb, var(--personal) 60%, black);
+  font-weight: bold;
+  font-size: 1.4rem;
+  border: 5px solid #ffffffe8;
+  border-radius: 10px;
+  margin: 0 8px;
+  padding-left: 1rem;
+  text-shadow: none;
+  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25);
+  padding: 1.2rem 2rem 1.2rem 1.8rem;
+
+  &:hover {
+    background-color: color-mix(in srgb, var(--personal) 60%, black);
+    color: #fffffff1;
+    border-color: #fffffff1;
+  }
+}
+
+.hero-text-card {
+  max-width: 700px;
+  background-color: rgba(255, 255, 255, 0.75);
+  text-align: center;
+  border: none;
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+  padding: 2rem;
+}
+
+.btn-brand {
+  background-color: #f47717d5;
+  color: #fff;
+  border: 2px solid #ffffff;
+  font-weight: bold;
+  font-size: 1.2rem;
+  padding: 1rem 1.5rem;
+  border-radius: 8px;
+
+  &:hover {
+    background-color: #ffffff;
+    color: #f47717d5;
+    border-color: #f47717d5;
+  }
+}

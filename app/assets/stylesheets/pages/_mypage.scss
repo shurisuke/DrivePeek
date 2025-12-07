@@ -1,0 +1,100 @@
+/* ==========================================
+     pages/_mypage.scss
+     マイページ専用セクション
+========================================== */
+.mypage-container {
+  background-color: var(--gray-bg);
+  padding-top: 3rem;
+
+  .btn-logout {
+    background-color: #ffffff;
+    color: #b35c00;
+    margin: 0 auto;
+    font-size: 1rem;
+    font-weight: bold;
+    padding: 0.75rem 1.5rem;
+    border: 2px solid #b35c00;
+    border-radius: 50px;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+    transition: background-color 0.3s, color 0.3s, transform 0.2s;
+    width: 200px;
+    text-decoration: none;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+
+    &:hover {
+      background-color: #b35c00;
+      color: #ffffff;
+      transform: translateY(-1px);
+    }
+  }
+}
+
+.mypage-title {
+  font-size: 35px;
+  color: var(--personal);
+  border-bottom: 2px solid var(--personal);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+.mypage-card {
+  background-color: #ffffff;
+  padding: 2.5rem;
+  max-width: 700px;
+  margin: 0 auto 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+}
+
+.mypage-card h3 {
+  color: var(--personal);
+  margin-bottom: 1.5rem;
+  text-align: center;
+  font-weight: bold;
+}
+
+.mypage-form .form-label {
+  font-weight: 600;
+  color: var(--personal);
+}
+
+.mypage-form .form-control,
+.mypage-form .form-select {
+  border-radius: 6px;
+  border-color: var(--personal);
+  background-color: #ffffff;
+  color: #333;
+  font-size: 0.95rem;
+}
+
+.mypage-note {
+  font-size: 1rem;
+  color: var(--personal);
+  margin-left: 6rem;
+  margin-top: 3rem;
+}
+
+.mypage-buttons {
+  display: grid;
+  gap: 1rem;
+  margin-top: 2rem;
+
+  .btn-teal {
+    background-color: #ffffff;
+    color: var(--personal);
+    border: 2px solid var(--personal);
+    border-radius: 50px;
+    width: 600px;
+    margin: 0 auto;
+    padding: 0.75rem 1.5rem;
+
+    &:hover {
+      background-color: var(--personal);
+      color: #ffffff;
+    }
+  }
+}

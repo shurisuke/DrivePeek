@@ -1,7 +1,24 @@
+/* ==========================================
+   application.bootstrap.scss
+   アプリケーション全体のスタイルのエントリーポイント
+========================================== */
+
 @use "bootstrap/scss/bootstrap" with (
   $primary: #506d53,
   $enable-rounded: false
 );
+
 @use "bootstrap-icons/font/bootstrap-icons";
 
-@use "custom";
+@use "base/variables";
+@use "base/utilities";
+
+@use "layouts/header";
+@use "layouts/footer";
+
+@use "pages/top_guest";
+@use "pages/top_user";
+@use "pages/mypage";
+
+@use "components/alerts";
+@use "components/logo";
