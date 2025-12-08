@@ -13,13 +13,15 @@
 @use "base/variables";
 @use "base/utilities";
 
-@use "layouts/header";
-@use "layouts/footer";
+@use "shared/alerts";
+@use "shared/logo";
+@use "shared/header";
+@use "shared/footer";
 
 @use "pages/top_guest";
 @use "pages/top_user";
 @use "pages/mypage";
-@use "pages/plan_form";
 
-@use "components/alerts";
-@use "components/logo";
+
+@use "plans/plan_form.scss";
+@use "plans/components/start_point_block";
