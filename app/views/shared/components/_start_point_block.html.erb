@@ -1,0 +1,34 @@
+<div class="start-point-block">
+  <!-- 上部ブロック（常に表示） -->
+  <div class="start-point-main">
+    <div class="start-label">
+      <span class="icon">S</span>
+      <span class="address">〇〇県〇〇市〇〇町57-666</span>
+    </div>
+    <div class="start-time">
+      <%= time_field_tag :departure_time, "10:00", class: "departure-time", step: 900 %>
+      <span class="label">発</span>
+    </div>
+  </div>
+
+  <!-- ドロップダウン開閉トリガー -->
+  <div class="dropdown-toggle">
+    <i class="bi bi-caret-down-fill"></i>
+  </div>
+
+  <!-- 折りたたみエリア（初期は非表示） -->
+  <div class="start-point-detail" style="display: none;">
+    <div class="toll-option">
+      <label>有料道路</label>
+      <select>
+        <option>使わない</option>
+        <option>使う</option>
+      </select>
+    </div>
+    <div class="distance-info">
+      <span>次の場所まで</span>
+      <span class="km">〇〇km</span>
+      <span class="time">〇〇時間〇〇分</span>
+    </div>
+  </div>
+</div>
