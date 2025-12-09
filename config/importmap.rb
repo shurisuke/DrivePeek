@@ -10,3 +10,4 @@ pin "@popperjs/core", to: "popper.js", preload: true
 pin "hamburger"
 pin "flatpickr", to: "https://ga.jspm.io/npm:flatpickr@4.6.13/dist/flatpickr.js"
 pin "plans/map", to: "plans/map.js"
+pin "plans/navibar", to: "plans/navibar.js"
