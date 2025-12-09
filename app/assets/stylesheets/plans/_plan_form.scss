@@ -21,7 +21,7 @@ body.no-footer {
       z-index: 1;
     }
 
-    .planber {
+    .planbar {
       position: fixed;
       top: 0;
       left: 0;
@@ -34,19 +34,22 @@ body.no-footer {
       display: flex;
       flex-direction: column;
 
-      &__tabs {
+      // タブナビ（新しいクラスに対応）
+      .plan-tab-nav {
         display: flex;
         justify-content: space-around;
         border-bottom: 1px solid #ccc;
         background: #fff;
 
-        .tab {
+        .tab-btn {
           flex: 1;
-          padding: 1rem;
+          padding: 1.2rem 1rem 0.8rem 1rem;
           border: none;
           background: none;
           font-weight: bold;
           cursor: pointer;
+          transition: all 0.2s ease;
+          border-bottom: 3px solid transparent;
 
           &.active {
             border-bottom: 3px solid var(--personal);
@@ -58,7 +61,7 @@ body.no-footer {
       &__content {
         flex: 1;
         overflow-y: auto;
-
+        padding: 1rem;
       }
     }
 
