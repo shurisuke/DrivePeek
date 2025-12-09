@@ -11,14 +11,13 @@ body.no-footer {
     overflow: hidden;
 
     .map {
-      background-image: url(map_sample.png);
       background-size: cover;
       background-position: center;
       position: absolute;
-      width: 100%;
+      width: calc(100% - 370px);
       height: 100%;
       top: 0;
-      left: 0;
+      left: 370px;
       z-index: 1;
     }
 
