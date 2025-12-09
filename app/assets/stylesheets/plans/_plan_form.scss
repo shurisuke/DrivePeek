@@ -42,8 +42,10 @@ body.no-footer {
         background: #fff;
 
         .tab-btn {
+          font-size: 17px;
+          color: #797979;
           flex: 1;
-          padding: 1.2rem 1rem 0.8rem 1rem;
+          padding: 1.2rem 0rem 0.8rem 0rem;
           border: none;
           background: none;
           font-weight: bold;
@@ -53,8 +55,12 @@ body.no-footer {
 
           &.active {
             border-bottom: 3px solid var(--personal);
-            color: var(--personal);
+            color: #1d4928;
           }
+        }
+
+        .tab-community {
+          font-size: 14px;
         }
       }
 

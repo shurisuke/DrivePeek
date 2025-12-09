@@ -7,15 +7,15 @@
   <!-- 左ナビバー -->
   <aside class="planbar">
     <div class="plan-tab-nav">
-      <button class="tab-btn" data-tab="search">検索</button>
+      <button class="tab-btn tab-community" data-tab="community">みんなのプラン</button>
       <button class="tab-btn active" data-tab="plan">プラン</button>
       <button class="tab-btn" data-tab="ai">AI提案</button>
     </div>
 
     <!-- 各タブの中身 -->
     <div class="planber__content">
-      <div class="tab-content tab-search">
-        <%= render "plans/form_components/search_block" %>
+      <div class="tab-content tab-community">
+        <%= render "plans/form_components/community_block" %>
       </div>
       <div class="tab-content tab-plan active">
         <%= render "plans/form_components/plan_block" %>
