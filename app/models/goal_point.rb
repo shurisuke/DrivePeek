@@ -1,4 +1,4 @@
-class EndPoint < ApplicationRecord
+class GoalPoint < ApplicationRecord
   # Associations
   belongs_to :plan
 
