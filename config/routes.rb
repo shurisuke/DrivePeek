@@ -24,11 +24,14 @@ Rails.application.routes.draw do
 
   # マイページ
   namespace :account do
-    resource :profile, only: [ :show, :edit, :update ]
+    resource :profile, only: %i[show edit update]
   end
 
   # プラン
-  resources :plans
+  resources :plans, only: %i[index create edit update destroy] do
+    resource :start_point, only: %i[update]
+    resource :goal_point, only: %i[update]
+  end
 
   # ヘルスチェック
   get "up" => "rails/health#show", as: :rails_health_check
