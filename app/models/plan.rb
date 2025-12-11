@@ -11,6 +11,27 @@ class Plan < ApplicationRecord
   # before
   before_update :set_default_title_if_blank
 
+  def to_marker_data
+    {
+      start_point: start_point&.lat && start_point&.lng ? {
+        lat: start_point.lat,
+        lng: start_point.lng
+      } : nil,
+
+      end_point: goal_point&.lat && goal_point&.lng ? {
+        lat: goal_point.lat,
+        lng: goal_point.lng
+      } : nil,
+
+      spots: spots.map do |spot|
+        {
+          lat: spot.lat,
+          lng: spot.lng
+        }
+      end
+    }
+  end
+
   private
 
   def set_default_title_if_blank
