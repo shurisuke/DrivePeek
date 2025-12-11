@@ -8,6 +8,19 @@ class Plan < ApplicationRecord
   has_many :like_plans, dependent: :destroy
   has_many :liked_by_users, through: :like_plans, source: :user
 
-  # Validations
-  validates :title, presence: true
+  # before
+  before_update :set_default_title_if_blank
+
+  private
+
+  def set_default_title_if_blank
+    if title.blank?
+      cities = spots.map(&:city).uniq.compact
+     self.title = if cities.any?
+                     "#{cities.join('・')}の旅"
+                   else
+                     "ドライブプラン"
+                   end
+    end
+  end
 end
