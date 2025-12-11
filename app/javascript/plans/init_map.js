@@ -1,3 +1,5 @@
+import { renderPlanMarkers } from "plans/render_plan_markers";
+
 let map;
 let markers = [];
 
@@ -110,5 +112,13 @@ document.addEventListener("turbo:load", () => {
     console.log("🚀 turbo:load で地図初期化を開始します");
     renderMap(fallbackCenter);
     addCurrentLocationMarker();
+
+    // ✅ ここでマーカーを描画
+    const planData = window.planData; // グローバル変数として用意してあるなら
+    if (planData) {
+      renderPlanMarkers(planData);
+    } else {
+      console.warn("🟡 planData が存在しません");
+    }
   }
 });
