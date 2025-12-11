@@ -54,6 +54,9 @@ gem "devise"
 # Bootstrap 5
 gem "bootstrap", "~> 5.3.3"
 
+# Ruby の SSL 接続を安定化させる
+gem "openssl"
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
