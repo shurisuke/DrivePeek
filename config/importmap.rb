@@ -9,6 +9,7 @@ pin "bootstrap", to: "bootstrap.min.js", preload: true
 pin "@popperjs/core", to: "popper.js", preload: true
 pin "hamburger"
 pin "flatpickr", to: "https://ga.jspm.io/npm:flatpickr@4.6.13/dist/flatpickr.js"
-pin "plans/map", to: "plans/map.js"
+pin "plans/init_map", to: "plans/init_map.js"
 pin "plans/navibar", to: "plans/navibar.js"
 pin "plans/create_plan_trigger", to: "plans/create_plan_trigger.js"
+pin "plans/render_plan_markers", to: "plans/render_plan_markers.js"
