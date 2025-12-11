@@ -75,15 +75,27 @@ document.addEventListener("turbo:load", () => {
   }
 });
 
-// 現在地 → 地図描画
+// 現在地 → 地図描画 → 現在地にピンを刺す
 globalThis.initMap = function () {
   if (navigator.geolocation) {
     navigator.geolocation.getCurrentPosition(
       (position) => {
-        renderMap({
+        const center = {
           lat: position.coords.latitude,
           lng: position.coords.longitude,
+        };
+
+        renderMap(center);
+
+        // ✅ 現在地にピンを追加
+        const marker = new google.maps.Marker({
+          position: center,
+          map: map,
+          title: "現在地",
+          animation: google.maps.Animation.DROP
         });
+
+        markers.push(marker);
       },
       () => {
         renderMap({ lat: 35.681236, lng: 139.767125 }); // fallback: 東京駅
