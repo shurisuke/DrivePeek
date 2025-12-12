@@ -24,7 +24,7 @@
             <li><%= link_to "みんなのドライブプラン", plans_path %></li>
             <% unless controller_name == 'plans' && action_name.in?(%w[edit]) %>
               <li>
-                <%= link_to "ドライブプランを作る", plans_path, class: "create-plan-link", data: { turbo_method: :post } %>
+                <%= link_to "ドライブプランを作る", plans_path, class: "create-plan-trigger", data: { turbo_method: :post } %>
               </li>
             <% end %>
             <li><%= link_to "スポット検索", authenticated_root_path %></li>
