@@ -1,4 +1,3 @@
-# app/services/reverse_geocoder.rb
 require 'net/http'
 require 'uri'
 require 'json'
@@ -23,12 +22,12 @@ class ReverseGeocoder
     uri.query = URI.encode_www_form({
       latlng: "#{lat},#{lng}",
       key: ENV["GOOGLE_MAPS_API_KEY"],
-      language: "ja"
+      language: "ja",
+      region: "jp"
     })
 
     http = Net::HTTP.new(uri.host, uri.port)
     http.use_ssl = true
-    # http.verify_mode = OpenSSL::SSL::VERIFY_NONE # ← 開発中のみ
 
     request = Net::HTTP::Get.new(uri.request_uri)
     response = http.request(request)
@@ -40,16 +39,21 @@ class ReverseGeocoder
     if json["status"] == "OK"
       result = json["results"].first
 
-      address = result["formatted_address"]
-      components = result["address_components"]
+      raw_address = result["formatted_address"].to_s
+      address = normalize_address(raw_address)
 
-      prefecture = components.find { |c| c["types"].include?("administrative_area_level_1") }&.dig("long_name")
-      city = components.find { |c| c["types"].include?("locality") || c["types"].include?("sublocality_level_1") }&.dig("long_name")
+      components = result["address_components"] || []
+
+      prefecture =
+        components.find { |c| c["types"].include?("administrative_area_level_1") }&.dig("long_name")
+
+      city =
+        components.find { |c| c["types"].include?("locality") || c["types"].include?("sublocality_level_1") }&.dig("long_name")
 
       {
         lat: lat,
         lng: lng,
-        address: address,
+        address: address, # ← ここに「栃木県宇都宮市叶谷町４７−１１１」だけ入る
         prefecture: prefecture || "不明",
         city: city || "不明"
       }
@@ -60,5 +64,23 @@ class ReverseGeocoder
   rescue => e
     Rails.logger.error "Geocoding failed: #{e.message}"
     FALLBACK_LOCATION
+  end
+
+  # 例:
+  # "日本、〒329-1117 栃木県宇都宮市叶谷町４７−１１１"
+  # → "栃木県宇都宮市叶谷町４７−１１１"
+  def self.normalize_address(address)
+    a = address.dup
+
+    # 先頭の国名（日本、）を削除
+    a.sub!(/\A日本[、,\s]*/u, "")
+
+    # 先頭の郵便番号（〒123-4567 / 〒123−4567 などハイフン差異も吸収）を削除
+    a.sub!(/\A〒\s*\d{3}[‐-‒–—−-]\d{4}\s*/u, "")
+
+    # 先頭に残りがちな記号/空白を削除
+    a.sub!(/\A[、,\s]+/u, "")
+
+    a.strip
   end
 end
