@@ -2,12 +2,8 @@
   <!-- 上部ブロック（常に表示） -->
   <div class="start-point-main">
     <div class="start-label">
-      <span class="icon">S</span>
-      <span class="address">〇〇県〇〇市〇〇町57-666</span>
-    </div>
-    <div class="start-time">
-      <%= time_field_tag :departure_time, "10:00", class: "departure-time", step: 900 %>
-      <span class="label">発</span>
+      <span class="icon" aria-hidden="true"></span>
+      <span class="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
     </div>
   </div>
 
