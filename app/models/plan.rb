@@ -11,28 +11,26 @@ class Plan < ApplicationRecord
   # before
   before_update :set_default_title_if_blank
 
-  def to_marker_data
+  def marker_data_for_edit
     {
-      start_point: start_point&.lat && start_point&.lng ? {
-        lat: start_point.lat,
-        lng: start_point.lng
-      } : nil,
+      start_point: lat_lng_hash(start_point),
+      end_point:   lat_lng_hash(goal_point),
+      spots:       spots.map { |spot| lat_lng_hash(spot) }.compact
+    }
+  end
 
-      end_point: goal_point&.lat && goal_point&.lng ? {
-        lat: goal_point.lat,
-        lng: goal_point.lng
-      } : nil,
-
-      spots: spots.map do |spot|
-        {
-          lat: spot.lat,
-          lng: spot.lng
-        }
-      end
+  def marker_data_for_public_view
+    {
+      spots: spots.map { |spot| lat_lng_hash(spot) }.compact
     }
   end
 
   private
+
+  def lat_lng_hash(record)
+    return nil unless record&.lat.present? && record&.lng.present?
+    { lat: record.lat, lng: record.lng }
+  end
 
   def set_default_title_if_blank
     if title.blank?
