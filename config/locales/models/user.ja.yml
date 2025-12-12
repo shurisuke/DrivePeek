@@ -28,3 +28,4 @@ ja:
       blank: "を入力してください"
       invalid: "は正しい形式ではありません"
       confirmation: "が一致しません"
+      record_invalid: "レコードが無効です: %{errors}"

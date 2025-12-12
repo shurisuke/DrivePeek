@@ -1,1 +1,5 @@
+<script>
+  window.planData = <%= raw(json_escape(@plan.marker_data_for_edit.to_json)) %>;
+</script>
+
 <%= render "plan_form" %>
