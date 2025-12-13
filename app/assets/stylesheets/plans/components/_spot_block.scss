@@ -1,0 +1,315 @@
+/* ==========================================
+     スポットブロック
+========================================== */
+
+.spot-block {
+  background: #ffffff;
+  border-radius: 6px;
+  width: 100%;
+  padding: 0.5rem 0.5rem 1rem 0.5rem;
+
+  /* ボタン用の共通トーン（なじむ系） */
+  --spot-action-bg: rgba(80, 109, 83, 0.06);
+  --spot-action-bg-hover: rgba(80, 109, 83, 0.10);
+  --spot-action-border: rgba(80, 109, 83, 0.22);
+  --spot-action-border-hover: rgba(80, 109, 83, 0.32);
+  --spot-action-text: rgba(80, 109, 83, 0.90);
+}
+
+.spot-block .spot-main {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  margin-bottom: 6px;
+  position: relative; /* absolute配置の基準 */
+}
+
+.spot-block .spot-order-pin {
+  position: absolute;
+  top: 0;
+  left: 0;
+  margin-top: 2px;
+
+  width: 34px;
+  height: 34px;
+  border-radius: 9999px;
+
+  background: #435e50;
+  color: #fff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  font-size: 0.9rem;
+  font-weight: 700;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+}
+
+/* ✅ お気に入りボタン（右上に浮かせる） */
+.spot-block .spot-fav-btn {
+  position: absolute;
+  top: 0;
+  right: 0;
+  z-index: 2;
+
+  width: 40px;
+  height: 40px;
+
+  border-radius: 9999px;
+  border: 1px solid #e5e5e5;
+  background: #fff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  cursor: pointer;
+  margin: 0;
+}
+
+.spot-block .spot-fav-btn i {
+  color: var(--personal);
+  font-size: 1.1rem;
+
+  position: relative;
+  top: 2px;
+}
+
+/* 中央エリア */
+.spot-block .spot-body {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+}
+
+/* ハートと被らないための“左右同量”の余白 */
+.spot-block {
+  --spot-fav-safe: 45px;
+}
+
+.spot-block .spot-name {
+  font-size: 1.05rem;
+  font-weight: 700;
+  text-align: center;
+  color: #222;
+
+  padding: 0 var(--spot-fav-safe);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spot-block .spot-address {
+  margin-top: 4px;
+  font-size: 0.85rem;
+  text-align: center;
+  color: rgba(82, 82, 82, 0.78);
+
+  padding: 0 var(--spot-fav-safe);
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spot-block .spot-tags {
+  margin-top: 8px;
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+
+  padding: 0 var(--spot-fav-safe);
+}
+
+.spot-block .tag-chip {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  padding: 4px 10px;
+  border-radius: 9999px;
+
+  font-size: 0.75rem;
+  border: 1px solid rgba(80, 109, 83, 0.25);
+  background: rgba(80, 109, 83, 0.08);
+  color: rgba(80, 109, 83, 0.9);
+}
+
+.spot-block .spot-memo {
+  margin-top: 16px;
+  margin-left: var(--spot-fav-safe);
+  margin-right: var(--spot-fav-safe);
+
+  padding: 10px 12px;
+  border-radius: 10px;
+
+  border: 1px solid rgba(80, 109, 83, 0.18);
+  background: rgba(80, 109, 83, 0.06);
+}
+
+.spot-block .spot-memo__label {
+  font-size: 0.8rem;
+  font-weight: 700;
+  color: rgba(80, 109, 83, 0.9);
+  margin-bottom: 4px;
+}
+
+.spot-block .spot-memo__placeholder {
+  font-size: 0.8rem;
+  color: rgba(80, 109, 83, 0.65);
+}
+
+/* ==========================================================
+   差し込み：collapse + トグル
+========================================================== */
+.spot-block .spot-detail-wrap {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+}
+
+.spot-block .spot-detail,
+.spot-block .spot-detail.collapse.show {
+  width: 100%;
+}
+
+.spot-block .spot-detail__inner {
+  width: 100%;
+  border-radius: 6px;
+  background: #fff;
+  padding: 0px 12px 0px 12px;
+  font-size: 0.9rem;
+}
+
+/* ✅ ここが今回のメイン：メモ/タグ追加ボタンを“なじむ丸ボタン”へ */
+.spot-block .spot-detail-actions {
+  display: flex;
+  gap: 20px;
+  margin-top: 8px;
+  margin-bottom: 12px;
+  justify-content: center;
+}
+
+.spot-block .spot-detail-actions .btn {
+  /* w-100が付いていても崩れないようにする */
+  width: auto !important;
+  flex: 0 0 auto;
+  width: auto;
+
+  border-radius: 9999px !important;
+
+  border: 1px solid var(--spot-action-border) !important;
+  background: var(--spot-action-bg) !important;
+  color: var(--spot-action-text) !important;
+
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 0.55rem 2rem;
+
+  box-shadow: none !important;
+  transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s, border-color 0.12s;
+}
+
+.spot-block .spot-detail-actions .btn:hover {
+  background: var(--spot-action-bg-hover) !important;
+  border-color: var(--spot-action-border-hover) !important;
+  transform: translateY(-1px);
+  box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
+}
+
+.spot-block .spot-detail-actions .btn:active {
+  transform: translateY(0);
+  box-shadow: none !important;
+  background: rgba(80, 109, 83, 0.14) !important;
+}
+
+.spot-block .spot-detail-actions .btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18) !important;
+}
+
+/* トグルボタン */
+.spot-block .detail-toggle {
+  width: 40px;
+  height: 40px;
+  margin-top: 16px;
+
+  border-radius: 6px;
+  border: 1px solid #cccccc;
+  background: #fff;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+}
+
+.spot-block .detail-toggle i {
+  color: var(--personal);
+  transform: none !important;
+}
+
+.spot-block .toll-option,
+.spot-block .distance-info {
+  margin-bottom: 8px;
+}
+
+.spot-block .distance-info {
+  margin-bottom: 0;
+}
+
+/* ==========================================
+   ✅ hover: お気に入り（ハート）
+========================================== */
+.spot-block .spot-fav-btn {
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
+}
+
+.spot-block .spot-fav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+  border-color: rgba(80, 109, 83, 0.25);
+}
+
+.spot-block .spot-fav-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.spot-block .spot-fav-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+/* ==========================================
+   ✅ hover: トグル（▼ボタン）
+========================================== */
+.spot-block .detail-toggle {
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
+}
+
+.spot-block .detail-toggle:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+  border-color: rgba(80, 109, 83, 0.25);
+  background: rgba(80, 109, 83, 0.04);
+}
+
+.spot-block .detail-toggle:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.spot-block .detail-toggle:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
+}

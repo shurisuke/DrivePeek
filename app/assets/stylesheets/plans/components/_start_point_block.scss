@@ -196,10 +196,34 @@
     cursor: pointer;
 
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+    /* ✅ 追加：ホバー演出 */
+    transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+      background-color: rgba(80, 109, 83, 0.04);
+    }
+
+    &:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25), 0 2px 6px rgba(0, 0, 0, 0.10);
+    }
   }
 
   .detail-toggle i {
-    transition: transform 0.15s;
+    transition: transform 0.15s, opacity 0.12s; /* ✅ opacity 追加 */
     color: var(--personal);
+
+    /* ✅ 追加：アイコンも微妙に反応 */
+    .detail-toggle:hover & {
+      opacity: 0.9;
+    }
   }
 }

@@ -31,15 +31,17 @@ body.no-footer {
       backdrop-filter: blur(10px);
       z-index: 2;
       box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+
       display: flex;
       flex-direction: column;
+      overflow: hidden; /* ✅ 追加：中身スクロールを安定させる */
 
-      // タブナビ（新しいクラスに対応）
       .plan-tab-nav {
         display: flex;
         justify-content: space-around;
         border-bottom: 1px solid #ccc;
         background: #fff;
+        flex: 0 0 auto; /* ✅ 念のため固定 */
 
         .tab-btn {
           font-size: 17px;
@@ -64,10 +66,15 @@ body.no-footer {
         }
       }
 
+      /* ✅ ここがスクロール領域（HTMLを planbar__content に直す前提） */
       &__content {
-        flex: 1;
+        flex: 1 1 auto;
+        min-height: 0;     /* ✅ 超重要：flex内スクロールの必須条件になりがち */
         overflow-y: auto;
-        padding: 1rem;
+
+
+        -webkit-overflow-scrolling: touch;
+        overscroll-behavior: contain;
       }
     }
 
