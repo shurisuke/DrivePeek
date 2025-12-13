@@ -1,30 +1,68 @@
 <div class="start-point-block">
-  <!-- 上部ブロック（常に表示） -->
-  <div class="start-point-main">
-    <div class="start-label">
+<div class="start-point-main">
+  <div class="start-label">
+    <div class="start-label__row">
       <span class="icon" aria-hidden="true"></span>
       <span class="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
     </div>
   </div>
 
-  <!-- ドロップダウン開閉トリガー -->
-  <div class="dropdown-toggle">
-    <i class="bi bi-caret-down-fill"></i>
+  <button
+    type="button"
+    class="start-point-change-btn"
+    data-start-point-toggle
+    aria-expanded="false"
+    aria-controls="start-point-edit">
+    変更
+  </button>
+</div>
+
+  <div id="start-point-edit" class="start-point-edit" hidden>
+    <div class="start-point-edit__inner">
+      <label for="start-point-address" class="start-point-edit__label">出発地点を変更</label>
+
+      <input
+        id="start-point-address"
+        type="text"
+        class="form-control start-point-edit__input"
+        placeholder="（例: 〇〇市〇〇町〇〇-〇）"
+        autocomplete="off"
+        data-start-point-input
+      >
+
+      <div class="start-point-edit__help">Enterで検索 → 更新</div>
+    </div>
   </div>
 
-  <!-- 折りたたみエリア（初期は非表示） -->
-  <div class="start-point-detail" style="display: none;">
-    <div class="toll-option">
-      <label>有料道路</label>
-      <select>
-        <option>使わない</option>
-        <option>使う</option>
-      </select>
+  <!-- ✅ 差し込み用：collapse + トグル（トグルの上に配置） -->
+  <div class="start-point-detail-wrap">
+    <!-- 先に“差し込まれる内容”を置く → 開いたらトグルが下に押される -->
+    <div class="collapse start-point-detail" id="startPointDetail-<%= @plan.id %>">
+      <div class="start-point-detail__inner">
+        <div class="toll-option mb-2 d-flex align-items-center justify-content-between">
+          <label class="mb-0 me-2">有料道路</label>
+          <select class="form-select form-select-sm" style="width: 140px;">
+            <option>使わない</option>
+            <option>使う</option>
+          </select>
+        </div>
+
+        <div class="distance-info d-flex align-items-center justify-content-between">
+          <span>次の場所まで</span>
+          <span class="km">〇〇km</span>
+          <span class="time">〇〇時間〇〇分</span>
+        </div>
+      </div>
     </div>
-    <div class="distance-info">
-      <span>次の場所まで</span>
-      <span class="km">〇〇km</span>
-      <span class="time">〇〇時間〇〇分</span>
-    </div>
+
+    <button
+      type="button"
+      class="detail-toggle"
+      data-bs-toggle="collapse"
+      data-bs-target="#startPointDetail-<%= @plan.id %>"
+      aria-expanded="false"
+      aria-controls="startPointDetail-<%= @plan.id %>">
+      <i class="bi bi-caret-down-fill"></i>
+    </button>
   </div>
 </div>
