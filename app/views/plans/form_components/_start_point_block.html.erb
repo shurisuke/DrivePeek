@@ -5,6 +5,38 @@
       <span class="icon" aria-hidden="true"></span>
       <span class="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
     </div>
+
+    <!-- 右：「変更」ボタン -->
+    <button
+      type="button"
+      class="start-point-change-btn"
+      data-start-point-toggle
+      aria-expanded="false"
+      aria-controls="start-point-edit">
+      変更
+    </button>
+  </div>
+
+    <!-- 編集フォーム領域（初期は非表示） -->
+  <div id="start-point-edit" class="start-point-edit" hidden>
+    <div class="start-point-edit__inner">
+      <label for="start-point-address" class="start-point-edit__label">
+        出発地点を変更
+      </label>
+
+      <input
+        id="start-point-address"
+        type="text"
+        class="form-control start-point-edit__input"
+        placeholder="住所を入力してEnter（例: 東京駅）"
+        autocomplete="off"
+        data-start-point-input
+      >
+
+      <div class="start-point-edit__help">
+        Enterで検索 → 更新
+      </div>
+    </div>
   </div>
 
   <!-- ドロップダウン開閉トリガー -->
