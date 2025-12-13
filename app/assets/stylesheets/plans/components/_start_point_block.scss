@@ -11,100 +11,195 @@
   .start-point-main {
     display: flex;
     align-items: center;
-    margin-bottom: 20px;
-    gap: 8px; // ✅ 要素が詰まった時の逃げ
+    gap: 8px;
+    margin-bottom: 12px;
 
-    // 左: アイコン（start-label） / 中央: 住所（address） / 右: start-time（将来復活用）
     .start-label {
-      display: flex;
-      align-items: center;
-      flex: 1 1 0;
-      min-width: 0;
+      flex: 1 1 auto;
+      min-width: 0; // ✅ 省略を効かせる必須
       margin: 0;
     }
 
+    /* ✅ アイコン＋住所を同じ行に固定 */
+    .start-label__row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    /* ✅ spanでもサイズが効くようにする（ぶつかり対策の本命） */
     .icon {
+      display: inline-block;
       width: 35px;
       height: 39px;
-      flex: 0 0 auto;
-      margin-right: 0.4rem;
+      flex: 0 0 35px; // ✅ 縮まず固定
+
       background: url(house-icon.png) no-repeat center / contain;
       background-size: 100% 100%;
     }
 
     .address {
-      color: #525252c5;
       flex: 1 1 auto;
-      text-align: center;
-      font-size: 0.95rem;
+      min-width: 0;
 
-      // ✅ 1行固定 + 省略
+      color: #525252c5;
+      font-size: 0.95rem;
+      text-align: left; // ✅ ぶつかり回避のため「左寄せ」推奨（中央寄せが必要なら後述）
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
 
-      min-width: 0;
       display: block;
 
-      transform: translateX(-15px);
+      /* 過去のズラしが残っていたら強制解除 */
+      transform: none !important;
     }
 
-    .start-time {
-      flex: 1 1 0;
-      display: flex;
-      justify-content: flex-end;
+    /* 変更ボタン（丸・パーソナルカラー背景・白字） */
+    .start-point-change-btn {
+      flex: 0 0 auto;
+
+      display: inline-flex;
       align-items: center;
-      min-width: 0;
+      justify-content: center;
+
+      height: 34px;
+      padding: 0 14px;
+      border-radius: 9999px;
+
+      border: none;
+      background: var(--personal);
+      color: #fff;
+      font-size: 0.85rem;
+      font-weight: 500;
+      letter-spacing: 0.04em;
+
+      cursor: pointer;
+
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+      &:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+        transform: translateY(-1px);
+      }
+
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        opacity: 0.95;
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.35);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
+      }
     }
   }
 
-  .dropdown-toggle {
+  /* ==========================================================
+     出発地点 編集フォーム領域
+  ========================================================== */
+  .start-point-edit {
+    margin-top: 0.6rem;
+  }
+
+  .start-point-edit__inner {
+    background: rgba(80, 109, 83, 0.10);
+    border: 1px solid rgba(80, 109, 83, 0.18);
+    border-radius: 10px;
+
+    padding: 0.75rem 0.75rem 0.6rem;
+    margin-bottom: 1rem;
+  }
+
+  .start-point-edit__label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(80, 109, 83, 0.9);
+    margin-bottom: 0.5rem;
+  }
+
+  .start-point-edit__input.form-control {
+    border-radius: 10px;
+    border: 1px solid rgba(80, 109, 83, 0.25);
+
+    padding: 0.6rem 0.7rem;
+    font-size: 0.95rem;
+    color: #333;
+    background: #fff;
+
+    &:focus {
+      border-color: rgba(80, 109, 83, 0.45);
+      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+    }
+
+    &::placeholder {
+      color: rgba(86, 125, 90, 0.55);
+    }
+  }
+
+  .start-point-edit__help {
+    margin-top: 0.45rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(80, 109, 83, 0.65);
+  }
+
+  /* ==========================================================
+     ✅ 差し込み用：collapse + トグル
+  ========================================================== */
+  .start-point-detail-wrap {
     display: flex;
-    justify-content: center;
+    flex-direction: column;
     align-items: center;
-    padding: 0.5rem;
-    cursor: pointer;
-    border: 1px solid #ccc;
-    border-radius: 6px;
-    background-color: #f8f8f8;
-    width: 40px;
-    height: 40px;
-    margin: 0 auto;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-
-    transition: background-color 0.2s, box-shadow 0.2s;
-
-    i {
-      font-size: 1.2rem;
-      color: #666;
-    }
-
-    &:hover {
-      background-color: #e0e0e0;
-      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-    }
-  }
-
-  .dropdown-toggle::after {
-    content: none !important;
+    gap: 8px;
+    width: 100%;
   }
 
   .start-point-detail {
-    margin-top: 0.5rem;
+    width: 100%;
+  }
+
+  .start-point-detail.collapse.show {
+    width: 100%;
+  }
+
+  .start-point-detail__inner {
+    width: 100%;
+    border-radius: 6px;
+    background: #fff;
+    padding: 0px 12px 12px 12px;
     font-size: 0.9rem;
+    width: 100%;
+  }
 
-    .toll-option,
-    .distance-info {
-      margin-bottom: 0.5rem;
-      display: flex;
-      align-items: center;
-      justify-content: space-between;
-    }
+  .detail-toggle {
+    width: 40px;
+    height: 40px;
+    border-radius: 6px;
+    border: 1px solid #cccccc;
+    background: #fff;
 
-    select {
-      padding: 0.3rem;
-      border-radius: 4px;
-      border: 1px solid #ccc;
-    }
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+
+  .detail-toggle i {
+    transition: transform 0.15s;
+    color: var(--personal);
   }
 }

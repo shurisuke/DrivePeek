@@ -4,8 +4,10 @@
 // - 「変更」ボタンでフォームを開閉
 // - Enterで住所をGeocodingして、出発地点ピンを差し替え
 // - 検索ヒットピンがあれば全消去
-// - 地図をズーム/フォーカス（✅ デフォルト挙動）
-// - ✅ サーバへ更新をPATCH（StartPointsController#update）
+// - 地図をズーム/フォーカス（デフォルト挙動）
+// - サーバへ更新をPATCH（StartPointsController#update）
+// 注意:
+// - ▼詳細パネルは Bootstrap dropdown だけで動かす（ここでは触らない）
 // ================================================================
 
 import {
@@ -17,7 +19,7 @@ import {
 
 import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder";
 
-const START_POINT_ICON_URL = "/icons/house-pin.png"; // render_plan_markers と合わせる
+const START_POINT_ICON_URL = "/icons/house-pin.png";
 const START_POINT_ICON_SIZE = { w: 50, h: 55 };
 const FOCUS_ZOOM = 16;
 
@@ -49,28 +51,22 @@ document.addEventListener("turbo:load", () => {
       if (!isOpen) input.focus();
     });
 
-    // --- IME変換中フラグ（✅ 変換確定Enterを除外するため） ---
+    // --- IME変換中フラグ（変換確定Enterを除外するため） ---
     let isImeComposing = false;
-
-    input.addEventListener("compositionstart", () => {
-      isImeComposing = true;
-    });
-
-    input.addEventListener("compositionend", () => {
-      isImeComposing = false;
-    });
+    input.addEventListener("compositionstart", () => (isImeComposing = true));
+    input.addEventListener("compositionend", () => (isImeComposing = false));
 
     // ----------------------------------------------------------------
     // 2) Enterで検索 → 更新（ピン差し替え + 地図フォーカス + サーバ更新）
     // ----------------------------------------------------------------
     input.addEventListener("keydown", async (e) => {
-      // ✅ IME変換中Enterは発火させない（日本語変換対策）
+      // IME変換中Enterは発火させない（日本語変換対策）
       if (e.isComposing || isImeComposing || e.keyCode === 229) return;
 
-      // ✅ Enter以外は無視
+      // Enter以外は無視
       if (e.key !== "Enter") return;
 
-      // ✅ ここから先は「確定Enter（実行）」だけが通る
+      // 確定Enter（実行）
       e.preventDefault();
 
       const map = getMapInstance();
@@ -83,16 +79,16 @@ document.addEventListener("turbo:load", () => {
       if (!query) return;
 
       try {
-        // ✅ (要件) 検索ヒット地点ピンがある場合、全て消去
+        // 検索ヒット地点ピンがある場合、全て消去
         clearSearchHitMarkers();
 
-        // ✅ 住所を Geocoding
+        // 住所を Geocoding
         const { location, viewport, formattedAddress } = await geocodeAddress(query);
 
-        // ✅ 表示用に整形（日本/郵便番号を落とす）
+        // 表示用に整形（日本/郵便番号を落とす）
         const displayAddress = normalizeDisplayAddress(formattedAddress);
 
-        // ✅ (要件) スタート地点pinを消して差し直す
+        // スタート地点pinを消して差し直す
         clearStartPointMarker();
 
         const marker = new google.maps.Marker({
@@ -101,19 +97,15 @@ document.addEventListener("turbo:load", () => {
           title: "出発地点",
           icon: {
             url: START_POINT_ICON_URL,
-            scaledSize: new google.maps.Size(
-              START_POINT_ICON_SIZE.w,
-              START_POINT_ICON_SIZE.h
-            ),
+            scaledSize: new google.maps.Size(START_POINT_ICON_SIZE.w, START_POINT_ICON_SIZE.h),
           },
         });
 
         setStartPointMarker(marker);
 
-        // ============================================================
+        // デフォルト挙動：
         // - viewport がある → fitBounds（Google Maps標準の寄せ）
         // - viewport がない → panTo + setZoom
-        // ============================================================
         if (viewport) {
           map.fitBounds(viewport);
         } else {
@@ -121,18 +113,14 @@ document.addEventListener("turbo:load", () => {
           map.setZoom(FOCUS_ZOOM);
         }
 
-        // ✅ UIの住所表示も更新（先に表示は更新してOK）
+        // UIの住所表示も更新（先に表示は更新してOK）
         addressSpan.textContent = displayAddress || query;
 
-        // ✅ フォームは閉じる
+        // フォームは閉じる
         editArea.hidden = true;
         toggleBtn.setAttribute("aria-expanded", "false");
 
-        // ============================================================
-        // 本命部分：StartPointsController#update にPATCHする
-        // - ルーティング想定: PATCH /plans/:plan_id/start_point
-        // - 送るparams形: { start_point: { lat, lng, address } }
-        // ============================================================
+        // サーバへ保存（StartPointsController#update）
         const lat = typeof location.lat === "function" ? location.lat() : location.lat;
         const lng = typeof location.lng === "function" ? location.lng() : location.lng;
 
@@ -142,13 +130,12 @@ document.addEventListener("turbo:load", () => {
           address: displayAddress || query,
         });
 
-        // ✅ サーバが返した値で最終上書き（表示ズレ防止）
+        // サーバが返した値で最終上書き（表示ズレ防止）
         if (resJson?.ok && resJson?.start_point?.address) {
           addressSpan.textContent = resJson.start_point.address;
         }
 
         console.log("✅ start_point update success:", resJson);
-
       } catch (err) {
         console.warn("⚠️ 出発地点の更新に失敗:", err);
         alert("住所が見つからない、または保存に失敗しました。別のキーワードで試してください。");
@@ -170,8 +157,6 @@ const persistStartPoint = async ({ lat, lng, address }) => {
   }
 
   const token = document.querySelector('meta[name="csrf-token"]')?.content;
-
-  // 例: PATCH /plans/144/start_point
   const url = `/plans/${planId}/start_point`;
 
   const res = await fetch(url, {
@@ -180,7 +165,7 @@ const persistStartPoint = async ({ lat, lng, address }) => {
     headers: {
       "Content-Type": "application/json",
       "X-CSRF-Token": token,
-      "Accept": "application/json",
+      Accept: "application/json",
     },
     body: JSON.stringify({
       start_point: { lat, lng, address },
