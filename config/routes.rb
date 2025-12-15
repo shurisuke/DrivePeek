@@ -31,6 +31,7 @@ Rails.application.routes.draw do
   resources :plans, only: %i[index create edit update destroy] do
     resource :start_point, only: %i[update]
     resource :goal_point, only: %i[update]
+    resources :plan_spots, only: %i[create]
   end
 
   # ヘルスチェック
