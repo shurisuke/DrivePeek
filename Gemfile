@@ -54,6 +54,9 @@ gem "devise"
 # Bootstrap 5
 gem "bootstrap", "~> 5.3.3"
 
+# リスト順序管理
+gem "acts_as_list"
+
 # Ruby の SSL 接続を安定化させる
 gem "openssl"
 
