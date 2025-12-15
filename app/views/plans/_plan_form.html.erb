@@ -15,22 +15,22 @@
   </div>
 
   <!-- 左ナビバー -->
-  <aside class="planbar">
+  <aside class="planbar" data-controller="navibar">
     <div class="plan-tab-nav">
-      <button class="tab-btn tab-community" data-tab="community">みんなのプラン</button>
-      <button class="tab-btn active" data-tab="plan">プラン</button>
-      <button class="tab-btn" data-tab="ai">AI提案</button>
+      <button class="tab-btn tab-community" data-tab="community" data-navibar-target="button" data-action="click->navibar#switch">みんなのプラン</button>
+      <button class="tab-btn active" data-tab="plan" data-navibar-target="button" data-action="click->navibar#switch">プラン</button>
+      <button class="tab-btn" data-tab="ai" data-navibar-target="button" data-action="click->navibar#switch">AI提案</button>
     </div>
 
     <!-- 各タブの中身 -->
     <div class="planbar__content">
-      <div class="tab-content tab-community">
+      <div class="tab-content tab-community" data-navibar-target="content">
         <%= render "plans/form_components/community_block" %>
       </div>
-      <div class="tab-content tab-plan active">
+      <div class="tab-content tab-plan active" data-navibar-target="content">
         <%= render "plans/form_components/plan_block", plan: plan %>
       </div>
-      <div class="tab-content tab-ai">
+      <div class="tab-content tab-ai" data-navibar-target="content">
         <%= render "plans/form_components/ai_suggestion_block" %>
       </div>
     </div>
