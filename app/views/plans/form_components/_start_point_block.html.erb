@@ -1,23 +1,24 @@
-<div class="start-point-block">
+<div class="start-point-block" data-controller="start-point-editor">
 <div class="start-point-main">
   <div class="start-label">
     <div class="start-label__row">
       <span class="icon" aria-hidden="true"></span>
-      <span class="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
+      <span class="address" data-start-point-editor-target="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
     </div>
   </div>
 
   <button
     type="button"
     class="start-point-change-btn"
-    data-start-point-toggle
+    data-start-point-editor-target="toggle"
+    data-action="click->start-point-editor#toggle"
     aria-expanded="false"
     aria-controls="start-point-edit">
     変更
   </button>
 </div>
 
-  <div id="start-point-edit" class="start-point-edit" hidden>
+  <div id="start-point-edit" class="start-point-edit" hidden data-start-point-editor-target="editArea">
     <div class="start-point-edit__inner">
       <label for="start-point-address" class="start-point-edit__label">出発地点を変更</label>
 
@@ -27,7 +28,8 @@
         class="form-control start-point-edit__input"
         placeholder="（例: 〇〇市〇〇町〇〇-〇）"
         autocomplete="off"
-        data-start-point-input
+        data-start-point-editor-target="input"
+        data-action="keydown->start-point-editor#search compositionstart->start-point-editor#compositionStart compositionend->start-point-editor#compositionEnd"
       >
 
       <div class="start-point-edit__help">Enterで検索 → 更新</div>
