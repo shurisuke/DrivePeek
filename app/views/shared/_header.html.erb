@@ -1,7 +1,7 @@
-<header class="header">
+<header class="header" data-controller="hamburger">
   <div class="header__inner">
     <!-- 右：ハンバーガーメニュー -->
-    <div class="hamburger hamburger-single" id="Hamburger">
+    <div class="hamburger hamburger-single" id="Hamburger" data-hamburger-target="button" data-action="click->hamburger#toggle">
       <div class="hamburger__container">
         <span class="hamburger__top"></span>
         <span class="hamburger__middle"></span>
@@ -11,7 +11,7 @@
   </div>
 
   <!-- 展開メニュー -->
-  <div class="sp__menu">
+  <div class="sp__menu" data-hamburger-target="menu">
     <div class="sp__menu__container">
       <div class="sp__menu__nav">
         <ul id="menu__hamburger__nav" class="sp__menu__ul">
@@ -23,8 +23,8 @@
             </li>
             <li><%= link_to "みんなのドライブプラン", plans_path %></li>
             <% unless controller_name == 'plans' && action_name.in?(%w[edit]) %>
-              <li>
-                <%= link_to "ドライブプランを作る", plans_path, class: "create-plan-trigger", data: { turbo_method: :post } %>
+              <li data-controller="create-plan-trigger">
+                <%= link_to "ドライブプランを作る", "#", data: { action: "click->create-plan-trigger#create" } %>
               </li>
             <% end %>
             <li><%= link_to "スポット検索", authenticated_root_path %></li>
