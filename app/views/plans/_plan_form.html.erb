@@ -2,7 +2,7 @@
 
 <div class="main-content plan-form">
   <!-- 地図 -->
-  <div id="map" class="map"></div>
+  <div id="map" class="map" data-plan-id="<%= plan.id %>"></div>
 
   <!-- 🔍 検索バー（地図上部に重ねる用） -->
   <div class="map-search-box">
@@ -14,27 +14,10 @@
     >
   </div>
 
-  <!-- 左ナビバー -->
-  <aside class="planbar" data-controller="navibar">
-    <div class="plan-tab-nav">
-      <button class="tab-btn tab-community" data-tab="community" data-navibar-target="button" data-action="click->navibar#switch">みんなのプラン</button>
-      <button class="tab-btn active" data-tab="plan" data-navibar-target="button" data-action="click->navibar#switch">プラン</button>
-      <button class="tab-btn" data-tab="ai" data-navibar-target="button" data-action="click->navibar#switch">AI提案</button>
-    </div>
-
-    <!-- 各タブの中身 -->
-    <div class="planbar__content">
-      <div class="tab-content tab-community" data-navibar-target="content">
-        <%= render "plans/form_components/community_block" %>
-      </div>
-      <div class="tab-content tab-plan active" data-navibar-target="content">
-        <%= render "plans/form_components/plan_block", plan: plan %>
-      </div>
-      <div class="tab-content tab-ai" data-navibar-target="content">
-        <%= render "plans/form_components/ai_suggestion_block" %>
-      </div>
-    </div>
-  </aside>
+  <!-- 左ナビバー（Turbo Frame化） -->
+  <%= turbo_frame_tag "planbar" do %>
+    <%= render "plans/form_components/planbar", plan: plan %>
+  <% end %>
 
   <!-- プラン保存ボタン -->
   <div class="plan-save">
