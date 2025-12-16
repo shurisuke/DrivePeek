@@ -1,3 +1,9 @@
+<%# ================================================================
+    Planタブ（単一責務）
+    用途: 出発地点 + プラン内スポット一覧（position順）を描画する
+    メモ: spot-block の並び替え（SortableJS）の親コンテナを提供する
+================================================================ %>
+
 <%= render "plans/form_components/start_point_block" %>
 
 <% user_spots_by_spot_id =
@@ -7,10 +13,13 @@
        .index_by(&:spot_id)
 %>
 
-<% @plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
-  <% user_spot = user_spots_by_spot_id[plan_spot.spot_id] %>
+<%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
+<div id="plan-spots-sortable" data-sortable="plan-spots">
+  <% @plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
+    <% user_spot = user_spots_by_spot_id[plan_spot.spot_id] %>
 
-  <%= render "plans/form_components/spot_block",
-             plan_spot: plan_spot,
-             user_spot: user_spot %>
-<% end %>
+    <%= render "plans/form_components/spot_block",
+               plan_spot: plan_spot,
+               user_spot: user_spot %>
+  <% end %>
+</div>
