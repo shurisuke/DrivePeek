@@ -35,4 +35,8 @@ export const bindPlanbarRefresh = () => {
   // 二重バインド防止（turbo遷移で何度も呼ばれても1回分にする）
   document.removeEventListener("plan:spot-added", refreshPlanbar)
   document.addEventListener("plan:spot-added", refreshPlanbar)
+
+  // 並び替え完了後も planbar を再描画
+  document.removeEventListener("plan:spots-reordered", refreshPlanbar)
+  document.addEventListener("plan:spots-reordered", refreshPlanbar)
 }
