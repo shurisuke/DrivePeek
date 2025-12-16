@@ -9,11 +9,13 @@ import { getPlanDataFromPage } from "map/plan_data";
 import { bindClearSearchHitsOnSpotAdded } from "map/search_box";
 import { bindSpotAddHandler } from "plans/spot_add_handler";
 import { bindPlanbarRefresh } from "plans/planbar_updater"
+import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 
 // moduleロード時に1回だけバインド（turbo遷移でもOK）
 bindClearSearchHitsOnSpotAdded();
 bindSpotAddHandler();
 bindPlanbarRefresh()
+bindSpotReorderHandler()
 
 document.addEventListener("turbo:load", async () => {
   const mapElement = document.getElementById("map")
