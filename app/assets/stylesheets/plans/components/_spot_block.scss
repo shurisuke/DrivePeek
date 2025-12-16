@@ -3,6 +3,7 @@
 ========================================== */
 
 .spot-block {
+  position: relative;
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
@@ -14,6 +15,33 @@
   --spot-action-border: rgba(80, 109, 83, 0.22);
   --spot-action-border-hover: rgba(80, 109, 83, 0.32);
   --spot-action-text: rgba(80, 109, 83, 0.90);
+
+  /* ✅ ドラッグ_toggle（ブロック全体を掴める） */
+  cursor: grab;
+
+  /* ✅ hover: 影＋薄い色変化 */
+  transition: box-shadow 0.12s, transform 0.12s, background-color 0.12s;
+}
+
+.spot-block:hover {
+  background: rgba(80, 109, 83, 0.03);
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.10);
+  transform: translateY(-1px);
+}
+
+.spot-block:active {
+  cursor: grabbing;
+  transform: translateY(0);
+}
+
+/* ✅ 操作系は cursor を戻す（誤ドラッグ防止） */
+.spot-block button,
+.spot-block a,
+.spot-block input,
+.spot-block textarea,
+.spot-block select,
+.spot-block label {
+  cursor: pointer;
 }
 
 .spot-block .spot-main {
@@ -24,6 +52,7 @@
   position: relative; /* absolute配置の基準 */
 }
 
+/* positionピン（左上） */
 .spot-block .spot-order-pin {
   position: absolute;
   top: 0;
@@ -66,8 +95,25 @@
   justify-content: center;
 
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  cursor: pointer;
   margin: 0;
+
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
+}
+
+.spot-block .spot-fav-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
+  border-color: rgba(80, 109, 83, 0.25);
+}
+
+.spot-block .spot-fav-btn:active {
+  transform: translateY(0);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.spot-block .spot-fav-btn:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
 }
 
 .spot-block .spot-fav-btn i {
@@ -188,7 +234,7 @@
   font-size: 0.9rem;
 }
 
-/* ✅ ここが今回のメイン：メモ/タグ追加ボタンを“なじむ丸ボタン”へ */
+/* メモ/タグ追加ボタン */
 .spot-block .spot-detail-actions {
   display: flex;
   gap: 20px;
@@ -198,10 +244,8 @@
 }
 
 .spot-block .spot-detail-actions .btn {
-  /* w-100が付いていても崩れないようにする */
   width: auto !important;
   flex: 0 0 auto;
-  width: auto;
 
   border-radius: 9999px !important;
 
@@ -249,52 +293,14 @@
   align-items: center;
   justify-content: center;
 
-  cursor: pointer;
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+
+  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
 }
 
 .spot-block .detail-toggle i {
   color: var(--personal);
   transform: none !important;
-}
-
-.spot-block .toll-option,
-.spot-block .distance-info {
-  margin-bottom: 8px;
-}
-
-.spot-block .distance-info {
-  margin-bottom: 0;
-}
-
-/* ==========================================
-   ✅ hover: お気に入り（ハート）
-========================================== */
-.spot-block .spot-fav-btn {
-  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
-}
-
-.spot-block .spot-fav-btn:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
-  border-color: rgba(80, 109, 83, 0.25);
-}
-
-.spot-block .spot-fav-btn:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
-}
-
-.spot-block .spot-fav-btn:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
-}
-
-/* ==========================================
-   ✅ hover: トグル（▼ボタン）
-========================================== */
-.spot-block .detail-toggle {
-  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
 }
 
 .spot-block .detail-toggle:hover {
@@ -312,4 +318,34 @@
 .spot-block .detail-toggle:focus-visible {
   outline: none;
   box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
+}
+
+.spot-block .toll-option,
+.spot-block .distance-info {
+  margin-bottom: 8px;
+}
+
+.spot-block .distance-info {
+  margin-bottom: 0;
+}
+
+/* ✅ ドラッグハンドル（全体ドラッグにするので“任意表示”扱い） */
+.spot-block .spot-drag-handle {
+  display: none;
+}
+
+/* SortableJS のゴースト（ドラッグ中の半透明） */
+.spot-block--ghost {
+  opacity: 0.9;
+  background: #f0f7f2;
+}
+
+/* SortableJS の選択状態 */
+.spot-block--chosen {
+  box-shadow: 0 4px 16px rgba(254, 255, 254, 0.25);
+}
+
+/* コンテナ余白（ハンドルなしなので不要） */
+#plan-spots-sortable {
+  padding-left: 0;
 }
