@@ -151,10 +151,3 @@ export const setupSearchBox = () => {
     map.fitBounds(bounds)
   })
 }
-
-// ✅ 将来要件: 「スポットがプランに追加された時に検索ヒット地点用マーカーを全て消す」
-export const bindClearSearchHitsOnSpotAdded = () => {
-  document.addEventListener("plan:spot-added", () => {
-    clearSearchHitMarkers()
-  })
-}

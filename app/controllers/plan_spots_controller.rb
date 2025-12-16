@@ -1,8 +1,9 @@
+# app/controllers/plan_spots_controller.rb
 class PlanSpotsController < ApplicationController
+  include JsonExceptions
+
   before_action :authenticate_user!
   before_action :set_plan
-
-  rescue_from ActiveRecord::RecordNotFound, with: :render_not_found
 
   def create
     result = SpotSetupService.new(
@@ -18,11 +19,20 @@ class PlanSpotsController < ApplicationController
         position: result.plan_spot.position
       }, status: :created
     else
-      render json: {
-        message: result.error_message,
-        details: result.errors
-      }, status: :unprocessable_entity
+      render json: { message: result.error_message, details: result.errors }, status: :unprocessable_entity
     end
+  end
+
+  def reorder
+    ordered_ids = params[:ordered_plan_spot_ids]
+
+    unless ordered_ids.is_a?(Array) && ordered_ids.all? { |id| id.to_s.match?(/\A\d+\z/) }
+      return render json: { message: "不正なリクエストです" }, status: :unprocessable_entity
+    end
+
+    PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
+
+    head :no_content
   end
 
   private
@@ -36,9 +46,5 @@ class PlanSpotsController < ApplicationController
       :place_id, :name, :address, :lat, :lng,
       :photo_reference, top_types: []
     )
-  end
-
-  def render_not_found
-    render json: { message: "プランが見つかりません" }, status: :not_found
   end
 end
