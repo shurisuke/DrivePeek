@@ -32,7 +32,11 @@ Rails.application.routes.draw do
     resource :planbar, only: %i[show]
     resource :start_point, only: %i[update]
     resource :goal_point, only: %i[update]
-    resources :plan_spots, only: %i[create]
+    resources :plan_spots, only: %i[create] do
+      collection do
+        patch :reorder
+      end
+    end
   end
 
   # ヘルスチェック

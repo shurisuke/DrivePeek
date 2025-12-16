@@ -25,6 +25,27 @@ class PlanSpotsController < ApplicationController
     end
   end
 
+  def reorder
+    ordered_ids = params[:ordered_plan_spot_ids]
+
+    unless ordered_ids.is_a?(Array) && ordered_ids.all? { |id| id.is_a?(Integer) || id.to_i.to_s == id.to_s }
+      return render json: { message: "不正なリクエストです" }, status: :unprocessable_entity
+    end
+
+    ActiveRecord::Base.transaction do
+      ordered_ids.each_with_index do |plan_spot_id, index|
+        plan_spot = @plan.plan_spots.find(plan_spot_id)
+        plan_spot.update!(position: index + 1)
+      end
+    end
+
+    head :no_content
+  rescue ActiveRecord::RecordNotFound
+    render json: { message: "スポットが見つかりません" }, status: :not_found
+  rescue ActiveRecord::RecordInvalid => e
+    render json: { message: "並び替えに失敗しました", details: e.message }, status: :unprocessable_entity
+  end
+
   private
 
   def set_plan
