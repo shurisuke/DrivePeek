@@ -9,7 +9,6 @@ const getCsrfToken = () => {
 }
 
 const getPlanId = () => {
-  // #map に限定して誤爆を防ぐ
   const el = document.getElementById("map")
   return el?.dataset.planId || null
 }
@@ -25,10 +24,7 @@ const filterTopTypes = (types) => {
     "geocode",
   ]
   const filtered = (types || []).filter((t) => !excludeList.includes(t))
-  // 除外後3件、足りなければ元の先頭3件
-  return filtered.length > 0
-    ? filtered.slice(0, 3)
-    : (types || []).slice(0, 3)
+  return filtered.length > 0 ? filtered.slice(0, 3) : (types || []).slice(0, 3)
 }
 
 const postSpotToRails = async (planId, detail) => {
@@ -52,6 +48,7 @@ const postSpotToRails = async (planId, detail) => {
       "X-CSRF-Token": getCsrfToken(),
       Accept: "application/json",
     },
+    credentials: "same-origin",
     body: JSON.stringify(body),
   })
 
@@ -68,33 +65,25 @@ const handleSpotAdd = async (event) => {
   const planId = getPlanId()
 
   if (!planId) {
-    console.error("❌ プランIDが見つかりません")
     alert("プランIDが見つかりません")
     return
   }
 
   if (!detail?.place_id) {
-    console.error("❌ スポット情報が不足しています", detail)
     alert("スポット情報が不足しています")
     return
   }
 
   try {
     const result = await postSpotToRails(planId, detail)
-    console.log("✅ スポット追加成功:", result)
-
-    // 検索マーカーをクリアするイベントを発火
     document.dispatchEvent(new CustomEvent("plan:spot-added", { detail: result }))
-
-    // TODO: UIへの反映（別Issue）
   } catch (err) {
-    console.error("❌ スポット追加失敗:", err)
     alert(err.message)
   }
 }
 
 export const bindSpotAddHandler = () => {
-  // 二重バインド防止: 一度外してから付け直す（冪等化）
+  // 二重バインド防止
   document.removeEventListener("spot:add", handleSpotAdd)
   document.addEventListener("spot:add", handleSpotAdd)
 }
