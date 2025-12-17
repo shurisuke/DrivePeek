@@ -1,7 +1,5 @@
 # app/controllers/plan_spots_controller.rb
 class PlanSpotsController < ApplicationController
-  include JsonExceptions
-
   before_action :authenticate_user!
   before_action :set_plan
 
@@ -31,7 +29,6 @@ class PlanSpotsController < ApplicationController
     end
 
     PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
-
     head :no_content
   end
 

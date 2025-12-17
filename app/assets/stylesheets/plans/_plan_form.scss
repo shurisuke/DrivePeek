@@ -34,7 +34,7 @@ body.no-footer {
 
       display: flex;
       flex-direction: column;
-      overflow: hidden; /* ✅ 追加：中身スクロールを安定させる */
+      overflow: visible; /* ✅ 追加：中身スクロールを安定させる */
 
       .plan-tab-nav {
         display: flex;

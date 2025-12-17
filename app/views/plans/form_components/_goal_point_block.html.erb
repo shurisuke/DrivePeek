@@ -1,13 +1,84 @@
-<div class="goal-point-block">
-  <!-- 上部ブロック（常に表示） -->
-  <div class="goal-point-main">
-    <div class="goal-label">
-      <span class="icon">G</span>
-      <span class="address">〇〇県〇〇市〇〇町57-666</span>
-    </div>
-    <div class="goal-time">
-      <%= time_field_tag :departure_time, "10:00", class: "arrival-time", step: 900 %>
-      <span class="label">発</span>
+<%# app/views/plans/form_components/_goal_point_block.html.erb %>
+<% plan ||= @plan %>
+<% goal_point = plan.goal_point %>
+
+<div
+  class="goal-point-section"
+  data-controller="goal-point-visibility"
+  data-goal-point-visibility-plan-id-value="<%= plan.id %>"
+>
+  <%# ✅ 帰宅地点ブロック（初期は hidden。トグルONで表示） %>
+  <div data-goal-point-visibility-target="blockArea" hidden>
+    <div class="goal-point-block" data-controller="goal-point-editor">
+      <div class="goal-point-main">
+        <div class="goal-label">
+          <div class="goal-label__row">
+            <span class="icon" aria-hidden="true"></span>
+
+            <div class="goal-text">
+              <div class="goal-title">帰宅</div>
+
+              <span class="address" data-goal-point-editor-target="address">
+                <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <button
+          type="button"
+          class="goal-point-change-btn"
+          data-goal-point-editor-target="toggle"
+          data-action="click->goal-point-editor#toggle"
+          aria-expanded="false"
+          aria-controls="goal-point-edit"
+        >
+          <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+          <span class="visually-hidden">帰宅地点を変更</span>
+        </button>
+      </div>
+
+      <div
+        id="goal-point-edit"
+        class="goal-point-edit"
+        hidden
+        data-goal-point-editor-target="editArea"
+      >
+        <div class="goal-point-edit__inner">
+          <label for="goal-point-address" class="goal-point-edit__label">帰宅地点を変更</label>
+
+          <input
+            id="goal-point-address"
+            type="text"
+            class="form-control goal-point-edit__input"
+            placeholder="（例: 〇〇市〇〇町〇〇-〇）"
+            autocomplete="off"
+            data-goal-point-editor-target="input"
+            data-action="keydown->goal-point-editor#search compositionstart->goal-point-editor#compositionStart compositionend->goal-point-editor#compositionEnd"
+          >
+
+          <div class="goal-point-edit__help">Enterで検索 → 更新</div>
+        </div>
+      </div>
     </div>
   </div>
+
+  <%# ✅ spotがある時だけ「帰宅地点（表示トグル）」を描画する %>
+  <% if plan.plan_spots.exists? %>
+    <div class="goal-point-toggle">
+      <div class="form-check form-switch goal-point-section__switch">
+        <input
+          class="form-check-input"
+          type="checkbox"
+          role="switch"
+          id="goal-point-visibility-switch"
+          data-goal-point-visibility-target="switch"
+          data-action="change->goal-point-visibility#toggle"
+        >
+        <label class="form-check-label" for="goal-point-visibility-switch">
+          帰宅地点
+        </label>
+      </div>
+    </div>
+  <% end %>
 </div>

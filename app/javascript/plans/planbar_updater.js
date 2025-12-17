@@ -1,42 +1,68 @@
+// app/javascript/plans/planbar_updater.js
+//
 // ================================================================
 // Planbar Updater（単一責務）
-// 用途: プラン作成/編集画面の左ナビ（planbar）を“そこだけ”再描画する
-//
-// 仕組み:
-// - spot_add_handler がスポット追加成功後に "plan:spot-added" を dispatch
-// - このファイルはそのイベントを購読し、/plans/:plan_id/planbar を取得
-// - 返ってきた turbo-stream を Turbo.renderStreamMessage で適用し、
-//   turbo_frame_tag "planbar" の中身だけを差し替える
-//
-// 注意:
-// - Turbo 遷移で同じ画面が再訪されるとイベント登録が重複しやすいので、
-//   removeEventListener → addEventListener で冪等化（=二重バインド防止）している
+// 用途: planbar を Turbo Stream で差し替えて、通知イベントを投げるだけ。
 // ================================================================
 
-import { Turbo } from "@hotwired/turbo-rails"
+import { getPlanDataFromPage } from "map/plan_data"
 
-const refreshPlanbar = async () => {
-  const map = document.getElementById("map")
-  const planId = map?.dataset.planId
-  if (!planId) return
+let bound = false
 
+const getPlanId = () => {
+  // ✅ 最優先：#map の dataset（ここが一番安定）
+  const planIdFromMap = document.getElementById("map")?.dataset?.planId
+  if (planIdFromMap) return planIdFromMap
+
+  // 次点：window.planData
+  const planData = getPlanDataFromPage()
+  return planData?.plan_id || planData?.id || null
+}
+
+const refreshPlanbar = async (planId) => {
   const res = await fetch(`/plans/${planId}/planbar`, {
     headers: { Accept: "text/vnd.turbo-stream.html" },
     credentials: "same-origin",
   })
+  if (!res.ok) {
+    console.warn("[planbar_updater] refreshPlanbar failed", { planId, status: res.status })
+    return
+  }
 
-  if (!res.ok) return
+  const html = await res.text()
 
-  const streamHtml = await res.text()
-  Turbo.renderStreamMessage(streamHtml)
+  if (!window.Turbo) {
+    console.error("[planbar_updater] Turbo is not available on window")
+    return
+  }
+
+  window.Turbo.renderStreamMessage(html)
+
+  console.log("[planbar_updater] planbar refreshed", { planId })
+
+  // ✅ 差し替え完了を通知（マーカー更新などは購読側が担当）
+  document.dispatchEvent(new CustomEvent("planbar:updated"))
+  document.dispatchEvent(new CustomEvent("map:route-updated"))
 }
 
 export const bindPlanbarRefresh = () => {
-  // 二重バインド防止（turbo遷移で何度も呼ばれても1回分にする）
-  document.removeEventListener("plan:spot-added", refreshPlanbar)
-  document.addEventListener("plan:spot-added", refreshPlanbar)
+  if (bound) return
+  bound = true
 
-  // 並び替え完了後も planbar を再描画
-  document.removeEventListener("plan:spots-reordered", refreshPlanbar)
-  document.addEventListener("plan:spots-reordered", refreshPlanbar)
+  console.log("[planbar_updater] bindPlanbarRefresh")
+
+  document.addEventListener("plan:spot-added", async () => {
+    const planId = getPlanId()
+    console.log("[planbar_updater] caught plan:spot-added", { planId })
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  // ✅ 並び替え完了後も planbar を再描画（position番号の更新）
+  document.addEventListener("plan:spots-reordered", async () => {
+    const planId = getPlanId()
+    console.log("[planbar_updater] caught plan:spots-reordered", { planId })
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
 }

@@ -1,29 +1,51 @@
+<%# app/views/plans/form_components/_start_point_block.html.erb %>
+<% plan ||= @plan %>
+
 <div class="start-point-block" data-controller="start-point-editor">
-<div class="start-point-main">
-  <div class="start-label">
-    <div class="start-label__row">
-      <span class="icon" aria-hidden="true"></span>
-      <span class="address" data-start-point-editor-target="address"><%= @plan.start_point&.address.presence || "出発地点が未設定です" %></span>
+  <div class="start-point-main">
+    <div class="start-label">
+      <div class="start-label__row">
+        <span class="icon" aria-hidden="true"></span>
+
+        <div class="start-text">
+          <div class="start-title">出発</div>
+
+          <span class="address" data-start-point-editor-target="address">
+            <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
+          </span>
+        </div>
+      </div>
     </div>
+
+    <button
+      type="button"
+      class="start-point-change-btn"
+      data-start-point-editor-target="toggle"
+      data-action="click->start-point-editor#toggle"
+      aria-expanded="false"
+      aria-controls="start-point-edit-<%= plan.id %>"
+    >
+      <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+      <span class="visually-hidden">出発地点を変更</span>
+    </button>
   </div>
 
-  <button
-    type="button"
-    class="start-point-change-btn"
-    data-start-point-editor-target="toggle"
-    data-action="click->start-point-editor#toggle"
-    aria-expanded="false"
-    aria-controls="start-point-edit">
-    変更
-  </button>
-</div>
-
-  <div id="start-point-edit" class="start-point-edit" hidden data-start-point-editor-target="editArea">
+  <div
+    id="start-point-edit-<%= plan.id %>"
+    class="start-point-edit"
+    hidden
+    data-start-point-editor-target="editArea"
+  >
     <div class="start-point-edit__inner">
-      <label for="start-point-address" class="start-point-edit__label">出発地点を変更</label>
+      <label
+        for="start-point-address-<%= plan.id %>"
+        class="start-point-edit__label"
+      >
+        出発地点を変更
+      </label>
 
       <input
-        id="start-point-address"
+        id="start-point-address-<%= plan.id %>"
         type="text"
         class="form-control start-point-edit__input"
         placeholder="（例: 〇〇市〇〇町〇〇-〇）"
@@ -36,35 +58,37 @@
     </div>
   </div>
 
-  <!-- ✅ 差し込み用：collapse + トグル（トグルの上に配置） -->
-  <div class="start-point-detail-wrap">
-    <!-- 先に“差し込まれる内容”を置く → 開いたらトグルが下に押される -->
-    <div class="collapse start-point-detail" id="startPointDetail-<%= @plan.id %>">
-      <div class="start-point-detail__inner">
-        <div class="toll-option mb-2 d-flex align-items-center justify-content-between">
-          <label class="mb-0 me-2">有料道路</label>
-          <select class="form-select form-select-sm" style="width: 140px;">
-            <option>使わない</option>
-            <option>使う</option>
-          </select>
-        </div>
+  <%# ✅ スポットが1件以上あるときだけ「詳細（有料道路/距離）」トグルを表示 %>
+  <% if plan.plan_spots.exists? %>
+    <div class="start-point-detail-wrap">
+      <div class="collapse start-point-detail" id="startPointDetail-<%= plan.id %>">
+        <div class="start-point-detail__inner">
+          <div class="toll-option mb-2 d-flex align-items-center justify-content-between">
+            <label class="mb-0 me-2">有料道路</label>
+            <select class="form-select form-select-sm" style="width: 140px;">
+              <option>使わない</option>
+              <option>使う</option>
+            </select>
+          </div>
 
-        <div class="distance-info d-flex align-items-center justify-content-between">
-          <span>次の場所まで</span>
-          <span class="km">〇〇km</span>
-          <span class="time">〇〇時間〇〇分</span>
+          <div class="distance-info d-flex align-items-center justify-content-between">
+            <span>次の場所まで</span>
+            <span class="km">〇〇km</span>
+            <span class="time">〇〇時間〇〇分</span>
+          </div>
         </div>
       </div>
-    </div>
 
-    <button
-      type="button"
-      class="detail-toggle"
-      data-bs-toggle="collapse"
-      data-bs-target="#startPointDetail-<%= @plan.id %>"
-      aria-expanded="false"
-      aria-controls="startPointDetail-<%= @plan.id %>">
-      <i class="bi bi-caret-down-fill"></i>
-    </button>
-  </div>
+      <button
+        type="button"
+        class="detail-toggle"
+        data-bs-toggle="collapse"
+        data-bs-target="#startPointDetail-<%= plan.id %>"
+        aria-expanded="false"
+        aria-controls="startPointDetail-<%= plan.id %>"
+      >
+        <i class="bi bi-caret-down-fill"></i>
+      </button>
+    </div>
+  <% end %>
 </div>

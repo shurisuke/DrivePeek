@@ -11,42 +11,124 @@ import {
   setEndPointMarker,
   clearPlanSpotMarkers,
   setPlanSpotMarkers,
-} from "map/state";
+} from "map/state"
 
 const normalizeLatLng = (p) => {
-  if (!p) return null;
-  return { lat: Number(p.lat), lng: Number(p.lng) };
-};
+  if (!p) return null
+  return { lat: Number(p.lat), lng: Number(p.lng) }
+}
+
+// ✅ planbar内のDOMを正として「スポット件数」を判定する（必要なら他用途で使える）
+const getSpotCountFromDom = () => {
+  return document.querySelectorAll(".spot-block[data-plan-spot-id]").length
+}
+
+// ✅ 2点間距離（メートル）: Haversine
+const distanceMeters = (a, b) => {
+  const R = 6371000
+  const toRad = (deg) => (deg * Math.PI) / 180
+
+  const dLat = toRad(b.lat - a.lat)
+  const dLng = toRad(b.lng - a.lng)
+
+  const lat1 = toRad(a.lat)
+  const lat2 = toRad(b.lat)
+
+  const sinDLat = Math.sin(dLat / 2)
+  const sinDLng = Math.sin(dLng / 2)
+
+  const h =
+    sinDLat * sinDLat +
+    Math.cos(lat1) * Math.cos(lat2) * sinDLng * sinDLng
+
+  return 2 * R * Math.asin(Math.sqrt(h))
+}
+
+const isNear = (a, b, thresholdMeters = 30) => {
+  if (!a || !b) return false
+  return distanceMeters(a, b) <= thresholdMeters
+}
+
+const buildHouseMarker = ({ map, position, title }) => {
+  return new google.maps.Marker({
+    map,
+    position,
+    title,
+    icon: {
+      url: "/icons/house-pin.png",
+      scaledSize: new google.maps.Size(50, 55),
+    },
+  })
+}
+
+const getEndPointFromPlanData = (planData) => {
+  // 環境によって end_point / goal_point の揺れがあり得るので両対応
+  return planData?.end_point || planData?.goal_point
+}
+
+// ✅ UIのトグル状態（#map.dataset.goalPointVisible）を正として扱う
+const isGoalPointVisible = () => {
+  const mapEl = document.getElementById("map")
+  return mapEl?.dataset?.goalPointVisible === "true"
+}
+
+// ✅ 「帰宅マーカーだけ」最新条件で描画し直す（トグル状態で判断）
+export const refreshGoalMarker = (planData) => {
+  const map = getMapInstance()
+  if (!map) {
+    console.warn("[render_plan_markers] refreshGoalMarker: map instance missing")
+    return
+  }
+
+  const visible = isGoalPointVisible()
+  const start = normalizeLatLng(planData?.start_point)
+  const end = normalizeLatLng(getEndPointFromPlanData(planData))
+
+  console.log("[render_plan_markers] refreshGoalMarker", {
+    visible,
+    spotCount: getSpotCountFromDom(),
+    start,
+    end,
+  })
+
+  // いったん消してから、条件を満たすなら作り直す
+  clearEndPointMarker()
+
+  // ✅ トグルOFFなら、ここで終了（=消えた状態になる）
+  if (!visible) return
+
+  // start と goal がほぼ同じなら goal は作らない（start を兼用）
+  if (start && end && isNear(start, end, 30)) return
+
+  if (!end) return
+
+  const marker = buildHouseMarker({ map, position: end, title: "帰宅地点" })
+  setEndPointMarker(marker)
+}
 
 export const renderPlanMarkers = (planData) => {
-  const map = getMapInstance();
+  const map = getMapInstance()
   if (!map) {
-    console.error("マップインスタンスが存在しません");
-    return;
+    console.error("マップインスタンスが存在しません")
+    return
   }
+
+  console.log("[render_plan_markers] renderPlanMarkers", planData)
 
   // 既存マーカーを用途別にクリア
-  clearStartPointMarker();
-  clearPlanSpotMarkers();
-  clearEndPointMarker();
+  clearStartPointMarker()
+  clearPlanSpotMarkers()
+  clearEndPointMarker()
 
   // 出発地点
-  const start = normalizeLatLng(planData?.start_point);
+  const start = normalizeLatLng(planData?.start_point)
   if (start) {
-    const marker = new google.maps.Marker({
-      map,
-      position: start,
-      title: "出発地点",
-      icon: {
-        url: "/icons/house-pin.png",
-        scaledSize: new google.maps.Size(50, 55),
-      },
-    });
-    setStartPointMarker(marker);
+    const marker = buildHouseMarker({ map, position: start, title: "出発地点" })
+    setStartPointMarker(marker)
   }
 
-  // スポット
-  const spots = Array.isArray(planData?.spots) ? planData.spots : [];
+  // スポット（ここは planData の内容で描画）
+  const spots = Array.isArray(planData?.spots) ? planData.spots : []
   const spotMarkers = spots
     .map(normalizeLatLng)
     .filter(Boolean)
@@ -55,22 +137,10 @@ export const renderPlanMarkers = (planData) => {
         map,
         position: spot,
         title: `スポット ${index + 1}`,
-      });
-    });
-  setPlanSpotMarkers(spotMarkers);
+      })
+    })
+  setPlanSpotMarkers(spotMarkers)
 
-  // 帰宅地点
-  const end = normalizeLatLng(planData?.end_point);
-  if (end) {
-    const marker = new google.maps.Marker({
-      map,
-      position: end,
-      title: "帰宅地点",
-      icon: {
-        url: "/icons/house-pin.png",
-        scaledSize: new google.maps.Size(50, 55),
-      },
-    });
-    setEndPointMarker(marker);
-  }
-};
+  // 帰宅地点（トグルONの時だけ描画）
+  refreshGoalMarker(planData)
+}

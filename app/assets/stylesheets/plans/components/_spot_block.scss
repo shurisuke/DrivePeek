@@ -349,3 +349,14 @@
 #plan-spots-sortable {
   padding-left: 0;
 }
+
+/* 帰宅地点が「非表示」のときは、最後spotのトグルを消す */
+body:not(.goal-point-visible) .spot-block--last .spot-detail-wrap {
+  display: none;
+}
+
+/* 帰宅地点が「表示」のときは、最後spotのトグルも出す */
+body.goal-point-visible .spot-block--last .spot-detail-wrap {
+  display: flex;      // spot-detail-wrap の元がflexならこれ
+  // display: block;  // 元がblockならこっち
+}

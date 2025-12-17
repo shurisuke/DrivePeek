@@ -43,7 +43,10 @@
     </div>
   </div>
 
-  <!-- 差し込み：collapse + トグル -->
+  <%# ✅ トグル領域は常に描画する
+      最後のスポットかどうかの判定・表示制御は
+      goal_point_visibility_controller.js がDOM基準で行う（hidden切替）
+  %>
   <div class="spot-detail-wrap">
     <div class="collapse spot-detail" id="spotDetail-<%= plan_spot.id %>">
       <div class="spot-detail__inner">
