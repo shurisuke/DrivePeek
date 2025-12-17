@@ -43,10 +43,7 @@
     </div>
   </div>
 
-  <%# ✅ トグル領域は常に描画する
-      最後のスポットかどうかの判定・表示制御は
-      goal_point_visibility_controller.js がDOM基準で行う（hidden切替）
-  %>
+  <%# ✅ トグル領域は常に描画する %>
   <div class="spot-detail-wrap">
     <div class="collapse spot-detail" id="spotDetail-<%= plan_spot.id %>">
       <div class="spot-detail__inner">
@@ -64,10 +61,20 @@
 
         <div class="toll-option d-flex align-items-center justify-content-between">
           <label class="mb-0 me-2">有料道路</label>
-          <select class="form-select form-select-sm" style="width: 140px;">
-            <option>使わない</option>
-            <option>使う</option>
-          </select>
+
+          <%# ✅ switch UI（変更検知はJSでイベント委譲） %>
+          <div class="form-check form-switch m-0">
+            <input
+              class="form-check-input"
+              type="checkbox"
+              role="switch"
+              aria-label="有料道路の使用を切り替える"
+              data-toll-used-switch="1"
+              data-plan-id="<%= plan_spot.plan_id %>"
+              data-plan-spot-id="<%= plan_spot.id %>"
+              <%= plan_spot.toll_used? ? "checked" : "" %>
+            >
+          </div>
         </div>
 
         <div class="distance-info d-flex align-items-center justify-content-between">
