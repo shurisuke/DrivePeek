@@ -12,13 +12,15 @@ import { getPlanDataFromPage } from "map/plan_data"
 import { bindSpotAddHandler } from "plans/spot_add_handler"
 import { bindPlanbarRefresh } from "plans/planbar_updater"
 import { bindPlanMapSync } from "plans/plan_map_sync"
+import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 
 console.log("[init_map] module loaded")
 
-// プラン画面で必要な “購読” はここで一括バインド（複数回呼んでも内部でガード）
+// プラン画面で必要な "購読" はここで一括バインド（複数回呼んでも内部でガード）
 bindSpotAddHandler()
 bindPlanbarRefresh()
 bindPlanMapSync()
+bindSpotReorderHandler()
 
 document.addEventListener("turbo:load", async () => {
   console.log("[init_map] turbo:load fired")

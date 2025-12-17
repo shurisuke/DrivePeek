@@ -7,6 +7,7 @@
 import Sortable from "sortablejs"
 
 let sortableInstance = null
+let bound = false
 
 const getOrderedPlanSpotIds = (container) => {
   const items = container.querySelectorAll(".spot-block[data-plan-spot-id]")
@@ -37,14 +38,23 @@ const saveReorder = async (planId, orderedIds) => {
 
 const initSortable = () => {
   const container = document.getElementById("plan-spots-sortable")
-  if (!container) return
+  if (!container) {
+    console.log("[spot_reorder_handler] initSortable: #plan-spots-sortable not found")
+    return
+  }
 
   // 二重初期化防止
-  if (container.dataset.sortableInitialized === "true") return
+  if (container.dataset.sortableInitialized === "true") {
+    console.log("[spot_reorder_handler] initSortable: already initialized, skip")
+    return
+  }
 
   const mapElement = document.getElementById("map")
   const planId = mapElement?.dataset.planId
-  if (!planId) return
+  if (!planId) {
+    console.log("[spot_reorder_handler] initSortable: planId not found")
+    return
+  }
 
   // 既存インスタンスを破棄
   if (sortableInstance) {
@@ -82,9 +92,11 @@ const initSortable = () => {
   })
 
   container.dataset.sortableInitialized = "true"
+  console.log("[spot_reorder_handler] initSortable: initialized successfully", { planId })
 }
 
 const destroySortable = () => {
+  console.log("[spot_reorder_handler] destroySortable called")
   if (sortableInstance) {
     sortableInstance.destroy()
     sortableInstance = null
@@ -97,6 +109,11 @@ const destroySortable = () => {
 }
 
 export const bindSpotReorderHandler = () => {
+  if (bound) return
+  bound = true
+
+  console.log("[spot_reorder_handler] bindSpotReorderHandler")
+
   // turbo:load で初期化
   document.addEventListener("turbo:load", initSortable)
 
@@ -105,9 +122,15 @@ export const bindSpotReorderHandler = () => {
 
   // planbar が Turbo Stream で更新された後に再初期化
   document.addEventListener("plan:spot-added", () => {
+    destroySortable()
     setTimeout(initSortable, 100)
   })
   document.addEventListener("plan:spots-reordered", () => {
+    destroySortable()
+    setTimeout(initSortable, 100)
+  })
+  document.addEventListener("planbar:updated", () => {
+    destroySortable()
     setTimeout(initSortable, 100)
   })
 }

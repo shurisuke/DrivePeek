@@ -7,15 +7,36 @@
 
 import { getPlanDataFromPage } from "map/plan_data"
 
+let bound = false
+
+const getPlanId = () => {
+  // ✅ 最優先：#map の dataset（ここが一番安定）
+  const planIdFromMap = document.getElementById("map")?.dataset?.planId
+  if (planIdFromMap) return planIdFromMap
+
+  // 次点：window.planData
+  const planData = getPlanDataFromPage()
+  return planData?.plan_id || planData?.id || null
+}
+
 const refreshPlanbar = async (planId) => {
   const res = await fetch(`/plans/${planId}/planbar`, {
     headers: { Accept: "text/vnd.turbo-stream.html" },
     credentials: "same-origin",
   })
-  if (!res.ok) return
+  if (!res.ok) {
+    console.warn("[planbar_updater] refreshPlanbar failed", { planId, status: res.status })
+    return
+  }
 
   const html = await res.text()
-  Turbo.renderStreamMessage(html)
+
+  if (!window.Turbo) {
+    console.error("[planbar_updater] Turbo is not available on window")
+    return
+  }
+
+  window.Turbo.renderStreamMessage(html)
 
   console.log("[planbar_updater] planbar refreshed", { planId })
 
@@ -25,11 +46,23 @@ const refreshPlanbar = async (planId) => {
 }
 
 export const bindPlanbarRefresh = () => {
-  document.addEventListener("plan:spot-added", async () => {
-    const planData = getPlanDataFromPage()
-    const planId = planData?.plan_id || planData?.id
-    if (!planId) return
+  if (bound) return
+  bound = true
 
+  console.log("[planbar_updater] bindPlanbarRefresh")
+
+  document.addEventListener("plan:spot-added", async () => {
+    const planId = getPlanId()
+    console.log("[planbar_updater] caught plan:spot-added", { planId })
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  // ✅ 並び替え完了後も planbar を再描画（position番号の更新）
+  document.addEventListener("plan:spots-reordered", async () => {
+    const planId = getPlanId()
+    console.log("[planbar_updater] caught plan:spots-reordered", { planId })
+    if (!planId) return
     await refreshPlanbar(planId)
   })
 }
