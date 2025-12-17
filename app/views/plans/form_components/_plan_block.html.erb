@@ -23,3 +23,6 @@
                user_spot: user_spot %>
   <% end %>
 </div>
+
+<%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
+<%= render "plans/form_components/goal_point_block", plan: @plan %>
