@@ -6,10 +6,13 @@
 //       - トグルON: 帰宅地点ブロックを表示 + 帰宅地点ピンを描画
 //       - トグルOFF: 帰宅地点ブロックを非表示 + 帰宅地点ピンを消す
 //
-// 仕様:
-// - 帰宅地点は plan 作成時点でDB上に存在している前提（=ここでは作成しない）
-// - 表示状態は sessionStorage に plan_id ごとに保存して、Turbo更新でも復元する
-// - デバッグ用に console.log を多めに出す
+// 追加:
+// - 「最後のスポットのトグル」を、帰宅地点がOFFのときは非表示にし
+//   帰宅地点がONのときは表示する（DOMは消さず hidden 制御）
+//
+// 修正:
+// - 「最後のスポット判定」をERB/DBではなくDOM基準に変更（Turbo更新/並び替えに強くする）
+// - planbar差し替え後にも再適用するため planbar:updated を購読
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -31,7 +34,19 @@ export default class extends Controller {
     const visible = saved === "true"
 
     this.switchTarget.checked = visible
+
+    // ✅ planbar差し替えのたびに「最後スポットのトグル状態」を再適用する
+    this._onPlanbarUpdated = () => {
+      const v = this.switchTarget.checked
+      this.toggleLastSpotDetail(v)
+    }
+    document.addEventListener("planbar:updated", this._onPlanbarUpdated)
+
     this.apply(visible, { reason: "connect" })
+  }
+
+  disconnect() {
+    document.removeEventListener("planbar:updated", this._onPlanbarUpdated)
   }
 
   toggle() {
@@ -52,13 +67,43 @@ export default class extends Controller {
     const mapEl = document.getElementById("map")
     if (mapEl) {
       mapEl.dataset.goalPointVisible = visible ? "true" : "false"
-      console.log("[goal-point-visibility] set #map.dataset.goalPointVisible", mapEl.dataset.goalPointVisible)
+      console.log(
+        "[goal-point-visibility] set #map.dataset.goalPointVisible",
+        mapEl.dataset.goalPointVisible
+      )
     } else {
       console.warn("[goal-point-visibility] #map not found (pin refresh skipped)")
     }
 
+    // ✅ 最後のスポットのトグル表示を切り替える（DOM基準）
+    this.toggleLastSpotDetail(visible)
+
     // ピンを再評価（ONなら描画、OFFなら消える）
     this.refreshGoalPin()
+  }
+
+  // ================================================================
+  // ✅ 最後のスポットのトグルを、帰宅地点ONのときだけ表示
+  // - 「最後」はDOM順（=ユーザーが見ている順）で判定する
+  // - 並び替え/追加/Turbo更新に強い
+  // ================================================================
+  toggleLastSpotDetail(visible) {
+    const blocks = document.querySelectorAll(".spot-block[data-plan-spot-id]")
+    if (!blocks || blocks.length === 0) {
+      console.log("[goal-point-visibility] no spot blocks. skip last toggle")
+      return
+    }
+
+    const lastBlock = blocks[blocks.length - 1]
+    const lastDetailWrap = lastBlock.querySelector(".spot-detail-wrap")
+
+    if (!lastDetailWrap) {
+      console.log("[goal-point-visibility] last spot detail-wrap not found")
+      return
+    }
+
+    lastDetailWrap.hidden = !visible
+    console.log("[goal-point-visibility] last spot toggle", { visible })
   }
 
   async refreshGoalPin() {
