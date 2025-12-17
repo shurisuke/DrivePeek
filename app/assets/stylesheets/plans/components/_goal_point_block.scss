@@ -1,73 +1,301 @@
 /* ==========================================
-     ゴール地点ブロック
+     帰宅地点ブロック
+     start_point_block と同じ見た目・密度に揃える
 ========================================== */
+
+/* ------------------------------------------
+   ✅ トグル行（背景/枠なし、Apple風）
+   “動かす” のは .goal-point-toggle に margin を当てる
+------------------------------------------ */
+.goal-point-section {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+
+  .goal-point-block {
+    margin-top: 0;
+  }
+
+  /* ✅ このラッパーを動かす（要望どおり “要素ごとずらす”） */
+  .goal-point-toggle {
+    margin: 3rem 1.5rem; // ←ここを触れば確実に動く
+  }
+
+  .goal-point-section__switch {
+    /* Bootstrap form-check の初期余白だけ消す（marginは触らない） */
+    &.form-check {
+      padding-left: 0;
+      margin: 0; // ←ラッパーで動かすのでここは0でOK
+      min-height: auto;
+    }
+
+    display: inline-flex;
+    align-items: center;
+
+    /* 文字とスイッチの間隔 */
+    gap: 20px;
+
+    background: transparent;
+    border: 0;
+    padding: 0;
+
+    .form-check-label {
+      order: 1;
+      margin: 0;
+
+      font-size: 0.86rem;
+      font-weight: 600;
+      color: rgba(68, 68, 68, 0.626);
+      letter-spacing: 0.02em;
+
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .form-check-input {
+      order: 2;
+
+      margin: 0;
+      float: none;
+
+      cursor: pointer;
+
+      width: 40px;
+      height: 22px;
+      border-radius: 9999px;
+
+      background-color: rgba(0, 0, 0, 0.18);
+      border: none;
+      background-image: none;
+
+      position: relative;
+      transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+
+      &:focus {
+        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+        outline: none;
+      }
+
+      &:checked {
+        background-color: #70aa73;
+      }
+
+      &:active {
+        opacity: 0.92;
+      }
+
+      &::before {
+        content: "";
+        position: absolute;
+        top: 2px;
+        left: 2px;
+        width: 18px;
+        height: 18px;
+        border-radius: 9999px;
+        background: #fff;
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+        transition: transform 0.15s ease;
+      }
+
+      &:checked::before {
+        transform: translateX(18px);
+      }
+
+      &::after {
+        content: none;
+      }
+    }
+  }
+}
+
+/* ------------------------------------------
+   ✅ 帰宅地点ブロック本体
+------------------------------------------ */
 .goal-point-block {
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
   padding: 1rem 0.5rem;
-  margin-bottom: 1rem;
+  margin-top: 0.5rem;
+
+  overflow: visible;
 
   .goal-point-main {
     display: flex;
-    justify-content: space-between;
     align-items: center;
-
-    .goal-time {
-      display: flex;
-      align-items: center;
-
-      .arrival-time {
-        font-size: 1rem;
-        font-weight: bold;
-        border: none;
-        background-color: #fff; // ← 修正: transparent をやめる
-        width: 5rem;
-        padding-right: 0.20rem; // ← 適度な余白を入れるとズレ防止
-        margin: 0;
-        border-radius: 4px;
-        box-sizing: border-box; // ← padding含めて幅調整
-        appearance: none; // Chromeでデフォルトアイコン非表示にしたい場合
-      }
-
-      .label {
-        margin-left: 0.4em;
-      }
-    }
+    gap: 8px;
+    margin-bottom: 12px;
 
     .goal-label {
-      display: flex;
-      align-items: center;
-
-      .icon {
-        background: #ddd;
-        border-radius: 50%;
-        padding: 0.3em 0.6em;
-        margin-right: 0.2em;
-        font-weight: bold;
-      }
-
-      .address {
-        font-size: 0.95rem;
-      }
+      flex: 1 1 auto;
+      min-width: 0;
+      margin: 0;
     }
 
-    .goal-time {
+    .goal-label__row {
       display: flex;
+      align-items: flex-start;
+      gap: 8px;
+      min-width: 0;
+    }
+
+    .icon {
+      display: inline-block;
+      width: 40px;
+      height: 42px;
+      flex: 0 0 35px;
+
+      background: url(house-icon.png) no-repeat center / contain;
+      background-size: 100% 100%;
+    }
+
+    .goal-text {
+      flex: 1 1 auto;
+      min-width: 0;
+
+      display: flex;
+      flex-direction: column;
       align-items: center;
+    }
+
+    .goal-title {
+      width: 100%;
+      font-weight: 700;
+      color: #111;
+      font-size: 18px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    .address {
+      width: 100%;
+      min-width: 0;
+
+      color: #525252c5;
+      font-size: 13.6px;
+
+      text-align: center;
+      line-height: 1.2;
+
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+
+      display: block;
+      transform: none !important;
+    }
+
+    .goal-point-change-btn {
+      flex: 0 0 auto;
+
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 9999px;
+
+      background: #fff;
+      border: 1px solid rgba(80, 109, 83, 0.28);
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      cursor: pointer;
+
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
 
       i {
-        margin-right: 0.3em;
+        font-size: 14px;
+        line-height: 1;
+        color: var(--personal);
+        transform: translateY(-0.5px);
       }
 
-      .arrival-time {
-        font-size: 1rem;
-        font-weight: bold;
+      &:hover {
+        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
+        transform: translateY(-1px);
       }
 
-      .label {
-        margin-left: 0.2em;
+      &:active {
+        transform: translateY(0);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+        opacity: 0.95;
+      }
+
+      &:focus-visible {
+        outline: none;
+        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
+      }
+
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        box-shadow: none;
       }
     }
+  }
+
+  .goal-point-edit {
+    position: fixed;
+    z-index: 2000;
+    width: min(360px, calc(100vw - 24px));
+    transform: translateY(-100px);
+  }
+
+  .goal-point-edit.is-floating {
+    position: fixed;
+    z-index: 300;
+    margin-top: 0;
+    width: min(360px, calc(100vw - 16px));
+  }
+
+  .goal-point-edit__inner {
+    background: #fff;
+    border: 1px solid rgba(80, 109, 83, 0.18);
+    border-radius: 10px;
+
+    padding: 0.75rem 0.75rem 0.6rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  }
+
+  .goal-point-edit.is-floating .goal-point-edit__inner {
+    background: #ffffff9c;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  }
+
+  .goal-point-edit__label {
+    display: block;
+    font-size: 0.85rem;
+    font-weight: 600;
+    color: rgba(80, 109, 83, 0.9);
+    margin-bottom: 0.5rem;
+  }
+
+  .goal-point-edit__input.form-control {
+    border-radius: 10px;
+    border: 1px solid rgba(80, 109, 83, 0.25);
+
+    padding: 0.6rem 0.7rem;
+    font-size: 0.95rem;
+    color: #333;
+    background: #fff;
+
+    &:focus {
+      border-color: rgba(80, 109, 83, 0.45);
+      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+    }
+
+    &::placeholder {
+      color: rgba(86, 125, 90, 0.55);
+    }
+  }
+
+  .goal-point-edit__help {
+    margin-top: 0.45rem;
+    text-align: center;
+    font-size: 0.75rem;
+    color: rgba(80, 109, 83, 0.65);
   }
 }
