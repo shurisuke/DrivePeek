@@ -12,10 +12,22 @@
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { geocodeAddress } from "map/geocoder"
+import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
+import {
+  getMapInstance,
+  clearSearchHitMarkers,
+  clearEndPointMarker,
+  setEndPointMarker,
+} from "map/state"
 
 export default class extends Controller {
   static targets = ["address", "toggle", "editArea", "input"]
+  static values = {
+    iconUrl: { type: String, default: "/icons/house-pin.png" },
+    iconWidth: { type: Number, default: 50 },
+    iconHeight: { type: Number, default: 55 },
+    focusZoom: { type: Number, default: 16 },
+  }
 
   connect() {
     console.log("[goal-point-editor] connect", {
@@ -115,6 +127,12 @@ export default class extends Controller {
 
     e.preventDefault()
 
+    const map = getMapInstance()
+    if (!map) {
+      console.warn("[goal-point-editor] map is not ready")
+      return
+    }
+
     const input = this.inputTarget.value.trim()
     if (!input) return
 
@@ -128,14 +146,69 @@ export default class extends Controller {
     console.log("[goal-point-editor] search begin", { planId, input })
 
     try {
+      // ✅ 検索ヒットピンを全て消去
+      clearSearchHitMarkers()
+
       const geo = await geocodeAddress(input)
       console.log("[goal-point-editor] geocode result", geo)
 
+      // ✅ geocodeAddress の戻り値から location と address を正しく取得
+      const formattedAddress = geo?.formattedAddress || input
+      const displayAddress = normalizeDisplayAddress
+        ? normalizeDisplayAddress(formattedAddress)
+        : formattedAddress
+
+      const location = geo?.location
+      const viewport = geo?.viewport || null
+
+      if (!location) {
+        throw new Error("Geocode結果にlocationがありません")
+      }
+
+      // ✅ google.maps.LatLng の lat()/lng() メソッドを呼ぶ
+      const lat = typeof location.lat === "function" ? location.lat() : location.lat
+      const lng = typeof location.lng === "function" ? location.lng() : location.lng
+
+      console.log("[goal-point-editor] extracted coordinates", { lat, lng, displayAddress })
+
+      // ✅ 帰宅ピンを消して差し直す
+      clearEndPointMarker()
+
+      const marker = new google.maps.Marker({
+        map,
+        position: location,
+        title: "帰宅地点",
+        icon: {
+          url: this.iconUrlValue,
+          scaledSize: new google.maps.Size(this.iconWidthValue, this.iconHeightValue),
+        },
+      })
+
+      setEndPointMarker(marker)
+
+      // ✅ 地図を寄せる
+      if (viewport) {
+        map.fitBounds(viewport)
+      } else {
+        map.panTo(location)
+        map.setZoom(this.focusZoomValue)
+      }
+
+      // ✅ goalPointVisible を true にセット（ピンを表示状態に）
+      const mapEl = document.getElementById("map")
+      if (mapEl) {
+        mapEl.dataset.goalPointVisible = "true"
+      }
+
+      // UIの住所表示を更新（ローカル結果で即反映）
+      this.addressTarget.textContent = displayAddress
+
+      // ✅ サーバへ保存
       const payload = {
         goal_point: {
-          address: geo.address || input,
-          lat: geo.lat,
-          lng: geo.lng,
+          address: displayAddress,
+          lat,
+          lng,
         },
       }
 
@@ -160,9 +233,10 @@ export default class extends Controller {
       const json = await res.json().catch(() => ({}))
       console.log("[goal-point-editor] update OK", json)
 
-      this.addressTarget.textContent = json.address || payload.goal_point.address
+      // サーバ確定値で最終上書き（表示ズレ防止）
+      this.addressTarget.textContent = json.address || displayAddress
 
-      // マーカー差し替え等のきっかけ（init_map.js 側で購読）
+      // 他が追従できるようにイベントを発火（plan_map_sync.js が購読）
       document.dispatchEvent(new CustomEvent("plan:goal-point-updated", { detail: json }))
 
       this.close()
