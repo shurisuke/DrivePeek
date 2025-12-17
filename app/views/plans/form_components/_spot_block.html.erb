@@ -70,9 +70,9 @@
               role="switch"
               aria-label="有料道路の使用を切り替える"
               data-toll-used-switch="1"
-              data-plan-id="<%= plan_spot.plan_id %>"
+             data-plan-id="<%= plan_spot.plan_id %>"
               data-plan-spot-id="<%= plan_spot.id %>"
-              <%= plan_spot.toll_used? ? "checked" : "" %>
+              <%= 'checked="checked"' if plan_spot.toll_used? %>
             >
           </div>
         </div>
