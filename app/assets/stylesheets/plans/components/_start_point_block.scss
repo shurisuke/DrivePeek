@@ -1,5 +1,6 @@
 /* ==========================================
      出発地点ブロック
+     goal_point と同じ見た目・密度に揃える
 ========================================== */
 .start-point-block {
   background: #ffffff;
@@ -7,6 +8,8 @@
   width: 100%;
   padding: 1rem 0.5rem;
   margin-top: 0.5rem;
+
+  overflow: visible;
 
   .start-point-main {
     display: flex;
@@ -16,69 +19,95 @@
 
     .start-label {
       flex: 1 1 auto;
-      min-width: 0; // ✅ 省略を効かせる必須
+      min-width: 0;
       margin: 0;
     }
 
-    /* ✅ アイコン＋住所を同じ行に固定 */
     .start-label__row {
       display: flex;
-      align-items: center;
+      align-items: flex-start; /* ✅ title を上に置く */
       gap: 8px;
       min-width: 0;
     }
 
-    /* ✅ spanでもサイズが効くようにする（ぶつかり対策の本命） */
+    /* ✅ goal と同じサイズ */
     .icon {
       display: inline-block;
-      width: 35px;
-      height: 39px;
-      flex: 0 0 35px; // ✅ 縮まず固定
+      width: 40px;
+      height: 42px;
+      flex: 0 0 35px;
 
       background: url(house-icon.png) no-repeat center / contain;
       background-size: 100% 100%;
     }
 
-    .address {
+    /* ✅ title + address を中央寄せ（goalと同じ） */
+    .start-text {
       flex: 1 1 auto;
       min-width: 0;
 
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    /* ✅ goal-title と同じ文字サイズ・太さ */
+    .start-title {
+      width: 100%;
+      font-weight: 700;
+      color: #111;
+      font-size: 18px;
+      line-height: 1.1;
+      margin-bottom: 10px;
+      text-align: center;
+    }
+
+    /* ✅ goal の address と同じ */
+    .address {
+      width: 100%;
+      min-width: 0;
+
       color: #525252c5;
-      font-size: 0.95rem;
-      text-align: left; // ✅ ぶつかり回避のため「左寄せ」推奨（中央寄せが必要なら後述）
+      font-size: 13.6px;
+
+      text-align: center;
+      line-height: 1.2;
+
       white-space: nowrap;
       overflow: hidden;
       text-overflow: ellipsis;
 
       display: block;
-
-      /* 過去のズラしが残っていたら強制解除 */
       transform: none !important;
     }
 
-    /* 変更ボタン（丸・パーソナルカラー背景・白字） */
+    /* ✅ goal と同じ “丸い鉛筆ボタン” */
     .start-point-change-btn {
       flex: 0 0 auto;
+
+      width: 30px;
+      height: 30px;
+      padding: 0;
+      border-radius: 9999px;
+
+      background: #fff;
+      border: 1px solid rgba(80, 109, 83, 0.28);
 
       display: inline-flex;
       align-items: center;
       justify-content: center;
 
-      height: 34px;
-      padding: 0 14px;
-      border-radius: 9999px;
-
-      border: none;
-      background: var(--personal);
-      color: #fff;
-      font-size: 0.85rem;
-      font-weight: 500;
-      letter-spacing: 0.04em;
-
       cursor: pointer;
 
       box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+      i {
+        font-size: 14px;
+        line-height: 1;
+        color: var(--personal);
+        transform: translateY(-0.5px);
+      }
 
       &:hover {
         box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
@@ -93,7 +122,7 @@
 
       &:focus-visible {
         outline: none;
-        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.35);
+        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
       }
 
       &:disabled {
@@ -105,7 +134,7 @@
   }
 
   /* ==========================================================
-     出発地点 編集フォーム領域
+     出発地点 編集フォーム領域（既存を維持）
   ========================================================== */
   .start-point-edit {
     margin-top: 0.6rem;
@@ -155,7 +184,7 @@
   }
 
   /* ==========================================================
-     ✅ 差し込み用：collapse + トグル
+     ✅ 差し込み用：collapse + トグル（既存を維持）
   ========================================================== */
   .start-point-detail-wrap {
     display: flex;
@@ -179,7 +208,6 @@
     background: #fff;
     padding: 0px 12px 12px 12px;
     font-size: 0.9rem;
-    width: 100%;
   }
 
   .detail-toggle {
@@ -196,8 +224,6 @@
     cursor: pointer;
 
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
-    /* ✅ 追加：ホバー演出 */
     transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s;
 
     &:hover {
@@ -218,10 +244,9 @@
   }
 
   .detail-toggle i {
-    transition: transform 0.15s, opacity 0.12s; /* ✅ opacity 追加 */
+    transition: transform 0.15s, opacity 0.12s;
     color: var(--personal);
 
-    /* ✅ 追加：アイコンも微妙に反応 */
     .detail-toggle:hover & {
       opacity: 0.9;
     }
