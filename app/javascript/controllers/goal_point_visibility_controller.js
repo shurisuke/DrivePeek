@@ -13,10 +13,13 @@
 // 修正:
 // - 「最後のスポット判定」をERB/DBではなくDOM基準に変更（Turbo更新/並び替えに強くする）
 // - planbar差し替え後にも再適用するため planbar:updated を購読
+// - map 初期化前に refreshGoalMarker を呼ばない（map instance missing 対策）
+//   → map インスタンスが取れるまで待ってから refresh する
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
 import { getPlanDataFromPage } from "map/plan_data"
+import { getMapInstance } from "map/state"
 
 export default class extends Controller {
   static targets = ["switch", "blockArea"]
@@ -32,7 +35,6 @@ export default class extends Controller {
     // 初期値: 保存済みがあれば復元 / なければ OFF
     const saved = sessionStorage.getItem(this.storageKey())
     const visible = saved === "true"
-
     this.switchTarget.checked = visible
 
     // ✅ planbar差し替えのたびに「最後スポットのトグル状態」を再適用する
@@ -42,11 +44,20 @@ export default class extends Controller {
     }
     document.addEventListener("planbar:updated", this._onPlanbarUpdated)
 
+    // ✅ map 初期化が turbo:load で走るため、ここでもう一度ピンを再評価できるようにする
+    // （connectが先に走って map がまだ無いケースの救済）
+    this._onTurboLoad = () => {
+      const v = this.switchTarget.checked
+      this.refreshGoalPin({ reason: "turbo:load", visible: v })
+    }
+    document.addEventListener("turbo:load", this._onTurboLoad)
+
     this.apply(visible, { reason: "connect" })
   }
 
   disconnect() {
     document.removeEventListener("planbar:updated", this._onPlanbarUpdated)
+    document.removeEventListener("turbo:load", this._onTurboLoad)
   }
 
   toggle() {
@@ -78,8 +89,8 @@ export default class extends Controller {
     // ✅ 最後のスポットのトグル表示を切り替える（DOM基準）
     this.toggleLastSpotDetail(visible)
 
-    // ピンを再評価（ONなら描画、OFFなら消える）
-    this.refreshGoalPin()
+    // ✅ ピンを再評価（map準備できるまで待つ）
+    this.refreshGoalPin({ reason, visible })
   }
 
   // ================================================================
@@ -106,14 +117,48 @@ export default class extends Controller {
     console.log("[goal-point-visibility] last spot toggle", { visible })
   }
 
-  async refreshGoalPin() {
+  // ================================================================
+  // ✅ map instance missing 対策
+  // - connect/apply が map 初期化より先に走ることがある
+  // - map/state の getMapInstance() が取れるまで待ってから refresh する
+  // ================================================================
+  async waitForMapInstance({ maxWaitMs = 2500, intervalMs = 50 } = {}) {
+    const start = Date.now()
+
+    while (Date.now() - start < maxWaitMs) {
+      const map = getMapInstance()
+      if (map) return true
+      await new Promise((r) => setTimeout(r, intervalMs))
+    }
+
+    return false
+  }
+
+  async refreshGoalPin({ reason, visible } = {}) {
+    // 二重実行防止（connect/turbo:load/planbar更新などで重なるのを防ぐ）
+    if (this._refreshingGoalPin) return
+    this._refreshingGoalPin = true
+
     try {
       const planData = getPlanDataFromPage()
       console.log("[goal-point-visibility] refreshGoalPin planData", planData)
 
+      if (!planData) return
+
+      // ✅ map が無い状態で refreshGoalMarker を呼ばない
+      const ready = await this.waitForMapInstance()
+      if (!ready) {
+        console.warn("[goal-point-visibility] map instance not ready (skip refreshGoalMarker)", {
+          reason,
+          visible: typeof visible === "boolean" ? visible : this.switchTarget.checked,
+        })
+        return
+      }
+
       const { refreshGoalMarker } = await import("plans/render_plan_markers")
       refreshGoalMarker(planData)
 
+      // ✅ map 準備できてから通知（plan_map_sync側の早すぎる refresh を防ぐ）
       document.dispatchEvent(
         new CustomEvent("plan:goal-point-visibility-changed", {
           detail: { visible: this.switchTarget.checked, plan_id: this.planIdValue },
@@ -121,6 +166,8 @@ export default class extends Controller {
       )
     } catch (e) {
       console.error("[goal-point-visibility] refreshGoalPin failed", e)
+    } finally {
+      this._refreshingGoalPin = false
     }
   }
 
