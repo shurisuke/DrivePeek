@@ -56,7 +56,7 @@
       width: 100%;
       font-weight: 700;
       color: #111;
-      font-size: 18px;
+      font-size: 1.07rem;
       line-height: 1.1;
       margin-bottom: 10px;
       text-align: center;
@@ -68,7 +68,7 @@
       min-width: 0;
 
       color: #525252c5;
-      font-size: 13.6px;
+      font-size: 13.0px;
 
       text-align: center;
       line-height: 1.2;
@@ -227,10 +227,151 @@
     width: 100%;
     border-radius: 6px;
     background: #fff;
-    padding: 0px 12px 12px 12px;
+    padding: 0px 12px 0px 12px;
     font-size: 0.9rem;
   }
 
+  /* ==========================================================
+     ✅ spot-blockと同じ：trip-summary（2行を1枚の枠にまとめる）
+  ========================================================== */
+  .trip-summary {
+    background: #f6f7f7;
+    border: 1px solid #e6e6e6;
+    border-radius: 12px;
+    overflow: hidden;
+    margin-bottom: 8px;
+  }
+
+  /* 上段：有料道路（枠は外枠に任せる） */
+  .trip-info {
+    display: grid;
+    grid-template-columns: auto auto 1fr auto;
+    align-items: center;
+
+    padding: 10px 12px;
+    font-size: 0.9rem;
+
+    background: transparent;
+    border: none;
+    border-radius: 0;
+    margin: 0;
+  }
+
+  .trip-info .label {
+    font-weight: 700;
+    color: rgba(67, 94, 80, 0.92);
+  }
+
+  .trip-info .toll-switch {
+    margin-left: 12px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+  }
+
+  .trip-info .form-switch {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  /* ✅ 右端列：spotと見た目を揃えるため、空でも幅を確保 */
+  .trip-info .price {
+    justify-self: end;
+    text-align: right;
+    margin-right: 1rem;
+    min-width: 3.5rem;
+  }
+
+  /* ✅ Apple風スイッチ（spotと同じ） */
+  .trip-info .form-check-input {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 40px;
+    height: 22px;
+    margin: 0 !important;
+
+    border: 0 !important;
+    outline: none !important;
+    box-shadow: none !important;
+
+    background-image: none !important;
+    background-color: #d0d5d2;
+
+    border-radius: 9999px;
+    position: relative;
+
+    transition: background-color 0.15s ease;
+  }
+
+  .trip-info .form-check-input::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+
+    width: 18px;
+    height: 18px;
+    border-radius: 9999px;
+
+    background: #fff;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+
+    transition: transform 0.15s ease;
+  }
+
+  .trip-info .form-check-input:checked {
+    background-color: var(--personal);
+  }
+
+  .trip-info .form-check-input:checked::after {
+    transform: translateX(18px);
+  }
+
+  .trip-info .form-check-input:focus,
+  .trip-info .form-check-input:focus-visible {
+    outline: none !important;
+    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18) !important;
+  }
+
+  /* 下段：次の場所まで（区切り線だけ） */
+  .distance-info {
+    width: 100%;
+    margin: 0;
+
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+
+    padding: 10px 12px;
+    font-size: 0.9rem;
+
+    background: transparent;
+    border: none;
+    border-radius: 0;
+
+    border-top: 1px solid #e1e1e1;
+  }
+
+  .distance-info > span:first-child {
+    font-weight: 700;
+    color: rgba(67, 94, 80, 0.92);
+  }
+
+  .distance-info .km,
+  .distance-info .time {
+    font-weight: 800;
+    color: #222;
+
+    padding-left: 12px;
+    border-left: 1px solid #e1e1e1;
+  }
+
+  /* ==========================================================
+     ✅ トグルボタン（既存維持）
+  ========================================================== */
   .detail-toggle {
     width: 40px;
     height: 40px;

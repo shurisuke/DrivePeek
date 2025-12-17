@@ -63,19 +63,38 @@
     <div class="start-point-detail-wrap">
       <div class="collapse start-point-detail" id="startPointDetail-<%= plan.id %>">
         <div class="start-point-detail__inner">
-          <div class="toll-option mb-2 d-flex align-items-center justify-content-between">
-            <label class="mb-0 me-2">有料道路</label>
-            <select class="form-select form-select-sm" style="width: 140px;">
-              <option>使わない</option>
-              <option>使う</option>
-            </select>
+
+          <%# ✅ spot-block と同じ：2行を1枚の枠（trip-summary）にまとめる %>
+          <div class="trip-summary">
+            <%# ✅ 上段：有料道路（トグルスイッチ化） %>
+            <div class="trip-info">
+              <span class="label">有料道路</span>
+
+              <div class="toll-switch">
+                <div class="form-check form-switch m-0">
+                  <input
+                    class="form-check-input"
+                    type="checkbox"
+                    role="switch"
+                    aria-label="有料道路の使用を切り替える（出発）"
+                    data-start-toll-used-switch="1"
+                    data-plan-id="<%= plan.id %>"
+                  >
+                </div>
+              </div>
+
+              <%# ✅ spot と列幅を揃えるためのダミー（必要なら後で実値に） %>
+              <span class="price"></span>
+            </div>
+
+            <%# ✅ 下段：次の場所まで %>
+            <div class="distance-info">
+              <span>次の場所まで</span>
+              <span class="km">〇〇km</span>
+              <span class="time">〇〇時間〇〇分</span>
+            </div>
           </div>
 
-          <div class="distance-info d-flex align-items-center justify-content-between">
-            <span>次の場所まで</span>
-            <span class="km">〇〇km</span>
-            <span class="time">〇〇時間〇〇分</span>
-          </div>
         </div>
       </div>
 
