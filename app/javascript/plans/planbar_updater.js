@@ -65,4 +65,12 @@ export const bindPlanbarRefresh = () => {
     if (!planId) return
     await refreshPlanbar(planId)
   })
+
+  // ✅ 追加: 有料道路の切り替え後も planbar を再描画（将来:距離/時間/料金にも波及）
+  document.addEventListener("plan:plan-spot-toll-used-updated", async (e) => {
+    const planId = getPlanId()
+    console.log("[planbar_updater] caught plan:plan-spot-toll-used-updated", { planId, detail: e?.detail })
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
 }
