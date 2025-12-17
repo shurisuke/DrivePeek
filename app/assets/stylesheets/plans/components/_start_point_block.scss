@@ -25,12 +25,12 @@
 
     .start-label__row {
       display: flex;
-      align-items: flex-start; /* ✅ title を上に置く */
+      align-items: flex-start; /* title を上に置く */
       gap: 8px;
       min-width: 0;
     }
 
-    /* ✅ goal と同じサイズ */
+    /* goal と同じサイズ */
     .icon {
       display: inline-block;
       width: 40px;
@@ -41,7 +41,7 @@
       background-size: 100% 100%;
     }
 
-    /* ✅ title + address を中央寄せ（goalと同じ） */
+    /* title + address を中央寄せ（goalと同じ） */
     .start-text {
       flex: 1 1 auto;
       min-width: 0;
@@ -51,7 +51,7 @@
       align-items: center;
     }
 
-    /* ✅ goal-title と同じ文字サイズ・太さ */
+    /* goal-title と同じ */
     .start-title {
       width: 100%;
       font-weight: 700;
@@ -62,7 +62,7 @@
       text-align: center;
     }
 
-    /* ✅ goal の address と同じ */
+    /* goal の address と同じ */
     .address {
       width: 100%;
       min-width: 0;
@@ -81,7 +81,7 @@
       transform: none !important;
     }
 
-    /* ✅ goal と同じ “丸い鉛筆ボタン” */
+    /* goal と同じ “丸い鉛筆ボタン” */
     .start-point-change-btn {
       flex: 0 0 auto;
 
@@ -134,19 +134,40 @@
   }
 
   /* ==========================================================
-     出発地点 編集フォーム領域（既存を維持）
+     ✅ 変更フォーム：planbar の外に“浮かせる”（goal と同じ）
+     - hiddenのときは非表示
+     - top/left は Stimulus が inline style で設定
   ========================================================== */
   .start-point-edit {
-    margin-top: 0.6rem;
+    position: fixed;
+    z-index: 2000;
+    width: min(360px, calc(100vw - 24px));
+
+    transform: translateY(-100px);
+    margin-top: 0;
   }
 
+  .start-point-edit.is-floating {
+    position: fixed;
+    z-index: 300;
+
+    margin-top: 0;
+    width: min(360px, calc(100vw - 16px));
+  }
+
+  /* ✅ goal と同じ “白地 + 枠 + 影” */
   .start-point-edit__inner {
-    background: rgba(80, 109, 83, 0.10);
+    background: #fff;
     border: 1px solid rgba(80, 109, 83, 0.18);
     border-radius: 10px;
 
     padding: 0.75rem 0.75rem 0.6rem;
-    margin-bottom: 1rem;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
+  }
+
+  .start-point-edit.is-floating .start-point-edit__inner {
+    background: #ffffff9c;
+    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
   }
 
   .start-point-edit__label {
@@ -184,7 +205,7 @@
   }
 
   /* ==========================================================
-     ✅ 差し込み用：collapse + トグル（既存を維持）
+     ✅ 差し込み用：collapse + トグル（既存維持）
   ========================================================== */
   .start-point-detail-wrap {
     display: flex;
