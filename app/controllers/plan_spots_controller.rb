@@ -21,17 +21,6 @@ class PlanSpotsController < ApplicationController
     end
   end
 
-  def reorder
-    ordered_ids = params[:ordered_plan_spot_ids]
-
-    unless ordered_ids.is_a?(Array) && ordered_ids.all? { |id| id.to_s.match?(/\A\d+\z/) }
-      return render json: { message: "不正なリクエストです" }, status: :unprocessable_entity
-    end
-
-    PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
-    head :no_content
-  end
-
   private
 
   def set_plan
