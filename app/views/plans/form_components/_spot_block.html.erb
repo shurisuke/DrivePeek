@@ -15,12 +15,7 @@
     <!-- positionピン（左上） -->
     <div class="spot-order-pin" aria-hidden="true"><%= plan_spot.position %></div>
 
-    <!-- お気に入り（右上） -->
-    <button type="button" class="spot-fav-btn" aria-label="お気に入り">
-      <i class="bi bi-heart"></i>
-    </button>
-
-    <!-- 中央：スポット名 / 住所 / タグ / メモ枠 -->
+    <!-- 中央：スポット名 / 住所 / タグ / メモ -->
     <div class="spot-body">
       <% if spot.name.present? %>
         <div class="spot-name"><%= spot.name %></div>
@@ -43,38 +38,64 @@
     </div>
   </div>
 
-  <%# ✅ トグル領域は常に描画する
-      最後のスポットかどうかの判定・表示制御は
-      goal_point_visibility_controller.js がDOM基準で行う（hidden切替）
-  %>
+  <%# ✅ トグル領域は常に描画する %>
   <div class="spot-detail-wrap">
     <div class="collapse spot-detail" id="spotDetail-<%= plan_spot.id %>">
       <div class="spot-detail__inner">
+
+        <%# ✅ ハートは廃止 → 「お気に入り」ボタン（メモ/タグと同型） %>
         <div class="spot-detail-actions">
-          <button type="button" class="btn btn-outline-secondary btn-sm w-100">
-            <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
-            メモ
-          </button>
+          <div class="spot-detail-actions__buttons">
+            <button type="button" class="btn btn-outline-secondary btn-sm w-100">
+              <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
+              メモ
+            </button>
 
-          <button type="button" class="btn btn-outline-secondary btn-sm w-100">
-            <i class="bi bi-tag me-1" aria-hidden="true"></i>
-            タグ
-          </button>
+            <button type="button" class="btn btn-outline-secondary btn-sm w-100">
+              <i class="bi bi-tag me-1" aria-hidden="true"></i>
+              タグ
+            </button>
+
+            <button type="button"
+                    class="btn btn-outline-secondary btn-sm w-100 btn-fav-icon"
+                    aria-label="お気に入り登録">
+              <i class="bi bi-heart" aria-hidden="true"></i>
+            </button>
+          </div>
         </div>
 
-        <div class="toll-option d-flex align-items-center justify-content-between">
-          <label class="mb-0 me-2">有料道路</label>
-          <select class="form-select form-select-sm" style="width: 140px;">
-            <option>使わない</option>
-            <option>使う</option>
-          </select>
+        <%# ✅ ここを「1つの枠」でまとめる %>
+        <div class="trip-summary">
+          <%# ✅ 有料道路 + EC料金（上段） %>
+          <div class="trip-info">
+            <span class="label">有料道路</span>
+
+            <div class="toll-switch">
+              <div class="form-check form-switch m-0">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  aria-label="有料道路の使用を切り替える"
+                  data-toll-used-switch="1"
+                  data-plan-id="<%= plan_spot.plan_id %>"
+                  data-plan-spot-id="<%= plan_spot.id %>"
+                  <%= 'checked="checked"' if plan_spot.toll_used? %>
+                >
+              </div>
+            </div>
+
+            <span class="price">¥ 〇〇〇〇</span>
+          </div>
+
+          <%# ✅ 次の場所まで（下段） %>
+          <div class="distance-info">
+            <span>次の場所まで</span>
+            <span class="km">〇〇km</span>
+            <span class="time">〇〇h 〇〇m</span>
+          </div>
         </div>
 
-        <div class="distance-info d-flex align-items-center justify-content-between">
-          <span>次の場所まで</span>
-          <span class="km">〇〇km</span>
-          <span class="time">〇〇時間〇〇分</span>
-        </div>
       </div>
     </div>
 

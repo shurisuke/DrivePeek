@@ -12,6 +12,7 @@ Rails.application.routes.draw do
   authenticated :user do
     root to: "dashboard#top", as: :authenticated_root
   end
+
   # 非ログイン時のルート
   unauthenticated do
     root to: "static_pages#top", as: :unauthenticated_root
@@ -32,9 +33,16 @@ Rails.application.routes.draw do
     resource :planbar, only: %i[show]
     resource :start_point, only: %i[update]
     resource :goal_point, only: %i[update]
+
     resources :plan_spots, only: %i[create] do
       collection do
-        patch :reorder
+        # ✅ 並び替え専用コントローラへ
+        patch :reorder, to: "plan_spots/reorders#update"
+      end
+
+      member do
+        # ✅ 有料道路使用有無専用コントローラへ
+        patch :update_toll_used, to: "plan_spots/toll_used#update"
       end
     end
   end

@@ -9,6 +9,16 @@ import Sortable from "sortablejs"
 let sortableInstance = null
 let bound = false
 
+// Turbo Stream 直後など、短時間に連続で呼ばれても1回だけ init する
+let initTimer = null
+const requestInitSortable = () => {
+  if (initTimer) return
+  initTimer = setTimeout(() => {
+    initTimer = null
+    initSortable()
+  }, 50)
+}
+
 const getOrderedPlanSpotIds = (container) => {
   const items = container.querySelectorAll(".spot-block[data-plan-spot-id]")
   return Array.from(items).map((el) => parseInt(el.dataset.planSpotId, 10))
@@ -43,12 +53,6 @@ const initSortable = () => {
     return
   }
 
-  // 二重初期化防止
-  if (container.dataset.sortableInitialized === "true") {
-    console.log("[spot_reorder_handler] initSortable: already initialized, skip")
-    return
-  }
-
   const mapElement = document.getElementById("map")
   const planId = mapElement?.dataset.planId
   if (!planId) {
@@ -56,7 +60,19 @@ const initSortable = () => {
     return
   }
 
-  // 既存インスタンスを破棄
+  // ✅ すでにこの container に Sortable が生きているなら何もしない
+  // - dataset は Turbo Stream で container が差し替わると消える
+  // - container が差し替わっていないなら、無駄に destroy / init しない
+  if (
+    container.dataset.sortableInitialized === "true" &&
+    sortableInstance &&
+    sortableInstance.el === container
+  ) {
+    console.log("[spot_reorder_handler] initSortable: already initialized, skip")
+    return
+  }
+
+  // ✅ container が差し替わっている / 初回なら、古いインスタンスを破棄して作り直す
   if (sortableInstance) {
     sortableInstance.destroy()
     sortableInstance = null
@@ -97,6 +113,7 @@ const initSortable = () => {
 
 const destroySortable = () => {
   console.log("[spot_reorder_handler] destroySortable called")
+
   if (sortableInstance) {
     sortableInstance.destroy()
     sortableInstance = null
@@ -115,22 +132,15 @@ export const bindSpotReorderHandler = () => {
   console.log("[spot_reorder_handler] bindSpotReorderHandler")
 
   // turbo:load で初期化
-  document.addEventListener("turbo:load", initSortable)
+  document.addEventListener("turbo:load", requestInitSortable)
 
   // turbo:before-cache で破棄（キャッシュ時に古いインスタンスを残さない）
   document.addEventListener("turbo:before-cache", destroySortable)
 
-  // planbar が Turbo Stream で更新された後に再初期化
-  document.addEventListener("plan:spot-added", () => {
-    destroySortable()
-    setTimeout(initSortable, 100)
-  })
-  document.addEventListener("plan:spots-reordered", () => {
-    destroySortable()
-    setTimeout(initSortable, 100)
-  })
-  document.addEventListener("planbar:updated", () => {
-    destroySortable()
-    setTimeout(initSortable, 100)
-  })
+  // ✅ ここが重要：destroy しないで init を要求するだけ
+  // - DOMが差し替わっていなければ initSortable がスキップする
+  // - DOMが差し替わっていれば initSortable が作り直す
+  document.addEventListener("plan:spot-added", requestInitSortable)
+  document.addEventListener("plan:spots-reordered", requestInitSortable)
+  document.addEventListener("planbar:updated", requestInitSortable)
 }
