@@ -58,8 +58,8 @@
     </div>
   </div>
 
-  <%# ✅ スポットが1件以上あるときだけ「詳細（有料道路/距離）」トグルを表示 %>
-  <% if plan.plan_spots.exists? %>
+  <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「詳細（有料道路/距離）」トグルを表示 %>
+  <% if plan.start_point.present? && plan.plan_spots.exists? %>
     <div class="start-point-detail-wrap">
       <div class="collapse start-point-detail" id="startPointDetail-<%= plan.id %>">
         <div class="start-point-detail__inner">
@@ -77,8 +77,9 @@
                     type="checkbox"
                     role="switch"
                     aria-label="有料道路の使用を切り替える（出発）"
-                    data-start-toll-used-switch="1"
+                    data-start-point-toll-used-switch="1"
                     data-plan-id="<%= plan.id %>"
+                    <%= 'checked="checked"' if plan.start_point&.toll_used? %>
                   >
                 </div>
               </div>
