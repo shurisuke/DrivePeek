@@ -23,10 +23,6 @@
   transition: box-shadow 0.12s, background-color 0.12s;
 }
 
-.spot-block:hover {
-  box-shadow: 0 0 14px rgba(0, 0, 0, 0.12);
-}
-
 .spot-block:active {
   cursor: grabbing;
 }
