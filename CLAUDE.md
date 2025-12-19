@@ -1,69 +1,51 @@
 # CLAUDE.md
+Claude Code (claude.ai/code) 用のリポジトリ運用ルール
 
-This file provides guidance to Claude Code (claude.ai/code) when working with this repository.
+## 0. 作業開始プロトコル（必須）
+依頼を受けたら必ず次の順で進めること。
 
-## 不変の前提 / ルール（必ず守る）
+1) この `CLAUDE.md` を読み、遵守する
+2) 依頼で指定された **単一の** `doc/tasks/*.md`（または明示された一覧）を読む
+   - フォルダ内を勝手に探索しない
+   - `doc/tasks/` が無い / 指定ファイルが無い場合は捏造せず「不明」
+3) 内部で順次思考してよいが **思考過程は出力しない**（結論・手順のみ出力）
 
-### Railsの思想
-- Railsの規約に従い、シンプルで明示的な実装を優先する。
-- コントローラは薄く保ち、ドメインロジックはモデル（または小さな調整役）に寄せ、責務を明確に分離する。
-- 「巨大Service（god service）」は避ける。調整役が必要な場合も、役割は順序制御 + transaction に限定し、実ロジックは各モデルに持たせる。
-- `Service#call` パターンは禁止。必要なら意図が伝わるメソッド名（例：`#setup`）を使う。
+理解確認（必ず明示）：
+- これは **再利用・統合** のプロジェクト
+- 新規ファイル作成は **強い正当化が必要**
+- 提案は **既存コード参照が必須**
+- 破れば応答は **無効**
 
-### Map / Marker の状態管理ルール
-- マーカーの生成・クリアは必ず `app/javascript/map/state.js` の setter / clearer 経由で行う。
-- state モジュールの外にマーカー参照を保持しない（迷子の参照を作らない）。
+## 1. 進め方（必須）
+応答は必ずこの構成で出す：
 
-### Turbo / Stimulus ルール
-- Map の初期化は `DOMContentLoaded` ではなく `turbo:load` で行う。
-- InfoWindow のDOMは動的に生成されるため、イベント付与はイベントデリゲーション等で確実に拾う。
+### 冒頭（必須）
+> コンプライアンス確認済み：作成よりも再利用を優先します
 
-### 命名 / データ受け渡し（JS ↔ Rails）契約
-- 「スポットをプランに追加」する際、JS → Rails へ送るpayloadは以下：
-  - name（任意）
-  - address（整形済み）
-  - lat, lng
-  - place_id
-  - photo_reference（任意）
-  - top_types（配列、最大3件：Googleのplace types）
-- PlanSpot のデフォルト:
-  - `toll_used` は DB default `false`（null:false）
-  - `position` は acts_as_list により plan 単位で末尾に追加される
+### 本文（必須）
+1) **既存コード分析**：関連ファイルパス列挙 + 理由（各1行）
+   - 「実在確認できない場合は“不明”とし、確認コマンドを依頼する」
+2) **実装計画**：変更点最小・再利用最優先
+   - 新規ファイルが必要なら「既存拡張不可の理由」「代替案」も書く
+3) **技術的詳細**：ファイルごとに変更内容（必要なら全文提示）
+4) **検証（必須）**：手動テスト 3ケース以上 +（可能なら）自動テストコマンド提示（例: `bin/rails test ...`）
 
----
+### 末尾（必須）
+- コンプライアンス確認で終了すること
+- 最後は必ず次の1文で終える：
+  > コンプライアンス確認：既存コード参照・再利用優先・捏造なしで回答しました
 
-## プロジェクト概要
-DrivePeekは、Google Maps連携を活用した日本語のドライブプランニングWebアプリケーションです。
-ユーザーはスポットを検索し、複数の立ち寄り地点を含むルートを計画できます。
-移動時間・距離の自動計算機能があり、プランを公開して他ユーザーと共有することも可能です。
+## 2. 不変ルール（必ず守る）
+### Rails
+- 規約優先・シンプルに
+- コントローラは薄く、実ロジックはモデル（or小さな調整役）へ
+- 巨大Service禁止 / `Service#call` 禁止（必要なら意図が伝わるメソッド名）
+- DHH的に考える：まず「Railsの規約で素直に書けるか」を優先し、過剰な抽象化・設定・汎用化はしない。
 
-主な機能:
-- Google Mapsでスポット検索・追加
-- 出発時間と滞在時間から帰宅時間を自動計算
-- 他ユーザーのプランを参考にできる
-- プライバシー保護（出発地・帰宅地は非公開）
+### Map / Marker
+- マーカー生成・クリアは必ず `app/javascript/map/state.js` の setter/clearer 経由
+- state 外に参照を保持しない
 
-## 開発コマンド
-```bash
-# 開発サーバー起動（Rails + CSS監視）
-foreman start -f Procfile.dev
-
-# 個別に起動する場合:
-bin/rails server -p 3000
-yarn run watch:css
-
-# データベース
-bin/rails db:create db:migrate
-
-# CSS手動ビルド
-yarn run build:css
-
-# テスト
-bin/rails test
-bin/rails test test/models
-bin/rails test test/path/to_test.rb:LINE
-
-# コード品質
-rubocop
-brakeman
-bundler-audit
+### Turbo / Stimulus
+- Map初期化は `turbo:load`
+- InfoWindow はイベントデリゲーション等で確実に拾う

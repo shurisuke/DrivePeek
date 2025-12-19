@@ -1,0 +1,3 @@
+<%= turbo_stream.replace dom_id(@spot, :like_button) do %>
+  <%= render "like_spots/button", spot: @spot, like_spot: @like_spot %>
+<% end %>
