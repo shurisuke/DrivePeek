@@ -36,13 +36,16 @@ Rails.application.routes.draw do
 
     resources :plan_spots, only: %i[create] do
       collection do
-        # ✅ 並び替え専用コントローラへ
+        # スポット順並び替え
         patch :reorder, to: "plan_spots/reorders#update"
       end
 
       member do
-        # ✅ 有料道路使用有無専用コントローラへ
+        # 有料道路使用切り替え
         patch :update_toll_used, to: "plan_spots/toll_used#update"
+
+        # メモ更新
+        patch :update_memo, to: "plan_spots/memos#update"
       end
     end
   end

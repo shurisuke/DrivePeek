@@ -6,16 +6,16 @@
 
 <div
   class="spot-block"
+  data-controller="plan-spot-memo"
+  data-plan-spot-memo-url-value="<%= update_memo_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-spot-id="<%= spot.id %>"
   data-plan-spot-id="<%= plan_spot.id %>"
   data-position="<%= plan_spot.position %>"
   data-user-spot-id="<%= user_spot&.id %>"
 >
   <div class="spot-main">
-    <!-- positionピン（左上） -->
     <div class="spot-order-pin" aria-hidden="true"><%= plan_spot.position %></div>
 
-    <!-- 中央：スポット名 / 住所 / タグ / メモ -->
     <div class="spot-body">
       <% if spot.name.present? %>
         <div class="spot-name"><%= spot.name %></div>
@@ -31,29 +31,65 @@
         <% end %>
       </div>
 
-      <div class="spot-memo">
-        <div class="spot-memo__label">メモ</div>
-        <div class="spot-memo__placeholder">（後ほど実装予定）</div>
+      <%# ✅ 表示用メモ枠（削除ボタンあり） %>
+      <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
+           data-plan-spot-memo-target="memoDisplay">
+
+        <button type="button"
+                class="spot-memo__delete"
+                aria-label="メモを削除"
+                data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#clear">
+          ×
+        </button>
+
+        <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
+          <%= simple_format(h(plan_spot.memo.to_s)) %>
+        </div>
       </div>
     </div>
   </div>
 
-  <%# ✅ トグル領域は常に描画する %>
   <div class="spot-detail-wrap">
-    <div class="collapse spot-detail" id="spotDetail-<%= plan_spot.id %>">
+    <div class="collapse spot-detail"
+         id="spotDetail-<%= plan_spot.id %>"
+         data-plan-spot-memo-target="detail">
       <div class="spot-detail__inner">
 
-        <%# ✅ ハートは廃止 → 「お気に入り」ボタン（メモ/タグと同型） %>
+        <%# ✅ 編集用メモ枠（削除ボタンあり） %>
+        <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
+             data-plan-spot-memo-target="editor">
+
+          <form data-action="submit->plan-spot-memo#submit">
+            <textarea class="form-control"
+              rows="2"
+              placeholder="メモを入力"
+              data-plan-spot-memo-target="textarea"
+              data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
+
+            <div class="spot-memo__editor-actions">
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm"
+                      data-action="click->plan-spot-memo#close">
+                閉じる
+              </button>
+
+              <button type="submit" class="btn btn-primary btn-sm">
+                保存
+              </button>
+            </div>
+          </form>
+        </div>
+
         <div class="spot-detail-actions">
           <div class="spot-detail-actions__buttons">
-            <button type="button" class="btn btn-outline-secondary btn-sm w-100">
+            <button type="button"
+                    class="btn btn-outline-secondary btn-sm w-100"
+                    data-action="click->plan-spot-memo#open">
               <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
-              メモ
             </button>
 
             <button type="button" class="btn btn-outline-secondary btn-sm w-100">
               <i class="bi bi-tag me-1" aria-hidden="true"></i>
-              タグ
             </button>
 
             <button type="button"
@@ -64,9 +100,7 @@
           </div>
         </div>
 
-        <%# ✅ ここを「1つの枠」でまとめる %>
-        <div class="trip-summary">
-          <%# ✅ 有料道路 + EC料金（上段） %>
+        <div class="trip-summary mt-3">
           <div class="trip-info">
             <span class="label">有料道路</span>
 
@@ -88,7 +122,6 @@
             <span class="price">¥ 〇〇〇〇</span>
           </div>
 
-          <%# ✅ 次の場所まで（下段） %>
           <div class="distance-info">
             <span>次の場所まで</span>
             <span class="km">〇〇km</span>

@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_17_235938) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_19_045053) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -53,6 +53,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_235938) do
     t.datetime "arrival_time"
     t.datetime "created_at", null: false
     t.datetime "departure_time"
+    t.text "memo"
     t.integer "move_cost", default: 0, null: false
     t.float "move_distance", default: 0.0, null: false
     t.integer "move_time", default: 0, null: false
@@ -131,7 +132,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_17_235938) do
 
   create_table "user_spots", force: :cascade do |t|
     t.datetime "created_at", null: false
-    t.text "memo"
     t.bigint "spot_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false

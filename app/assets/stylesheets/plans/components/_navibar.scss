@@ -8,3 +8,11 @@
 .tab-content.active {
   display: block;
 }
+
+html { scrollbar-gutter: stable; }
+
+.planbar__content {
+  overflow-y: scroll;        /* auto → scroll */
+  scrollbar-gutter: stable;
+  min-height: 0;
+}

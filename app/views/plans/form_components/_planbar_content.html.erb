@@ -1,0 +1,12 @@
+<%# app/views/plans/form_components/_planbar_content.html.erb %>
+<div class="tab-content tab-community" data-navibar-target="content">
+  <%= render "plans/form_components/community_block" %>
+</div>
+
+<div class="tab-content tab-plan active" data-navibar-target="content">
+  <%= render "plans/form_components/plan_block", plan: plan %>
+</div>
+
+<div class="tab-content tab-ai" data-navibar-target="content">
+  <%= render "plans/form_components/ai_suggestion_block" %>
+</div>

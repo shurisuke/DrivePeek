@@ -6,15 +6,7 @@
   </div>
 
   <!-- 各タブの中身 -->
-  <div class="planbar__content">
-    <div class="tab-content tab-community" data-navibar-target="content">
-      <%= render "plans/form_components/community_block" %>
-    </div>
-    <div class="tab-content tab-plan active" data-navibar-target="content">
-      <%= render "plans/form_components/plan_block", plan: plan %>
-    </div>
-    <div class="tab-content tab-ai" data-navibar-target="content">
-      <%= render "plans/form_components/ai_suggestion_block" %>
-    </div>
+  <div class="planbar__content" id="planbar_content">
+    <%= render "plans/form_components/planbar_content", plan: plan %>
   </div>
 </aside>
