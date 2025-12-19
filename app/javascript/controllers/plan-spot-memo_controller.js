@@ -81,7 +81,6 @@ export default class extends Controller {
 
   // ✅ 追加：削除（= 空文字で update）
   async clear(event) {
-    event.preventDefault()
     event.stopPropagation()
 
     const data = await this._patchMemo("")
