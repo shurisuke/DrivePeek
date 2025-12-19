@@ -31,10 +31,11 @@
         <% end %>
       </div>
 
-      <div class="spot-memo">
-        <div class="spot-memo__label">メモ</div>
-        <div class="spot-memo__placeholder">（後ほど実装予定）</div>
-      </div>
+      <% if plan_spot.memo.present? %>
+        <div class="spot-memo spot-memo--pin">
+          <div class="spot-memo__content"><%= simple_format(h(plan_spot.memo)) %></div>
+        </div>
+      <% end %>
     </div>
   </div>
 
@@ -64,9 +65,7 @@
           </div>
         </div>
 
-        <%# ✅ ここを「1つの枠」でまとめる %>
         <div class="trip-summary">
-          <%# ✅ 有料道路 + EC料金（上段） %>
           <div class="trip-info">
             <span class="label">有料道路</span>
 
@@ -88,7 +87,6 @@
             <span class="price">¥ 〇〇〇〇</span>
           </div>
 
-          <%# ✅ 次の場所まで（下段） %>
           <div class="distance-info">
             <span>次の場所まで</span>
             <span class="km">〇〇km</span>
