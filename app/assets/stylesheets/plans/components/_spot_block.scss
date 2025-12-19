@@ -139,16 +139,13 @@
 
   position: relative;
 
-  /* 紙の大きさ（本文が短くても潰れない） */
-  --memo-min-height: 160px;
+  --memo-min-height: 80px;
   min-height: var(--memo-min-height);
 
-  /* 白い紙 */
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 10px;
 
-  /* 淡い影（左右も少し強め・でも淡い） */
   box-shadow:
     0 10px 22px rgba(0, 0, 0, 0.12),
     8px 0 18px rgba(0, 0, 0, 0.06),
@@ -160,7 +157,6 @@
   overflow: hidden;
 }
 
-/* simple_format の余白を消す */
 .spot-block .spot-memo__content p {
   margin: 0;
 }
@@ -483,40 +479,49 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
 }
 
 /* ==========================================================
-   ✅ 強制上書き：メモを白い紙枠（背景画像なし）＋ベージュテープ
+   ✅ 強制上書き：メモ（表示）＋メモ（編集）＋削除ボタン
+   - テープ（::before / ::after）は完全削除
+   - 表示と編集で「紙の見た目」は共通
+   - 編集は padding 左右 35px
+   - textarea は枠線/フォーカスリング無し
 ========================================================== */
-/* ==========================================================
-   ✅ 変更点（テープ → 黄色い画鋲ピン）
-   - テープ用の ::before / ::after は削除
-   - 代わりに「黄色い丸ピン」をメモ内の上部中央に配置
-   - 針（棒）は描かない（丸のみ）
-========================================================== */
-.spot-block .spot-memo {
-  display: flex;
-  position: relative;
 
-  margin-top: 15px;
+/* -------------------------------
+   共通：メモ枠（表示/編集）
+------------------------------- */
+.spot-block .spot-memo {
+  /* 表示/編集で文字を揃える（必要ならここを調整） */
+  --memo-font-size: 0.82rem;
+  --memo-text-color: rgba(33, 33, 33, 0.55);
+
+  position: relative;
+  display: flex;
+
+  margin-top: 30px;
   margin-left: calc(var(--spot-fav-safe) - 10px);
   margin-right: calc(var(--spot-fav-safe) - 10px);
 
-  min-height: 160px !important;
-  padding: 18px 18px !important;
+  min-height: 40px;
 
-  background: #ffffff !important;
-  border: 1px solid rgba(0, 0, 0, 0.10) !important;
-  border-radius: 3px !important;
+  padding: 20px 18px 18px;
+
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 3px;
 
   align-items: center;
   justify-content: center;
 
   text-align: center;
-  overflow: visible !important;
+
+  overflow: visible;
+
   box-shadow:
     0 6px 14px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06) !important;
+    0 1px 3px rgba(0, 0, 0, 0.06);
 }
 
-/* simple_format の余白を消す */
+/* simple_format の余白 */
 .spot-block .spot-memo__content p {
   margin: 0;
 }
@@ -524,52 +529,109 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
 .spot-block .spot-memo__content {
   width: 100%;
   max-width: 100%;
-}
 
-/* --- ❸ 黄色い画鋲（丸だけ）をメモ内の上部中央に配置 --- */
-.spot-block .spot-memo.spot-memo--pin::before {
-  content: "";
-  position: absolute;
-
-  /* ✅ 「メモ内」の上部中央 */
-  top: 10px;     /* 好みで 8〜14px */
-  left: 50%;
-  transform: translateX(-50%);
-
-  /* ✅ 小さい黄色い丸 */
-  width: 14px;   /* 好みで 12〜16px */
-  height: 14px;
-  border-radius: 9999px;
-
-  /* ✅ ピンっぽい黄色（少し立体） */
-  background: radial-gradient(circle at 30% 30%, #fff6b5 0%, #ffd54a 45%, #f0b400 100%);
-  border: 1px solid rgba(0, 0, 0, 0.10);
-
-  /* ✅ 影は“淡く” */
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-
-  z-index: 3;
-  pointer-events: none;
-}
-
-/* ✅ メモブロックの高さを低くする（基本） */
-.spot-block .spot-memo {
-  /* まずここを下げてください（例: 160 → 120） */
-  min-height: 120px !important;
-
-  /* 中身が少ない時にさらに詰めたいなら上下パディングも下げる */
-  padding-top: 10px !important;
-  padding-bottom: 0px !important;
-}
-
-/* ✅ メモ本文のフォントを小さく + 色を薄くする */
-.spot-block .spot-memo__content {
-  font-size: 0.82rem;                 /* 例: 0.92rem → 0.82rem */
+  font-size: var(--memo-font-size);
   line-height: 1.55;
-  color: rgba(33, 33, 33, 0.55);      /* 薄め */
+  color: var(--memo-text-color);
+  letter-spacing: 0.01em;
 }
 
-/* simple_format が作る p の余白はゼロのままでOK */
-.spot-block .spot-memo__content p {
-  margin: 0;
+/* -------------------------------
+   共通：削除ボタン（表示/編集）
+------------------------------- */
+.spot-block .spot-memo__delete {
+  position: absolute;
+  top: 8px;
+  right: 10px;
+  z-index: 20;
+
+  border: none;
+  background: transparent;
+  box-shadow: none;
+
+  color: rgba(0, 0, 0, 0.35);
+  font-size: 18px;
+  font-weight: 600;
+  line-height: 1;
+
+  padding: 0;
+  cursor: pointer;
+  opacity: 0.9;
+}
+
+.spot-block .spot-memo__delete:hover {
+  color: rgba(0, 0, 0, 0.55);
+  opacity: 1;
+}
+
+.spot-block .spot-memo__delete:active {
+  transform: translateY(0.5px);
+}
+
+.spot-block .spot-memo__delete:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+  border-radius: 6px;
+}
+
+/* -------------------------------
+   編集：メモ編集枠（spot-memo--editor）
+------------------------------- */
+.spot-block .spot-memo.spot-memo--editor {
+  /* 編集枠の上位置だけ別調整したいならここ */
+  margin-top: 24px;
+  margin-left: 21px;
+  margin-right: 21px;
+
+  /* ✅ ここが要望：左右 padding を 35px */
+  padding: 20px 35px 18px;
+
+  /* 編集時は縦積みしやすいように */
+  display: block;
+  text-align: left;
+}
+
+/* form/textarea を100%にして「padding変えても見た目変わらない」を防ぐ */
+.spot-block .spot-memo.spot-memo--editor form {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  align-items: center; /* ボタン列を中央に */
+}
+
+.spot-block .spot-memo.spot-memo--editor textarea.form-control {
+  width: 100%;
+  box-sizing: border-box;
+
+  resize: none;
+  background: transparent;
+
+  /* ✅ 枠線/リング無し（Bootstrap対策込み） */
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+
+  font-size: var(--memo-font-size);
+  line-height: 1.55;
+  color: var(--memo-text-color);
+  letter-spacing: 0.01em;
+
+  /* 入力開始位置が中央になる事故防止 */
+  text-align: left;
+}
+
+.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus,
+.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible {
+  border: 0;
+  outline: 0;
+  box-shadow: none;
+}
+
+/* ボタン列：中央寄せ */
+.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
 }
