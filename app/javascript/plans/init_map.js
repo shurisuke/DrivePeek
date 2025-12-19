@@ -33,7 +33,6 @@ document.addEventListener("turbo:load", async () => {
     return
   }
 
-  // 初期値はOFF（トグル操作でONになったら goal_point_visibility_controller が更新）
   if (!mapElement.dataset.goalPointVisible) {
     mapElement.dataset.goalPointVisible = "false"
   }
@@ -46,8 +45,6 @@ document.addEventListener("turbo:load", async () => {
   addCurrentLocationMarker()
 
   const planData = getPlanDataFromPage()
-
-  // ✅ プランデータが無い画面（例: スポット詳細など）でも map は動く
   if (!planData) {
     console.log("[init_map] planData not found. renderPlanMarkers skipped.")
     return

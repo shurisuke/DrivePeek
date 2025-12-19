@@ -424,11 +424,18 @@
   display: none;
 }
 
+/* 元の位置の影は消す（イベントも奪わせない） */
 .spot-block--ghost {
-  opacity: 0.9;
-  background: #f0f7f2;
+  opacity: 0;
+  pointer-events: none;
 }
 
+/* 掴んでいる側は最前面に */
+.spot-block--drag {
+  z-index: 9999;
+}
+
+/* chosenは見た目だけ（必要なら） */
 .spot-block--chosen {
   box-shadow: 0 4px 16px rgba(254, 255, 254, 0.25);
 }
