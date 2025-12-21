@@ -769,28 +769,59 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
   margin: 0 40px;
 }
 
+/* ✅ 削除ボタン：デフォルト非表示 */
 .spot-block .spot-memo.spot-memo--pin .spot-memo__delete {
-  position: absolute;
-  top: 6px;
-  right: 25px;
+  display: none;
+}
 
-  transform: translateY(-35%);
+/* ✅ 削除ボタン：編集中（is-editing）時のみ表示、メモ枠の右側・縦中央、赤背景・白× */
+.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete {
+  display: inline-flex;
+
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+
   z-index: 30;
 
-  border: 0;
-  background: transparent;
-  box-shadow: none;
+  width: 24px;
+  height: 24px;
 
-  color: rgba(0, 0, 0, 0.35);
-  font-size: 18px;
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 9999px;
+
+  background: #dc3545;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.35);
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
   line-height: 1;
 
   padding: 0;
   cursor: pointer;
+
+  transition: background-color 0.12s, box-shadow 0.12s, transform 0.12s;
 }
 
-.spot-block .spot-memo.spot-memo--pin .spot-memo__delete:hover {
-  color: rgba(0, 0, 0, 0.55);
+.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:hover {
+  background: #c82333;
+  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.45);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:active {
+  transform: translateY(-50%) scale(0.96);
+  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
+}
+
+.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.35), 0 2px 6px rgba(220, 53, 69, 0.35);
 }
 
 /* -------------------------------
