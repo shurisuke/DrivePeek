@@ -4,8 +4,8 @@ Rails.application.routes.draw do
   # Devise関連
   devise_for :users, controllers: {
     registrations: "users/registrations", # 新規登録画面
-    sessions: "users/sessions", # ログイン画面
-    passwords: "users/passwords" # パスワード再設定リクエスト画面
+    sessions: "users/sessions",           # ログイン画面
+    passwords: "users/passwords"          # パスワード再設定リクエスト画面
   }
 
   # ログイン時のルート
@@ -35,6 +35,9 @@ Rails.application.routes.draw do
     resource :goal_point, only: %i[update]
 
     resources :plan_spots, only: %i[create] do
+      # ✅ タグ（追加/削除）: /plans/:plan_id/plan_spots/:plan_spot_id/tags
+      resources :tags, only: %i[create destroy], module: :plan_spots
+
       collection do
         # スポット順並び替え
         patch :reorder, to: "plan_spots/reorders#update"
