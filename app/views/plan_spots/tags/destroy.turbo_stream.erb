@@ -1,0 +1,6 @@
+<%= turbo_stream.update dom_id(@plan_spot, :tag_chips) do %>
+  <%= render "plan_spots/tags/chips",
+             plan: @plan,
+             plan_spot: @plan_spot,
+             tags: @tags %>
+<% end %>
