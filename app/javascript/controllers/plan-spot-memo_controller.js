@@ -55,7 +55,10 @@ export default class extends Controller {
     // ③ ✅ 既存メモは「表示したまま」にする（非表示にしない）
     // this.memoDisplayTarget.classList.add("d-none")
 
-    // ④ 初回フォーカス（末尾へ）
+    // ④ ✅ 編集中フラグ：削除ボタン表示用
+    this.memoDisplayTarget.classList.add("is-editing")
+
+    // ⑤ 初回フォーカス（末尾へ）
     window.setTimeout(() => this.focusTextareaToEnd(), 0)
   }
 
@@ -70,6 +73,9 @@ export default class extends Controller {
 
     // エディタ非表示
     this.editorTarget.classList.add("d-none")
+
+    // ✅ 編集中フラグ解除：削除ボタン非表示
+    this.memoDisplayTarget.classList.remove("is-editing")
 
     // 既存メモがあるなら再表示（※ open で隠さなくなったので実質そのまま）
     if (this.memoContentTarget?.innerText?.trim() !== "") {
@@ -93,6 +99,9 @@ export default class extends Controller {
       this.memoDisplayTarget.classList.add("d-none")
     }
 
+    // ✅ 編集中フラグ解除
+    this.memoDisplayTarget.classList.remove("is-editing")
+
     // エディタは閉じる
     this.editorTarget.classList.add("d-none")
   }
@@ -106,6 +115,8 @@ export default class extends Controller {
     this.textareaTarget.value = ""
     this.memoContentTarget.innerHTML = ""
     this.memoDisplayTarget.classList.add("d-none")
+    // ✅ 編集中フラグ解除
+    this.memoDisplayTarget.classList.remove("is-editing")
     this.editorTarget.classList.add("d-none")
   }
 

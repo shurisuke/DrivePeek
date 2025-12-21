@@ -40,9 +40,13 @@
         <%= render "plan_spots/tags/chips", plan: plan_spot.plan, plan_spot: plan_spot, tags: tags %>
       <% end %>
 
-      <%# ✅ 表示用メモ枠（削除ボタンあり） %>
+      <%# ✅ 表示用メモ枠（メモがある時だけ表示、削除ボタン付き） %>
       <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
            data-plan-spot-memo-target="memoDisplay">
+
+        <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
+          <%= simple_format(h(plan_spot.memo.to_s)) %>
+        </div>
 
         <button type="button"
                 class="spot-memo__delete"
@@ -50,10 +54,6 @@
                 data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#clear">
           ×
         </button>
-
-        <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
-          <%= simple_format(h(plan_spot.memo.to_s)) %>
-        </div>
       </div>
     </div>
   </div>
@@ -64,7 +64,7 @@
          data-plan-spot-memo-target="detail">
       <div class="spot-detail__inner">
 
-        <%# ✅ 編集用メモ枠（閉じる不具合修正版） %>
+        <%# ✅ 編集用メモ枠（削除ボタンは表示用メモ側にあるため、ここには置かない） %>
         <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
              data-plan-spot-memo-target="editor"
              data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#stopPropagation">
