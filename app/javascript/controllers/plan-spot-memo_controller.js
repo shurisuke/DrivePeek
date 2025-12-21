@@ -5,6 +5,16 @@ export default class extends Controller {
   static targets = ["detail", "editor", "textarea", "memoDisplay", "memoContent"]
   static values = { url: String }
 
+  connect() {
+    // ✅ タグフォームが開いたら、メモ側を閉じる（相互排他）
+    this._onTagsOpened = () => this.closeIfOpen()
+    this.element.addEventListener("spot:tags-opened", this._onTagsOpened)
+  }
+
+  disconnect() {
+    this.element.removeEventListener("spot:tags-opened", this._onTagsOpened)
+  }
+
   // ✅ textarea / 削除ボタン上での pointerdown/click を親へ伝播させない
   stopPropagation(event) {
     event.stopPropagation()
@@ -19,7 +29,7 @@ export default class extends Controller {
     this.textareaTarget.focus()
   }
 
-  // ✅ open直後だけ末尾へ（ここだけ selectionRange を使う）
+  // ✅ open直後だけ末尾へ
   focusTextareaToEnd() {
     const el = this.textareaTarget
     el.focus()
@@ -33,14 +43,17 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
 
+    // ✅ メモを開く前に「タグ側を閉じて」と通知（相互排他）
+    this.element.dispatchEvent(new CustomEvent("spot:memo-opened", { bubbles: true }))
+
     // ① spotDetail を開く（閉じてたら）
     this._showCollapse(this.detailTarget)
 
     // ② メモエディタを表示
     this.editorTarget.classList.remove("d-none")
 
-    // ③ 既存メモがある場合は入力中は非表示
-    this.memoDisplayTarget.classList.add("d-none")
+    // ③ ✅ 既存メモは「表示したまま」にする（非表示にしない）
+    // this.memoDisplayTarget.classList.add("d-none")
 
     // ④ 初回フォーカス（末尾へ）
     window.setTimeout(() => this.focusTextareaToEnd(), 0)
@@ -48,12 +61,18 @@ export default class extends Controller {
 
   close(event) {
     event.preventDefault()
+    this.closeIfOpen()
+  }
+
+  closeIfOpen() {
+    if (!this.hasEditorTarget) return
+    if (this.editorTarget.classList.contains("d-none")) return
 
     // エディタ非表示
     this.editorTarget.classList.add("d-none")
 
-    // 既存メモがあるなら再表示
-    if (this.memoContentTarget.innerText.trim() !== "") {
+    // 既存メモがあるなら再表示（※ open で隠さなくなったので実質そのまま）
+    if (this.memoContentTarget?.innerText?.trim() !== "") {
       this.memoDisplayTarget.classList.remove("d-none")
     }
   }
@@ -68,7 +87,6 @@ export default class extends Controller {
     // 表示更新（改行反映のため memo_html）
     this.memoContentTarget.innerHTML = data.memo_html
 
-    // ✅ 保存したらメモブロックの表示を解禁
     if (data.memo_present) {
       this.memoDisplayTarget.classList.remove("d-none")
     } else {
@@ -79,21 +97,15 @@ export default class extends Controller {
     this.editorTarget.classList.add("d-none")
   }
 
-  // ✅ 追加：削除（= 空文字で update）
   async clear(event) {
     event.stopPropagation()
 
     const data = await this._patchMemo("")
     if (!data) return
 
-    // textarea も空に
     this.textareaTarget.value = ""
-
-    // 表示も消す
     this.memoContentTarget.innerHTML = ""
     this.memoDisplayTarget.classList.add("d-none")
-
-    // エディタ閉じる
     this.editorTarget.classList.add("d-none")
   }
 

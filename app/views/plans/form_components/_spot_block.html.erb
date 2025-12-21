@@ -6,7 +6,7 @@
 
 <div
   class="spot-block"
-  data-controller="plan-spot-memo"
+  data-controller="plan-spot-memo plan-spot-tags"
   data-plan-spot-memo-url-value="<%= update_memo_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-spot-id="<%= spot.id %>"
   data-plan-spot-id="<%= plan_spot.id %>"
@@ -25,11 +25,15 @@
         <div class="spot-address"><%= spot.address %></div>
       <% end %>
 
-      <div class="spot-tags">
-        <% tags.each do |tag| %>
-          <span class="tag-chip"><%= tag.tag_name %></span>
-        <% end %>
-      </div>
+      <%# ✅ タグ表示（Turbo差し替え対象） %>
+      <%= turbo_frame_tag dom_id(plan_spot, :tag_chips),
+                          class: "spot-tags",
+                          data: {
+                            plan_spot_tags_target: "chips",
+                            action: "turbo:frame-render->plan-spot-tags#onFrameRender"
+                          } do %>
+        <%= render "plan_spots/tags/chips", plan: plan_spot.plan, plan_spot: plan_spot, tags: tags %>
+      <% end %>
 
       <%# ✅ 表示用メモ枠（削除ボタンあり） %>
       <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
@@ -55,44 +59,99 @@
          data-plan-spot-memo-target="detail">
       <div class="spot-detail__inner">
 
-        <%# ✅ 編集用メモ枠（削除ボタンあり） %>
+        <%# ✅ 編集用メモ枠（閉じる不具合修正版） %>
         <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
-             data-plan-spot-memo-target="editor">
+             data-plan-spot-memo-target="editor"
+             data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#stopPropagation">
 
           <form data-action="submit->plan-spot-memo#submit">
             <textarea class="form-control"
-              rows="2"
-              placeholder="メモを入力"
-              data-plan-spot-memo-target="textarea"
-              data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
+                      rows="2"
+                      placeholder="メモを入力"
+                      data-plan-spot-memo-target="textarea"
+                      data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
 
             <div class="spot-memo__editor-actions">
-              <button type="button"
-                      class="btn btn-outline-secondary btn-sm"
-                      data-action="click->plan-spot-memo#close">
+              <button
+                type="button"
+                class="btn btn-outline-secondary"
+                data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#close"
+              >
                 閉じる
               </button>
 
-              <button type="submit" class="btn btn-primary btn-sm">
-                保存
+              <button
+                type="submit"
+                class="btn btn-personal"
+                data-action="pointerdown->plan-spot-memo#stopPropagation"
+              >
+                追加
               </button>
             </div>
           </form>
         </div>
 
         <div class="spot-detail-actions">
-          <div class="spot-detail-actions__buttons">
-            <button type="button"
-                    class="btn btn-outline-secondary btn-sm w-100"
-                    data-action="click->plan-spot-memo#open">
-              <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
-            </button>
+          <%# ✅ フォームを「ボタンの上」に出すためのラッパー（縦積み用） %>
+          <div class="spot-detail-actions__buttons-wrap">
 
-            <button type="button" class="btn btn-outline-secondary btn-sm w-100">
-              <i class="bi bi-tag me-1" aria-hidden="true"></i>
-            </button>
+            <%# ✅ タグ追加フォーム（メモと同じCSS枠 / 入力できるようにイベント伝播停止） %>
+            <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
+                 data-plan-spot-tags-target="form"
+                 data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation">
 
-            <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+              <%= form_with(
+                    url: plan_plan_spot_tags_path(plan_spot.plan, plan_spot),
+                    method: :post,
+                    data: {
+                      turbo_frame: dom_id(plan_spot, :tag_chips),
+                      action: "turbo:submit-end->plan-spot-tags#afterSubmit"
+                    }
+                  ) do |f| %>
+
+                <%= f.text_field :tag_name,
+                                 name: "tag[tag_name]",
+                                 class: "form-control",
+                                 placeholder: "タグを追加",
+                                 autocomplete: "off",
+                                 data: {
+                                   plan_spot_tags_target: "input",
+                                   action: "pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation keydown->plan-spot-tags#stopPropagation"
+                                 } %>
+
+                <div class="spot-memo__editor-actions">
+                  <%# ✅ メモフォームと同じにする（btn-sm/btn-primary をやめる） %>
+                  <button type="button"
+                          class="btn btn-outline-secondary"
+                          data-action="click->plan-spot-tags#close">
+                    閉じる
+                  </button>
+
+                  <button type="submit" class="btn btn-personal">
+                    追加
+                  </button>
+                </div>
+              <% end %>
+            </div>
+
+            <div class="spot-detail-actions__buttons">
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      data-action="click->plan-spot-memo#open">
+                <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
+              </button>
+
+              <%# ✅ タグ編集（フォーム表示 + ×表示） %>
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      data-action="click->plan-spot-tags#toggle"
+                      aria-label="タグを編集">
+                <i class="bi bi-tag me-1" aria-hidden="true"></i>
+              </button>
+
+              <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+            </div>
+
           </div>
         </div>
 
