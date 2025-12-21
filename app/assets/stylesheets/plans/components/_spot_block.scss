@@ -204,6 +204,34 @@
   width: 100%;
 }
 
+/* ==========================================================
+   ✅ 修正：ボタンが左寄りになる原因を潰す
+   - turbo-frame / form が display:block + w-100 で伸びると中央揃えが崩れる
+   - 行の直下の子要素を「伸びない」ようにして、常に中央に集める
+========================================================== */
+.spot-block .spot-detail-actions__buttons > * {
+  flex: 0 0 auto;
+}
+
+/* like_spots/button は turbo_frame_tag を使うので、ここを必ず抑える */
+.spot-block .spot-detail-actions__buttons > turbo-frame {
+  display: inline-flex;
+  width: auto !important;
+  max-width: none !important;
+  align-items: center;
+  justify-content: center;
+}
+
+/* button_to / form_with が w-100 を持っていても、ボタン列では伸ばさない */
+.spot-block .spot-detail-actions__buttons > form,
+.spot-block .spot-detail-actions__buttons > .button_to {
+  display: inline-flex;
+  width: auto !important;
+  max-width: none !important;
+  align-items: center;
+  justify-content: center;
+}
+
 /* ✅ ここが重要：タグ/メモのフォーム内ボタンまで巻き込まないように
    .spot-detail-actions .btn → .spot-detail-actions__buttons .btn に限定 */
 .spot-block .spot-detail-actions__buttons .btn {
