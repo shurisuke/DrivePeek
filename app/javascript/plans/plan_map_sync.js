@@ -11,6 +11,22 @@ import { getPlanDataFromPage } from "map/plan_data"
 let bound = false
 let cachedPlanData = null
 
+// ✅ DOM から最新のスポット情報を収集する
+const getSpotsFromDom = () => {
+  const spotBlocks = document.querySelectorAll(".spot-block[data-lat][data-lng]")
+  return Array.from(spotBlocks).map((el) => ({
+    lat: Number(el.dataset.lat),
+    lng: Number(el.dataset.lng),
+  }))
+}
+
+// ✅ planData の spots を DOM から更新した新しいオブジェクトを返す
+const mergeSpotsFromDom = (planData) => {
+  const spots = getSpotsFromDom()
+  console.log("[plan_map_sync] mergeSpotsFromDom", { spotsCount: spots.length })
+  return { ...planData, spots }
+}
+
 const setGoalVisible = (visible) => {
   const mapEl = document.getElementById("map")
   if (!mapEl) return
@@ -73,9 +89,11 @@ export const bindPlanMapSync = () => {
   document.addEventListener("planbar:updated", async () => {
     console.log("[plan_map_sync] caught planbar:updated")
 
-    const planData = getPlanDataFromPage()
-    if (!planData) return
+    // ✅ window.planData は古いので、spots だけ DOM から更新する
+    const basePlanData = getPlanDataFromPage() || cachedPlanData
+    if (!basePlanData) return
 
+    const planData = mergeSpotsFromDom(basePlanData)
     cachedPlanData = planData
     await renderAllMarkersSafe(planData)
   })

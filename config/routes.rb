@@ -34,7 +34,7 @@ Rails.application.routes.draw do
     resource :start_point, only: %i[update]
     resource :goal_point, only: %i[update]
 
-    resources :plan_spots, only: %i[create] do
+    resources :plan_spots, only: %i[create destroy] do
       # ✅ タグ（追加/削除）: /plans/:plan_id/plan_spots/:plan_spot_id/tags
       resources :tags, only: %i[create destroy], module: :plan_spots
 

@@ -8,7 +8,7 @@
                   class: "btn btn-outline-secondary btn-sm w-100 btn-fav-icon btn-fav-icon--active",
                   "aria-label": "お気に入り解除",
                   data: { turbo_frame: dom_id(spot, :like_button) } do %>
-      <i class="bi bi-heart-fill text-danger" aria-hidden="true"></i>
+      <i class="bi bi-heart-fill" aria-hidden="true"></i>
     <% end %>
   <% else %>
     <%= button_to like_spots_path(spot_id: spot.id),

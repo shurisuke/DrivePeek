@@ -158,6 +158,13 @@ export const bindPlanbarRefresh = () => {
     await refreshPlanbar(planId)
   })
 
+  document.addEventListener("plan:spot-deleted", async (e) => {
+    const planId = e?.detail?.planId || getPlanId()
+    console.log("[planbar_updater] caught plan:spot-deleted", { planId, detail: e?.detail })
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
   document.addEventListener("plan:plan-spot-toll-used-updated", async (e) => {
     const planId = getPlanId()
     console.log("[planbar_updater] caught plan:plan-spot-toll-used-updated", {

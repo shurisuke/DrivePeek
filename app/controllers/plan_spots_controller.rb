@@ -2,6 +2,7 @@
 class PlanSpotsController < ApplicationController
   before_action :authenticate_user!
   before_action :set_plan
+  before_action :set_plan_spot, only: %i[destroy]
 
   def create
     result = SpotSetupService.new(
@@ -21,10 +22,29 @@ class PlanSpotsController < ApplicationController
     end
   end
 
+  def destroy
+    target_id = helpers.dom_id(@plan_spot) # 先に退避しておくと安心
+    @plan_spot.destroy!
+
+    respond_to do |format|
+      format.turbo_stream do
+        render turbo_stream: turbo_stream.remove(target_id)
+      end
+
+      format.html do
+        redirect_to edit_plan_path(@plan), notice: "スポットを削除しました"
+      end
+    end
+  end
+
   private
 
   def set_plan
     @plan = current_user.plans.find(params[:plan_id])
+  end
+
+  def set_plan_spot
+    @plan_spot = @plan.plan_spots.find(params[:id])
   end
 
   def spot_params
