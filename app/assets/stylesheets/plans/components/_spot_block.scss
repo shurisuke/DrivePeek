@@ -662,6 +662,49 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
   color: #fff !important;
 }
 
+/* ==========================================
+   ✅ スポット削除ボタン（丸アイコン）
+   - パーソナルカラー背景
+   - ×は白
+========================================== */
+/* ×アイコンだけ 1px 太く見せる（他のアイコンは触らない） */
+.spot-block .spot-delete-icon::before {
+  /* Safari/Chrome系：1pxストローク */
+  -webkit-text-stroke: 1px currentColor;
+
+  /* Firefox等の保険：疑似的に太らせる */
+  text-shadow:
+    1px 0 0 currentColor,
+    -1px 0 0 currentColor,
+    0 1px 0 currentColor,
+    0 -1px 0 currentColor;
+}
+
+/* ×アイコンだけ小さく */
+.spot-block .spot-detail-actions__buttons .btn i.spot-delete-icon {
+  font-size: 0.9rem !important;
+}
+
+/* -------------------------------
+   お気に入りボタン
+------------------------------- */
+
+/* ✅ お気に入りボタンのハートだけ少し小さく */
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon i {
+  font-size: 0.95rem !important;
+}
+
+/* ✅ お気に入りON：アイコンだけパーソナルカラー */
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i {
+  color: var(--personal) !important;
+}
+
+/* （念のため）Bootstrap Icons の ::before が currentColor なのでここも効きます */
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i.bi::before {
+  color: var(--personal) !important;
+}
+
+
 /* ==========================================================
    ✅ メモ（表示/編集）最終上書き
 ========================================================== */

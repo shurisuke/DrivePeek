@@ -30,7 +30,7 @@
                           class: "spot-tags",
                           data: {
                             plan_spot_tags_target: "chips",
-                            action: "turbo:frame-render->plan-spot-tags#onFrameRender"
+                            action: "turbo:frame-render->plan-spot-tags#syncEditingUI"
                           } do %>
         <%= render "plan_spots/tags/chips", plan: plan_spot.plan, plan_spot: plan_spot, tags: tags %>
       <% end %>
@@ -120,28 +120,35 @@
                                  } %>
 
                 <div class="spot-memo__editor-actions">
-                  <%# ✅ メモフォームと同じにする（btn-sm/btn-primary をやめる） %>
-                  <button type="button"
-                          class="btn btn-outline-secondary"
-                          data-action="click->plan-spot-tags#close">
+                  <button
+                    type="button"
+                    class="btn btn-outline-secondary"
+                    data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#close"
+                  >
                     閉じる
                   </button>
 
-                  <button type="submit" class="btn btn-personal">
+                  <button
+                    type="submit"
+                    class="btn btn-personal"
+                    data-action="pointerdown->plan-spot-tags#stopPropagation"
+                  >
                     追加
                   </button>
                 </div>
               <% end %>
             </div>
 
+            <%# ✅ ボタン列（左→右：お気に入り / メモ / タグ / 削除） %>
             <div class="spot-detail-actions__buttons">
+              <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+
               <button type="button"
                       class="btn btn-outline-secondary btn-sm w-100"
                       data-action="click->plan-spot-memo#open">
                 <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
               </button>
 
-              <%# ✅ タグ編集（フォーム表示 + ×表示） %>
               <button type="button"
                       class="btn btn-outline-secondary btn-sm w-100"
                       data-action="click->plan-spot-tags#toggle"
@@ -149,7 +156,13 @@
                 <i class="bi bi-tag me-1" aria-hidden="true"></i>
               </button>
 
-              <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+              <%# ✅ スポット削除（見た目のみ。機能は次） %>
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      aria-label="スポットを削除"
+                      data-action="pointerdown->plan-spot-memo#stopPropagation">
+                <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
+              </button>
             </div>
 
           </div>
