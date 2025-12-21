@@ -36,3 +36,35 @@ RSpec等の自動テストは不要。代わりに手動テストを必ず実施
 - planbarが更新され、開いていたcollapse/スクロール位置が復元される
 - 地図ピンが残スポット数に一致し、番号が1..Nで詰まる
 - 連続削除でも壊れない
+
+---
+
+## 実装メモ（2024-01実装）
+
+### 処理フロー
+1. 削除ボタン押下（確認ダイアログ表示）
+2. Turbo フォームが DELETE リクエスト送信
+3. `PlanSpotsController#destroy` で plan_spot を削除
+4. Turbo Stream で `turbo_stream.remove(dom_id(@plan_spot))` を返す
+5. フォームの `turbo:submit-end` イベントで `plan-spot-delete` コントローラの `afterSubmit` が発火
+6. `plan:spot-deleted` カスタムイベントを dispatch
+7. `planbar_updater.js` がイベントをキャッチして `refreshPlanbar(planId)` を実行
+8. planbar 再描画後、`planbar:updated` イベントが発火
+9. `plan_map_sync.js` がイベントをキャッチして `renderPlanMarkers(planData)` でピン再描画
+
+### 変更ファイル一覧
+| ファイル | 変更内容 |
+|---------|---------|
+| `config/routes.rb` | plan_spots に destroy アクションを追加 |
+| `app/controllers/plan_spots_controller.rb` | destroy アクション実装（Turbo Stream remove） |
+| `app/views/plans/form_components/_spot_block.html.erb` | spot-block に id/data-lat/data-lng 追加、削除ボタンを Turbo フォームに変更 |
+| `app/javascript/controllers/plan_spot_delete_controller.js` | 新規：削除成功時に plan:spot-deleted イベントを発火 |
+| `app/javascript/plans/planbar_updater.js` | plan:spot-deleted イベントリスナーを追加 |
+| `app/javascript/plans/plan_map_sync.js` | DOM からスポット情報を収集して planbar:updated 後にマーカー再描画 |
+
+### 不具合修正（手動テストで発見）
+1. **data-action 属性が出力されない問題**: `form_with` で `"data-action"` を直接キーとして渡すのではなく、`data: { action: "..." }` として渡すように修正
+2. **マーカーが再描画されない問題**: `window.planData` が古いままだったため、DOM から最新のスポット情報（data-lat/data-lng）を収集して planData.spots を更新するように修正
+
+### 将来TODO
+- 経路再計算、経路再描画、時間再計算→保存→planbar再描画
