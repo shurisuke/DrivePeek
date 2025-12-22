@@ -9,18 +9,21 @@ export default class extends Controller {
     // ✅ タグフォームが開いたら、メモ側を閉じる（相互排他）
     this._onTagsOpened = () => this.closeIfOpen()
     this.element.addEventListener("spot:tags-opened", this._onTagsOpened)
+
+    // ✅ 設定が開いたら、メモ側を閉じる（相互排他）
+    this._onSettingsOpened = () => this.closeIfOpen()
+    this.element.addEventListener("spot:settings-opened", this._onSettingsOpened)
   }
 
   disconnect() {
     this.element.removeEventListener("spot:tags-opened", this._onTagsOpened)
+    this.element.removeEventListener("spot:settings-opened", this._onSettingsOpened)
   }
 
-  // ✅ textarea / 削除ボタン上での pointerdown/click を親へ伝播させない
   stopPropagation(event) {
     event.stopPropagation()
   }
 
-  // ✅ textarea にフォーカスするだけ（カーソル位置は触らない）
   focusTextarea(event) {
     if (event) {
       event.preventDefault()
@@ -29,7 +32,6 @@ export default class extends Controller {
     this.textareaTarget.focus()
   }
 
-  // ✅ open直後だけ末尾へ
   focusTextareaToEnd() {
     const el = this.textareaTarget
     el.focus()
@@ -43,7 +45,7 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
 
-    // ✅ メモを開く前に「タグ側を閉じて」と通知（相互排他）
+    // ✅ メモを開く前に「他を閉じて」と通知（相互排他）
     this.element.dispatchEvent(new CustomEvent("spot:memo-opened", { bubbles: true }))
 
     // ① spotDetail を開く（閉じてたら）
@@ -52,10 +54,10 @@ export default class extends Controller {
     // ② メモエディタを表示
     this.editorTarget.classList.remove("d-none")
 
-    // ③ ✅ 既存メモは「表示したまま」にする（非表示にしない）
+    // ③ 既存メモは「表示したまま」
     // this.memoDisplayTarget.classList.add("d-none")
 
-    // ④ ✅ 編集中フラグ：削除ボタン表示用
+    // ④ 編集中フラグ：削除ボタン表示用
     this.memoDisplayTarget.classList.add("is-editing")
 
     // ⑤ 初回フォーカス（末尾へ）
@@ -63,7 +65,7 @@ export default class extends Controller {
   }
 
   close(event) {
-    event.preventDefault()
+    if (event) event.preventDefault()
     this.closeIfOpen()
   }
 
@@ -71,13 +73,9 @@ export default class extends Controller {
     if (!this.hasEditorTarget) return
     if (this.editorTarget.classList.contains("d-none")) return
 
-    // エディタ非表示
     this.editorTarget.classList.add("d-none")
-
-    // ✅ 編集中フラグ解除：削除ボタン非表示
     this.memoDisplayTarget.classList.remove("is-editing")
 
-    // 既存メモがあるなら再表示（※ open で隠さなくなったので実質そのまま）
     if (this.memoContentTarget?.innerText?.trim() !== "") {
       this.memoDisplayTarget.classList.remove("d-none")
     }
@@ -90,7 +88,6 @@ export default class extends Controller {
     const data = await this._patchMemo(memo)
     if (!data) return
 
-    // 表示更新（改行反映のため memo_html）
     this.memoContentTarget.innerHTML = data.memo_html
 
     if (data.memo_present) {
@@ -99,10 +96,7 @@ export default class extends Controller {
       this.memoDisplayTarget.classList.add("d-none")
     }
 
-    // ✅ 編集中フラグ解除
     this.memoDisplayTarget.classList.remove("is-editing")
-
-    // エディタは閉じる
     this.editorTarget.classList.add("d-none")
   }
 
@@ -115,7 +109,6 @@ export default class extends Controller {
     this.textareaTarget.value = ""
     this.memoContentTarget.innerHTML = ""
     this.memoDisplayTarget.classList.add("d-none")
-    // ✅ 編集中フラグ解除
     this.memoDisplayTarget.classList.remove("is-editing")
     this.editorTarget.classList.add("d-none")
   }
