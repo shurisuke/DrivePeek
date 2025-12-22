@@ -1,12 +1,42 @@
 <aside class="planbar" data-controller="navibar">
   <div class="plan-tab-nav">
-    <button class="tab-btn tab-community" data-tab="community" data-navibar-target="button" data-action="click->navibar#switch">みんなのプラン</button>
-    <button class="tab-btn active" data-tab="plan" data-navibar-target="button" data-action="click->navibar#switch">プラン</button>
-    <button class="tab-btn" data-tab="ai" data-navibar-target="button" data-action="click->navibar#switch">AI提案</button>
+    <button class="tab-btn tab-community"
+            data-tab="community"
+            data-navibar-target="button"
+            data-action="click->navibar#switch">
+      みんなのプラン
+    </button>
+
+    <button class="tab-btn active"
+            data-tab="plan"
+            data-navibar-target="button"
+            data-action="click->navibar#switch">
+      プラン
+    </button>
+
+    <button class="tab-btn"
+            data-tab="ai"
+            data-navibar-target="button"
+            data-action="click->navibar#switch">
+      AI提案
+    </button>
+
+    <!-- ✅ ナビバーの“場外”に出す時計（Planタブの時だけ表示） -->
+    <button type="button"
+            class="plan-time-fab"
+            hidden
+            aria-label="時間表示のオン/オフ"
+            aria-pressed="false"
+            data-navibar-target="timeToggle"
+            data-action="click->navibar#toggleTimePanel">
+      <i class="bi bi-clock" aria-hidden="true"></i>
+    </button>
   </div>
 
-  <!-- 各タブの中身 -->
+  <!-- ✅ 横にはみ出し表示のため、スクロールは内側に移す -->
   <div class="planbar__content" id="planbar_content">
-    <%= render "plans/form_components/planbar_content", plan: plan %>
+    <div class="planbar__content-scroll">
+      <%= render "plans/form_components/planbar_content", plan: plan %>
+    </div>
   </div>
 </aside>
