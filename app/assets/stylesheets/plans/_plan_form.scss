@@ -17,7 +17,7 @@ body.no-footer {
       width: calc(100% - 370px);
       height: 100%;
       top: 0;
-      left: 370px;
+      left: 350px;
       z-index: 1;
     }
 
@@ -25,7 +25,7 @@ body.no-footer {
       position: fixed;
       top: 0;
       left: 0;
-      width: 370px;
+      width: 350px;
       height: 100%;
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);

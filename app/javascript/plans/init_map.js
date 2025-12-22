@@ -14,6 +14,7 @@ import { bindPlanbarRefresh } from "plans/planbar_updater"
 import { bindPlanMapSync } from "plans/plan_map_sync"
 import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 import { bindTollUsedHandler } from "plans/toll_used_handler"
+import { bindStayDurationHandler } from "plans/stay_duration_handler"
 
 console.log("[init_map] module loaded")
 
@@ -23,6 +24,7 @@ bindPlanbarRefresh()
 bindPlanMapSync()
 bindSpotReorderHandler()
 bindTollUsedHandler()
+bindStayDurationHandler()
 
 document.addEventListener("turbo:load", async () => {
   console.log("[init_map] turbo:load fired")
