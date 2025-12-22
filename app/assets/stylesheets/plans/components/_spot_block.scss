@@ -36,6 +36,10 @@
   cursor: pointer;
 }
 
+/* ------------------------------------------
+   上部（スポット情報）
+------------------------------------------ */
+
 .spot-block .spot-main {
   display: flex;
   align-items: flex-start;
@@ -88,7 +92,7 @@
 
 .spot-block .spot-address {
   margin-top: 4px;
-  font-size: 13.0px;
+  font-size: 13px;
   text-align: center;
   color: rgba(82, 82, 82, 0.78);
 
@@ -98,6 +102,10 @@
   overflow: hidden;
   text-overflow: ellipsis;
 }
+
+/* ------------------------------------------
+   タグ
+------------------------------------------ */
 
 .spot-block .spot-tags {
   margin-top: 8px;
@@ -123,50 +131,158 @@
   color: rgba(80, 109, 83, 0.9);
 }
 
-/* ==========================================================
-   ✅ メモ：背景画像なしで「白い紙枠」
-   - 以前の memo_bg.png は不使用
-   - 影は淡く（左右も自然に）
-========================================================== */
-.spot-block .spot-memo {
-  margin-top: 16px;
-  margin-left: var(--spot-fav-safe);
-  margin-right: var(--spot-fav-safe);
-
+/* 編集時だけ×分広げて右端固定 */
+.spot-block .spot-tags .tag-chip {
   position: relative;
-
-  --memo-min-height: 80px;
-  min-height: var(--memo-min-height);
-
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 10px;
-
-  box-shadow:
-    0 10px 22px rgba(0, 0, 0, 0.12),
-    8px 0 18px rgba(0, 0, 0, 0.06),
-    -8px 0 18px rgba(0, 0, 0, 0.06);
-
-  padding: 18px 18px;
-  text-align: center;
-
-  overflow: hidden;
+  display: inline-flex;
+  align-items: center;
 }
 
-.spot-block .spot-memo__content p {
-  margin: 0;
+.spot-block .spot-tags .tag-chip__remove {
+  display: none;
 }
 
-.spot-block .spot-memo__content {
-  font-size: 0.92rem;
+.spot-block .spot-tags.is-editing .tag-chip {
+  padding-right: 28px;
+}
+
+.spot-block .spot-tags.is-editing .tag-chip__remove {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  position: absolute;
+  top: 50%;
+  right: 8px;
+  transform: translateY(-50%);
+
+  width: 18px;
+  height: 18px;
+  padding: 0;
+
+  border: 0;
+  background: transparent;
+  border-radius: 9999px;
+
+  color: rgba(80, 109, 83, 0.55);
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+}
+
+.spot-block .spot-tags.is-editing .tag-chip__remove:hover {
+  background: rgba(80, 109, 83, 0.10);
+  color: rgba(80, 109, 83, 0.95);
+}
+
+.spot-block .spot-tags.is-editing .tag-chip__remove:focus-visible {
+  outline: none;
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+}
+
+/* ×の下線を消す（aタグ対策） */
+.spot-block .spot-tags .tag-chip__remove,
+.spot-block .spot-tags .tag-chip__remove:hover,
+.spot-block .spot-tags .tag-chip__remove:focus,
+.spot-block .spot-tags .tag-chip__remove:focus-visible {
+  text-decoration: none !important;
+}
+
+/* ------------------------------------------
+   メモ（表示）
+------------------------------------------ */
+
+/* 表示用メモ（spot-memo--pin）は“カード共通”の影響を受けないように限定 */
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) {
+  position: relative;
+  margin-top: 15px !important;
+
+  padding: 0 !important;
+  margin-left: 0 !important;
+  margin-right: 0 !important;
+
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  min-height: 0 !important;
+  overflow: visible !important;
+}
+
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__content {
+  font-size: 0.82rem;
   line-height: 1.55;
-  color: rgba(34, 34, 34, 0.92);
+  color: rgba(33, 33, 33, 0.75);
   letter-spacing: 0.01em;
+
+  text-align: center;
 }
 
-/* ==========================================================
-   差し込み：collapse + トグル（以下はあなたの既存のまま）
-========================================================== */
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__content p {
+  margin: 0 40px;
+}
+
+/* 削除ボタン：デフォルト非表示 */
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__delete {
+  display: none;
+}
+
+/* 削除ボタン：編集中（is-editing）時のみ表示 */
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete {
+  display: inline-flex;
+
+  position: absolute;
+  top: 50%;
+  right: 15px;
+  transform: translateY(-50%);
+
+  z-index: 30;
+
+  width: 24px;
+  height: 24px;
+
+  align-items: center;
+  justify-content: center;
+
+  border: 0;
+  border-radius: 9999px;
+
+  background: #dc3545;
+  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.35);
+
+  color: #fff;
+  font-size: 14px;
+  font-weight: 700;
+  line-height: 1;
+
+  padding: 0;
+  cursor: pointer;
+
+  transition: background-color 0.12s, box-shadow 0.12s, transform 0.12s;
+}
+
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:hover {
+  background: #c82333;
+  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.45);
+  transform: translateY(-50%) scale(1.08);
+}
+
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:active {
+  transform: translateY(-50%) scale(0.96);
+  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
+}
+
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:focus-visible {
+  outline: none;
+  box-shadow: none;
+}
+
+/* ------------------------------------------
+   collapse + トグル
+------------------------------------------ */
+
 .spot-block .spot-detail-wrap {
   display: flex;
   flex-direction: column;
@@ -188,6 +304,10 @@
   font-size: 0.9rem;
 }
 
+/* ------------------------------------------
+   ボタン列
+------------------------------------------ */
+
 .spot-block .spot-detail-actions {
   display: flex;
   justify-content: center;
@@ -197,6 +317,14 @@
   margin-bottom: 12px;
 }
 
+/* フォームをボタンの上に縦積み */
+.spot-block .spot-detail-actions__buttons-wrap {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
 .spot-block .spot-detail-actions__buttons {
   display: flex;
   gap: 12px;
@@ -204,16 +332,11 @@
   width: 100%;
 }
 
-/* ==========================================================
-   ✅ 修正：ボタンが左寄りになる原因を潰す
-   - turbo-frame / form が display:block + w-100 で伸びると中央揃えが崩れる
-   - 行の直下の子要素を「伸びない」ようにして、常に中央に集める
-========================================================== */
+/* 中央揃え崩れ対策 */
 .spot-block .spot-detail-actions__buttons > * {
   flex: 0 0 auto;
 }
 
-/* like_spots/button は turbo_frame_tag を使うので、ここを必ず抑える */
 .spot-block .spot-detail-actions__buttons > turbo-frame {
   display: inline-flex;
   width: auto !important;
@@ -222,7 +345,6 @@
   justify-content: center;
 }
 
-/* button_to / form_with が w-100 を持っていても、ボタン列では伸ばさない */
 .spot-block .spot-detail-actions__buttons > form,
 .spot-block .spot-detail-actions__buttons > .button_to {
   display: inline-flex;
@@ -232,24 +354,26 @@
   justify-content: center;
 }
 
-/* ✅ ここが重要：タグ/メモのフォーム内ボタンまで巻き込まないように
-   .spot-detail-actions .btn → .spot-detail-actions__buttons .btn に限定 */
+/* 丸アイコンボタン化（メモ/タグ/お気に入り/設定/削除） */
 .spot-block .spot-detail-actions__buttons .btn {
-  width: auto !important;
-  flex: 0 0 auto;
-
+  width: 44px !important;
+  min-width: 44px !important;
+  height: 44px !important;
+  padding: 0 !important;
   border-radius: 9999px !important;
+
+  display: inline-flex !important;
+  align-items: center !important;
+  justify-content: center !important;
 
   border: 1px solid var(--spot-action-border) !important;
   background: var(--spot-action-bg) !important;
   color: var(--spot-action-text) !important;
 
-  font-size: 0.85rem;
-  font-weight: 600;
-  padding: 0.55rem 1rem;
-
   box-shadow: none !important;
   transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s, border-color 0.12s;
+
+  line-height: 1 !important;
 }
 
 .spot-block .spot-detail-actions__buttons .btn:hover {
@@ -267,61 +391,110 @@
 
 .spot-block .spot-detail-actions__buttons .btn:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18) !important;
+  box-shadow: none !important;
 }
 
-.spot-block .trip-summary {
-  background: #f6f7f7;
-  border: 1px solid #e6e6e6;
-  border-radius: 12px;
-  overflow: hidden;
-
-  margin-bottom: 8px;
+.spot-block .spot-detail-actions__buttons .btn i {
+  margin: 0 !important;
+  display: block !important;
+  line-height: 1 !important;
+  font-size: 1.1rem;
 }
 
-.spot-block .trip-info {
-  display: grid;
-  grid-template-columns: auto auto 1fr auto;
+.spot-block .spot-detail-actions__buttons .btn i.bi::before {
+  position: relative;
+  top: 2px;
+}
+
+/* 余計な文字幅を消す（アイコンだけ表示） */
+.spot-block .spot-detail-actions__buttons .btn:not(.btn-fav-icon) {
+  font-size: 0;
+}
+
+/* お気に入り：ハートだけ少し小さく */
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon i {
+  font-size: 0.95rem !important;
+}
+
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i,
+.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i.bi::before {
+  color: var(--personal) !important;
+}
+
+/* 削除アイコンを少し太く & 小さく */
+.spot-block .spot-delete-icon::before {
+  -webkit-text-stroke: 1px currentColor;
+  text-shadow:
+    1px 0 0 currentColor,
+    -1px 0 0 currentColor,
+    0 1px 0 currentColor,
+    0 -1px 0 currentColor;
+}
+
+.spot-block .spot-detail-actions__buttons .btn i.spot-delete-icon {
+  font-size: 0.9rem !important;
+}
+
+/* ------------------------------------------
+   設定フォーム（改良）
+------------------------------------------ */
+
+.spot-block .spot-settings {
+  width: 100%;
+}
+
+/* 1行に収める共通 */
+.spot-block .spot-settings__row {
+  display: flex;
   align-items: center;
+  justify-content: space-between;
+  gap: 12px;
 
-  padding: 10px 12px;
+  padding: 8px 0;
+}
+
+/* ラベル */
+.spot-block .spot-settings__label {
+  font-weight: 700;
+  color: rgba(33, 33, 33, 0.78);
   font-size: 0.9rem;
-
-  background: transparent;
-  border: none;
-  border-radius: 0;
   margin: 0;
 }
 
-.spot-block .trip-info .label {
-  font-weight: 700;
-  color: rgba(67, 94, 80, 0.92);
-}
-
-.spot-block .trip-info .toll-switch {
-  margin-left: 12px;
+/* 有料道路：左側（ラベル + スイッチ） */
+.spot-block .spot-settings__toll-left {
   display: inline-flex;
   align-items: center;
-  justify-content: flex-start;
+  gap: 10px;
+  min-width: 0;
 }
 
-.spot-block .trip-info .form-switch {
+/* EC料金：右寄せ（ONの時だけHTMLで出る） */
+.spot-block .spot-settings__price {
+  margin-left: auto;
+  font-weight: 800;
+  color: #222;
+  white-space: nowrap;
+}
+
+/* 滞在時間行：ラベル + select を1行に */
+.spot-block .spot-settings__row--stay .spot-settings__label {
+  flex: 0 0 auto;
+}
+
+.spot-block .spot-settings__row--stay .form-select {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* トグル（アプリっぽい見た目） + クリック時の枠線を消す */
+.spot-block .spot-settings .form-switch {
   margin: 0 !important;
   padding: 0 !important;
   min-height: auto !important;
 }
 
-.spot-block .trip-info .price {
-  justify-self: end;
-  text-align: right;
-
-  font-weight: 800;
-  color: #222;
-
-  margin-right: 1rem;
-}
-
-.spot-block .trip-info .form-check-input {
+.spot-block .spot-settings .form-check-input {
   -webkit-appearance: none;
   appearance: none;
 
@@ -343,7 +516,7 @@
   transition: background-color 0.15s ease;
 }
 
-.spot-block .trip-info .form-check-input::after {
+.spot-block .spot-settings .form-check-input::after {
   content: "";
   position: absolute;
   top: 2px;
@@ -359,56 +532,222 @@
   transition: transform 0.15s ease;
 }
 
-.spot-block .trip-info .form-check-input:checked {
+.spot-block .spot-settings .form-check-input:checked {
   background-color: var(--personal);
 }
 
-.spot-block .trip-info .form-check-input:checked::after {
+.spot-block .spot-settings .form-check-input:checked::after {
   transform: translateX(18px);
 }
 
-.spot-block .trip-info .form-check-input:focus,
-.spot-block .trip-info .form-check-input:focus-visible {
+/* ✅ クリック時（focus）枠線を消す */
+.spot-block .spot-settings .form-check-input:focus,
+.spot-block .spot-settings .form-check-input:focus-visible {
   outline: none !important;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18) !important;
+  box-shadow: none !important;
 }
 
-.spot-block .distance-info {
-  width: 100%;
-  margin: 0;
+/* ------------------------------------------
+   次の場所まで（枠/背景を消す + ラベルを小さく薄く）
+------------------------------------------ */
+
+.spot-block .spot-next-move {
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+
+  width: 265px;
+  font-size: 0.9rem;
 
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
   gap: 10px;
 
-  padding: 10px 12px;
-  font-size: 0.9rem;
-
-  background: transparent;
-  border: none;
-  border-radius: 0;
-
-  border-top: 1px solid #e1e1e1;
+  margin: 0 auto 8px; /* ← ここにする（左右autoで中央寄せ） */
+  margin-top: 20px
 }
 
-.spot-block .distance-info > span:first-child {
-  font-weight: 700;
-  color: rgba(67, 94, 80, 0.92);
+.spot-block .spot-next-move .label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(33, 33, 33, 0.55);
 }
 
-.spot-block .distance-info .km,
-.spot-block .distance-info .time {
+.spot-block .spot-next-move .km,
+.spot-block .spot-next-move .time {
   font-weight: 800;
   color: #222;
 
   padding-left: 12px;
-  border-left: 1px solid #e1e1e1;
+  border-left: 1px solid rgba(0, 0, 0, 0.10);
 }
 
-.spot-block .distance-info .time {
-  margin-right: 10px;
+/* ------------------------------------------
+   編集パネル共通（メモ編集/タグ追加/設定）
+   - spot-memo--pin + spot-memo--editor をカードにする
+------------------------------------------ */
+
+/* ✅ 外側は“影なし”の土台にする（影は枠線側に合わせる） */
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor {
+  position: relative;
+  background: transparent !important;
+  border: 0 !important;
+  box-shadow: none !important;
+
+  /* 枠(=::before)より内側に中身が入る余白 */
+  padding: 30px 18px 24px !important;
+  margin: 0 !important;
+
+  min-height: auto !important;
+
+  /* 影が切れないように保険 */
+  overflow: visible !important;
 }
+
+/* ✅ 枠線を描く::before に “背景 + 枠 + 影” を全部乗せる */
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor::before {
+  content: "";
+  position: absolute;
+  top: 15px;
+  right: 15px;
+  bottom: 10px;
+  left: 15px;
+
+  background: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 8px;
+
+  /* ✅ 影が「枠線の位置」に来る */
+  box-shadow:
+    0 6px 14px rgba(0, 0, 0, 0.08),
+    0 1px 3px rgba(0, 0, 0, 0.06);
+
+  pointer-events: none;
+  z-index: 0;
+}
+
+/* ✅ 中身は枠より前面に */
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor form,
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor .spot-memo__editor-actions {
+  position: relative;
+  z-index: 1;
+}
+
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor form,
+.spot-block .spot-memo.spot-memo--pin.spot-memo--editor .spot-settings {
+  position: relative;
+  z-index: 1;
+}
+
+/* 入力中は cursor:text */
+.spot-block .spot-memo.spot-memo--editor input.form-control,
+.spot-block .spot-memo.spot-memo--editor textarea.form-control {
+  cursor: text;
+}
+
+.spot-block .spot-memo.spot-memo--editor textarea.form-control,
+.spot-block .spot-memo.spot-memo--editor input.form-control {
+  width: 100%;
+  box-sizing: border-box;
+
+  resize: none;
+  background: transparent !important;
+
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+
+  font-size: 0.82rem;
+  line-height: 1.55;
+  color: rgba(33, 33, 33, 0.75);
+  letter-spacing: 0.01em;
+
+  text-align: center;
+}
+
+.spot-block .spot-memo.spot-memo--editor input.form-control::placeholder {
+  color: rgba(33, 33, 33, 0.45);
+}
+
+.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus,
+.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible,
+.spot-block .spot-memo.spot-memo--editor input.form-control:focus,
+.spot-block .spot-memo.spot-memo--editor input.form-control:focus-visible {
+  border: 0 !important;
+  outline: 0 !important;
+  box-shadow: none !important;
+}
+
+/* editor-actions（閉じる/追加/保存） */
+.spot-block .spot-memo__editor-actions {
+  width: 100%;
+  display: flex;
+  justify-content: center;
+  gap: 12px;
+  margin-top: 10px;
+}
+
+/* ボタン見た目統一 */
+.spot-block .spot-memo__editor-actions .btn {
+  min-width: 60px !important;
+  padding: 0.5rem 0.7rem !important;
+  font-weight: 700 !important;
+  box-shadow: none !important;
+  font-size: 0.8rem !important;
+  border-radius: 6px !important;
+}
+
+.spot-block .spot-memo__editor-actions .btn.btn-outline-secondary {
+  border-width: 2px !important;
+}
+
+.spot-block .spot-memo__editor-actions .btn.btn-personal,
+.spot-block .spot-memo__editor-actions .btn.btn-primary {
+  background: #435e50 !important;
+  border: 1px solid #435e50 !important;
+  color: #fff !important;
+}
+
+/* Chrome autofill 対策 */
+.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill,
+.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:hover,
+.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:focus {
+  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
+  -webkit-text-fill-color: rgba(33, 33, 33, 0.75) !important;
+  transition: background-color 9999s ease-out 0s;
+}
+
+/* ==========================================
+   ✅ 設定フォームだけ：左右の内側余白を増やす
+   - 対象は data-plan-spot-settings-target="panel" のみ
+========================================== */
+.spot-block [data-plan-spot-settings-target="panel"].spot-memo.spot-memo--pin.spot-memo--editor {
+  /* 中身を左右に余裕を持たせる（枠線より内側に入れる） */
+  padding-left: 45px !important;
+  padding-right: 45px !important;
+}
+
+/* ==========================================
+   ✅ 滞在時間select：幅固定 + focus枠を消す
+========================================== */
+.spot-block select[id^="stayDuration-"] {
+  width: 120px;
+  min-width: 100px;
+  max-width: 100px;
+}
+
+/* Bootstrapの focus ring を消す */
+.spot-block select[id^="stayDuration-"]:focus,
+.spot-block select[id^="stayDuration-"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+
+/* ------------------------------------------
+   下部：開閉トグル
+------------------------------------------ */
 
 .spot-block .detail-toggle {
   width: 40px;
@@ -447,25 +786,26 @@
 
 .spot-block .detail-toggle:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.28), 0 2px 6px rgba(0, 0, 0, 0.10);
+  box-shadow: none;
 }
+
+/* ------------------------------------------
+   Sortable / 末尾表示制御など
+------------------------------------------ */
 
 .spot-block .spot-drag-handle {
   display: none;
 }
 
-/* 元の位置の影は消す（イベントも奪わせない） */
 .spot-block--ghost {
   opacity: 0;
   pointer-events: none;
 }
 
-/* 掴んでいる側は最前面に */
 .spot-block--drag {
   z-index: 9999;
 }
 
-/* chosenは見た目だけ（必要なら） */
 .spot-block--chosen {
   box-shadow: 0 4px 16px rgba(254, 255, 254, 0.25);
 }
@@ -484,611 +824,4 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
 
 .no-collapse-anim .collapsing {
   transition: none !important;
-}
-
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon {
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  line-height: 1;
-}
-
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon i {
-  margin: 0 !important;
-  display: block;
-  line-height: 1;
-  font-size: 1.1rem;
-}
-
-.spot-block .btn-fav-icon i.bi::before {
-  position: relative;
-  top: 2px;
-}
-
-/* ==========================================================
-   ✅ 強制上書き：メモ（表示）＋メモ（編集）＋削除ボタン
-========================================================== */
-
-/* -------------------------------
-   共通：メモ枠（表示/編集）
-------------------------------- */
-.spot-block .spot-memo {
-  --memo-font-size: 0.82rem;
-  --memo-text-color: rgba(33, 33, 33, 0.55);
-
-  position: relative;
-  display: flex;
-
-  margin-top: 30px;
-  margin-left: calc(var(--spot-fav-safe) - 10px);
-  margin-right: calc(var(--spot-fav-safe) - 10px);
-
-  min-height: 40px;
-
-  padding: 20px 18px 18px;
-
-  background: #ffffff;
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 3px;
-
-  align-items: center;
-  justify-content: center;
-
-  text-align: center;
-
-  overflow: visible;
-
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
-}
-
-.spot-block .spot-memo__content p {
-  margin: 0;
-}
-
-.spot-block .spot-memo__content {
-  width: 100%;
-  max-width: 100%;
-
-  font-size: var(--memo-font-size);
-  line-height: 1.55;
-  color: var(--memo-text-color);
-  letter-spacing: 0.01em;
-}
-
-/* -------------------------------
-   共通：削除ボタン（表示/編集）
-------------------------------- */
-.spot-block .spot-memo__delete {
-  position: absolute;
-  top: 8px;
-  right: 10px;
-  z-index: 20;
-
-  border: none;
-  background: transparent;
-  box-shadow: none;
-
-  color: rgba(0, 0, 0, 0.35);
-  font-size: 18px;
-  font-weight: 600;
-  line-height: 1;
-
-  padding: 0;
-  cursor: pointer;
-  opacity: 0.9;
-}
-
-.spot-block .spot-memo__delete:hover {
-  color: rgba(0, 0, 0, 0.55);
-  opacity: 1;
-}
-
-.spot-block .spot-memo__delete:active {
-  transform: translateY(0.5px);
-}
-
-.spot-block .spot-memo__delete:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
-  border-radius: 6px;
-}
-
-/* -------------------------------
-   編集：メモ編集枠（spot-memo--editor）
-------------------------------- */
-.spot-block .spot-memo.spot-memo--editor {
-  margin-top: 24px;
-  margin-left: 21px;
-  margin-right: 21px;
-
-  padding: 20px 35px 18px;
-
-  display: block;
-  text-align: left;
-}
-
-.spot-block .spot-memo.spot-memo--editor form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.spot-block .spot-memo.spot-memo--editor textarea.form-control {
-  width: 100%;
-  box-sizing: border-box;
-
-  resize: none;
-  background: transparent;
-
-  border: 0;
-  outline: 0;
-  box-shadow: none;
-
-  font-size: var(--memo-font-size);
-  line-height: 1.55;
-  color: var(--memo-text-color);
-  letter-spacing: 0.01em;
-
-  text-align: left;
-}
-
-.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus,
-.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible {
-  border: 0;
-  outline: 0;
-  box-shadow: none;
-}
-
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-/* ==========================================================
-   ✅ 追加：メモ/タグ編集 共通：アクションボタン見た目を完全統一
-   - タグ編集の「閉じる/追加」も、メモと同じ .spot-memo__editor-actions を使う前提
-========================================================== */
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions .btn {
-  min-width: 60px !important;
-  padding: 0.5rem 0.7rem !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-  font-size: 0.8rem !important;
-
-  /* スクショの四角寄りに合わせる（丸くしたければ値を上げてOK） */
-  border-radius: 6px !important;
-}
-
-/* outline（閉じる）をメモと同じ雰囲気に寄せる */
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions .btn.btn-outline-secondary {
-  border-width: 2px !important;
-}
-
-/* primary系（追加/保存）をメモと同じ緑に寄せる（btn-personal を使っている場合） */
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions .btn.btn-personal {
-  background: #435e50 !important;
-  border: 1px solid #435e50 !important;
-  color: #fff !important;
-}
-
-/* btn-primary で実装している場合でも見た目を揃える（影響範囲は editor-actions の中だけ） */
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions .btn.btn-primary {
-  background: #435e50 !important;
-  border: 1px solid #435e50 !important;
-  color: #fff !important;
-}
-
-/* ==========================================
-   ✅ スポット削除ボタン（丸アイコン）
-   - パーソナルカラー背景
-   - ×は白
-========================================== */
-/* ×アイコンだけ 1px 太く見せる（他のアイコンは触らない） */
-.spot-block .spot-delete-icon::before {
-  /* Safari/Chrome系：1pxストローク */
-  -webkit-text-stroke: 1px currentColor;
-
-  /* Firefox等の保険：疑似的に太らせる */
-  text-shadow:
-    1px 0 0 currentColor,
-    -1px 0 0 currentColor,
-    0 1px 0 currentColor,
-    0 -1px 0 currentColor;
-}
-
-/* ×アイコンだけ小さく */
-.spot-block .spot-detail-actions__buttons .btn i.spot-delete-icon {
-  font-size: 0.9rem !important;
-}
-
-/* -------------------------------
-   お気に入りボタン
-------------------------------- */
-
-/* ✅ お気に入りボタンのハートだけ少し小さく */
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon i {
-  font-size: 0.95rem !important;
-}
-
-/* ✅ お気に入りON：アイコンだけパーソナルカラー */
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i {
-  color: var(--personal) !important;
-}
-
-/* （念のため）Bootstrap Icons の ::before が currentColor なのでここも効きます */
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i.bi::before {
-  color: var(--personal) !important;
-}
-
-
-/* ==========================================================
-   ✅ メモ（表示/編集）最終上書き
-========================================================== */
-
-/* -------------------------------
-   表示用メモ（spot-memo--pin）
-------------------------------- */
-.spot-block .spot-memo.spot-memo--pin {
-  position: relative;
-  margin-top: 15px !important;
-
-  padding: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
-
-  background: transparent !important;
-  border: 0 !important;
-  box-shadow: none !important;
-
-  min-height: 0 !important;
-  overflow: visible !important;
-}
-
-.spot-block .spot-memo.spot-memo--pin .spot-memo__content {
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(33, 33, 33, 0.75);
-  letter-spacing: 0.01em;
-
-  text-align: center;
-}
-
-.spot-block .spot-memo.spot-memo--pin .spot-memo__content p {
-  margin: 0 40px;
-}
-
-/* ✅ 削除ボタン：デフォルト非表示 */
-.spot-block .spot-memo.spot-memo--pin .spot-memo__delete {
-  display: none;
-}
-
-/* ✅ 削除ボタン：編集中（is-editing）時のみ表示、メモ枠の右側・縦中央、赤背景・白× */
-.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete {
-  display: inline-flex;
-
-  position: absolute;
-  top: 50%;
-  right: 15px;
-  transform: translateY(-50%);
-
-  z-index: 30;
-
-  width: 24px;
-  height: 24px;
-
-  align-items: center;
-  justify-content: center;
-
-  border: 0;
-  border-radius: 9999px;
-
-  background: #dc3545;
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.35);
-
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-
-  padding: 0;
-  cursor: pointer;
-
-  transition: background-color 0.12s, box-shadow 0.12s, transform 0.12s;
-}
-
-.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:hover {
-  background: #c82333;
-  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.45);
-  transform: translateY(-50%) scale(1.08);
-}
-
-.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:active {
-  transform: translateY(-50%) scale(0.96);
-  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
-}
-
-.spot-block .spot-memo.spot-memo--pin.is-editing .spot-memo__delete:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(220, 53, 69, 0.35), 0 2px 6px rgba(220, 53, 69, 0.35);
-}
-
-/* -------------------------------
-   編集用メモ（spot-memo--editor）
-------------------------------- */
-.spot-block .spot-memo.spot-memo--editor {
-  position: relative;
-  margin-top: 15px !important;
-}
-
-.spot-block .spot-memo.spot-memo--editor form {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-}
-
-.spot-block .spot-memo.spot-memo--editor textarea.form-control {
-  width: 100%;
-  box-sizing: border-box;
-
-  resize: none;
-  background: transparent;
-
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(33, 33, 33, 0.75);
-  letter-spacing: 0.01em;
-
-  text-align: center;
-}
-
-.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus,
-.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible {
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-}
-
-.spot-block .spot-memo.spot-memo--editor .spot-memo__editor-actions {
-  width: 100%;
-  display: flex;
-  justify-content: center;
-  gap: 12px;
-  margin-top: 10px;
-}
-
-.spot-block .spot-memo.spot-memo--editor form {
-  margin-top: 30px;
-  margin-bottom: 30px;
-}
-
-/* ==========================================================
-   ✅ 丸アイコンボタン化（メモ/タグ/お気に入り）
-========================================================== */
-
-.spot-block .spot-detail-actions__buttons .btn {
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
-  padding: 0 !important;
-  border-radius: 9999px !important;
-
-  display: inline-flex !important;
-  align-items: center !important;
-  justify-content: center !important;
-
-  line-height: 1 !important;
-}
-
-.spot-block .spot-detail-actions__buttons .btn i {
-  margin: 0 !important;
-  display: block !important;
-  line-height: 1 !important;
-  font-size: 1.1rem;
-}
-
-.spot-block .spot-detail-actions__buttons .btn i.bi::before {
-  position: relative;
-  top: 2px;
-}
-
-.spot-block .spot-detail-actions__buttons .btn:not(.btn-fav-icon) {
-  font-size: 0;
-}
-
-/* ==========================================
-   ✅ タグ編集（追加フォーム + ×削除）
-   - 重複排除版
-   - タグ追加フォーム“全体”に枠（spot-memoと同じ系統）を付与
-========================================== */
-
-/* ✅ 縦積みラッパー：フォームをボタンの上に置く */
-.spot-block .spot-detail-actions__buttons-wrap {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
-
-/* ==============================
-   タグチップ：編集時だけ×分広げて右端固定
-============================== */
-
-/* 通常時（×なし） */
-.spot-block .spot-tags .tag-chip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-
-  padding: 4px 10px;
-}
-
-/* ×ボタンは通常は非表示 */
-.spot-block .spot-tags .tag-chip__remove {
-  display: none;
-}
-
-/* 編集時（×あり）だけ、右余白を増やしてチップ幅を拡張 */
-.spot-block .spot-tags.is-editing .tag-chip {
-  padding-right: 28px;
-}
-
-/* 編集時だけ×を右端に表示（文字にかぶらない） */
-.spot-block .spot-tags.is-editing .tag-chip__remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-
-  width: 18px;
-  height: 18px;
-  padding: 0;
-
-  border: 0;
-  background: transparent;
-  border-radius: 9999px;
-
-  color: rgba(80, 109, 83, 0.55);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.spot-block .spot-tags.is-editing .tag-chip__remove:hover {
-  background: rgba(80, 109, 83, 0.10);
-  color: rgba(80, 109, 83, 0.95);
-}
-
-.spot-block .spot-tags.is-editing .tag-chip__remove:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
-}
-
-/* ✅ ×の下線を消す（aタグ対策） */
-.spot-block .spot-tags .tag-chip__remove,
-.spot-block .spot-tags .tag-chip__remove:hover,
-.spot-block .spot-tags .tag-chip__remove:focus,
-.spot-block .spot-tags .tag-chip__remove:focus-visible {
-  text-decoration: none !important;
-}
-
-/* ==========================================================
-   ✅ タグ追加フォーム：枠（フォーム全体） + 入力見た目固定
-   - “枠線を15px内側”に変更済み
-   - ✅ メモ編集フォームの枠線被りも解消（ここが変更点）
-========================================================== */
-
-/* ✅ 外側は枠なし + ::before の inset 枠を描くための基準 */
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor {
-  position: relative;
-  background: #ffffff !important;
-  border: 0 !important;
-
-  box-shadow:
-    0 6px 14px rgba(0, 0, 0, 0.08),
-    0 1px 3px rgba(0, 0, 0, 0.06);
-
-  /* ✅ 枠線(top:15)より内側に中身が入るように余白を確保 */
-  padding: 30px 18px 24px !important;
-  margin: 0 !important;
-
-  min-height: auto !important;
-}
-
-/* ✅ 枠線を 15px ほど内側に寄せる（下も15で統一して被りを防ぐ） */
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor::before {
-  content: "";
-  position: absolute;
-  top: 15px;
-  right: 15px;
-  bottom: 10px;
-  left: 15px;
-
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 8px;
-
-  pointer-events: none;
-
-  /* ✅ 枠線は背面 */
-  z-index: 0;
-}
-
-/* ✅ 中身（フォーム）を枠線より前面に + 既存の margin-top/bottom 30px を無効化 */
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor form {
-  position: relative;
-  z-index: 1;
-  margin: 0 !important;
-}
-
-/* ✅ ボタン行なども枠線より前面に */
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor .spot-memo__editor-actions {
-  position: relative;
-  z-index: 1;
-}
-
-/* ✅ 入力中は cursor:text にする（全体cursor:pointerの上書き） */
-.spot-block .spot-memo.spot-memo--editor input.form-control,
-.spot-block .spot-memo.spot-memo--editor textarea.form-control {
-  cursor: text;
-}
-
-/* ✅ textarea と同じ見え方に input を寄せる */
-.spot-block .spot-memo.spot-memo--editor input.form-control {
-  width: 100%;
-  box-sizing: border-box;
-
-  background: transparent !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-
-  font-size: 0.82rem;
-  line-height: 1.55;
-  color: rgba(33, 33, 33, 0.75);
-  letter-spacing: 0.01em;
-
-  text-align: center;
-}
-
-.spot-block .spot-memo.spot-memo--editor input.form-control::placeholder {
-  color: rgba(33, 33, 33, 0.45);
-}
-
-.spot-block .spot-memo.spot-memo--editor input.form-control:focus,
-.spot-block .spot-memo.spot-memo--editor input.form-control:focus-visible {
-  background: transparent !important;
-  border: 0 !important;
-  outline: 0 !important;
-  box-shadow: none !important;
-}
-
-/* Chromeの autofill で勝手に色が付く対策 */
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill,
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:hover,
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  -webkit-text-fill-color: rgba(33, 33, 33, 0.75) !important;
-  transition: background-color 9999s ease-out 0s;
 }

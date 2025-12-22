@@ -100,35 +100,44 @@
           <%# ✅ フォームを「ボタンの上」に出すためのラッパー（縦積み用） %>
           <div class="spot-detail-actions__buttons-wrap">
 
-            <%# ✅ 設定フォーム（新規） %>
+            <%# ✅ 設定フォーム（改良） %>
             <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                  data-plan-spot-settings-target="panel"
                  data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#stopPropagation">
 
               <div class="spot-settings">
 
-                <%# 有料道路（ここに移動） %>
-                <div class="spot-settings__row">
-                  <div class="spot-settings__label">有料道路</div>
+                <%# 1行目：有料道路（ラベル右にスイッチ）＋ 右端にEC料金（ONの時だけ） %>
+                <div class="spot-settings__row spot-settings__row--toll">
+                  <div class="spot-settings__toll-left">
+                    <div class="spot-settings__label">有料道路</div>
 
-                  <div class="toll-switch">
-                    <div class="form-check form-switch m-0">
-                      <input
-                        class="form-check-input"
-                        type="checkbox"
-                        role="switch"
-                        aria-label="有料道路の使用を切り替える"
-                        data-toll-used-switch="1"
-                        data-plan-id="<%= plan_spot.plan_id %>"
-                        data-plan-spot-id="<%= plan_spot.id %>"
-                        <%= 'checked="checked"' if plan_spot.toll_used? %>
-                      >
+                    <div class="toll-switch">
+                      <div class="form-check form-switch m-0">
+                        <input
+                          class="form-check-input"
+                          type="checkbox"
+                          role="switch"
+                          aria-label="有料道路の使用を切り替える"
+                          data-toll-used-switch="1"
+                          data-plan-id="<%= plan_spot.plan_id %>"
+                          data-plan-spot-id="<%= plan_spot.id %>"
+                          <%= 'checked="checked"' if plan_spot.toll_used? %>
+                        >
+                      </div>
                     </div>
                   </div>
+
+                  <% if plan_spot.toll_used? %>
+                    <div class="spot-settings__price">
+                      <%# move_cost がある前提ならこちらを優先。なければプレースホルダ %>
+                      <%= plan_spot.move_cost.present? ? number_to_currency(plan_spot.move_cost, unit: "¥ ", precision: 0) : "¥ 〇〇〇〇" %>
+                    </div>
+                  <% end %>
                 </div>
 
-                <%# 滞在時間（select） %>
-                <div class="spot-settings__row mt-3">
+                <%# 2行目：滞在時間（1行で完結） %>
+                <div class="spot-settings__row spot-settings__row--stay">
                   <label class="spot-settings__label" for="stayDuration-<%= plan_spot.id %>">滞在時間</label>
 
                   <select
@@ -216,8 +225,17 @@
               <% end %>
             </div>
 
-            <%# ✅ ボタン列（左→右：お気に入り / メモ / タグ / 設定 / 削除） %>
+            <%# ✅ ボタン列（左→右：設定 / お気に入り / メモ / タグ / 削除） %>
             <div class="spot-detail-actions__buttons">
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      data-plan-spot-settings-target="toggle"
+                      data-action="click->plan-spot-settings#toggle"
+                      aria-label="設定を開く"
+                      aria-expanded="false">
+                <i class="bi bi-gear me-1" aria-hidden="true"></i>
+              </button>
+
               <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
 
               <button type="button"
@@ -232,15 +250,6 @@
                       data-action="click->plan-spot-tags#toggle"
                       aria-label="タグを編集">
                 <i class="bi bi-tag me-1" aria-hidden="true"></i>
-              </button>
-
-              <button type="button"
-                      class="btn btn-outline-secondary btn-sm w-100"
-                      data-plan-spot-settings-target="toggle"
-                      data-action="click->plan-spot-settings#toggle"
-                      aria-label="設定を開く"
-                      aria-expanded="false">
-                <i class="bi bi-gear me-1" aria-hidden="true"></i>
               </button>
 
               <%# ✅ スポット削除（Turbo Stream で remove） %>
@@ -264,21 +273,19 @@
           </div>
         </div>
 
-        <div class="trip-summary mt-3">
-          <div class="trip-info">
-            <span class="label">有料道路</span>
+        <%# ✅ 「次の場所まで」だけカラム参照で表示（枠/背景はCSSで撤去） %>
+        <% move_minutes = plan_spot.move_time.to_i %>
+        <% hours = move_minutes / 60 %>
+        <% minutes = move_minutes % 60 %>
 
-            <%# ✅ トグルは設定フォームへ移動したので、ここは状態表示だけにする %>
-            <span class="ms-2"><%= plan_spot.toll_used? ? "ON" : "OFF" %></span>
+        <div class="spot-next-move mt-3">
+          <span class="label">次の場所まで</span>
 
-            <span class="price">¥ 〇〇〇〇</span>
-          </div>
+          <span class="km">
+            <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+          </span>
 
-          <div class="distance-info">
-            <span>次の場所まで</span>
-            <span class="km">〇〇km</span>
-            <span class="time">〇〇h 〇〇m</span>
-          </div>
+          <span class="time"><%= "#{hours}h #{minutes}m" %></span>
         </div>
 
       </div>
