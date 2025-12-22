@@ -30,7 +30,6 @@
         <div class="spot-address"><%= spot.address %></div>
       <% end %>
 
-      <%# ✅ タグ表示（Turbo差し替え対象） %>
       <%= turbo_frame_tag dom_id(plan_spot, :tag_chips),
                           class: "spot-tags",
                           data: {
@@ -40,10 +39,8 @@
         <%= render "plan_spots/tags/chips", plan: plan_spot.plan, plan_spot: plan_spot, tags: tags %>
       <% end %>
 
-      <%# ✅ 表示用メモ枠（メモがある時だけ表示、削除ボタン付き） %>
       <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
            data-plan-spot-memo-target="memoDisplay">
-
         <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
           <%= simple_format(h(plan_spot.memo.to_s)) %>
         </div>
@@ -55,6 +52,19 @@
           ×
         </button>
       </div>
+
+      <%# ✅ 常時表示 %>
+      <% move_minutes = plan_spot.move_time.to_i %>
+      <% hours = move_minutes / 60 %>
+      <% minutes = move_minutes % 60 %>
+
+      <div class="spot-next-move mt-3">
+        <span class="label">次の場所まで</span>
+        <span class="km">
+          <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+        </span>
+        <span class="time"><%= "#{hours}h #{minutes}m" %></span>
+      </div>
     </div>
   </div>
 
@@ -64,11 +74,9 @@
          data-plan-spot-memo-target="detail">
       <div class="spot-detail__inner">
 
-        <%# ✅ 編集用メモ枠（削除ボタンは表示用メモ側にあるため、ここには置かない） %>
         <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
              data-plan-spot-memo-target="editor"
              data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#stopPropagation">
-
           <form data-action="submit->plan-spot-memo#submit">
             <textarea class="form-control"
                       rows="2"
@@ -77,19 +85,15 @@
                       data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
 
             <div class="spot-memo__editor-actions">
-              <button
-                type="button"
-                class="btn btn-outline-secondary"
-                data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#close"
-              >
+              <button type="button"
+                      class="btn btn-outline-secondary"
+                      data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#close">
                 閉じる
               </button>
 
-              <button
-                type="submit"
-                class="btn btn-personal"
-                data-action="pointerdown->plan-spot-memo#stopPropagation"
-              >
+              <button type="submit"
+                      class="btn btn-personal"
+                      data-action="pointerdown->plan-spot-memo#stopPropagation">
                 追加
               </button>
             </div>
@@ -97,17 +101,13 @@
         </div>
 
         <div class="spot-detail-actions">
-          <%# ✅ フォームを「ボタンの上」に出すためのラッパー（縦積み用） %>
           <div class="spot-detail-actions__buttons-wrap">
 
-            <%# ✅ 設定フォーム（改良） %>
             <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                  data-plan-spot-settings-target="panel"
                  data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#stopPropagation">
 
               <div class="spot-settings">
-
-                <%# 1行目：有料道路（ラベル右にスイッチ）＋ 右端にEC料金（ONの時だけ） %>
                 <div class="spot-settings__row spot-settings__row--toll">
                   <div class="spot-settings__toll-left">
                     <div class="spot-settings__label">有料道路</div>
@@ -135,13 +135,12 @@
                   <% end %>
                 </div>
 
-                <%# 2行目：滞在時間（1行で完結） %>
                 <div class="spot-settings__row spot-settings__row--stay">
                   <label class="spot-settings__label" for="stayDuration-<%= plan_spot.id %>">滞在時間</label>
 
                   <select
                     id="stayDuration-<%= plan_spot.id %>"
-                    class="form-select"
+                    class="form-select spot-settings__stay-select"
                     data-stay-duration-input="1"
                     data-plan-id="<%= plan_spot.plan_id %>"
                     data-plan-spot-id="<%= plan_spot.id %>"
@@ -166,21 +165,17 @@
                 </div>
 
                 <div class="spot-memo__editor-actions mt-3">
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-plan-spot-settings-target="toggle"
-                    data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#close"
-                    aria-expanded="false"
-                  >
+                  <button type="button"
+                          class="btn btn-outline-secondary"
+                          data-plan-spot-settings-target="toggle"
+                          data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#close"
+                          aria-expanded="false">
                     閉じる
                   </button>
                 </div>
-
               </div>
             </div>
 
-            <%# ✅ タグ追加フォーム %>
             <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                  data-plan-spot-tags-target="form"
                  data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation">
@@ -205,26 +200,21 @@
                                  } %>
 
                 <div class="spot-memo__editor-actions">
-                  <button
-                    type="button"
-                    class="btn btn-outline-secondary"
-                    data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#close"
-                  >
+                  <button type="button"
+                          class="btn btn-outline-secondary"
+                          data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#close">
                     閉じる
                   </button>
 
-                  <button
-                    type="submit"
-                    class="btn btn-personal"
-                    data-action="pointerdown->plan-spot-tags#stopPropagation"
-                  >
+                  <button type="submit"
+                          class="btn btn-personal"
+                          data-action="pointerdown->plan-spot-tags#stopPropagation">
                     追加
                   </button>
                 </div>
               <% end %>
             </div>
 
-            <%# ✅ ボタン列 %>
             <div class="spot-detail-actions__buttons">
               <button type="button"
                       class="btn btn-outline-secondary btn-sm w-100"
@@ -272,21 +262,6 @@
         </div>
 
       </div>
-    </div>
-
-    <%# ✅ ここに移動：常時表示の「次の場所まで」 %>
-    <% move_minutes = plan_spot.move_time.to_i %>
-    <% hours = move_minutes / 60 %>
-    <% minutes = move_minutes % 60 %>
-
-    <div class="spot-next-move mt-3">
-      <span class="label">次の場所まで</span>
-
-      <span class="km">
-        <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
-      </span>
-
-      <span class="time"><%= "#{hours}h #{minutes}m" %></span>
     </div>
 
     <button

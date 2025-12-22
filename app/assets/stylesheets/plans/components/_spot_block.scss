@@ -487,6 +487,60 @@
   min-width: 0;
 }
 
+/* ✅ 有料道路行：EC料金の見た目に合わせて高さ固定 */
+.spot-block .spot-settings__row--toll {
+  height: 34px;              /* ←まずはこの値でOK（必要なら 32〜36で微調整） */
+  align-items: center;
+  padding: 0;                /* 行高固定したいので縦paddingは消す */
+}
+
+/* 左側（ラベル+スイッチ）も高さ内に収める */
+.spot-block .spot-settings__toll-left {
+  height: 34px;
+  align-items: center;
+}
+
+/* EC料金：高さブレ防止（数字の上下ズレ対策） */
+.spot-block .spot-settings__price {
+  line-height: 1;            /* 余計な行高で伸びないように */
+  display: inline-flex;
+  align-items: center;
+  height: 34px;
+}
+
+/* ==========================================
+   ✅ 設定フォームの下半分（滞在時間行）だけブレ防止
+   - 行高を固定
+   - select を flex で伸縮させない
+========================================== */
+
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay {
+  height: 34px;      /* ← 有料道路行と同じ高さで固定（32〜36で微調整OK） */
+  padding: 0;        /* 高さ固定のため縦paddingを消す */
+  align-items: center;
+}
+
+/* ← これが効きます：flexで伸びないようにする */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select {
+  flex: 0 0 100px;   /* 固定幅 */
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+
+  height: 34px;      /* 行高と合わせて固定 */
+  min-height: 34px;
+  box-sizing: border-box;
+
+  margin-left: auto; /* 右寄せ */
+}
+
+/* （念のため）Bootstrapのfocusでサイズが変わらないように */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus,
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
 /* トグル（アプリっぽい見た目） + クリック時の枠線を消す */
 .spot-block .spot-settings .form-switch {
   margin: 0 !important;
@@ -729,19 +783,134 @@
 }
 
 /* ==========================================
-   ✅ 滞在時間select：幅固定 + focus枠を消す
+   ✅ 滞在時間select：幅固定 + 角丸 + focus枠を消す（スナップショットでもブレない）
 ========================================== */
-.spot-block select[id^="stayDuration-"] {
+.spot-block .spot-settings__stay-select {
   width: 100px;
   min-width: 100px;
   max-width: 100px;
+
+  flex: 0 0 100px;          /* ← flexで伸び縮みしない */
+  box-sizing: border-box;   /* ← ほんの少しの横揺れ防止 */
+
+  border-radius: 10px;      /* ← 角つきを解消 */
 }
 
 /* Bootstrapの focus ring を消す */
-.spot-block select[id^="stayDuration-"]:focus,
-.spot-block select[id^="stayDuration-"]:focus-visible {
+.spot-block .spot-settings__stay-select:focus,
+.spot-block .spot-settings__stay-select:focus-visible {
   outline: none !important;
   box-shadow: none !important;
+}
+
+/* ==========================================
+   ✅ 設定フォームを「薄く・小さく」まとめる（HTML変更なし）
+   - 対象: 設定パネルだけ
+========================================== */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings {
+  /* 文字サイズを約 3/4 */
+  font-size: 0.82rem;
+}
+
+/* ラベルも少し軽く＆小さく */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__label {
+  font-size: 0.82rem;
+  font-weight: 600;
+  color: rgba(33, 33, 33, 0.70);
+}
+
+/* 行間・余白を詰める */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row {
+  padding: 6px 0;
+  gap: 10px;
+}
+
+/* EC料金も小さく */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__price {
+  font-size: 0.9rem;
+  font-weight: 500;
+}
+
+/* ==========================================
+   ✅ トグルスイッチ：全体を約 2/3 に縮小
+========================================== */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input {
+  width: 28px;   /* 40 -> 28 */
+  height: 16px;  /* 22 -> 16 */
+
+  border: 0 !important;
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input::after {
+  top: 2px;
+  left: 2px;
+
+  width: 12px;   /* 18 -> 12 */
+  height: 12px;  /* 18 -> 12 */
+
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+}
+
+/* つまみ移動量も縮小（28 - 12 - 4 = 12） */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:checked::after {
+  transform: translateX(12px);
+}
+
+/* focusリングは出さない（再保証） */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus,
+.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================
+   ✅ 滞在時間 select：小型化（設定フォーム内だけ）
+========================================== */
+.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"] {
+  width: 100px;
+  min-width: 100px;
+  max-width: 100px;
+
+  font-size: 0.9rem;
+  line-height: 1.2;
+
+  /* 高さと余白を小さく */
+  padding: 6px 28px 6px 10px; /* 右は矢印分確保 */
+  min-height: 34px;
+
+  border-radius: 6px;
+
+  font-variant-numeric: tabular-nums;      /* まずこれ */
+  font-feature-settings: "tnum";           /* Safari保険 */
+  letter-spacing: 0;                        /* 余計な詰めで揺れないように */
+  transition: none !important;              /* 念のため */
+  -webkit-font-smoothing: antialiased;      /* Macでの微振動対策（効く時あり） */
+}
+
+/* Bootstrapのfocus枠を消す（再保証） */
+.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus,
+.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus-visible {
+  outline: none !important;
+  box-shadow: none !important;
+}
+
+/* ==========================================
+   ✅ 設定フォームの「閉じる」以外を小さく
+   - 閉じるボタンは現状維持
+========================================== */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn {
+  font-size: 0.8rem !important;
+  padding: 0.42rem 0.6rem !important;
+  min-width: 52px !important;
+}
+
+/* 閉じるボタンだけ現状維持（上書きで戻す） */
+.spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn.btn-outline-secondary {
+  font-size: 0.8rem !important;
+  padding: 0.5rem 0.7rem !important;
+  min-width: 60px !important;
 }
 
 
