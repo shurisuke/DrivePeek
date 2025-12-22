@@ -1,6 +1,6 @@
 /* ==========================================
      出発地点ブロック
-     goal_point と同じ見た目・密度に揃える
+     spot-block と同じ密度に揃える（次の場所まで=常時 / 有料道路=トグル内）
 ========================================== */
 .start-point-block {
   background: #ffffff;
@@ -11,6 +11,9 @@
 
   overflow: visible;
 
+  /* ------------------------------------------
+     上段：出発（アイコン/住所/編集）
+  ------------------------------------------ */
   .start-point-main {
     display: flex;
     align-items: center;
@@ -25,12 +28,11 @@
 
     .start-label__row {
       display: flex;
-      align-items: flex-start; /* title を上に置く */
+      align-items: flex-start;
       gap: 8px;
       min-width: 0;
     }
 
-    /* goal と同じサイズ */
     .icon {
       display: inline-block;
       width: 40px;
@@ -41,7 +43,6 @@
       background-size: 100% 100%;
     }
 
-    /* title + address を中央寄せ（goalと同じ） */
     .start-text {
       flex: 1 1 auto;
       min-width: 0;
@@ -51,7 +52,6 @@
       align-items: center;
     }
 
-    /* goal-title と同じ */
     .start-title {
       width: 100%;
       font-weight: 700;
@@ -62,13 +62,12 @@
       text-align: center;
     }
 
-    /* goal の address と同じ */
     .address {
       width: 100%;
       min-width: 0;
 
       color: #525252c5;
-      font-size: 13.0px;
+      font-size: 13px;
 
       text-align: center;
       line-height: 1.2;
@@ -81,7 +80,6 @@
       transform: none !important;
     }
 
-    /* goal と同じ “丸い鉛筆ボタン” */
     .start-point-change-btn {
       flex: 0 0 auto;
 
@@ -133,11 +131,9 @@
     }
   }
 
-  /* ==========================================================
-     ✅ 変更フォーム：planbar の外に“浮かせる”（goal と同じ）
-     - hiddenのときは非表示
-     - top/left は Stimulus が inline style で設定
-  ========================================================== */
+  /* ------------------------------------------
+     変更フォーム（浮かせる）
+  ------------------------------------------ */
   .start-point-edit {
     position: fixed;
     z-index: 2000;
@@ -155,7 +151,6 @@
     width: min(360px, calc(100vw - 16px));
   }
 
-  /* ✅ goal と同じ “白地 + 枠 + 影” */
   .start-point-edit__inner {
     background: #fff;
     border: 1px solid rgba(80, 109, 83, 0.18);
@@ -204,9 +199,46 @@
     color: rgba(80, 109, 83, 0.65);
   }
 
-  /* ==========================================================
-     ✅ 差し込み用：collapse + トグル（既存維持）
-  ========================================================== */
+  /* ------------------------------------------
+     ✅ 常時表示：次の場所まで（spot-next-move と同じ）
+  ------------------------------------------ */
+  .distance-info {
+    background: transparent;
+    border: 0;
+    border-radius: 0;
+
+    width: 265px;
+    font-size: 0.9rem;
+
+    display: grid;
+    grid-template-columns: 1fr auto auto;
+    align-items: center;
+    gap: 10px;
+
+    margin: 0 auto 8px;
+    margin-top: 20px;
+
+    padding: 0;
+  }
+
+  .distance-info .label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgb(35, 35, 35);
+  }
+
+  .distance-info .km,
+  .distance-info .time {
+    font-weight: 400;
+    color: #2d2d2d;
+
+    padding-left: 12px;
+    border-left: 1px solid rgba(0, 0, 0, 0.10);
+  }
+
+  /* ------------------------------------------
+     collapse + トグル（spot-block と同じ）
+  ------------------------------------------ */
   .start-point-detail-wrap {
     display: flex;
     flex-direction: column;
@@ -215,10 +247,7 @@
     width: 100%;
   }
 
-  .start-point-detail {
-    width: 100%;
-  }
-
+  .start-point-detail,
   .start-point-detail.collapse.show {
     width: 100%;
   }
@@ -226,75 +255,74 @@
   .start-point-detail__inner {
     width: 100%;
     border-radius: 6px;
-    background: #fff;
-    padding: 0px 12px 0px 12px;
+    background: transparent;
+    padding: 0;
     font-size: 0.9rem;
   }
 
-  /* ==========================================================
-     ✅ spot-blockと同じ：trip-summary（2行を1枚の枠にまとめる）
-  ========================================================== */
-  .trip-summary {
-    background: #f6f7f7;
-    border: 1px solid #e6e6e6;
-    border-radius: 12px;
-    overflow: hidden;
-    margin-bottom: 8px;
-  }
+  /* ------------------------------------------
+     ✅ 有料道路行：次の場所まで行と “全く同じ幅” に揃える
+     - 265px 中央寄せ
+     - スイッチはラベル右（15px空ける）
+     - スイッチは前回比 0.9倍（32x18 -> 29x16 / つまみ14 -> 13）
+     - focus線無し
+  ------------------------------------------ */
+  .start-toll-row {
+    width: 265px;
+    margin: 0 auto 8px;
+    margin-top: 10px;
 
-  /* 上段：有料道路（枠は外枠に任せる） */
-  .trip-info {
     display: grid;
-    grid-template-columns: auto auto 1fr auto;
+    grid-template-columns: auto auto 1fr; /* ラベル, スイッチ, 右端価格 */
     align-items: center;
 
-    padding: 10px 12px;
-    font-size: 0.9rem;
+    gap: 0;          /* gapは0で固定。余白はmarginで管理 */
+    padding: 0;
 
     background: transparent;
-    border: none;
+    border: 0;
     border-radius: 0;
-    margin: 0;
   }
 
-  .trip-info .label {
-    font-weight: 700;
-    color: rgba(67, 94, 80, 0.92);
+  .start-toll-row .label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgb(35, 35, 35);
+    white-space: nowrap;
   }
 
-  .trip-info .toll-switch {
-    margin-left: 12px;
+  /* ✅ スイッチ左に15px空ける */
+  .start-toll-row .toll-switch {
+    margin-left: 15px;
+
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
+
+    height: 16px;
+    min-width: 0;
+
+    border-left: 0 !important;
+    box-shadow: none !important;
   }
 
-  .trip-info .form-switch {
+  .start-toll-row .form-check.form-switch {
     margin: 0 !important;
     padding: 0 !important;
     min-height: auto !important;
   }
 
-  /* ✅ 右端列：spotと見た目を揃えるため、空でも幅を確保 */
-  .trip-info .price {
-    justify-self: end;
-    text-align: right;
-    margin-right: 1rem;
-    min-width: 3.5rem;
-  }
-
-  /* ✅ Apple風スイッチ（spotと同じ） */
-  .trip-info .form-check-input {
+  /* ✅ カスタムスイッチ（0.9倍：32x18 -> 29x16） */
+  .start-toll-row .form-check-input {
     -webkit-appearance: none;
     appearance: none;
 
-    width: 40px;
-    height: 22px;
-    margin: 0 !important;
+    width: 29px;
+    height: 16px;
 
+    margin: 0 !important;
     border: 0 !important;
     outline: none !important;
-    box-shadow: none !important;
 
     background-image: none !important;
     background-color: #d0d5d2;
@@ -303,78 +331,62 @@
     position: relative;
 
     transition: background-color 0.15s ease;
+    box-shadow: none !important;
   }
 
-  .trip-info .form-check-input::after {
+  /* つまみ（14 -> 13） */
+  .start-toll-row .form-check-input::after {
     content: "";
     position: absolute;
     top: 2px;
     left: 2px;
 
-    width: 18px;
-    height: 18px;
+    width: 12px;
+    height: 12px;
     border-radius: 9999px;
 
     background: #fff;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 
     transition: transform 0.15s ease;
   }
 
-  .trip-info .form-check-input:checked {
+  .start-toll-row .form-check-input:checked {
     background-color: var(--personal);
   }
 
-  .trip-info .form-check-input:checked::after {
-    transform: translateX(18px);
+  /* 移動量 = 29 - 12 - 4 = 13 */
+  .start-toll-row .form-check-input:checked::after {
+    transform: translateX(13px);
   }
 
-  .trip-info .form-check-input:focus,
-  .trip-info .form-check-input:focus-visible {
+  .start-toll-row .form-check-input:focus,
+  .start-toll-row .form-check-input:focus-visible {
     outline: none !important;
-    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18) !important;
+    box-shadow: none !important;
   }
 
-  /* 下段：次の場所まで（区切り線だけ） */
-  .distance-info {
-    width: 100%;
-    margin: 0;
+  /* 料金：右端に固定（右寄せ） */
+  .start-toll-row .price {
+    justify-self: end;
+    text-align: right;
 
-    display: grid;
-    grid-template-columns: 1fr auto auto;
-    align-items: center;
-    gap: 10px;
+    white-space: nowrap;
+    font-weight: 400;
+    color: #2d2d2d;
 
-    padding: 10px 12px;
-    font-size: 0.9rem;
-
-    background: transparent;
-    border: none;
-    border-radius: 0;
-
-    border-top: 1px solid #e1e1e1;
+    line-height: 1;
+    min-width: 60px;
   }
 
-  .distance-info > span:first-child {
-    font-weight: 700;
-    color: rgba(67, 94, 80, 0.92);
-  }
-
-  .distance-info .km,
-  .distance-info .time {
-    font-weight: 800;
-    color: #222;
-
-    padding-left: 12px;
-    border-left: 1px solid #e1e1e1;
-  }
-
-  /* ==========================================================
-     ✅ トグルボタン（既存維持）
-  ========================================================== */
+  /* ------------------------------------------
+     下部トグル（spot-block と同じ）
+  ------------------------------------------ */
   .detail-toggle {
     width: 40px;
     height: 40px;
+    margin-top: 36px;
+
     border-radius: 6px;
     border: 1px solid #cccccc;
     background: #fff;
@@ -382,17 +394,16 @@
     display: inline-flex;
     align-items: center;
     justify-content: center;
-    margin-top: 30px;
-
-    cursor: pointer;
 
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s;
+
+    transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
 
     &:hover {
       transform: translateY(-1px);
-      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.14);
-      background-color: rgba(80, 109, 83, 0.04);
+      box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
+      border-color: rgba(80, 109, 83, 0.25);
+      background: rgba(80, 109, 83, 0.04);
     }
 
     &:active {
@@ -402,16 +413,12 @@
 
     &:focus-visible {
       outline: none;
-      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25), 0 2px 6px rgba(0, 0, 0, 0.10);
+      box-shadow: none;
     }
   }
 
   .detail-toggle i {
-    transition: transform 0.15s, opacity 0.12s;
     color: var(--personal);
-
-    .detail-toggle:hover & {
-      opacity: 0.9;
-    }
+    transform: none !important;
   }
 }

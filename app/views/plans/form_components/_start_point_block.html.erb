@@ -1,6 +1,11 @@
 <%# app/views/plans/form_components/_start_point_block.html.erb %>
 <% plan ||= @plan %>
 
+<% first_plan_spot = plan.plan_spots.order(:position).first %>
+<% move_minutes = first_plan_spot&.move_time.to_i %>
+<% hours = move_minutes / 60 %>
+<% minutes = move_minutes % 60 %>
+
 <div class="start-point-block" data-controller="start-point-editor">
   <div class="start-point-main">
     <div class="start-label">
@@ -37,10 +42,7 @@
     data-start-point-editor-target="editArea"
   >
     <div class="start-point-edit__inner">
-      <label
-        for="start-point-address-<%= plan.id %>"
-        class="start-point-edit__label"
-      >
+      <label for="start-point-address-<%= plan.id %>" class="start-point-edit__label">
         出発地点を変更
       </label>
 
@@ -58,42 +60,55 @@
     </div>
   </div>
 
-  <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「詳細（有料道路/距離）」トグルを表示 %>
+  <%# ✅ 常時表示：次の場所まで（265px 中央寄せ） %>
+  <div class="distance-info">
+    <span class="label">次の場所まで</span>
+
+    <span class="km">
+      <% if first_plan_spot&.move_distance.present? %>
+        <%= number_with_precision(first_plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+      <% else %>
+        —km
+      <% end %>
+    </span>
+
+    <span class="time">
+      <% if first_plan_spot&.move_time.present? %>
+        <%= "#{hours}h #{minutes}m" %>
+      <% else %>
+        —
+      <% end %>
+    </span>
+  </div>
+
+  <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「有料道路」トグルを表示 %>
   <% if plan.start_point.present? && plan.plan_spots.exists? %>
     <div class="start-point-detail-wrap">
       <div class="collapse start-point-detail" id="startPointDetail-<%= plan.id %>">
         <div class="start-point-detail__inner">
 
-          <%# ✅ spot-block と同じ：2行を1枚の枠（trip-summary）にまとめる %>
-          <div class="trip-summary">
-            <%# ✅ 上段：有料道路（トグルスイッチ化） %>
-            <div class="trip-info">
-              <span class="label">有料道路</span>
+          <%# ✅ 次の場所行と「同じ横幅(265px)・同じ揃え」 %>
+          <div class="start-toll-row">
+            <span class="label">有料道路</span>
 
-              <div class="toll-switch">
-                <div class="form-check form-switch m-0">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    aria-label="有料道路の使用を切り替える（出発）"
-                    data-start-point-toll-used-switch="1"
-                    data-plan-id="<%= plan.id %>"
-                    <%= 'checked="checked"' if plan.start_point&.toll_used? %>
-                  >
-                </div>
+            <div class="toll-switch">
+              <div class="form-check form-switch m-0">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  aria-label="有料道路の使用を切り替える（出発）"
+                  data-start-point-toll-used-switch="1"
+                  data-plan-id="<%= plan.id %>"
+                  <%= 'checked="checked"' if plan.start_point&.toll_used? %>
+                >
               </div>
-
-              <%# ✅ spot と列幅を揃えるためのダミー（必要なら後で実値に） %>
-              <span class="price"></span>
             </div>
 
-            <%# ✅ 下段：次の場所まで %>
-            <div class="distance-info">
-              <span>次の場所まで</span>
-              <span class="km">〇〇km</span>
-              <span class="time">〇〇時間〇〇分</span>
-            </div>
+            <%# ✅ 料金は常にDOMに出す（表示/非表示はCSSで切替） %>
+            <span class="price">
+              <%= first_plan_spot&.move_cost.present? ? number_to_currency(first_plan_spot.move_cost, unit: "¥ ", precision: 0) : "¥ 〇〇〇〇" %>
+            </span>
           </div>
 
         </div>
@@ -107,7 +122,7 @@
         aria-expanded="false"
         aria-controls="startPointDetail-<%= plan.id %>"
       >
-        <i class="bi bi-caret-down-fill"></i>
+        <i class="bi bi-caret-down-fill" aria-hidden="true"></i>
       </button>
     </div>
   <% end %>
