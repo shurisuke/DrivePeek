@@ -49,6 +49,9 @@ Rails.application.routes.draw do
 
         # メモ更新
         patch :update_memo, to: "plan_spots/memos#update"
+
+        # ✅ 滞在時間更新（追加）
+        patch :update_stay_duration, to: "plan_spots/stay_durations#update"
       end
     end
   end
