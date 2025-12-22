@@ -565,19 +565,19 @@
   gap: 10px;
 
   margin: 0 auto 8px; /* ← ここにする（左右autoで中央寄せ） */
-  margin-top: 20px
+  margin-top: 20px;
 }
 
 .spot-block .spot-next-move .label {
   font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(33, 33, 33, 0.55);
+  font-weight: 500;
+  color: rgb(35, 35, 35);
 }
 
 .spot-block .spot-next-move .km,
 .spot-block .spot-next-move .time {
-  font-weight: 800;
-  color: #222;
+  font-weight: 400;
+  color: #2d2d2d;
 
   padding-left: 12px;
   border-left: 1px solid rgba(0, 0, 0, 0.10);
@@ -732,7 +732,7 @@
    ✅ 滞在時間select：幅固定 + focus枠を消す
 ========================================== */
 .spot-block select[id^="stayDuration-"] {
-  width: 120px;
+  width: 100px;
   min-width: 100px;
   max-width: 100px;
 }

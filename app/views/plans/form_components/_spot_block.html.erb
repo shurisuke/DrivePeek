@@ -130,7 +130,6 @@
 
                   <% if plan_spot.toll_used? %>
                     <div class="spot-settings__price">
-                      <%# move_cost がある前提ならこちらを優先。なければプレースホルダ %>
                       <%= plan_spot.move_cost.present? ? number_to_currency(plan_spot.move_cost, unit: "¥ ", precision: 0) : "¥ 〇〇〇〇" %>
                     </div>
                   <% end %>
@@ -181,7 +180,7 @@
               </div>
             </div>
 
-            <%# ✅ タグ追加フォーム（メモと同じCSS枠 / 入力できるようにイベント伝播停止） %>
+            <%# ✅ タグ追加フォーム %>
             <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                  data-plan-spot-tags-target="form"
                  data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation">
@@ -225,7 +224,7 @@
               <% end %>
             </div>
 
-            <%# ✅ ボタン列（左→右：設定 / お気に入り / メモ / タグ / 削除） %>
+            <%# ✅ ボタン列 %>
             <div class="spot-detail-actions__buttons">
               <button type="button"
                       class="btn btn-outline-secondary btn-sm w-100"
@@ -252,7 +251,6 @@
                 <i class="bi bi-tag me-1" aria-hidden="true"></i>
               </button>
 
-              <%# ✅ スポット削除（Turbo Stream で remove） %>
               <%= form_with(
                     url: plan_plan_spot_path(plan_spot.plan, plan_spot),
                     method: :delete,
@@ -273,22 +271,22 @@
           </div>
         </div>
 
-        <%# ✅ 「次の場所まで」だけカラム参照で表示（枠/背景はCSSで撤去） %>
-        <% move_minutes = plan_spot.move_time.to_i %>
-        <% hours = move_minutes / 60 %>
-        <% minutes = move_minutes % 60 %>
-
-        <div class="spot-next-move mt-3">
-          <span class="label">次の場所まで</span>
-
-          <span class="km">
-            <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
-          </span>
-
-          <span class="time"><%= "#{hours}h #{minutes}m" %></span>
-        </div>
-
       </div>
+    </div>
+
+    <%# ✅ ここに移動：常時表示の「次の場所まで」 %>
+    <% move_minutes = plan_spot.move_time.to_i %>
+    <% hours = move_minutes / 60 %>
+    <% minutes = move_minutes % 60 %>
+
+    <div class="spot-next-move mt-3">
+      <span class="label">次の場所まで</span>
+
+      <span class="km">
+        <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+      </span>
+
+      <span class="time"><%= "#{hours}h #{minutes}m" %></span>
     </div>
 
     <button
