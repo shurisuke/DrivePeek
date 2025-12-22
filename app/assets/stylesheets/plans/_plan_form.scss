@@ -34,14 +34,16 @@ body.no-footer {
 
       display: flex;
       flex-direction: column;
-      overflow: visible; /* ✅ 追加：中身スクロールを安定させる */
+      overflow: visible;
 
       .plan-tab-nav {
         display: flex;
+        align-items: stretch;
         justify-content: space-around;
         border-bottom: 1px solid #ccc;
         background: #fff;
-        flex: 0 0 auto; /* ✅ 念のため固定 */
+        flex: 0 0 auto;
+        position: relative; /* ✅ 時計ボタンの見た目安定用 */
 
         .tab-btn {
           font-size: 17px;
@@ -64,14 +66,50 @@ body.no-footer {
         .tab-community {
           font-size: 14px;
         }
+
+        /* ✅ 時計ボタン（Planタブ時だけ表示） */
+        .tab-time-toggle {
+          flex: 0 0 auto;
+          width: 44px;
+          border: none;
+          background: transparent;
+
+          display: inline-flex;
+          align-items: center;
+          justify-content: center;
+
+          cursor: pointer;
+
+          /* 初期は非表示（Planタブactiveで is-visible が付く） */
+          opacity: 0;
+          pointer-events: none;
+
+          i {
+            font-size: 18px;
+            color: rgba(121, 121, 121, 0.95);
+          }
+
+          &.is-visible {
+            opacity: 1;
+            pointer-events: auto;
+          }
+
+          &.is-active i {
+            color: var(--personal);
+          }
+
+          &:focus,
+          &:focus-visible {
+            outline: none;
+            box-shadow: none;
+          }
+        }
       }
 
-      /* ✅ ここがスクロール領域（HTMLを planbar__content に直す前提） */
       &__content {
         flex: 1 1 auto;
-        min-height: 0;     /* ✅ 超重要：flex内スクロールの必須条件になりがち */
+        min-height: 0;
         overflow-y: auto;
-
 
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
@@ -143,5 +181,144 @@ body.no-footer {
         }
       }
     }
+  }
+}
+
+/* ==========================================
+   Planタブ：時間表示領域（右に100px展開）
+   - body.plan-time-open の時だけ表示
+   - ブロックの高さ（collapse）に追従
+========================================== */
+
+body.plan-time-open .plan-time-panel {
+  display: block;
+}
+
+.has-plan-time-panel {
+  position: relative; /* ✅ 右パネルのabsolute基準 */
+}
+
+/* 右側に出す白枠（約100px） */
+.plan-time-panel {
+  display: none;
+
+  position: absolute;
+  top: 0;
+  bottom: 0;
+
+  width: 100px;
+  right: -112px; /* 100px + 余白12px */
+
+  pointer-events: none; /* ✅ 操作の邪魔をしない（drag/click） */
+}
+
+.plan-time-panel__inner {
+  height: 100%;
+
+  background: #fff;
+  border: 1px solid rgba(0, 0, 0, 0.10);
+  border-radius: 8px;
+
+  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
+  padding: 10px 8px;
+
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+
+  justify-content: flex-start;
+}
+
+.plan-time-panel__row {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 4px;
+}
+
+.plan-time-panel__label {
+  font-size: 0.76rem;
+  font-weight: 600;
+  color: rgba(33, 33, 33, 0.55);
+  text-align: center;
+}
+
+.plan-time-panel__value {
+  font-size: 0.92rem;
+  font-weight: 700;
+  color: #222;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+/* spot用：境目矢印（下寄せ） */
+.plan-time-panel__arrow {
+  margin-top: auto;
+  display: flex;
+  justify-content: center;
+  opacity: 0.9;
+
+  i {
+    color: rgba(80, 109, 83, 0.85);
+    font-size: 18px;
+    transform: translateY(2px);
+  }
+}
+
+.planbar {
+  overflow: visible;
+
+  .plan-tab-nav {
+    position: relative; /* ✅ 場外ボタンの基準 */
+    overflow: visible;  /* ✅ はみ出し許可 */
+  }
+
+  /* ✅ 時計アイコン（AI提案の右横・場外） */
+  .plan-time-fab {
+    position: absolute;
+    top: 50%;
+    right: -46px;              /* ← “場外” */
+    transform: translateY(-50%);
+
+    width: 38px;
+    height: 38px;
+    border-radius: 9999px;
+
+    background: #fff;
+    border: 1px solid rgba(80, 109, 83, 0.22);
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    i {
+      font-size: 18px;
+      color: rgba(121, 121, 121, 0.95);
+    }
+
+    &.is-active i {
+      color: var(--personal);
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: none;
+      box-shadow: none;
+    }
+  }
+
+  /* ✅ 重要：横パネルを見せるため、外側は visible */
+  &__content {
+    overflow: visible;
+  }
+
+  /* ✅ 縦スクロールは内側で持つ */
+  &__content-scroll {
+    overflow-y: auto;
+    max-height: calc(100vh - 60px); /* タブ高さ分のだいたい。必要なら微調整 */
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
   }
 }
