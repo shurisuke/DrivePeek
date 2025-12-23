@@ -496,3 +496,17 @@ body.plan-time-open .plan-form .plan-time-panel__inner {
 .start-point-block .block-time-panel__main {
   justify-content: flex-end;
 }
+
+/* ==========================================
+   ✅ planbar更新中のブレ抑制
+========================================== */
+body.planbar-updating * {
+  transition: none !important;
+  animation: none !important;
+}
+
+.planbar__content-scroll {
+  /* ✅ 横振れの主因：スクロールバー有無で幅が変わるのを止める */
+  overflow-y: scroll;           /* 常にスクロールバー領域を確保 */
+  scrollbar-gutter: stable;     /* 対応ブラウザではさらに安定 */
+}

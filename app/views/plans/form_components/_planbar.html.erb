@@ -26,7 +26,7 @@
     <%# ✅ スクロールコンテナ: OFF時350px / ON時430px %>
     <div class="planbar__content-scroll">
       <%# ブロック一覧（常時350px） %>
-      <div class="planbar__blocks">
+      <div class="planbar__blocks" id="planbar_blocks">
         <%= render "plans/form_components/planbar_content", plan: plan %>
       </div>
     </div>
