@@ -8,6 +8,9 @@ class PlanSpots::StayDurationsController < ApplicationController
     stay_duration = params[:stay_duration].presence&.to_i
 
     if @plan_spot.update(stay_duration: stay_duration)
+      # 時刻再計算（滞在時間変更 → schedule のみ）
+      Plan::Recalculator.new(@plan_spot.plan).recalculate!(schedule: true)
+
       render json: { plan_spot_id: @plan_spot.id, stay_duration: @plan_spot.stay_duration }
     else
       render json: { message: @plan_spot.errors.full_messages.first || "滞在時間の更新に失敗しました" },

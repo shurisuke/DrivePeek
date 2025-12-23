@@ -11,6 +11,11 @@ class StartPointsController < ApplicationController
     end
 
     if @start_point.update(start_point_params)
+      # 出発時間が変わった場合のみ時刻再計算
+      if start_point_params.key?(:departure_time)
+        Plan::Recalculator.new(@plan).recalculate!(schedule: true)
+      end
+
       render_success(@start_point)
     else
       render_failure(@start_point)
