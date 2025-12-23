@@ -26,6 +26,7 @@ export default class extends Controller {
 
     this.checkVisibility()
     this.restoreOpenState()
+    this.updateDepartureTimeClass()
 
     document.addEventListener("click", this.boundOnTabClick)
 
@@ -60,6 +61,9 @@ export default class extends Controller {
 
     document.body.classList.toggle("plan-time-open", isOpen)
 
+    // ✅ 出発時刻の状態に応じて departure-time-unset クラスを切り替え
+    this.updateDepartureTimeClass()
+
     // ボタン見た目
     const fab = this.element.querySelector(".plan-time-fab")
     if (fab) {
@@ -71,6 +75,12 @@ export default class extends Controller {
     this.applyScrollWidthFallback(isOpen)
 
     if (save) this.saveOpenState(isOpen)
+  }
+
+  // 出発時刻が未設定なら body.departure-time-unset を付与
+  updateDepartureTimeClass() {
+    const departureTimeSet = document.querySelector(".start-departure-time--set")
+    document.body.classList.toggle("departure-time-unset", !departureTimeSet)
   }
 
   saveOpenState(isOpen) {
@@ -138,7 +148,10 @@ export default class extends Controller {
     // 1) 幅の再適用（CSS/inline保険）
     this.applyScrollWidthFallback(isOpen)
 
-    // 2) scrollTop 復元
+    // 2) 出発時刻の状態を再適用
+    this.updateDepartureTimeClass()
+
+    // 3) scrollTop 復元
     const scroll = this.findPlanbarScroll()
     if (scroll) {
       scroll.scrollTop = this.cachedScrollTop || 0
