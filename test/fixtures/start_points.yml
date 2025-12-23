@@ -2,18 +2,26 @@
 
 one:
   plan: one
-  address: MyString
-  lat: 1.5
-  lng: 1.5
-  departure_time: 2025-12-04 16:58:14
-  prefecture: MyString
-  city: MyString
+  address: "Shibuya Station, Tokyo"
+  lat: 35.6580
+  lng: 139.7016
+  departure_time: "09:00:00"
+  prefecture: "Tokyo"
+  city: "Shibuya"
+  toll_used: false
+  move_time: 30
+  move_distance: 10.5
+  move_cost: 0
 
 two:
   plan: two
-  address: MyString
-  lat: 1.5
-  lng: 1.5
-  departure_time: 2025-12-04 16:58:14
-  prefecture: MyString
-  city: MyString
+  address: "Shinjuku Station, Tokyo"
+  lat: 35.6896
+  lng: 139.7006
+  departure_time: "10:00:00"
+  prefecture: "Tokyo"
+  city: "Shinjuku"
+  toll_used: false
+  move_time: 45
+  move_distance: 15.0
+  move_cost: 0

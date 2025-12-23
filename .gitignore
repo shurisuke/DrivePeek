@@ -41,3 +41,8 @@
 
 # Ignore Claude Code settings
 /.claude
+
+# Ignore task documents
+/docs/tasks/
+
+/CLAUDE.md

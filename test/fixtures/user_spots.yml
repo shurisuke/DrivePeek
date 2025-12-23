@@ -3,9 +3,7 @@
 one:
   user: one
   spot: one
-  memo: MyText
 
 two:
   user: two
   spot: two
-  memo: MyText

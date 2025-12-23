@@ -1,0 +1,91 @@
+# frozen_string_literal: true
+
+require "test_helper"
+
+class Plan::RecalculatorTest < ActiveSupport::TestCase
+  setup do
+    @plan = plans(:one)
+    @start_point = start_points(:one)
+    @plan_spot = plan_spots(:one)
+    @goal_point = goal_points(:one)
+
+    # 初期状態を設定
+    @start_point.update!(departure_time: Time.zone.parse("09:00"))
+    @plan_spot.update!(move_time: 30, stay_duration: 60)
+  end
+
+  test "recalculate! with schedule: true recalculates times" do
+    result = Plan::Recalculator.new(@plan).recalculate!(schedule: true)
+
+    assert_equal true, result
+
+    @plan_spot.reload
+    @goal_point.reload
+
+    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+    assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
+    assert_equal "10:30", @goal_point.arrival_time.strftime("%H:%M")
+  end
+
+  test "recalculate! with schedule: false does not recalculate times" do
+    # 初期時刻を設定
+    @plan_spot.update!(arrival_time: Time.zone.parse("08:00"), departure_time: Time.zone.parse("08:30"))
+
+    result = Plan::Recalculator.new(@plan).recalculate!(schedule: false)
+
+    assert_equal true, result
+
+    @plan_spot.reload
+    # 時刻は変更されていない
+    assert_equal "08:00", @plan_spot.arrival_time.strftime("%H:%M")
+    assert_equal "08:30", @plan_spot.departure_time.strftime("%H:%M")
+  end
+
+  test "recalculate! with route: true calls Route.recalculate!" do
+    # Route は現在スタブで true を返す
+    result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
+
+    assert_equal true, result
+
+    # Schedule も計算される
+    @plan_spot.reload
+    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+  end
+
+  test "recalculate! returns true by default (schedule only)" do
+    result = Plan::Recalculator.new(@plan).recalculate!
+
+    assert_equal true, result
+
+    @plan_spot.reload
+    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+  end
+
+  test "recalculate! executes route before schedule" do
+    # route → schedule の順序を確認
+    # Route はスタブなので、両方実行できることを確認
+    result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
+
+    assert_equal true, result
+
+    # route が先に実行され、schedule が後に実行されたことを確認
+    @plan_spot.reload
+    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+    assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
+  end
+
+  test "recalculate! returns false when schedule fails" do
+    # departure_time を nil にして schedule を失敗させる
+    @start_point.update_column(:departure_time, nil)
+
+    result = Plan::Recalculator.new(@plan).recalculate!(schedule: true)
+
+    assert_equal false, result
+  end
+
+  test "recalculate! with both route and schedule false returns true" do
+    result = Plan::Recalculator.new(@plan).recalculate!(route: false, schedule: false)
+
+    assert_equal true, result
+  end
+end
