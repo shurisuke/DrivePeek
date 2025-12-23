@@ -6,6 +6,15 @@
 <% hours = move_minutes / 60 %>
 <% minutes = move_minutes % 60 %>
 
+<%# ✅ 出発時間（time型 → HH:MM形式） %>
+<% departure_time_value =
+     if plan.start_point&.respond_to?(:departure_time) && plan.start_point.departure_time.present?
+       plan.start_point.departure_time.strftime("%H:%M")
+     else
+       nil
+     end
+%>
+
 <div class="start-point-block" data-controller="start-point-editor">
   <%# ✅ 左側: 既存コンテンツ（350px） %>
   <div class="block-main-content">
@@ -64,26 +73,28 @@
       </div>
     </div>
 
-    <%# ✅ 常時表示：次の場所まで（265px 中央寄せ） %>
-    <div class="distance-info">
-      <span class="label">次の場所まで</span>
+    <%# ✅ スポットが1件以上の場合のみ「次の場所まで」を表示 %>
+    <% if plan.plan_spots.exists? %>
+      <div class="distance-info">
+        <span class="label">次の場所まで</span>
 
-      <span class="km">
-        <% if first_plan_spot&.move_distance.present? %>
-          <%= number_with_precision(first_plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
-        <% else %>
-          —km
-        <% end %>
-      </span>
+        <span class="km">
+          <% if first_plan_spot&.move_distance.present? %>
+            <%= number_with_precision(first_plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+          <% else %>
+            —km
+          <% end %>
+        </span>
 
-      <span class="time">
-        <% if first_plan_spot&.move_time.present? %>
-          <%= "#{hours}h #{minutes}m" %>
-        <% else %>
-          —
-        <% end %>
-      </span>
-    </div>
+        <span class="time">
+          <% if first_plan_spot&.move_time.present? %>
+            <%= "#{hours}h #{minutes}m" %>
+          <% else %>
+            —
+          <% end %>
+        </span>
+      </div>
+    <% end %>
 
     <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「有料道路」トグルを表示 %>
     <% if plan.start_point.present? && plan.plan_spots.exists? %>
@@ -122,7 +133,7 @@
           aria-expanded="false"
           aria-controls="startPointDetail-<%= plan.id %>"
         >
-          <i class="bi bi-caret-down-fill" aria-hidden="true"></i>
+          <i class="bi bi-caret-down-fill"></i>
         </button>
       </div>
     <% end %>
@@ -131,14 +142,36 @@
   <%# ✅ 右側: 時刻パネル (ON時のみ表示） %>
   <div class="block-time-panel">
     <div class="block-time-panel__main">
-      <div class="block-time-panel__row block-time-panel__row--departure">
-        <span class="block-time-panel__label block-time-panel__label--departure">出発</span>
-        <span class="block-time-panel__value block-time-panel__value--departure">09:00</span>
+      <div
+        class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %>"
+        data-controller="start-departure-time"
+        data-start-departure-time-plan-id-value="<%= plan.id %>"
+      >
+        <button
+          type="button"
+          class="start-departure-time__help-btn"
+          data-action="click->start-departure-time#showHelp"
+          aria-label="ヘルプ"
+        >?</button>
+
+        <div class="start-departure-time__label">
+          <%= departure_time_value.present? ? "出発" : "出発時間" %>
+        </div>
+
+        <input
+          type="text"
+          class="start-departure-time__input"
+          placeholder="--:--"
+          inputmode="numeric"
+          autocomplete="off"
+          value="<%= departure_time_value %>"
+          data-start-departure-time-target="input"
+        >
       </div>
     </div>
 
-    <%# ✅ トグル部分の横に矢印 %>
-    <% if plan.start_point.present? && plan.plan_spots.exists? %>
+    <%# ✅ スポットが追加されている時のみ矢印を表示 %>
+    <% if plan.plan_spots.exists? %>
       <div class="block-time-panel__toggle-area">
         <div class="block-time-panel__arrow">
           <i class="bi bi-arrow-down-short" aria-hidden="true"></i>

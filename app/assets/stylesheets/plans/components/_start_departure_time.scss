@@ -1,0 +1,195 @@
+/* ==========================================
+     出発時間ピッカー（StartPoint）
+========================================== */
+
+.start-departure-time {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  width: 60px;
+  max-width: 60px;
+  align-items: center;
+  text-align: center;
+}
+
+/* ✅ 2行で固定（ERBで<br>を入れる前提） */
+.start-departure-time__label {
+  width: 100%;
+  max-width: 60px; /* 右カラムが狭いので上限を決める */
+  font-size: 12px;
+  font-weight: 600;
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+
+  white-space: normal;
+  word-break: keep-all;
+}
+
+/* ✅ 入力欄：クリックでピッカーが開く */
+.start-departure-time__input {
+  width: 60px; /* コンパクト */
+  height: 32px;
+
+  box-sizing: border-box;
+  border: 1px solid #cfd6cf;
+  border-radius: 6px;
+
+  background: #fff;
+  color: #111;
+  text-align: center;
+
+  font-size: 14px;
+  font-weight: 700;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+    border-color: #2c5c3a;
+    box-shadow: 0 0 0 2px rgba(44, 92, 58, 0.25);
+  }
+
+  &::placeholder {
+    color: #999;
+    font-weight: 400;
+  }
+}
+
+/* ✅ 設定済み時：よりコンパクトに */
+.start-departure-time--set {
+  gap: 2px;
+
+  .start-departure-time__label {
+    font-size: 0.7rem;
+    font-weight: 500;
+    color: rgba(33, 33, 33, 0.55);
+  }
+
+  .start-departure-time__input {
+    height: 28px;
+    font-size: 13px;
+    border-color: transparent;
+    background: transparent;
+
+    &:hover {
+      border-color: #cfd6cf;
+      background: #fff;
+    }
+
+    &:focus {
+      border-color: #2c5c3a;
+      background: #fff;
+    }
+  }
+}
+
+/* ✅ ヘルプボタン（上から順：?ボタン → ラベル → 入力欄） */
+.start-departure-time__help-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  width: 16px;
+  height: 16px;
+  margin-bottom: 10px;
+  padding: 0;
+  border: none;
+  border-radius: 50%;
+
+  background: #888;
+  color: #fff;
+  font-size: 10px;
+  font-weight: 700;
+  line-height: 1;
+
+  cursor: pointer;
+
+  &:hover {
+    background: #666;
+  }
+}
+
+/* ✅ ヘルプダイアログ */
+#departure-time-help-dialog {
+  max-width: 420px;
+  padding: 0;
+  border: none;
+  border-radius: 12px;
+  box-shadow: 0 4px 24px rgba(0, 0, 0, 0.2);
+
+  &::backdrop {
+    background: rgba(0, 0, 0, 0.4);
+  }
+}
+
+.departure-time-help-dialog__content {
+  padding: 20px 24px;
+  text-align: center;
+}
+
+.departure-time-help-dialog__title {
+  margin: 0 0 12px;
+  font-size: 16px;
+  font-weight: 700;
+  color: #333;
+}
+
+.departure-time-help-dialog__text {
+  margin: 0 0 16px;
+  font-size: 14px;
+  line-height: 1.6;
+  color: #555;
+}
+
+.departure-time-help-dialog__close-btn {
+  min-width: 80px;
+  padding: 8px 20px;
+  border: none;
+  border-radius: 6px;
+
+  background: #2c5c3a;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 600;
+
+  cursor: pointer;
+
+  &:hover {
+    background: #234a2e;
+  }
+}
+
+/* ✅ flatpickr 時刻入力欄をコンパクトに */
+.flatpickr-calendar.hasTime .flatpickr-time {
+  max-height: 36px;
+}
+
+.flatpickr-time {
+  .numInputWrapper {
+    width: 28px !important;
+    min-width: 28px !important;
+
+    span.arrowUp,
+    span.arrowDown {
+      width: 28px;
+    }
+  }
+
+  .flatpickr-hour,
+  .flatpickr-minute {
+    width: 28px !important;
+    min-width: 28px !important;
+    padding: 0 2px;
+    font-size: 13px;
+  }
+
+  .flatpickr-time-separator {
+    width: auto;
+    padding: 0 2px;
+  }
+}

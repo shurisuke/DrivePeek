@@ -22,7 +22,6 @@
 @use "pages/top_user";
 @use "pages/mypage";
 
-
 @use "plans/plan_form.scss";
 @use "plans/components/start_point_block";
 @use "plans/components/spot_block";
@@ -30,3 +29,4 @@
 @use "plans/components/navibar";
 @use "plans/components/map_search_box";
 @use "plans/components/infowindow";
+@use "plans/components/_start_departure_time";
