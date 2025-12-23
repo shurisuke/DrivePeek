@@ -115,7 +115,7 @@
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
-  padding: 1rem 0.5rem;
+  padding: 16px 0px;
   margin-top: 0.5rem;
 
   overflow: visible;
@@ -132,39 +132,78 @@
       margin: 0;
     }
 
+    /*
+      ✅ ここが要点
+      - アイコンを absolute にしてレイアウトから外す
+      - 中央の .goal-text は「左右同じ分だけ空けた幅」で中央固定
+      → アイコンに影響されず “帰宅/住所がど真ん中”
+    */
     .goal-label__row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
+      position: relative;
       min-width: 0;
+
+      /* flex をやめて、中央要素だけが通常フローに乗る構造にする */
+      display: block;
     }
 
     .icon {
-      display: inline-block;
       width: 40px;
       height: 42px;
-      flex: 0 0 35px;
 
       background: url(house-icon.png) no-repeat center / contain;
       background-size: 100% 100%;
+
+      /* ✅ アイコンはレイアウトに参加させない */
+      position: absolute;
+      left: 2%;
+      top: 2px;
+      transform: translateY(-2px);
+
+      pointer-events: none;
     }
 
     .goal-text {
-      flex: 1 1 auto;
       min-width: 0;
 
       display: flex;
       flex-direction: column;
       align-items: center;
+
+      /*
+        ✅ 中央固定のための幅
+        - アイコンは absolute なので “右側の余白” は不要
+        - 左のアイコン分だけ安全領域を見込む
+      */
+      width: calc(100% - 60px);
+      margin: 0 auto;
+    }
+
+    /*
+      ✅ タイトル行：帰宅 + 編集ボタンを「横並びで中央」にする
+      - 編集ボタンは右端固定ではなく、帰宅の右隣に置く
+      - この行だけ少し右にずらして planbar の視覚中心に合わせる
+    */
+    .goal-title-row {
+      width: 100%;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 8px;
+      margin-bottom: 10px;
+
+      /* ✅ ここで微調整（右へ） */
+      transform: translateX(20px);
     }
 
     .goal-title {
-      width: 100%;
       font-weight: 700;
       color: #111;
       font-size: 1.05rem;
       line-height: 1.1;
-      margin-bottom: 10px;
+      margin: 0;
+
       text-align: center;
     }
 
@@ -187,15 +226,18 @@
     }
 
     .goal-point-change-btn {
-      flex: 0 0 auto;
-
       width: 30px;
       height: 30px;
       padding: 0;
-      border-radius: 9999px;
+
+      /* ✅ 丸みは消す */
+      border-radius: 0;
 
       background: #fff;
-      border: 1px solid rgba(80, 109, 83, 0.28);
+
+      /* ✅ 非ホバー時は「枠線なし・影なし」 */
+      border: 0;
+      box-shadow: none;
 
       display: inline-flex;
       align-items: center;
@@ -203,8 +245,11 @@
 
       cursor: pointer;
 
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+      transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+      /* ✅ 右端固定をやめる（＝帰宅の右隣に置く） */
+      position: static;
+      transform: none;
 
       i {
         font-size: 14px;
@@ -213,14 +258,13 @@
         transform: translateY(-0.5px);
       }
 
+      /* ✅ ホバー時だけ「枠線 + 影」あり */
       &:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
-        transform: translateY(-1px);
+        border: 1px solid rgba(80, 109, 83, 0.28);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       }
 
       &:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
         opacity: 0.95;
       }
 
@@ -233,8 +277,19 @@
         opacity: 0.5;
         cursor: not-allowed;
         box-shadow: none;
+        border: 0;
       }
     }
+  }
+
+  /*
+    ✅ 到着時刻を上寄せ（ここが修正点）
+    - block-time-panel 自体の display/flex など “配置ロジック” は上書きしない
+    - 「フレックスアイテムとして上に寄せる」だけを指定する
+    → 右カラムに残ったまま上寄せできる
+  */
+  .block-time-panel {
+    align-self: flex-start;
   }
 
   .goal-point-edit {
