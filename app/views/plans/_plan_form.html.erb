@@ -19,6 +19,22 @@
     <%= render "plans/form_components/planbar", plan: plan %>
   <% end %>
 
+  <!-- ✅ 時計ボタン＋白背景（固定・スクロールに巻き込まれない） -->
+  <div class="plan-time-toggle-header"
+       data-controller="plan-time-toggle"
+       data-plan-time-toggle-planbar-selector-value=".planbar">
+    <button type="button"
+            class="plan-time-fab"
+            aria-label="時間表示のオン/オフ"
+            aria-pressed="false"
+            data-action="click->plan-time-toggle#toggle">
+      <%= image_tag "clock.png",
+                    class: "plan-time-fab__icon",
+                    alt: "",
+                    aria: { hidden: true } %>
+    </button>
+  </div>
+
   <!-- プラン保存ボタン -->
   <div class="plan-save">
     <%= button_to "プランを保存", plans_path, method: :post, class: "btn btn-save" %>

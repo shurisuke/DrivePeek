@@ -1,10 +1,17 @@
+/* app/assets/stylesheets/pages/_plan_form.scss */
 /* ==========================================
      pages/_plan_form.scss
-     プラン作成画面レイアウト
+     プランタブ全体
+     プランタブ時刻レール
 ========================================== */
 
 body.no-footer {
   .plan-form {
+    /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
+    --planbar-width: 350px;
+    --rail-width: 70px;
+    --map-gap: 20px;
+
     position: relative;
     width: 100% !important;
     height: 100vh;
@@ -14,10 +21,12 @@ body.no-footer {
       background-size: cover;
       background-position: center;
       position: absolute;
-      width: calc(100% - 370px);
+
+      left: var(--planbar-width);
+      width: calc(100% - (var(--planbar-width) + var(--map-gap)));
+
       height: 100%;
       top: 0;
-      left: 350px;
       z-index: 1;
     }
 
@@ -25,8 +34,10 @@ body.no-footer {
       position: fixed;
       top: 0;
       left: 0;
-      width: 350px;
+
+      width: var(--planbar-width);
       height: 100%;
+
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
       z-index: 2;
@@ -43,7 +54,9 @@ body.no-footer {
         border-bottom: 1px solid #ccc;
         background: #fff;
         flex: 0 0 auto;
-        position: relative; /* ✅ 時計ボタンの見た目安定用 */
+        position: relative;
+        overflow: visible;
+        height: 60px;
 
         .tab-btn {
           font-size: 17px;
@@ -66,53 +79,36 @@ body.no-footer {
         .tab-community {
           font-size: 14px;
         }
-
-        /* ✅ 時計ボタン（Planタブ時だけ表示） */
-        .tab-time-toggle {
-          flex: 0 0 auto;
-          width: 44px;
-          border: none;
-          background: transparent;
-
-          display: inline-flex;
-          align-items: center;
-          justify-content: center;
-
-          cursor: pointer;
-
-          /* 初期は非表示（Planタブactiveで is-visible が付く） */
-          opacity: 0;
-          pointer-events: none;
-
-          i {
-            font-size: 18px;
-            color: rgba(121, 121, 121, 0.95);
-          }
-
-          &.is-visible {
-            opacity: 1;
-            pointer-events: auto;
-          }
-
-          &.is-active i {
-            color: var(--personal);
-          }
-
-          &:focus,
-          &:focus-visible {
-            outline: none;
-            box-shadow: none;
-          }
-        }
       }
 
       &__content {
         flex: 1 1 auto;
         min-height: 0;
+        overflow: visible;
+        position: relative;
+      }
+
+      /* ✅ スクロールコンテナ */
+      &__content-scroll {
+        position: absolute;
+        top: 0;
+        left: 0;
+
         overflow-y: auto;
+        width: 100%; /* ✅ 350固定をやめる（親=planbarの幅に追従） */
+        height: calc(100vh - 60px);
 
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
+
+        background: rgba(255, 255, 255, 0.95);
+        box-sizing: border-box;
+      }
+
+      /* ✅ ブロック一覧コンテナ（固定をやめて100%） */
+      &__blocks {
+        width: 100%;
+        box-sizing: border-box;
       }
     }
 
@@ -184,141 +180,319 @@ body.no-footer {
   }
 }
 
+/* ✅ ON時: スクロールコンテナを planbar + rail に拡張 */
+body.no-footer.plan-time-open .plan-form .planbar .planbar__content-scroll {
+  width: calc(var(--planbar-width) + var(--rail-width));
+}
+
 /* ==========================================
-   Planタブ：時間表示領域（右に100px展開）
-   - body.plan-time-open の時だけ表示
-   - ブロックの高さ（collapse）に追従
+   時計ボタン＋白背景ヘッダー（固定・スクロール非連動）
 ========================================== */
 
-body.plan-time-open .plan-time-panel {
-  display: block;
-}
-
-.has-plan-time-panel {
-  position: relative; /* ✅ 右パネルのabsolute基準 */
-}
-
-/* 右側に出す白枠（約100px） */
-.plan-time-panel {
-  display: none;
-
-  position: absolute;
+.plan-time-toggle-header {
+  position: fixed;
   top: 0;
-  bottom: 0;
+  left: var(--planbar-width);
+  width: var(--rail-width);
+  height: 60px;
 
-  width: 100px;
-  right: -112px; /* 100px + 余白12px */
+  z-index: 15;
+  pointer-events: none;
 
-  pointer-events: none; /* ✅ 操作の邪魔をしない（drag/click） */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  &[hidden] {
+    display: none !important;
+  }
+
+  &::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    background: #fff;
+    border-bottom: 1px solid #ccc;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: -1;
+  }
 }
 
-.plan-time-panel__inner {
-  height: 100%;
+body.plan-time-open .plan-time-toggle-header::before {
+  opacity: 1;
+}
+
+/* ✅ 時計ボタン */
+.plan-time-fab {
+  width: 38px;
+  height: 38px;
+  border-radius: 9999px;
 
   background: #fff;
-  border: 1px solid rgba(0, 0, 0, 0.10);
-  border-radius: 8px;
+  border: 1px solid rgba(80, 109, 83, 0.22);
 
-  box-shadow: 0 6px 14px rgba(0, 0, 0, 0.08);
-  padding: 10px 8px;
+  /* ✅ 要望: 影を削除 */
+  box-shadow: none;
+
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  cursor: pointer;
+  pointer-events: auto;
+
+  /* ✅ 要望: 左に10pxずらす（ヘッダーの中央寄せは維持） */
+  transform: translateX(-10px);
+
+  .plan-time-fab__icon {
+    width: 48px;
+    height: 48px;
+    display: block;
+  }
+
+  &:focus,
+  &:focus-visible {
+    outline: none;
+
+    /* ✅ フォーカス時の影も削除（現状は box-shadow を当ててた） */
+    box-shadow: none;
+  }
+}
+
+/* ==========================================
+   時刻表示レール（planbar 右側）
+========================================== */
+
+.plan-time-slot {
+  position: fixed;
+  left: var(--planbar-width);
+  width: var(--rail-width);
+
+  pointer-events: none;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+/* ✅ レール内の上下ボーダーは消す（横線の原因） */
+.plan-time-panel__inner {
+  height: 100%;
+  background: #fff;
+
+  /* 左は planbar と密着させる */
+  border-left: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.15);
+  border-top: 0;
+  border-bottom: 0;
+
+  border-radius: 0;
+  box-shadow: none;
+  padding: 8px 0px;
 
   display: flex;
   flex-direction: column;
-  gap: 10px;
-
-  justify-content: flex-start;
+  justify-content: space-between;
+  gap: 0;
 }
 
 .plan-time-panel__row {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 4px;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
 }
 
 .plan-time-panel__label {
-  font-size: 0.76rem;
+  font-size: 0.7rem;
   font-weight: 600;
   color: rgba(33, 33, 33, 0.55);
   text-align: center;
 }
 
 .plan-time-panel__value {
-  font-size: 0.92rem;
+  font-size: 0.88rem;
   font-weight: 700;
   color: #222;
   text-align: center;
   font-variant-numeric: tabular-nums;
 }
 
-/* spot用：境目矢印（下寄せ） */
-.plan-time-panel__arrow {
-  margin-top: auto;
+/* ==========================================
+   ✅ ブロック + 右の時刻パネル
+   重要: ラッパー側の padding を 0 にして「左余白圧迫」を根絶
+========================================== */
+
+.start-point-block,
+.spot-block,
+.goal-point-block {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  gap: 0;
+
+  box-sizing: border-box;
+  padding: 0 40px;
+}
+
+/* ✅ 左側メイン（将来拡張のため100%基準） */
+.block-main-content {
+  flex: 1 1 auto;
+  width: 100%;
+  min-width: 0;
+  box-sizing: border-box;
+
+  /* 念のため：謎の左余白が入るのを抑止 */
+  margin-left: 0 !important;
+}
+
+/* ✅ 右側時刻パネル（レール幅固定） */
+.block-time-panel {
+  display: none;
+  flex: 0 0 var(--rail-width);
+  width: var(--rail-width);
+  min-width: var(--rail-width);
+
+  background: #fff;
+  border-left: none;
+  border-radius: 0;
+
+  flex-direction: column;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+body.plan-time-open .block-time-panel {
+  display: flex;
+}
+
+.block-time-panel__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  gap: 8px;
+  padding: 0;
+}
+
+.block-time-panel__row {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.block-time-panel__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.55);
+  text-align: center;
+}
+
+.block-time-panel__value {
+  font-size: 0.88rem;
+  font-weight: 500;
+  color: #222;
+  text-align: center;
+  font-variant-numeric: tabular-nums;
+}
+
+.block-time-panel__toggle-area {
+  flex: 0 0 auto;
   display: flex;
   justify-content: center;
-  opacity: 0.9;
+  align-items: center;
+  padding: 25px 0;
+}
+
+.block-time-panel__arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
 
   i {
-    color: rgba(80, 109, 83, 0.85);
-    font-size: 18px;
-    transform: translateY(2px);
+    font-size: 24px;
+    color: rgba(80, 109, 83, 0.75);
+    line-height: 1;
   }
 }
 
-.planbar {
+body.plan-time-open .plan-form .planbar {
+  box-shadow: none !important;
+}
+
+/* ================================================================
+   ✅ 正攻法：子要素は「固定幅」を捨てて width:100%
+================================================================ */
+
+.block-main-content .spot-body,
+.block-main-content .spot-main,
+.block-main-content .spot-block-body,
+.block-main-content .spot-block__body,
+.block-main-content .spot-block-inner,
+.block-main-content .spot-block__inner,
+.block-main-content .start-point-main,
+.block-main-content .goal-point-main,
+.block-main-content .distance-info,
+.block-main-content .start-point-detail-wrap,
+.block-main-content .goal-point-toggle,
+.block-main-content .goal-point-section,
+.block-main-content .start-label,
+.block-main-content .goal-label {
+  width: 100% !important;
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+.block-main-content > div {
+  max-width: 100%;
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   ✅ 時刻レールの「中身だけ」左に寄せる
+   - レール幅(70px)やスクロール領域は触らない
+========================================== */
+
+body.plan-time-open .plan-form {
+  --time-rail-content-offset-x: -12px;
+}
+
+/* 各ブロックの時刻レール（出発/滞在/到着の並びが出るところ） */
+body.plan-time-open .plan-form .block-time-panel__main {
+  position: relative;
+  left: var(--time-rail-content-offset-x);
+}
+
+/* もし上部の固定レール（.plan-time-panel__inner 側）も同じように寄せたいなら */
+body.plan-time-open .plan-form .plan-time-panel__inner {
+  position: relative;
+  left: var(--time-rail-content-offset-x);
+}
+
+/* 矢印ラッパーごと寄せる（まずはこれでOKなことが多い） */
+body.plan-time-open .plan-form .block-time-panel__toggle-area {
+  position: relative;
+  left: var(--time-rail-content-offset-x);
+}
+
+/* 念のため：はみ出しが見えるように（効かない時の保険） */
+body.plan-time-open .plan-form .block-time-panel,
+body.plan-time-open .plan-form .plan-time-panel__inner {
   overflow: visible;
+}
 
-  .plan-tab-nav {
-    position: relative; /* ✅ 場外ボタンの基準 */
-    overflow: visible;  /* ✅ はみ出し許可 */
-  }
+/* ==========================================
+   ✅ 追加要望（出発ブロックだけ）
+   1) トグル横矢印の「下padding」を10減らす
+   2) 出発時間を「下寄せ」
+========================================== */
 
-  /* ✅ 時計アイコン（AI提案の右横・場外） */
-  .plan-time-fab {
-    position: absolute;
-    top: 50%;
-    right: -46px;              /* ← “場外” */
-    transform: translateY(-50%);
+/* 1) 矢印エリア */
+.start-point-block .block-time-panel__toggle-area {
+  padding: 50px 0 10px;
+}
 
-    width: 38px;
-    height: 38px;
-    border-radius: 9999px;
-
-    background: #fff;
-    border: 1px solid rgba(80, 109, 83, 0.22);
-    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.12);
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-
-    i {
-      font-size: 18px;
-      color: rgba(121, 121, 121, 0.95);
-    }
-
-    &.is-active i {
-      color: var(--personal);
-    }
-
-    &:focus,
-    &:focus-visible {
-      outline: none;
-      box-shadow: none;
-    }
-  }
-
-  /* ✅ 重要：横パネルを見せるため、外側は visible */
-  &__content {
-    overflow: visible;
-  }
-
-  /* ✅ 縦スクロールは内側で持つ */
-  &__content-scroll {
-    overflow-y: auto;
-    max-height: calc(100vh - 60px); /* タブ高さ分のだいたい。必要なら微調整 */
-    -webkit-overflow-scrolling: touch;
-    overscroll-behavior: contain;
-  }
+/* 2) 出発時間：右レール内の行を下寄せ */
+.start-point-block .block-time-panel__main {
+  justify-content: flex-end;
 }
