@@ -28,7 +28,7 @@ class StartPointsController < ApplicationController
   end
 
   def start_point_params
-    params.require(:start_point).permit(:lat, :lng, :address, :prefecture, :city, :toll_used)
+    params.require(:start_point).permit(:lat, :lng, :address, :prefecture, :city, :toll_used, :departure_time)
   end
 
   def only_toll_used_param?
@@ -38,7 +38,7 @@ class StartPointsController < ApplicationController
   def render_success(start_point)
     render json: {
       ok: true,
-      start_point: start_point.as_json(only: %i[lat lng address prefecture city toll_used])
+      start_point: start_point.as_json(only: %i[lat lng address prefecture city toll_used departure_time])
     }, status: :ok
   end
 

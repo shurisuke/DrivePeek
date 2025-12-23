@@ -322,6 +322,14 @@ const restoreGoalPointVisibilityState = (state) => {
 }
 
 // -------------------------------
+// ✅ 出発時刻の状態に応じて body.departure-time-unset を切り替え
+// -------------------------------
+const updateDepartureTimeClass = () => {
+  const departureTimeSet = document.querySelector(".start-departure-time--set")
+  document.body.classList.toggle("departure-time-unset", !departureTimeSet)
+}
+
+// -------------------------------
 // ✅ planbar スクロール位置の退避/復元（ズレない方式）
 // -------------------------------
 const findScrollAnchor = (scrollEl) => {
@@ -451,8 +459,9 @@ const refreshPlanbar = async (planId) => {
     await withNoCollapseAnimation(async () => {
       window.Turbo.renderStreamMessage(html)
 
-      // ✅ “即” 復元（controllerが後から触って揺れるのを潰す）
+      // ✅ "即" 復元（controllerが後から触って揺れるのを潰す）
       restoreGoalPointVisibilityState(goalPointState)
+      updateDepartureTimeClass()
 
       await new Promise((r) => requestAnimationFrame(() => r()))
 
@@ -499,6 +508,18 @@ export const bindPlanbarRefresh = () => {
   })
 
   document.addEventListener("plan:plan-spot-toll-used-updated", async () => {
+    const planId = getPlanId()
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  document.addEventListener("plan:departure-time-updated", async () => {
+    const planId = getPlanId()
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  document.addEventListener("plan:plan-spot-stay-duration-updated", async () => {
     const planId = getPlanId()
     if (!planId) return
     await refreshPlanbar(planId)

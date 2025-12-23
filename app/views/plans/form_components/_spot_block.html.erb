@@ -55,12 +55,12 @@
           </button>
         </div>
 
-        <%# ✅ 常時表示 %>
+        <%# ✅ 次の場所まで（最後のスポット＆帰宅地点非表示時はJSで非表示） %>
         <% move_minutes = plan_spot.move_time.to_i %>
         <% hours = move_minutes / 60 %>
         <% minutes = move_minutes % 60 %>
 
-        <div class="spot-next-move mt-3">
+        <div class="spot-next-move mt-3" data-plan-time-role="spot-next-move">
           <span class="label">次の場所まで</span>
           <span class="km">
             <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km

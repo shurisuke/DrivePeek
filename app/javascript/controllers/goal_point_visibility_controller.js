@@ -50,11 +50,9 @@ export default class extends Controller {
     }, spotBlocks[0]);
 
     // spot_block 側で付けた目印
-    const departureRow = lastSpot.querySelector('[data-plan-time-role="spot-departure"]');
-    const arrowArea = lastSpot.querySelector('[data-plan-time-role="spot-arrow"]');
+    const nextMoveRow = lastSpot.querySelector('[data-plan-time-role="spot-next-move"]');
 
-    // goalVisible=true なら表示、false なら非表示
-    if (departureRow) departureRow.hidden = !goalVisible;
-    if (arrowArea) arrowArea.hidden = !goalVisible;
+    // goalVisible=true なら表示、false なら非表示（出発時間・矢印は常に表示）
+    if (nextMoveRow) nextMoveRow.hidden = !goalVisible;
   }
 }

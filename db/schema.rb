@@ -10,13 +10,13 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_22_070046) do
+ActiveRecord::Schema[8.1].define(version: 2025_12_23_180913) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
   create_table "goal_points", force: :cascade do |t|
     t.string "address"
-    t.datetime "arrival_time"
+    t.time "arrival_time"
     t.datetime "created_at", null: false
     t.float "lat"
     t.float "lng"
@@ -46,9 +46,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_070046) do
   end
 
   create_table "plan_spots", force: :cascade do |t|
-    t.datetime "arrival_time"
+    t.time "arrival_time"
     t.datetime "created_at", null: false
-    t.datetime "departure_time"
+    t.time "departure_time"
     t.text "memo"
     t.integer "move_cost", default: 0, null: false
     t.float "move_distance", default: 0.0, null: false
@@ -97,7 +97,7 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_22_070046) do
     t.string "address"
     t.string "city"
     t.datetime "created_at", null: false
-    t.datetime "departure_time"
+    t.time "departure_time"
     t.float "lat"
     t.float "lng"
     t.integer "move_cost"
