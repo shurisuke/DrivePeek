@@ -425,3 +425,10 @@
     transform: none !important;
   }
 }
+
+.block-time-panel input[data-start-departure-time-input="1"] {
+  width: 52px;          /* かなり狭くてもOK */
+  padding: 6px 6px;
+  font-size: 12px;
+  text-align: center;
+}
