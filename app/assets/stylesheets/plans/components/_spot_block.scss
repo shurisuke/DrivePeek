@@ -1,15 +1,23 @@
+/* app/assets/stylesheets/components/_spot_block.scss */
 /* ==========================================
      スポットブロック
 ========================================== */
 
+/* ================================================================
+   ✅ 重要：ラッパー(.spot-block)に padding を持たせない
+   - flex内の block-main-content が「左の余白に圧迫される」原因を潰す
+   - カード見た目は .block-main-content 側へ寄せる
+================================================================ */
+
 .spot-block {
   position: relative;
-  background: #ffffff;
-  border-radius: 6px;
   width: 100%;
-  padding: 0.5rem 0.5rem 1rem 0.5rem;
   margin-top: 15px;
-  padding-top: 20px;
+
+  /* ✅ ラッパーには持たせない */
+  background: transparent;
+  border-radius: 0;
+  padding: 0;
 
   --spot-action-bg: rgba(80, 109, 83, 0.06);
   --spot-action-bg-hover: rgba(80, 109, 83, 0.10);
@@ -36,6 +44,37 @@
   cursor: pointer;
 }
 
+/* ✅ カード見た目はメイン側へ */
+.spot-block .block-main-content {
+  background: #ffffff;
+  border-radius: 6px;
+
+  padding: 0.5rem 0.5rem 1rem 0.5rem;
+  padding-top: 20px;
+
+  box-sizing: border-box;
+}
+
+/* ==========================================
+   ✅ スポットブロック：時刻パネル（到着/滞在/出発）の縦配置
+   - 到着: padding-top: 20px で上寄せ
+   - 出発: padding-bottom: 20px で下寄せ
+   - 滞在: 到着と出発の間（中央）
+========================================== */
+
+.spot-block .block-time-panel__main {
+  justify-content: space-between;
+  gap: 0;
+}
+
+.spot-block .block-time-panel__row:first-child {
+  padding-top: 5px;
+}
+
+.spot-block .block-time-panel__row:last-child {
+  padding-bottom: 32px;
+}
+
 /* ------------------------------------------
    上部（スポット情報）
 ------------------------------------------ */
@@ -50,22 +89,21 @@
 
 .spot-block .spot-order-pin {
   position: absolute;
-  top: 0;
-  left: 0;
-  margin-top: 2px;
+  top: 1%;
+  left: 1%;
 
   width: 34px;
   height: 34px;
   border-radius: 9999px;
 
-  background: #435e50;
+  background: #ef813de9;
   color: #fff;
 
   display: inline-flex;
   align-items: center;
   justify-content: center;
 
-  font-size: 0.9rem;
+  font-size: 1rem;
   font-weight: 700;
 
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
@@ -287,7 +325,6 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  gap: 8px;
   width: 100%;
 }
 
@@ -489,9 +526,9 @@
 
 /* ✅ 有料道路行：EC料金の見た目に合わせて高さ固定 */
 .spot-block .spot-settings__row--toll {
-  height: 34px;              /* ←まずはこの値でOK（必要なら 32〜36で微調整） */
+  height: 34px;
   align-items: center;
-  padding: 0;                /* 行高固定したいので縦paddingは消す */
+  padding: 0;
 }
 
 /* 左側（ラベル+スイッチ）も高さ内に収める */
@@ -502,7 +539,7 @@
 
 /* EC料金：高さブレ防止（数字の上下ズレ対策） */
 .spot-block .spot-settings__price {
-  line-height: 1;            /* 余計な行高で伸びないように */
+  line-height: 1;
   display: inline-flex;
   align-items: center;
   height: 34px;
@@ -510,31 +547,27 @@
 
 /* ==========================================
    ✅ 設定フォームの下半分（滞在時間行）だけブレ防止
-   - 行高を固定
-   - select を flex で伸縮させない
 ========================================== */
 
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay {
-  height: 34px;      /* ← 有料道路行と同じ高さで固定（32〜36で微調整OK） */
-  padding: 0;        /* 高さ固定のため縦paddingを消す */
+  height: 34px;
+  padding: 0;
   align-items: center;
 }
 
-/* ← これが効きます：flexで伸びないようにする */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select {
-  flex: 0 0 100px;   /* 固定幅 */
+  flex: 0 0 100px;
   width: 100px;
   min-width: 100px;
   max-width: 100px;
 
-  height: 34px;      /* 行高と合わせて固定 */
+  height: 34px;
   min-height: 34px;
   box-sizing: border-box;
 
-  margin-left: auto; /* 右寄せ */
+  margin-left: auto;
 }
 
-/* （念のため）Bootstrapのfocusでサイズが変わらないように */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus,
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus-visible {
   outline: none !important;
@@ -594,7 +627,6 @@
   transform: translateX(18px);
 }
 
-/* ✅ クリック時（focus）枠線を消す */
 .spot-block .spot-settings .form-check-input:focus,
 .spot-block .spot-settings .form-check-input:focus-visible {
   outline: none !important;
@@ -602,7 +634,7 @@
 }
 
 /* ------------------------------------------
-   次の場所まで（枠/背景を消す + ラベルを小さく薄く）
+   次の場所まで
 ------------------------------------------ */
 
 .spot-block .spot-next-move {
@@ -618,7 +650,7 @@
   align-items: center;
   gap: 10px;
 
-  margin: 0 auto 8px; /* ← ここにする（左右autoで中央寄せ） */
+  margin: 0 auto 8px;
   margin-top: 20px;
 }
 
@@ -639,27 +671,21 @@
 
 /* ------------------------------------------
    編集パネル共通（メモ編集/タグ追加/設定）
-   - spot-memo--pin + spot-memo--editor をカードにする
 ------------------------------------------ */
 
-/* ✅ 外側は“影なし”の土台にする（影は枠線側に合わせる） */
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor {
   position: relative;
   background: transparent !important;
   border: 0 !important;
   box-shadow: none !important;
 
-  /* 枠(=::before)より内側に中身が入る余白 */
   padding: 30px 18px 24px !important;
   margin: 0 !important;
 
   min-height: auto !important;
-
-  /* 影が切れないように保険 */
   overflow: visible !important;
 }
 
-/* ✅ 枠線を描く::before に “背景 + 枠 + 影” を全部乗せる */
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor::before {
   content: "";
   position: absolute;
@@ -672,7 +698,6 @@
   border: 1px solid rgba(0, 0, 0, 0.10);
   border-radius: 8px;
 
-  /* ✅ 影が「枠線の位置」に来る */
   box-shadow:
     0 6px 14px rgba(0, 0, 0, 0.08),
     0 1px 3px rgba(0, 0, 0, 0.06);
@@ -681,7 +706,6 @@
   z-index: 0;
 }
 
-/* ✅ 中身は枠より前面に */
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor form,
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor .spot-memo__editor-actions {
   position: relative;
@@ -694,7 +718,6 @@
   z-index: 1;
 }
 
-/* 入力中は cursor:text */
 .spot-block .spot-memo.spot-memo--editor input.form-control,
 .spot-block .spot-memo.spot-memo--editor textarea.form-control {
   cursor: text;
@@ -733,7 +756,6 @@
   box-shadow: none !important;
 }
 
-/* editor-actions（閉じる/追加/保存） */
 .spot-block .spot-memo__editor-actions {
   width: 100%;
   display: flex;
@@ -742,7 +764,6 @@
   margin-top: 10px;
 }
 
-/* ボタン見た目統一 */
 .spot-block .spot-memo__editor-actions .btn {
   min-width: 60px !important;
   padding: 0.5rem 0.7rem !important;
@@ -763,7 +784,6 @@
   color: #fff !important;
 }
 
-/* Chrome autofill 対策 */
 .spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill,
 .spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:hover,
 .spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:focus {
@@ -774,29 +794,26 @@
 
 /* ==========================================
    ✅ 設定フォームだけ：左右の内側余白を増やす
-   - 対象は data-plan-spot-settings-target="panel" のみ
 ========================================== */
 .spot-block [data-plan-spot-settings-target="panel"].spot-memo.spot-memo--pin.spot-memo--editor {
-  /* 中身を左右に余裕を持たせる（枠線より内側に入れる） */
   padding-left: 45px !important;
   padding-right: 45px !important;
 }
 
 /* ==========================================
-   ✅ 滞在時間select：幅固定 + 角丸 + focus枠を消す（スナップショットでもブレない）
+   ✅ 滞在時間select：幅固定 + 角丸 + focus枠を消す
 ========================================== */
 .spot-block .spot-settings__stay-select {
   width: 100px;
   min-width: 100px;
   max-width: 100px;
 
-  flex: 0 0 100px;          /* ← flexで伸び縮みしない */
-  box-sizing: border-box;   /* ← ほんの少しの横揺れ防止 */
+  flex: 0 0 100px;
+  box-sizing: border-box;
 
-  border-radius: 10px;      /* ← 角つきを解消 */
+  border-radius: 10px;
 }
 
-/* Bootstrapの focus ring を消す */
 .spot-block .spot-settings__stay-select:focus,
 .spot-block .spot-settings__stay-select:focus-visible {
   outline: none !important;
@@ -805,27 +822,22 @@
 
 /* ==========================================
    ✅ 設定フォームを「薄く・小さく」まとめる（HTML変更なし）
-   - 対象: 設定パネルだけ
 ========================================== */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings {
-  /* 文字サイズを約 3/4 */
   font-size: 0.82rem;
 }
 
-/* ラベルも少し軽く＆小さく */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__label {
   font-size: 0.82rem;
   font-weight: 600;
   color: rgba(33, 33, 33, 0.70);
 }
 
-/* 行間・余白を詰める */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row {
   padding: 6px 0;
   gap: 10px;
 }
 
-/* EC料金も小さく */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings__price {
   font-size: 0.9rem;
   font-weight: 500;
@@ -835,8 +847,8 @@
    ✅ トグルスイッチ：全体を約 2/3 に縮小
 ========================================== */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input {
-  width: 28px;   /* 40 -> 28 */
-  height: 16px;  /* 22 -> 16 */
+  width: 28px;
+  height: 16px;
 
   border: 0 !important;
   outline: none !important;
@@ -847,18 +859,16 @@
   top: 2px;
   left: 2px;
 
-  width: 12px;   /* 18 -> 12 */
-  height: 12px;  /* 18 -> 12 */
+  width: 12px;
+  height: 12px;
 
   box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 }
 
-/* つまみ移動量も縮小（28 - 12 - 4 = 12） */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:checked::after {
   transform: translateX(12px);
 }
 
-/* focusリングは出さない（再保証） */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus,
 .spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus-visible {
   outline: none !important;
@@ -876,20 +886,18 @@
   font-size: 0.9rem;
   line-height: 1.2;
 
-  /* 高さと余白を小さく */
-  padding: 6px 28px 6px 10px; /* 右は矢印分確保 */
+  padding: 6px 28px 6px 10px;
   min-height: 34px;
 
   border-radius: 6px;
 
-  font-variant-numeric: tabular-nums;      /* まずこれ */
-  font-feature-settings: "tnum";           /* Safari保険 */
-  letter-spacing: 0;                        /* 余計な詰めで揺れないように */
-  transition: none !important;              /* 念のため */
-  -webkit-font-smoothing: antialiased;      /* Macでの微振動対策（効く時あり） */
+  font-variant-numeric: tabular-nums;
+  font-feature-settings: "tnum";
+  letter-spacing: 0;
+  transition: none !important;
+  -webkit-font-smoothing: antialiased;
 }
 
-/* Bootstrapのfocus枠を消す（再保証） */
 .spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus,
 .spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus-visible {
   outline: none !important;
@@ -898,7 +906,6 @@
 
 /* ==========================================
    ✅ 設定フォームの「閉じる」以外を小さく
-   - 閉じるボタンは現状維持
 ========================================== */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn {
   font-size: 0.8rem !important;
@@ -906,13 +913,11 @@
   min-width: 52px !important;
 }
 
-/* 閉じるボタンだけ現状維持（上書きで戻す） */
 .spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn.btn-outline-secondary {
   font-size: 0.8rem !important;
   padding: 0.5rem 0.7rem !important;
   min-width: 60px !important;
 }
-
 
 /* ------------------------------------------
    下部：開閉トグル

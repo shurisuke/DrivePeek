@@ -3,16 +3,20 @@
 // ================================================================
 // Planbar Updater（単一責務）
 // 用途: planbar を Turbo Stream で差し替えて、通知イベントを投げるだけ。
-// ✅ 改良：空白ゼロ
+// ✅ 改良：空白ゼロ（※ただし現状は安定性優先で“揺れ要因”を無効化）
 //   - fetch中は旧UIを見せたまま操作だけ止める
-//   - 差し替え〜復元中は「旧UIのスナップショット」を上に被せて空白を消す
-//   - 裏では visibility:hidden でガタつきを隠して復元する
-//   - planbar内の collapse(show) をすべて復元（StartPoint/Spot/Goal など）
+//   - planbar内の collapse(show) を復元（StartPoint/Spot/Goal など）
 //   - spot-block 内のフォーム状態（settings/memo/tags）を復元
-//   - planbar__content のスクロール位置も復元（アンカー方式）
-// ✅ 追加：帰宅地点トグル（switch/hidden/body class）も退避・即復元（ガタつき対策）
-//   - Turbo差し替え後に controller が “後から” hidden を触って揺れるのを防ぐ
-//   - Turbo復元時はcollapseのアニメーションを無効化する
+//   - planbar のスクロール位置も復元（アンカー方式）
+// ✅ 追加：帰宅地点トグル（switch/hidden/body class）も退避・即復元
+//
+// ⚠️ 現状の安定版方針
+//   - “横振れ/スクロール死”の原因になりやすい処理（snapshot / visibility hidden）を無効化
+//   - 代わりに「最小の復元処理」に絞って安定動作を優先する
+//
+// 重要前提:
+//   - 実際にスクロールしている要素は .planbar__content-scroll
+//   - ここを基準に lock / scroll復元 / anchor計算を行う
 // ================================================================
 
 import { getPlanDataFromPage } from "map/plan_data"
@@ -30,12 +34,14 @@ const getPlanId = () => {
 // -------------------------------
 // planbar root / scroll element
 // -------------------------------
-const getPlanbarRoot = () => {
-  const scroll = document.querySelector(".planbar__content")
-  return scroll || document
-}
+// ✅ ルートは planbar まで広く取る（差し替え対象のDOMにも強い）
+const getPlanbarRoot = () => document.querySelector(".planbar") || document
 
-const getPlanbarScrollEl = () => document.querySelector(".planbar__content")
+// ✅ 実際にスクロールする要素を最優先で取る（ここが最重要）
+const getPlanbarScrollEl = () =>
+  document.querySelector(".planbar__content-scroll") ||
+  document.querySelector(".planbar__content") ||
+  null
 
 // -------------------------------
 // ✅ fetch中：見た目は残したまま「操作だけ」止める
@@ -55,21 +61,6 @@ const unlockPlanbarUI = () => {
 }
 
 // -------------------------------
-// ✅ DOM差し替え〜復元中だけ planbar を隠す（裏で作業する）
-// -------------------------------
-const hidePlanbar = () => {
-  const el = getPlanbarScrollEl()
-  if (!el) return
-  el.style.setProperty("visibility", "hidden", "important")
-}
-
-const showPlanbar = () => {
-  const el = getPlanbarScrollEl()
-  if (!el) return
-  el.style.removeProperty("visibility")
-}
-
-// -------------------------------
 // ✅ 更新中だけ scroll anchoring を無効化（勝手にズレるのを抑える）
 // -------------------------------
 const beginPlanbarUpdate = () => {
@@ -86,7 +77,8 @@ const beginPlanbarUpdate = () => {
   el.style.scrollBehavior = "auto"
   el.style.overflowAnchor = "none"
 
-  hidePlanbar()
+  // ❌ 横振れ/スクロール死の原因になりやすいので無効化（安定版）
+  // el.style.setProperty("visibility", "hidden", "important")
 }
 
 const endPlanbarUpdate = () => {
@@ -98,13 +90,13 @@ const endPlanbarUpdate = () => {
   delete el.dataset.prevScrollBehavior
   delete el.dataset.prevOverflowAnchor
 
-  showPlanbar()
+  // ❌ 横振れ/スクロール死の原因になりやすいので無効化（安定版）
+  // el.style.removeProperty("visibility")
 }
 
 // ================================================================
-// ✅ 空白ゼロのための “スナップショット”
-// - 旧 planbar__content を固定位置で画面上に被せる
-// - duplicate id / data-controller を除去して副作用をゼロにする
+// ❌ “スナップショット”は現状無効化（横振れ原因）
+// （コードは残すが使わない）
 // ================================================================
 let planbarSnapshotEl = null
 
@@ -129,11 +121,9 @@ const createPlanbarSnapshot = () => {
   if (!src) return null
 
   const rect = src.getBoundingClientRect()
-
   const clone = src.cloneNode(true)
   sanitizeSnapshot(clone)
 
-  // ✅ サブピクセルで左右に“ビクッ”としやすいので整数化（軽いが効く）
   const top = Math.round(rect.top)
   const left = Math.round(rect.left)
   const width = Math.round(rect.width)
@@ -148,13 +138,10 @@ const createPlanbarSnapshot = () => {
   clone.style.zIndex = "999999"
   clone.style.pointerEvents = "none"
 
-  // ✅ ここ重要：スクロールバー有無で幅が変わると“左右ガタつき”になる
-  // overflow:hidden だと見た目の折返し/幅が変わりやすいので auto/scroll に寄せる
   clone.style.overflowY = "scroll"
   clone.style.overflowX = "hidden"
   clone.style.scrollbarGutter = "stable"
   clone.style.boxSizing = "border-box"
-
   clone.style.background = "#fff"
 
   document.body.appendChild(clone)
@@ -297,7 +284,6 @@ const restoreSpotBlockUIStates = async (states) => {
 
 // -------------------------------
 // ✅ 追加：帰宅地点トグル（switch/hidden/body class）退避/復元
-// - これが「後から切り替わる」と planbar 高さが変わってガタつく
 // -------------------------------
 const captureGoalPointVisibilityState = () => {
   const section = document.querySelector(".goal-point-section")
@@ -331,7 +317,6 @@ const restoreGoalPointVisibilityState = (state) => {
   if (switchEl) switchEl.checked = !!state.checked
   if (blockArea) blockArea.hidden = !!state.hidden
 
-  // ✅ CSSが body.goal-point-visible に依存してるので、ここも即復元して“揺れ”を止める
   if (state.bodyVisible) document.body.classList.add("goal-point-visible")
   else document.body.classList.remove("goal-point-visible")
 }
@@ -431,8 +416,6 @@ const refreshPlanbar = async (planId) => {
   const openCollapseIds = captureOpenCollapseIds()
   const spotBlockStates = captureSpotBlockUIStates()
   const scrollState = capturePlanbarScrollState()
-
-  // ✅ 追加：帰宅地点トグル状態も退避（ガタつき対策）
   const goalPointState = captureGoalPointVisibilityState()
 
   document.dispatchEvent(new CustomEvent("planbar:will-update"))
@@ -460,17 +443,15 @@ const refreshPlanbar = async (planId) => {
     return
   }
 
-  planbarSnapshotEl = createPlanbarSnapshot()
+  // ❌ 横振れ要因なので無効化（安定版）
+  // planbarSnapshotEl = createPlanbarSnapshot()
   beginPlanbarUpdate()
 
   try {
     await withNoCollapseAnimation(async () => {
       window.Turbo.renderStreamMessage(html)
 
-      // Turbo差し替え後は新しい .planbar__content になるので、もう一度隠す
-      hidePlanbar()
-
-      // ✅ ここで “即” 復元しておく（controllerが後から触って揺れるのを潰す）
+      // ✅ “即” 復元（controllerが後から触って揺れるのを潰す）
       restoreGoalPointVisibilityState(goalPointState)
 
       await new Promise((r) => requestAnimationFrame(() => r()))
@@ -490,7 +471,7 @@ const refreshPlanbar = async (planId) => {
     document.dispatchEvent(new CustomEvent("map:route-updated"))
   } finally {
     endPlanbarUpdate()
-    removePlanbarSnapshot()
+    // removePlanbarSnapshot() // ❌ 無効化（安定版）
     unlockPlanbarUI()
   }
 }

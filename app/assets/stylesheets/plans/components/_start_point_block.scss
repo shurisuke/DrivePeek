@@ -1,18 +1,21 @@
 /* ==========================================
      出発地点ブロック
-     spot-block と同じ密度に揃える（次の場所まで=常時 / 有料道路=トグル内）
+     goal_point_block と同じ見た目・密度に揃える
 ========================================== */
 .start-point-block {
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
-  padding: 1rem 0.5rem;
-  margin-top: 1.5rem;
+  padding: 16px 0px;
+  margin-top: 0.5rem;
 
   overflow: visible;
 
   /* ------------------------------------------
      上段：出発（アイコン/住所/編集）
+     - アイコンは absolute（中央計算に参加させない）
+     - 出発/住所はど真ん中
+     - 編集ボタンは「出発」の右隣
   ------------------------------------------ */
   .start-point-main {
     display: flex;
@@ -27,38 +30,62 @@
     }
 
     .start-label__row {
-      display: flex;
-      align-items: flex-start;
-      gap: 8px;
+      position: relative;
       min-width: 0;
+
+      /* goal と同じく、中央要素だけが通常フローに乗る */
+      display: block;
     }
 
     .icon {
-      display: inline-block;
       width: 40px;
       height: 42px;
-      flex: 0 0 35px;
 
       background: url(house-icon.png) no-repeat center / contain;
       background-size: 100% 100%;
+
+      position: absolute;
+      left: 2%;
+      top: 2px;
+      transform: translateY(-2px);
+
+      pointer-events: none;
     }
 
     .start-text {
-      flex: 1 1 auto;
       min-width: 0;
 
       display: flex;
       flex-direction: column;
       align-items: center;
+
+      /* アイコン分だけ安全領域を見込んで中央固定 */
+      width: calc(100% - 60px);
+      margin: 0 auto;
+    }
+
+    /* 出発 + 編集（右隣） */
+    .start-title-row {
+      width: 100%;
+
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+
+      gap: 8px;
+      margin-bottom: 10px;
+
+      /* goal と同様に、視覚中心の微調整（必要に応じて数値だけ触る） */
+      transform: translateX(20px);
     }
 
     .start-title {
-      width: 100%;
       font-weight: 700;
       color: #111;
-      font-size: 1.12rem;
+      font-size: 17px;
       line-height: 1.1;
-      margin-bottom: 10px;
+      margin: 0;
+
       text-align: center;
     }
 
@@ -80,16 +107,17 @@
       transform: none !important;
     }
 
+    /* 編集ボタン（goal と同じ挙動・見た目） */
     .start-point-change-btn {
-      flex: 0 0 auto;
-
       width: 30px;
       height: 30px;
       padding: 0;
-      border-radius: 9999px;
 
+      border-radius: 0;
       background: #fff;
-      border: 1px solid rgba(80, 109, 83, 0.28);
+
+      border: 0;
+      box-shadow: none;
 
       display: inline-flex;
       align-items: center;
@@ -97,8 +125,7 @@
 
       cursor: pointer;
 
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-      transition: transform 0.12s, box-shadow 0.12s, opacity 0.12s;
+      transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
 
       i {
         font-size: 14px;
@@ -108,13 +135,11 @@
       }
 
       &:hover {
-        box-shadow: 0 4px 10px rgba(0, 0, 0, 0.16);
-        transform: translateY(-1px);
+        border: 1px solid rgba(80, 109, 83, 0.28);
+        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
       }
 
       &:active {
-        transform: translateY(0);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
         opacity: 0.95;
       }
 
@@ -127,13 +152,12 @@
         opacity: 0.5;
         cursor: not-allowed;
         box-shadow: none;
+        border: 0;
       }
     }
   }
 
-  /* ------------------------------------------
-     変更フォーム（浮かせる）
-  ------------------------------------------ */
+  /* --- 以下（変更フォーム〜）は現状を維持 --- */
   .start-point-edit {
     position: fixed;
     z-index: 2000;
@@ -199,9 +223,6 @@
     color: rgba(80, 109, 83, 0.65);
   }
 
-  /* ------------------------------------------
-     ✅ 常時表示：次の場所まで（spot-next-move と同じ）
-  ------------------------------------------ */
   .distance-info {
     background: transparent;
     border: 0;
@@ -218,7 +239,7 @@
     margin: 0 auto 8px;
     margin-top: 20px;
 
-    padding: 0;
+    padding: 0 42.5px;
   }
 
   .distance-info .label {
@@ -236,9 +257,6 @@
     border-left: 1px solid rgba(0, 0, 0, 0.10);
   }
 
-  /* ------------------------------------------
-     collapse + トグル（spot-block と同じ）
-  ------------------------------------------ */
   .start-point-detail-wrap {
     display: flex;
     flex-direction: column;
@@ -260,23 +278,16 @@
     font-size: 0.9rem;
   }
 
-  /* ------------------------------------------
-     ✅ 有料道路行：次の場所まで行と “全く同じ幅” に揃える
-     - 265px 中央寄せ
-     - スイッチはラベル右（15px空ける）
-     - スイッチは前回比 0.9倍（32x18 -> 29x16 / つまみ14 -> 13）
-     - focus線無し
-  ------------------------------------------ */
   .start-toll-row {
     width: 265px;
     margin: 0 auto 8px;
     margin-top: 10px;
 
     display: grid;
-    grid-template-columns: auto auto 1fr; /* ラベル, スイッチ, 右端価格 */
+    grid-template-columns: auto auto 1fr;
     align-items: center;
 
-    gap: 0;          /* gapは0で固定。余白はmarginで管理 */
+    gap: 0;
     padding: 0;
 
     background: transparent;
@@ -291,7 +302,6 @@
     white-space: nowrap;
   }
 
-  /* ✅ スイッチ左に15px空ける */
   .start-toll-row .toll-switch {
     margin-left: 15px;
 
@@ -312,7 +322,6 @@
     min-height: auto !important;
   }
 
-  /* ✅ カスタムスイッチ（0.9倍：32x18 -> 29x16） */
   .start-toll-row .form-check-input {
     -webkit-appearance: none;
     appearance: none;
@@ -334,7 +343,6 @@
     box-shadow: none !important;
   }
 
-  /* つまみ（14 -> 13） */
   .start-toll-row .form-check-input::after {
     content: "";
     position: absolute;
@@ -355,7 +363,6 @@
     background-color: var(--personal);
   }
 
-  /* 移動量 = 29 - 12 - 4 = 13 */
   .start-toll-row .form-check-input:checked::after {
     transform: translateX(13px);
   }
@@ -366,7 +373,6 @@
     box-shadow: none !important;
   }
 
-  /* 料金：右端に固定（右寄せ） */
   .start-toll-row .price {
     justify-self: end;
     text-align: right;
@@ -379,9 +385,6 @@
     min-width: 60px;
   }
 
-  /* ------------------------------------------
-     下部トグル（spot-block と同じ）
-  ------------------------------------------ */
   .detail-toggle {
     width: 40px;
     height: 40px;
