@@ -81,15 +81,15 @@
 
         <span class="km">
           <% if start_point&.move_distance.present? %>
-            <%= number_with_precision(start_point.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+            <%= format_distance(start_point.move_distance) %><span class="km-unit">km</span>
           <% else %>
-            —km
+            —<span class="km-unit">km</span>
           <% end %>
         </span>
 
         <span class="time">
           <% if start_point&.move_time.present? %>
-            <%= "#{hours}h #{minutes}m" %>
+            <% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span>
           <% else %>
             —
           <% end %>

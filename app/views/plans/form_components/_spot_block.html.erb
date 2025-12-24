@@ -65,9 +65,9 @@
         <div class="spot-next-move mt-3" data-plan-time-role="spot-next-move">
           <span class="label">次の場所まで</span>
           <span class="km">
-            <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+            <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
           </span>
-          <span class="time"><%= "#{hours}h #{minutes}m" %></span>
+          <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
         </div>
       </div>
     </div>

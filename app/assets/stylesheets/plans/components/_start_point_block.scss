@@ -251,10 +251,26 @@
   .distance-info .km,
   .distance-info .time {
     font-weight: 400;
+    font-size: calc(1em + 2px);
     color: #2d2d2d;
 
     padding-left: 12px;
     border-left: 1px solid rgba(0, 0, 0, 0.10);
+  }
+
+  .distance-info .time-unit {
+    font-size: 13px;
+    margin-left: 2px;
+    margin-right: 2px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .distance-info .km-unit {
+    font-size: 13px;
+    margin-left: 2px;
   }
 
   .start-point-detail-wrap {
