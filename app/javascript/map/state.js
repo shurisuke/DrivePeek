@@ -1,6 +1,12 @@
+// app/javascript/map/state.js
 // ================================================================
-// 地図とマーカーの状態管理（単一責務）
-// 用途: mapインスタンスと各種マーカー参照を保持し、差し替え/クリアを提供する
+// Map State（単一責務）
+// 用途: Google Maps の map インスタンスと、用途別に分けた参照（marker / polyline）を保持する。
+//       描画側は「作る」だけ、参照の差し替え・クリアはこの state に集約する。
+// 補足:
+//   - 参照を state 外に保持しない（重複描画・消し忘れ防止）
+//   - set* は必ず対応する clear* を先に呼び、常に最新参照だけを保持する
+//   - 管理対象: currentLocation / startPoint / endPoint / planSpotMarkers / searchHitMarkers / routePolylines
 // ================================================================
 
 let map = null;
@@ -11,6 +17,7 @@ let startPointMarker = null;      // 出発地点（単体）
 let endPointMarker = null;        // 帰宅地点（単体）
 let planSpotMarkers = [];         // プラン内スポット（配列）
 let searchHitMarkers = [];        // 検索ヒット（配列）
+let routePolylines = [];          // 経路ポリライン（配列）
 
 // --- map instance ---
 export const getMapInstance = () => map;
@@ -78,4 +85,15 @@ export const clearSearchHitMarkers = () => {
 export const setSearchHitMarkers = (markers) => {
   clearSearchHitMarkers();
   searchHitMarkers = markers;
+};
+
+// --- 経路ポリライン ---
+export const clearRoutePolylines = () => {
+  routePolylines.forEach((p) => p.setMap(null));
+  routePolylines = [];
+};
+
+export const setRoutePolylines = (polylines) => {
+  clearRoutePolylines();
+  routePolylines = polylines;
 };
