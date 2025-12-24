@@ -198,6 +198,10 @@ export const bindPlanMapSync = () => {
   document.addEventListener("plan:goal-point-visibility-changed", async (e) => {
     console.log("[plan_map_sync] caught plan:goal-point-visibility-changed", e?.detail)
 
+    // ✅ 先に #map の goalPointVisible を更新（renderRoutePolylines が参照するため）
+    const goalVisible = e?.detail?.goalVisible ?? false
+    setGoalVisible(goalVisible)
+
     const planData = getPlanDataFromPage()
     if (!planData) return
 
