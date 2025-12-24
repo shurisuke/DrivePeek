@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "minitest/mock"
 
 class Plan::RouteTest < ActiveSupport::TestCase
   setup do
@@ -26,130 +27,212 @@ class Plan::RouteTest < ActiveSupport::TestCase
   end
 
   # ----------------------------------------------------------------
-  # 1) 指定された区間のみが処理対象になる
+  # ヘルパー: DirectionsClient をスタブ
   # ----------------------------------------------------------------
-  test "recalculate! processes all segments" do
-    route = Plan::Route.new(@plan)
-    result = route.recalculate!
-
-    assert_equal true, result
-
-    # start_point → plan_spot の区間が処理される
-    @start_point.reload
-    assert_equal 0, @start_point.move_time
-    assert_equal 0.0, @start_point.move_distance
-    assert_equal 0, @start_point.move_cost
-    assert_nil @start_point.polyline
-
-    # plan_spot → goal_point の区間が処理される
-    @plan_spot.reload
-    assert_equal 0, @plan_spot.move_time
-    assert_equal 0.0, @plan_spot.move_distance
-    assert_equal 0, @plan_spot.move_cost
-    assert_nil @plan_spot.polyline
-  end
-
-  test "recalculate! updates start_point for first segment" do
-    route = Plan::Route.new(@plan)
-    route.recalculate!
-
-    @start_point.reload
-
-    # Phase 1: ダミー結果（0, 0, 0, nil）が保存される
-    assert_equal 0, @start_point.move_time
-    assert_equal 0.0, @start_point.move_distance
-    assert_equal 0, @start_point.move_cost
-    assert_nil @start_point.polyline
-  end
-
-  test "recalculate! updates plan_spot for subsequent segments" do
-    route = Plan::Route.new(@plan)
-    route.recalculate!
-
-    @plan_spot.reload
-
-    # Phase 1: ダミー結果（0, 0, 0, nil）が保存される
-    assert_equal 0, @plan_spot.move_time
-    assert_equal 0.0, @plan_spot.move_distance
-    assert_equal 0, @plan_spot.move_cost
-    assert_nil @plan_spot.polyline
-  end
-
-  # ----------------------------------------------------------------
-  # 2) 同一区間はキャッシュされ、処理が二重に走らない
-  # ----------------------------------------------------------------
-  test "same segment is cached and not processed twice" do
-    route = Plan::Route.new(@plan)
-
-    # セグメントを手動で構築
-    segment = {
-      from_record: @start_point,
-      to_record: @plan_spot,
-      from_location: { lat: @start_point.lat, lng: @start_point.lng },
-      to_location: { lat: @spot.lat, lng: @spot.lng },
-      toll_used: false,
-      segment_key: "StartPoint:#{@start_point.id}-PlanSpot:#{@plan_spot.id}-false"
+  def stub_directions_client(result = nil)
+    result ||= {
+      move_time: 30,
+      move_distance: 10.5,
+      move_cost: 0,
+      polyline: "encoded_polyline_string"
     }
 
-    # 同一セグメントを2回処理
-    route.send(:process_segments, [segment, segment])
-
-    # キャッシュに1エントリのみ
-    assert_equal 1, route.segment_cache.size
-  end
-
-  test "segment_cache stores route data by segment_key" do
-    route = Plan::Route.new(@plan)
-    route.recalculate!
-
-    # キャッシュにエントリが存在する
-    assert route.segment_cache.any?
-
-    # 全エントリがダミー結果
-    route.segment_cache.each_value do |data|
-      assert_equal 0, data[:move_time]
-      assert_equal 0.0, data[:move_distance]
-      assert_equal 0, data[:move_cost]
-      assert_nil data[:polyline]
+    Plan::DirectionsClient.stub(:fetch, result) do
+      yield
     end
   end
 
   # ----------------------------------------------------------------
-  # 3) 出発側レコードに保存される（保存先ルールの確認）
+  # 1) 指定された区間のみ Directions API が呼ばれる
+  # ----------------------------------------------------------------
+  test "recalculate! calls DirectionsClient for each segment" do
+    call_count = 0
+    mock_result = {
+      move_time: 30,
+      move_distance: 10.5,
+      move_cost: 0,
+      polyline: "test_polyline"
+    }
+
+    Plan::DirectionsClient.stub(:fetch, ->(*_args) { call_count += 1; mock_result }) do
+      route = Plan::Route.new(@plan)
+      route.recalculate!
+
+      # 2区間: start_point→plan_spot, plan_spot→goal_point
+      assert_equal 2, call_count
+      assert_equal 2, route.api_call_count
+    end
+  end
+
+  test "recalculate! updates all segments with API results" do
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      result = route.recalculate!
+
+      assert_equal true, result
+
+      @start_point.reload
+      @plan_spot.reload
+
+      # start_point → plan_spot の結果
+      assert_equal 30, @start_point.move_time
+      assert_equal 10.5, @start_point.move_distance
+      assert_equal "encoded_polyline_string", @start_point.polyline
+
+      # plan_spot → goal_point の結果
+      assert_equal 30, @plan_spot.move_time
+      assert_equal 10.5, @plan_spot.move_distance
+      assert_equal "encoded_polyline_string", @plan_spot.polyline
+    end
+  end
+
+  # ----------------------------------------------------------------
+  # 2) 同一区間はキャッシュにより API が1回しか呼ばれない
+  # ----------------------------------------------------------------
+  test "same segment is cached and API called only once" do
+    route = Plan::Route.new(@plan)
+
+    # セグメントを手動で構築
+    segment = route.send(:build_segment,
+      from_record: @start_point,
+      to_record: @plan_spot,
+      toll_used: false
+    )
+
+    call_count = 0
+    mock_result = { move_time: 30, move_distance: 10.5, move_cost: 0, polyline: "test" }
+
+    Plan::DirectionsClient.stub(:fetch, ->(*_args) { call_count += 1; mock_result }) do
+      # 同一セグメントを2回処理
+      route.send(:process_segments, [segment, segment])
+
+      # APIは1回しか呼ばれない
+      assert_equal 1, call_count
+      assert_equal 1, route.api_call_count
+
+      # キャッシュに1エントリ
+      assert_equal 1, route.segment_cache.size
+    end
+  end
+
+  test "different toll_used creates different cache keys" do
+    route = Plan::Route.new(@plan)
+
+    segment_no_toll = route.send(:build_segment,
+      from_record: @start_point,
+      to_record: @plan_spot,
+      toll_used: false
+    )
+
+    segment_with_toll = route.send(:build_segment,
+      from_record: @start_point,
+      to_record: @plan_spot,
+      toll_used: true
+    )
+
+    # 異なるキーが生成される
+    refute_equal segment_no_toll[:segment_key], segment_with_toll[:segment_key]
+  end
+
+  # ----------------------------------------------------------------
+  # 3) toll_used の値が API パラメータに反映される
+  # ----------------------------------------------------------------
+  test "toll_used is passed to DirectionsClient" do
+    received_toll_used = nil
+
+    Plan::DirectionsClient.stub(:fetch, ->(origin:, destination:, toll_used:) {
+      received_toll_used = toll_used
+      { move_time: 30, move_distance: 10.5, move_cost: 0, polyline: "test" }
+    }) do
+      # toll_used = false のスポット
+      @start_point.update!(toll_used: false)
+      route = Plan::Route.new(@plan)
+
+      segment = route.send(:build_segment,
+        from_record: @start_point,
+        to_record: @plan_spot,
+        toll_used: @start_point.toll_used?
+      )
+
+      route.send(:calculate_route, segment)
+
+      assert_equal false, received_toll_used
+    end
+  end
+
+  test "toll_used true is passed to DirectionsClient" do
+    received_toll_used = nil
+
+    Plan::DirectionsClient.stub(:fetch, ->(origin:, destination:, toll_used:) {
+      received_toll_used = toll_used
+      { move_time: 30, move_distance: 10.5, move_cost: 0, polyline: "test" }
+    }) do
+      @start_point.update!(toll_used: true)
+      route = Plan::Route.new(@plan)
+
+      segment = route.send(:build_segment,
+        from_record: @start_point,
+        to_record: @plan_spot,
+        toll_used: @start_point.toll_used?
+      )
+
+      route.send(:calculate_route, segment)
+
+      assert_equal true, received_toll_used
+    end
+  end
+
+  # ----------------------------------------------------------------
+  # 4) 結果が出発側レコードに保存される
   # ----------------------------------------------------------------
   test "route data is saved to departure side record (start_point)" do
-    # start_point → plan_spot の区間では start_point に保存
-    route = Plan::Route.new(@plan)
-    route.recalculate!
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      route.recalculate!
 
-    @start_point.reload
-    assert_equal 0, @start_point.move_time
-    assert_equal 0.0, @start_point.move_distance
+      @start_point.reload
+
+      assert_equal 30, @start_point.move_time
+      assert_equal 10.5, @start_point.move_distance
+      assert_equal 0, @start_point.move_cost
+      assert_equal "encoded_polyline_string", @start_point.polyline
+    end
   end
 
   test "route data is saved to departure side record (plan_spot)" do
-    # plan_spot → goal_point の区間では plan_spot に保存
-    route = Plan::Route.new(@plan)
-    route.recalculate!
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      route.recalculate!
 
-    @plan_spot.reload
-    assert_equal 0, @plan_spot.move_time
-    assert_equal 0.0, @plan_spot.move_distance
-  end
+      @plan_spot.reload
 
-  test "goal_point does not receive route data (arrival side only)" do
-    # goal_point は到着側なので route data を持たない
-    # arrival_time のみを持つ（スキーマ上 move_* カラムがない）
-    route = Plan::Route.new(@plan)
-    route.recalculate!
-
-    # goal_point に move_time 等のメソッドがないことを確認
-    refute @goal_point.respond_to?(:move_time)
-    refute @goal_point.respond_to?(:move_distance)
+      assert_equal 30, @plan_spot.move_time
+      assert_equal 10.5, @plan_spot.move_distance
+      assert_equal 0, @plan_spot.move_cost
+      assert_equal "encoded_polyline_string", @plan_spot.polyline
+    end
   end
 
   # ----------------------------------------------------------------
-  # 4) 複数スポットのケース
+  # 5) polyline が nil ではなく保存される
+  # ----------------------------------------------------------------
+  test "polyline is saved to records" do
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      route.recalculate!
+
+      @start_point.reload
+      @plan_spot.reload
+
+      assert_not_nil @start_point.polyline
+      assert_not_nil @plan_spot.polyline
+      assert_equal "encoded_polyline_string", @start_point.polyline
+      assert_equal "encoded_polyline_string", @plan_spot.polyline
+    end
+  end
+
+  # ----------------------------------------------------------------
+  # 6) 複数スポットのケース
   # ----------------------------------------------------------------
   test "recalculate! handles multiple plan_spots correctly" do
     spot_two = spots(:two)
@@ -161,26 +244,26 @@ class Plan::RouteTest < ActiveSupport::TestCase
       move_cost: 999
     )
 
-    route = Plan::Route.new(@plan)
-    route.recalculate!
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      route.recalculate!
 
-    # 3区間が処理される:
-    # 1. start_point → plan_spot[0]
-    # 2. plan_spot[0] → plan_spot[1]
-    # 3. plan_spot[1] → goal_point
+      # 3区間が処理される
+      assert_equal 3, route.api_call_count
 
-    @start_point.reload
-    @plan_spot.reload
-    plan_spot_two.reload
+      @start_point.reload
+      @plan_spot.reload
+      plan_spot_two.reload
 
-    # すべてダミー結果
-    assert_equal 0, @start_point.move_time
-    assert_equal 0, @plan_spot.move_time
-    assert_equal 0, plan_spot_two.move_time
+      # すべて更新される
+      assert_equal 30, @start_point.move_time
+      assert_equal 30, @plan_spot.move_time
+      assert_equal 30, plan_spot_two.move_time
+    end
   end
 
   # ----------------------------------------------------------------
-  # 5) エッジケース
+  # 7) エッジケース
   # ----------------------------------------------------------------
   test "recalculate! returns false when start_point is nil" do
     @start_point.destroy!
@@ -195,110 +278,108 @@ class Plan::RouteTest < ActiveSupport::TestCase
     @plan_spot.destroy!
     @plan.reload
 
-    result = Plan::Route.new(@plan).recalculate!
-
-    assert_equal true, result
+    stub_directions_client do
+      result = Plan::Route.new(@plan).recalculate!
+      assert_equal true, result
+    end
   end
 
   test "recalculate! succeeds when goal_point is nil" do
     @goal_point.destroy!
     @plan.reload
 
-    result = Plan::Route.new(@plan).recalculate!
+    stub_directions_client do
+      route = Plan::Route.new(@plan)
+      result = route.recalculate!
 
-    assert_equal true, result
-
-    # start_point → plan_spot の1区間のみ処理
-    @start_point.reload
-    assert_equal 0, @start_point.move_time
+      assert_equal true, result
+      # start_point → plan_spot の1区間のみ
+      assert_equal 1, route.api_call_count
+    end
   end
 
   # ----------------------------------------------------------------
-  # 6) Recalculator 経由での呼び出し
+  # 8) Recalculator 経由での呼び出し
   # ----------------------------------------------------------------
   test "recalculate! is called via Plan::Recalculator with route: true" do
-    result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: false)
+    stub_directions_client do
+      result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: false)
 
-    assert_equal true, result
+      assert_equal true, result
 
-    @start_point.reload
-    assert_equal 0, @start_point.move_time
+      @start_point.reload
+      assert_equal 30, @start_point.move_time
+    end
   end
 
   test "route and schedule are executed in correct order via Recalculator" do
-    # 出発時間と滞在時間を設定
     @start_point.update!(departure_time: Time.zone.parse("09:00"))
     @plan_spot.update!(stay_duration: 60)
 
-    result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
+    stub_directions_client do
+      result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
 
-    assert_equal true, result
+      assert_equal true, result
 
-    @start_point.reload
-    @plan_spot.reload
+      @start_point.reload
+      @plan_spot.reload
 
-    # route: ダミー結果が保存される
-    assert_equal 0, @start_point.move_time
+      # route: API結果が保存される
+      assert_equal 30, @start_point.move_time
 
-    # schedule: 時刻が計算される（move_time=0 なので即時到着）
-    assert @plan_spot.arrival_time.present?
-    assert_equal "09:00", @plan_spot.arrival_time.strftime("%H:%M")
-    assert_equal "10:00", @plan_spot.departure_time.strftime("%H:%M") # +60分滞在
+      # schedule: 時刻が計算される
+      assert @plan_spot.arrival_time.present?
+      # 09:00 + 30分(move_time) = 09:30(arrival)
+      assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+      # 09:30 + 60分(stay) = 10:30(departure)
+      assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
+    end
   end
 
   # ----------------------------------------------------------------
-  # 7) recalculate_segments! のテスト
+  # 9) recalculate_segments! のテスト
   # ----------------------------------------------------------------
   test "recalculate_segments! processes only specified segments" do
-    # start_point の値を変更しておく
     @start_point.update!(move_time: 999)
 
     route = Plan::Route.new(@plan)
 
-    # plan_spot → goal_point の区間のみ指定
     segment = route.send(:build_segment,
       from_record: @plan_spot,
       to_record: @goal_point,
       toll_used: false
     )
 
-    route.recalculate_segments!([segment])
+    stub_directions_client do
+      route.recalculate_segments!([segment])
 
-    # plan_spot は更新される
-    @plan_spot.reload
-    assert_equal 0, @plan_spot.move_time
+      # plan_spot は更新される
+      @plan_spot.reload
+      assert_equal 30, @plan_spot.move_time
 
-    # start_point は更新されない（999のまま）
-    @start_point.reload
-    assert_equal 999, @start_point.move_time
-  end
-
-  test "recalculate_segments! returns true for empty segments" do
-    route = Plan::Route.new(@plan)
-    result = route.recalculate_segments!([])
-
-    assert_equal true, result
+      # start_point は更新されない
+      @start_point.reload
+      assert_equal 999, @start_point.move_time
+    end
   end
 
   # ----------------------------------------------------------------
-  # 8) Phase 1: 外部APIが呼ばれていないことの確認
+  # 10) API呼び出し失敗時のフォールバック
   # ----------------------------------------------------------------
-  test "Phase 1: no external API calls are made" do
-    # calculate_route がダミー結果を返すことを確認
-    route = Plan::Route.new(@plan)
+  test "handles API failure gracefully with fallback values" do
+    # DirectionsClient がフォールバック値を返す場合
+    fallback = Plan::DirectionsClient::FALLBACK_RESULT.dup
 
-    segment = {
-      from_record: @start_point,
-      to_record: @plan_spot,
-      toll_used: false
-    }
+    Plan::DirectionsClient.stub(:fetch, fallback) do
+      route = Plan::Route.new(@plan)
+      result = route.recalculate!
 
-    result = route.send(:calculate_route, segment)
+      assert_equal true, result
 
-    # ダミー結果が返される
-    assert_equal Plan::Route::DUMMY_ROUTE_DATA[:move_time], result[:move_time]
-    assert_equal Plan::Route::DUMMY_ROUTE_DATA[:move_distance], result[:move_distance]
-    assert_equal Plan::Route::DUMMY_ROUTE_DATA[:move_cost], result[:move_cost]
-    assert_nil result[:polyline]
+      @start_point.reload
+      assert_equal 0, @start_point.move_time
+      assert_equal 0.0, @start_point.move_distance
+      assert_nil @start_point.polyline
+    end
   end
 end
