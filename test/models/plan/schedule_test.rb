@@ -10,25 +10,33 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     @goal_point = goal_points(:one)
   end
 
-  test "recalculate! returns false when start_point is nil" do
+  test "recalculate! returns true (skipped) when start_point is nil" do
     user = users(:two)
     plan_without_start = Plan.create!(user: user, title: "No Start")
 
+    # 計算条件を満たさない場合はスキップして成功扱い
+    # ※ Route の計算結果をロールバックさせないための仕様
     result = Plan::Schedule.new(plan_without_start).recalculate!
-    assert_equal false, result
+    assert_equal true, result
   end
 
-  test "recalculate! returns false when departure_time is nil" do
+  test "recalculate! returns true (skipped) when departure_time is nil" do
     @start_point.update_column(:departure_time, nil)
 
+    # 計算条件を満たさない場合はスキップして成功扱い
+    # ※ Route の計算結果をロールバックさせないための仕様
     result = Plan::Schedule.new(@plan).recalculate!
-    assert_equal false, result
+    assert_equal true, result
   end
 
   test "recalculate! calculates arrival/departure times for single spot" do
-    # Setup: departure_time = 09:00, move_time = 30min, stay_duration = 60min
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    @plan_spot.update!(move_time: 30, stay_duration: 60)
+    # Setup:
+    #   - departure_time = 09:00
+    #   - start_point.move_time = 30min (start → spot1)
+    #   - plan_spot.stay_duration = 60min
+    #   - plan_spot.move_time = 15min (spot1 → goal)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
+    @plan_spot.update!(move_time: 15, stay_duration: 60)
 
     result = Plan::Schedule.new(@plan).recalculate!
 
@@ -41,8 +49,8 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
     # departure_time = 09:30 + 60min = 10:30
     assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
-    # goal arrival = 10:30
-    assert_equal "10:30", @goal_point.arrival_time.strftime("%H:%M")
+    # goal arrival = 10:30 + 15min = 10:45
+    assert_equal "10:45", @goal_point.arrival_time.strftime("%H:%M")
   end
 
   test "recalculate! calculates times for multiple spots in order" do
@@ -58,15 +66,16 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     plan_spot2 = @plan.plan_spots.create!(
       spot: spot2,
       position: 2,
-      move_time: 45,
+      move_time: 20,      # spot2 → goal: 20min
       stay_duration: 90
     )
 
-    # departure_time = 09:00
-    # spot1: move_time = 30min, stay_duration = 60min
-    # spot2: move_time = 45min, stay_duration = 90min
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    @plan_spot.update!(move_time: 30, stay_duration: 60)
+    # move_time の保存先:
+    #   - start_point.move_time = 30min (start → spot1)
+    #   - spot1.move_time = 45min (spot1 → spot2)
+    #   - spot2.move_time = 20min (spot2 → goal)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
+    @plan_spot.update!(move_time: 45, stay_duration: 60)
 
     result = Plan::Schedule.new(@plan).recalculate!
 
@@ -84,13 +93,14 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     assert_equal "11:15", plan_spot2.arrival_time.strftime("%H:%M")
     assert_equal "12:45", plan_spot2.departure_time.strftime("%H:%M")
 
-    # goal: arrival = 12:45
-    assert_equal "12:45", @goal_point.arrival_time.strftime("%H:%M")
+    # goal: arrival = 12:45 + 20 = 13:05
+    assert_equal "13:05", @goal_point.arrival_time.strftime("%H:%M")
   end
 
   test "recalculate! handles departure_time change" do
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    @plan_spot.update!(move_time: 30, stay_duration: 60)
+    # start_point.move_time = 30min (start → spot1)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
+    @plan_spot.update!(move_time: 0, stay_duration: 60)
 
     # Initial calculation
     Plan::Schedule.new(@plan).recalculate!
@@ -122,11 +132,14 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     plan_spot2 = @plan.plan_spots.create!(
       spot: spot2,
       position: 2,
-      move_time: 30,
+      move_time: 0,          # spot2 → goal
       stay_duration: 60
     )
 
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
+    # move_time の保存先:
+    #   - start_point.move_time = 30min (start → spot1)
+    #   - spot1.move_time = 30min (spot1 → spot2)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
     @plan_spot.update!(move_time: 30, stay_duration: 60)
 
     # Initial calculation
@@ -135,7 +148,7 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     @plan_spot.reload
     plan_spot2.reload
 
-    # spot1: departure = 09:30 + 60 = 10:30
+    # spot1: arrival = 09:00 + 30 = 09:30, departure = 09:30 + 60 = 10:30
     assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
     # spot2: arrival = 10:30 + 30 = 11:00
     assert_equal "11:00", plan_spot2.arrival_time.strftime("%H:%M")
@@ -154,8 +167,9 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
   end
 
   test "recalculate! handles zero move_time and nil stay_duration" do
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    # move_time は NOT NULL 制約があるため 0 を使用、stay_duration は nullable
+    # start_point.move_time = 0 (start → spot1)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 0)
+    # plan_spot.move_time = 0 (spot1 → goal), stay_duration = nil
     @plan_spot.update!(move_time: 0, stay_duration: nil)
 
     result = Plan::Schedule.new(@plan).recalculate!
@@ -170,8 +184,9 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
   end
 
   test "recalculate! wraps time past midnight" do
-    @start_point.update!(departure_time: Time.zone.parse("23:00"))
-    @plan_spot.update!(move_time: 90, stay_duration: 60)
+    # start_point.move_time = 90min (start → spot1)
+    @start_point.update!(departure_time: Time.zone.parse("23:00"), move_time: 90)
+    @plan_spot.update!(move_time: 0, stay_duration: 60)
 
     result = Plan::Schedule.new(@plan).recalculate!
 
@@ -188,11 +203,13 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     user = users(:two)
     plan_no_goal = Plan.create!(user: user, title: "No Goal")
 
+    # start_point.move_time = 30min (start → spot)
     plan_no_goal.create_start_point!(
       lat: 35.0,
       lng: 139.0,
       address: "Start Address",
-      departure_time: Time.zone.parse("09:00")
+      departure_time: Time.zone.parse("09:00"),
+      move_time: 30
     )
 
     spot = Spot.create!(
@@ -206,7 +223,7 @@ class Plan::ScheduleTest < ActiveSupport::TestCase
     plan_spot = plan_no_goal.plan_spots.create!(
       spot: spot,
       position: 1,
-      move_time: 30,
+      move_time: 0,   # spot → goal (no goal, so 0)
       stay_duration: 60
     )
 
