@@ -11,8 +11,11 @@ class Plan::RecalculatorTest < ActiveSupport::TestCase
     @goal_point = goal_points(:one)
 
     # 初期状態を設定
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    @plan_spot.update!(move_time: 30, stay_duration: 60)
+    # move_time の保存先ルール:
+    #   - start_point.move_time = start → first_spot
+    #   - plan_spot.move_time = spot → next (goal)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
+    @plan_spot.update!(move_time: 0, stay_duration: 60)  # spot → goal: 0分
   end
 
   # ----------------------------------------------------------------
@@ -95,13 +98,14 @@ class Plan::RecalculatorTest < ActiveSupport::TestCase
     end
   end
 
-  test "recalculate! returns false when schedule fails" do
-    # departure_time を nil にして schedule を失敗させる
+  test "recalculate! returns true when departure_time is nil (schedule skipped)" do
+    # departure_time を nil にすると schedule はスキップされる（成功扱い）
+    # ※ route の計算結果をロールバックさせないための仕様
     @start_point.update_column(:departure_time, nil)
 
     result = Plan::Recalculator.new(@plan).recalculate!(schedule: true)
 
-    assert_equal false, result
+    assert_equal true, result
   end
 
   test "recalculate! with both route and schedule false returns true" do

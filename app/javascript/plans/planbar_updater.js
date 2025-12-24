@@ -524,4 +524,25 @@ export const bindPlanbarRefresh = () => {
     if (!planId) return
     await refreshPlanbar(planId)
   })
+
+  // ✅ 出発地点変更後：経路再計算されるため planbar を更新
+  document.addEventListener("plan:start-point-updated", async () => {
+    const planId = getPlanId()
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  // ✅ 出発地点の有料道路切替後：経路再計算されるため planbar を更新
+  document.addEventListener("plan:start-point-toll-used-updated", async () => {
+    const planId = getPlanId()
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
+
+  // ✅ 帰宅地点変更後：経路再計算されるため planbar を更新
+  document.addEventListener("plan:goal-point-updated", async () => {
+    const planId = getPlanId()
+    if (!planId) return
+    await refreshPlanbar(planId)
+  })
 }

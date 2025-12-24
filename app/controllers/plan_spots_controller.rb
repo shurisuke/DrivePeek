@@ -1,5 +1,7 @@
 # app/controllers/plan_spots_controller.rb
 class PlanSpotsController < ApplicationController
+  include Recalculable
+
   before_action :authenticate_user!
   before_action :set_plan
   before_action :set_plan_spot, only: %i[destroy]
@@ -12,6 +14,9 @@ class PlanSpotsController < ApplicationController
     ).setup
 
     if result.success?
+      # ✅ スポット追加後に route → schedule を再計算
+      recalculate_route_and_schedule!(@plan)
+
       render json: {
         plan_spot_id: result.plan_spot.id,
         spot_id: result.spot.id,
@@ -25,6 +30,9 @@ class PlanSpotsController < ApplicationController
   def destroy
     target_id = helpers.dom_id(@plan_spot) # 先に退避しておくと安心
     @plan_spot.destroy!
+
+    # ✅ スポット削除後に route → schedule を再計算
+    recalculate_route_and_schedule!(@plan)
 
     respond_to do |format|
       format.turbo_stream do

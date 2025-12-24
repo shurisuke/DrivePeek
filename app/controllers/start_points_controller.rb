@@ -1,5 +1,7 @@
 # app/controllers/start_points_controller.rb
 class StartPointsController < ApplicationController
+  include Recalculable
+
   before_action :authenticate_user!
   before_action :set_plan
   before_action :set_start_point
@@ -11,8 +13,11 @@ class StartPointsController < ApplicationController
     end
 
     if @start_point.update(start_point_params)
-      # 出発時間が変わった場合のみ時刻再計算
-      if start_point_params.key?(:departure_time)
+      # ✅ 経路に影響する変更があれば route → schedule を再計算
+      if route_affecting_params?
+        recalculate_route_and_schedule!(@plan)
+      elsif start_point_params.key?(:departure_time)
+        # 出発時間のみ変更 → schedule のみ再計算
         Plan::Recalculator.new(@plan).recalculate!(schedule: true)
       end
 
@@ -38,6 +43,12 @@ class StartPointsController < ApplicationController
 
   def only_toll_used_param?
     start_point_params.keys == ["toll_used"]
+  end
+
+  # 経路に影響するパラメータが含まれているか
+  def route_affecting_params?
+    route_keys = %w[lat lng address toll_used]
+    (start_point_params.keys & route_keys).any?
   end
 
   def render_success(start_point)

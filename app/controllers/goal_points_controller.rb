@@ -1,12 +1,17 @@
 # app/controllers/goal_points_controller.rb
-# ※ start_point と同じ更新方式の goal_point 版（未実装なら追加してください）
+# ※ start_point と同じ更新方式の goal_point 版
 class GoalPointsController < ApplicationController
+  include Recalculable
+
   before_action :authenticate_user!
   before_action :set_plan
 
   def update
     goal_point = @plan.goal_point || @plan.build_goal_point
     goal_point.update!(goal_point_params)
+
+    # ✅ 帰宅地点変更後に route → schedule を再計算
+    recalculate_route_and_schedule!(@plan)
 
     render json: {
       address: goal_point.address,
