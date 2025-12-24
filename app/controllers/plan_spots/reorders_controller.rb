@@ -1,6 +1,8 @@
 # app/controllers/plan_spots/reorders_controller.rb
 module PlanSpots
   class ReordersController < ApplicationController
+    include Recalculable
+
     before_action :authenticate_user!
     before_action :set_plan
 
@@ -13,6 +15,10 @@ module PlanSpots
       end
 
       PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
+
+      # ✅ 並び替え後に route → schedule を再計算
+      recalculate_route_and_schedule!(@plan)
+
       head :no_content
     end
 

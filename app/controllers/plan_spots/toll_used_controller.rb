@@ -1,6 +1,8 @@
 # app/controllers/plan_spots/toll_usages_controller.rb
 module PlanSpots
   class TollUsedController < ApplicationController
+    include Recalculable
+
     before_action :authenticate_user!
     before_action :set_plan
     before_action :set_plan_spot
@@ -10,6 +12,9 @@ module PlanSpots
       toll_used = ActiveModel::Type::Boolean.new.cast(params[:toll_used])
 
       if @plan_spot.update(toll_used: toll_used)
+        # ✅ 有料道路切替後に route → schedule を再計算
+        recalculate_route_and_schedule!(@plan)
+
         render json: {
           plan_spot_id: @plan_spot.id,
           toll_used: @plan_spot.toll_used
