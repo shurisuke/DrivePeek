@@ -12,6 +12,7 @@ import {
   clearPlanSpotMarkers,
   setPlanSpotMarkers,
 } from "map/state"
+import { showInfoWindowForPin } from "map/infowindow"
 
 const normalizeLatLng = (p) => {
   if (!p) return null
@@ -72,6 +73,39 @@ const isGoalPointVisible = () => {
   return mapEl?.dataset?.goalPointVisible === "true"
 }
 
+// ✅ DOMから出発地点の住所を取得
+const getStartPointAddressFromDom = () => {
+  const el = document.querySelector(".start-point-block .address")
+  return el?.textContent?.trim() || null
+}
+
+// ✅ DOMから帰宅地点の住所を取得
+const getGoalPointAddressFromDom = () => {
+  const el = document.querySelector(".goal-point-block .address")
+  return el?.textContent?.trim() || null
+}
+
+// ✅ DOMからスポット情報を取得（position順）
+const getSpotInfoFromDom = () => {
+  const blocks = document.querySelectorAll(".spot-block[data-plan-spot-id]")
+  const spots = []
+
+  blocks.forEach((block) => {
+    const nameEl = block.querySelector(".spot-name")
+    const addressEl = block.querySelector(".spot-address")
+
+    spots.push({
+      name: nameEl?.textContent?.trim() || null,
+      address: addressEl?.textContent?.trim() || null,
+      lat: Number(block.dataset.lat),
+      lng: Number(block.dataset.lng),
+      photoUrl: block.dataset.photoUrl || null,
+    })
+  })
+
+  return spots
+}
+
 // ✅ 「帰宅マーカーだけ」最新条件で描画し直す（トグル状態で判断）
 export const refreshGoalMarker = (planData) => {
   const map = getMapInstance()
@@ -103,6 +137,17 @@ export const refreshGoalMarker = (planData) => {
   if (!end) return
 
   const marker = buildHouseMarker({ map, position: end, title: "帰宅地点" })
+
+  // ✅ クリックでInfoWindow表示（ボタンなし）
+  marker.addListener("click", () => {
+    const address = getGoalPointAddressFromDom()
+    showInfoWindowForPin({
+      marker,
+      name: "帰宅",
+      address,
+    })
+  })
+
   setEndPointMarker(marker)
 }
 
@@ -124,20 +169,47 @@ export const renderPlanMarkers = (planData) => {
   const start = normalizeLatLng(planData?.start_point)
   if (start) {
     const marker = buildHouseMarker({ map, position: start, title: "出発地点" })
+
+    // ✅ クリックでInfoWindow表示（ボタンなし）
+    marker.addListener("click", () => {
+      const address = getStartPointAddressFromDom()
+      showInfoWindowForPin({
+        marker,
+        name: "出発",
+        address,
+      })
+    })
+
     setStartPointMarker(marker)
   }
 
-  // スポット（ここは planData の内容で描画）
+  // スポット（DOMから情報を取得してマーカーに紐付け）
+  const spotInfoList = getSpotInfoFromDom()
   const spots = Array.isArray(planData?.spots) ? planData.spots : []
+
   const spotMarkers = spots
     .map(normalizeLatLng)
     .filter(Boolean)
     .map((spot, index) => {
-      return new google.maps.Marker({
+      const spotInfo = spotInfoList[index] || {}
+
+      const marker = new google.maps.Marker({
         map,
         position: spot,
-        title: `スポット ${index + 1}`,
+        title: spotInfo.name || `スポット ${index + 1}`,
       })
+
+      // ✅ クリックでInfoWindow表示（ボタンなし）
+      marker.addListener("click", () => {
+        showInfoWindowForPin({
+          marker,
+          name: spotInfo.name || `スポット ${index + 1}`,
+          address: spotInfo.address,
+          photoUrl: spotInfo.photoUrl,
+        })
+      })
+
+      return marker
     })
   setPlanSpotMarkers(spotMarkers)
 

@@ -41,15 +41,5 @@
   </div>
 
   <!-- 右下: プラン情報 -->
-  <div class="plan-info">
-    <p>走行距離: 120km</p>
-    <p>EC料金: ¥3,200</p>
-    <p>移動時間: 2時間30分</p>
-  </div>
-
-  <!-- 右ズームボタン -->
-  <div class="map-controls">
-    <button class="zoom-btn in">＋</button>
-    <button class="zoom-btn out">−</button>
-  </div>
+  <%= render "plans/form_components/plan_info", plan: plan %>
 </div>
