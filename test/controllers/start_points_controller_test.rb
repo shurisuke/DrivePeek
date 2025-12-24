@@ -1,6 +1,7 @@
 # frozen_string_literal: true
 
 require "test_helper"
+require "minitest/mock"
 
 class StartPointsControllerTest < ActionDispatch::IntegrationTest
   setup do
@@ -37,24 +38,38 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
     assert_equal "11:30", @goal_point.arrival_time.strftime("%H:%M")
   end
 
-  test "update without departure_time does not trigger recalculation" do
+  test "update toll_used triggers route and schedule recalculation" do
     # 初期時刻を設定
-    @plan_spot.update!(arrival_time: Time.zone.parse("09:30"), departure_time: Time.zone.parse("10:30"))
+    @plan_spot.update!(
+      arrival_time: Time.zone.parse("09:30"),
+      departure_time: Time.zone.parse("10:30"),
+      move_time: 30
+    )
 
-    # toll_used だけを更新（departure_time は変更しない）
-    # start_point が既に存在する状態で toll_used を更新
+    # toll_used を更新 → 経路が変わるため route + schedule 再計算
     @start_point.update!(lat: 35.6580, lng: 139.7016)
-    patch plan_start_point_path(@plan), params: {
-      start_point: { toll_used: true }
-    }, as: :json
+
+    # DirectionsClient をスタブして経路情報を返す
+    stub_response = {
+      move_time: 20,
+      move_distance: 15.0,
+      move_cost: 500,
+      polyline: "test"
+    }
+    Plan::DirectionsClient.stub(:fetch, ->(*_args) { stub_response }) do
+      patch plan_start_point_path(@plan), params: {
+        start_point: { toll_used: true }
+      }, as: :json
+    end
 
     assert_response :success
 
     @plan_spot.reload
 
-    # 時刻は変更されていない
-    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
-    assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
+    # 経路再計算により move_time が更新され、時刻も再計算される
+    # departure_time(09:00) + move_time(20分) = arrival_time(09:20)
+    assert_equal 20, @plan_spot.move_time
+    assert_equal "09:20", @plan_spot.arrival_time.strftime("%H:%M")
   end
 
   test "update returns success json response" do
