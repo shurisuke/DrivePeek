@@ -284,7 +284,7 @@
     <div class="block-time-panel__main">
       <div class="block-time-panel__row">
         <span class="block-time-panel__label">到着</span>
-        <span class="block-time-panel__value">09:30</span>
+        <span class="block-time-panel__value"><%= plan_spot.arrival_time&.strftime("%H:%M") || "--:--" %></span>
       </div>
 
       <%# 滞在時間（設定されている場合のみ） %>
@@ -297,7 +297,7 @@
 
       <div class="block-time-panel__row" data-plan-time-role="spot-departure">
         <span class="block-time-panel__label">出発</span>
-        <span class="block-time-panel__value">10:00</span>
+        <span class="block-time-panel__value"><%= plan_spot.departure_time&.strftime("%H:%M") || "--:--" %></span>
       </div>
     </div>
 
