@@ -11,17 +11,17 @@
 #
 # 制約:
 #   - arrival_time / departure_time には一切触らない（時刻計算は Plan::Schedule の責務）
-#   - 処理完了後に Plan::Schedule を実行する
 #
-# Phase 1:
-#   - Directions API 呼び出しは行わない（ダミー結果を返す）
-#   - キャッシュ枠を用意（同一区間は処理が二重に走らない仕組み）
+# Phase 2:
+#   - Google Directions API を呼び出して経路計算
+#   - 同一区間（segment_key）はキャッシュして1回だけAPI呼び出し
+#   - toll_used を区間ごとに反映
 #
 class Plan::Route
-  attr_reader :plan, :segment_cache
+  attr_reader :plan, :segment_cache, :api_call_count
 
-  # ダミー結果（Phase 1）
-  DUMMY_ROUTE_DATA = {
+  # フォールバック結果（API呼び出し失敗時）
+  FALLBACK_ROUTE_DATA = {
     move_time: 0,
     move_distance: 0.0,
     move_cost: 0,
@@ -31,6 +31,7 @@ class Plan::Route
   def initialize(plan)
     @plan = plan
     @segment_cache = {} # キャッシュ: segment_key => route_data
+    @api_call_count = 0 # API呼び出し回数（テスト・デバッグ用）
   end
 
   # 全区間を再計算して保存
@@ -162,13 +163,17 @@ class Plan::Route
     route_data
   end
 
-  # 経路を計算（Phase 1: ダミー結果を返す）
-  # Phase 2 で Google Directions API に置き換え
+  # 経路を計算（Google Directions API を呼び出し）
   # @param segment [Hash]
   # @return [Hash] { move_time:, move_distance:, move_cost:, polyline: }
-  def calculate_route(_segment)
-    # Phase 1: ダミー結果を返す（APIは呼ばない）
-    DUMMY_ROUTE_DATA.dup
+  def calculate_route(segment)
+    @api_call_count += 1
+
+    Plan::DirectionsClient.fetch(
+      origin: segment[:from_location],
+      destination: segment[:to_location],
+      toll_used: segment[:toll_used]
+    )
   end
 
   # 経路データを出発側レコードに保存
