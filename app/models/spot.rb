@@ -13,6 +13,16 @@ class Spot < ApplicationRecord
   validates :lat, presence: true
   validates :lng, presence: true
 
+  # photo_reference から写真URLを生成
+  def photo_url(max_width: 520)
+    return nil if photo_reference.blank?
+
+    api_key = ENV["GOOGLE_MAPS_API_KEY"]
+    return nil if api_key.blank?
+
+    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=#{max_width}&photo_reference=#{photo_reference}&key=#{api_key}"
+  end
+
   # Google Places のペイロードを適用
   # - 新規: 全属性をセット
   # - 既存: 空欄のみ補完、photo_reference は常に更新（鮮度優先）

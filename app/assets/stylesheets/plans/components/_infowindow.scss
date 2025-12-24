@@ -1,18 +1,78 @@
 /* ==========================================
-     Infowindow
+   Infowindow
 ========================================== */
 
+/* ✅ InfoWindow全体（Google Maps の枠を含む） */
+.gm-style-iw-c {
+  padding: 0 !important;
+  padding-top: 11px !important; /* ×ボタン用スペース */
+  border-radius: 0 !important;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15) !important;
+}
+
+.gm-style-iw-d {
+  overflow: hidden !important;
+}
+
+/* ✅ ×ボタン（閉じるボタン）: 白背景・赤い× */
+.gm-style-iw-c button.gm-ui-hover-effect {
+  position: absolute !important;
+  top: 4px !important;
+  right: 4px !important;
+  width: 20px !important;
+  height: 20px !important;
+  background-color: #fff !important;
+  border-radius: 2px !important;
+  opacity: 1 !important;
+  z-index: 10 !important;
+  box-shadow: none !important;
+
+  /* 元のアイコンを非表示 */
+  img,
+  span {
+    display: none !important;
+  }
+
+  /* 赤い×を擬似要素で表示 */
+  &::after {
+    content: "×";
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 16px;
+    font-weight: bold;
+    line-height: 1;
+    color: #dc3545;
+  }
+
+  /* ヒットエリア確保 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: -6px;
+    right: -6px;
+    bottom: -6px;
+    left: -6px;
+  }
+}
+
+/* ✅ 吹き出しの三角（tail）を非表示にする場合はこちら */
+/* .gm-style-iw-tc { display: none !important; } */
+
+/* ✅ InfoWindow本体 */
 .dp-infowindow {
-  width: 260px;
+  width: 80vw;
+  max-width: 320px;
+  min-width: 200px;
   font-family: inherit;
+  box-sizing: border-box;
 }
 
 .dp-infowindow__photo {
   width: 100%;
-  height: 140px;
+  height: 168px;
   overflow: hidden;
-  border-radius: 12px;
-  margin-bottom: 10px;
 }
 
 .dp-infowindow__img {
@@ -21,24 +81,36 @@
   object-fit: cover;
 }
 
-.dp-infowindow__noimg {
-  width: 100%;
-  height: 100%;
-  display: grid;
-  place-items: center;
-  font-size: 12px;
-  opacity: 0.7;
+.dp-infowindow__body {
+  padding: 12px;
+  text-align: center;
+}
+
+/* 写真がない場合（.dp-infowindow__photo がない場合）の余白調整 */
+.dp-infowindow__body:first-child {
+  padding-top: 0;
 }
 
 .dp-infowindow__name {
   font-weight: 700;
-  margin-bottom: 6px;
+  font-size: 16px;
+  margin-bottom: 4px;
+
+  /* 1行省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dp-infowindow__address {
   font-size: 12px;
-  opacity: 0.8;
-  margin-bottom: 10px;
+  opacity: 0.7;
+  margin-bottom: 8px;
+
+  /* 1行省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .dp-infowindow__btn {
@@ -47,4 +119,19 @@
   border-radius: 999px;
   padding: 10px 12px;
   cursor: pointer;
+  margin: 5px 0;
+
+  /* ✅ スポットアイコンと同じオレンジ / 白文字 */
+  background-color: #f7931e;
+  color: #fff;
+  font-weight: 600;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: #e5850f;
+  }
+
+  &:active {
+    background-color: #d17a0a;
+  }
 }
