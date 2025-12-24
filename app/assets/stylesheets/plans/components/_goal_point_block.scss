@@ -4,8 +4,7 @@
 ========================================== */
 
 /* ------------------------------------------
-   ✅ トグル行（背景/枠なし、Apple風）
-   “動かす” のは .goal-point-toggle に margin を当てる
+   ✅ 帰宅地点トグル行（出発地点の有料道路トグルと同じ見た目に統一）
 ------------------------------------------ */
 .goal-point-section {
   display: flex;
@@ -16,95 +15,96 @@
     margin-top: 30px;
   }
 
-  /* ✅ このラッパーを動かす（要望どおり “要素ごとずらす”） */
-  .goal-point-toggle {
-    margin: 3rem 1.5rem; // ←ここを触れば確実に動く
-  }
+  /* ✅ 帰宅地点トグル行（ラベルとスイッチを中央寄せでまとめて表示） */
+  .goal-point-toggle-row {
+    width: 100%;
+    margin: 3rem auto;
 
-  .goal-point-section__switch {
-    /* Bootstrap form-check の初期余白だけ消す（marginは触らない） */
-    &.form-check {
-      padding-left: 0;
-      margin: 0; // ←ラッパーで動かすのでここは0でOK
-      min-height: auto;
-    }
-
-    display: inline-flex;
+    display: flex;
+    justify-content: center;
     align-items: center;
-
-    /* 文字とスイッチの間隔 */
-    gap: 20px;
+    gap: 30px;
+    padding: 0;
 
     background: transparent;
     border: 0;
-    padding: 0;
+    border-radius: 0;
+  }
 
-    .form-check-label {
-      order: 1;
-      margin: 0;
+  .goal-point-toggle-row .label {
+    font-size: calc(0.82rem + 1px);
+    font-weight: 500;
+    color: rgb(35, 35, 35);
+    white-space: nowrap;
+  }
 
-      font-size: 0.86rem;
-      font-weight: 600;
-      color: rgba(68, 68, 68, 0.626);
-      letter-spacing: 0.02em;
+  .goal-point-toggle-row .toll-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
 
-      cursor: pointer;
-      user-select: none;
-    }
+    height: 16px;
+    min-width: 0;
 
-    .form-check-input {
-      order: 2;
+    border-left: 0 !important;
+    box-shadow: none !important;
+  }
 
-      margin: 0;
-      float: none;
+  .goal-point-toggle-row .form-check.form-switch {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
 
-      cursor: pointer;
+  .goal-point-toggle-row .form-check-input {
+    -webkit-appearance: none;
+    appearance: none;
 
-      width: 40px;
-      height: 22px;
-      border-radius: 9999px;
+    width: 29px;
+    height: 16px;
 
-      background-color: rgba(0, 0, 0, 0.18);
-      border: none;
-      background-image: none;
+    margin: 0 !important;
+    border: 0 !important;
+    outline: none !important;
 
-      position: relative;
-      transition: background-color 0.15s ease, box-shadow 0.15s ease, opacity 0.15s ease;
+    background-image: none !important;
+    background-color: #d0d5d2;
 
-      &:focus {
-        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
-        outline: none;
-      }
+    border-radius: 9999px;
+    position: relative;
 
-      &:checked {
-        background-color: #aaddac;
-      }
+    transition: background-color 0.15s ease;
+    box-shadow: none !important;
+  }
 
-      &:active {
-        opacity: 0.92;
-      }
+  .goal-point-toggle-row .form-check-input::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
 
-      &::before {
-        content: "";
-        position: absolute;
-        top: 2px;
-        left: 2px;
-        width: 18px;
-        height: 18px;
-        border-radius: 9999px;
-        background: #fff;
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
-        transition: transform 0.15s ease;
-      }
+    width: 12px;
+    height: 12px;
+    border-radius: 9999px;
 
-      &:checked::before {
-        transform: translateX(18px);
-      }
+    background: #fff;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 
-      &::after {
-        content: none;
-      }
-    }
+    transition: transform 0.15s ease;
+  }
+
+  .goal-point-toggle-row .form-check-input:checked {
+    background-color: var(--personal);
+  }
+
+  .goal-point-toggle-row .form-check-input:checked::after {
+    transform: translateX(13px);
+  }
+
+  .goal-point-toggle-row .form-check-input:focus,
+  .goal-point-toggle-row .form-check-input:focus-visible {
+    outline: none !important;
+    box-shadow: none !important;
   }
 }
 

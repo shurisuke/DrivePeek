@@ -79,19 +79,22 @@
   </div>
 
   <% if plan.plan_spots.exists? %>
-    <div class="goal-point-toggle">
-      <div class="form-check form-switch goal-point-section__switch">
-        <input
-          class="form-check-input"
-          type="checkbox"
-          role="switch"
-          id="goal-point-visibility-switch-<%= plan.id %>"
-          data-goal-point-visibility-target="switch"
-          data-action="change->goal-point-visibility#toggle"
-        >
-        <label class="form-check-label" for="goal-point-visibility-switch-<%= plan.id %>">
-          帰宅地点
-        </label>
+    <%# ✅ 帰宅地点トグル（出発地点の有料道路トグルと同じ見た目に統一） %>
+    <div class="goal-point-toggle-row">
+      <span class="label">帰宅地点</span>
+
+      <div class="toll-switch">
+        <div class="form-check form-switch m-0">
+          <input
+            class="form-check-input"
+            type="checkbox"
+            role="switch"
+            id="goal-point-visibility-switch-<%= plan.id %>"
+            aria-label="帰宅地点の表示を切り替える"
+            data-goal-point-visibility-target="switch"
+            data-action="change->goal-point-visibility#toggle"
+          >
+        </div>
       </div>
     </div>
   <% end %>
