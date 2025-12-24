@@ -2,7 +2,6 @@
 // ================================================================
 // 単一責務: 帰宅地点ブロックの表示/非表示をトグルで切り替える
 // 用途: goal-point の表示切替に連動して「最後のスポット」の右レール表示も調整する
-// 補足: 帰宅地点が非表示のとき、最後のスポットの「出発」行と矢印を非表示にする
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus";
@@ -27,6 +26,13 @@ export default class extends Controller {
 
     // 帰宅が非表示なら、最後のスポットの右レール「出発」行と矢印を消す
     this.updateLastSpotRail(goalVisible);
+
+    // ✅ 帰宅地点の表示状態変更を通知（polyline描画と連動）
+    document.dispatchEvent(
+      new CustomEvent("plan:goal-point-visibility-changed", {
+        detail: { goalVisible },
+      })
+    );
   }
 
   // ------------------------------------------------------------

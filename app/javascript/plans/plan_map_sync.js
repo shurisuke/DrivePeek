@@ -2,11 +2,19 @@
 //
 // ================================================================
 // Plan Map Sync（単一責務）
-// 用途: プラン画面で発生するイベントを購読し、
-//       必要な marker 更新を行う。
+// 用途: プラン画面で発生するイベントを購読し、地図表示を同期する。
+//       - マーカー描画: planbar差し替え後に DOM から最新座標を拾って再描画
+//       - 経路描画: DB保存済み polyline を DOM から収集し、API非依存で再描画
+//       - 帰宅地点トグル: goal の表示状態に合わせて「最後区間」を描く/描かないを切替
+//
+// 重要:
+//   - 経路は Directions / Routes API を一切呼ばず、geometry.decodePath で描画する
+//   - polyline の参照は map/state.js に保持し、再描画前に必ず clear する
+//   - 再描画トリガは turbo:load / planbar:updated / map:route-updated / goal関連イベント
 // ================================================================
 
 import { getPlanDataFromPage } from "map/plan_data"
+import { getMapInstance, setRoutePolylines, clearRoutePolylines } from "map/state"
 
 let bound = false
 let cachedPlanData = null
@@ -18,6 +26,89 @@ const getSpotsFromDom = () => {
     lat: Number(el.dataset.lat),
     lng: Number(el.dataset.lng),
   }))
+}
+
+// ✅ DOM から polyline 情報を収集する（区間順）
+const getPolylinesFromDom = () => {
+  const polylines = []
+
+  // 1. start_point → 最初の plan_spot の区間
+  const startPointBlock = document.querySelector(".start-point-block[data-polyline]")
+  if (startPointBlock?.dataset.polyline) {
+    polylines.push(startPointBlock.dataset.polyline)
+  }
+
+  // 2. plan_spot → 次の plan_spot or goal_point の区間（position順）
+  const spotBlocks = document.querySelectorAll(".spot-block[data-polyline][data-position]")
+  const sortedBlocks = Array.from(spotBlocks).sort((a, b) => {
+    return Number(a.dataset.position) - Number(b.dataset.position)
+  })
+
+  sortedBlocks.forEach((block) => {
+    if (block.dataset.polyline) {
+      polylines.push(block.dataset.polyline)
+    }
+  })
+
+  return polylines.filter(Boolean)
+}
+
+// ✅ 帰宅地点の表示状態を取得する
+const isGoalPointVisible = () => {
+  const mapEl = document.getElementById("map")
+  return mapEl?.dataset?.goalPointVisible === "true"
+}
+
+// ✅ polyline をデコードして地図上に描画する
+const renderRoutePolylines = () => {
+  const map = getMapInstance()
+  if (!map) {
+    console.log("[plan_map_sync] renderRoutePolylines: map not ready")
+    return
+  }
+
+  // geometry library がロードされているか確認
+  if (!google?.maps?.geometry?.encoding?.decodePath) {
+    console.warn("[plan_map_sync] geometry library not loaded")
+    return
+  }
+
+  let encodedPolylines = getPolylinesFromDom()
+
+  // ✅ 帰宅地点が非表示の場合、最後の区間（最後スポット→帰宅地点）を除外
+  const goalVisible = isGoalPointVisible()
+  if (!goalVisible && encodedPolylines.length > 0) {
+    encodedPolylines = encodedPolylines.slice(0, -1)
+    console.log("[plan_map_sync] goalPoint hidden, excluding last segment")
+  }
+
+  console.log("[plan_map_sync] renderRoutePolylines", {
+    count: encodedPolylines.length,
+    goalVisible,
+  })
+
+  if (encodedPolylines.length === 0) {
+    clearRoutePolylines()
+    return
+  }
+
+  const polylineInstances = encodedPolylines.map((encoded) => {
+    try {
+      const path = google.maps.geometry.encoding.decodePath(encoded)
+      return new google.maps.Polyline({
+        path,
+        map,
+        strokeColor: "#4285F4",
+        strokeOpacity: 0.8,
+        strokeWeight: 4,
+      })
+    } catch (e) {
+      console.warn("[plan_map_sync] Failed to decode polyline:", e)
+      return null
+    }
+  }).filter(Boolean)
+
+  setRoutePolylines(polylineInstances)
 }
 
 // ✅ planData の spots を DOM から更新した新しいオブジェクトを返す
@@ -83,6 +174,11 @@ export const bindPlanMapSync = () => {
       cachedPlanData = fresh
       console.log("[plan_map_sync] turbo:load - cachedPlanData updated")
     }
+
+    // ✅ 初回描画：polyline を描画する（少し遅延させてマップ初期化を待つ）
+    setTimeout(() => {
+      renderRoutePolylines()
+    }, 100)
   })
 
   // planbar 差し替え後：planDataを取り直して「全部のピン」を差し直す
@@ -98,7 +194,7 @@ export const bindPlanMapSync = () => {
     await renderAllMarkersSafe(planData)
   })
 
-  // トグルON/OFF：帰宅ピンだけ更新
+  // トグルON/OFF：帰宅ピンだけ更新 + polyline 再描画
   document.addEventListener("plan:goal-point-visibility-changed", async (e) => {
     console.log("[plan_map_sync] caught plan:goal-point-visibility-changed", e?.detail)
 
@@ -107,6 +203,9 @@ export const bindPlanMapSync = () => {
 
     cachedPlanData = planData
     await refreshGoalMarkerSafe(planData)
+
+    // ✅ 帰宅地点の表示状態に応じて polyline を再描画
+    renderRoutePolylines()
   })
 
   // 帰宅地点の更新：必ず visible=true にして、帰宅ピンを更新
@@ -146,5 +245,11 @@ export const bindPlanMapSync = () => {
   // 受信確認用（残してOK）
   document.addEventListener("plan:spot-added", (e) => {
     console.log("[plan_map_sync] caught plan:spot-added", e?.detail)
+  })
+
+  // ✅ 経路更新後：polyline を再描画する
+  document.addEventListener("map:route-updated", () => {
+    console.log("[plan_map_sync] caught map:route-updated")
+    renderRoutePolylines()
   })
 }
