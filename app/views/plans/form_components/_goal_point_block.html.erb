@@ -71,7 +71,7 @@
         <div class="block-time-panel__main">
           <div class="block-time-panel__row block-time-panel__row--arrival">
             <span class="block-time-panel__label block-time-panel__label--arrival">到着</span>
-            <span class="block-time-panel__value block-time-panel__value--arrival">12:00</span>
+            <span class="block-time-panel__value block-time-panel__value--arrival"><%= goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
           </div>
         </div>
       </div>
