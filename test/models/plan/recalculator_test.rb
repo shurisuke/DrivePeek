@@ -42,14 +42,15 @@ class Plan::RecalculatorTest < ActiveSupport::TestCase
   end
 
   test "recalculate! with route: true calls Route.recalculate!" do
-    # Route は現在スタブで true を返す
+    # Route は Phase 1 でダミー結果（move_time=0）を返す
     result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
 
     assert_equal true, result
 
-    # Schedule も計算される
+    # Route により move_time=0 になり、Schedule も計算される
     @plan_spot.reload
-    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
+    # 09:00 + 0分(move_time) = 09:00(arrival) + 60分(stay) = 10:00(departure)
+    assert_equal "09:00", @plan_spot.arrival_time.strftime("%H:%M")
   end
 
   test "recalculate! returns true by default (schedule only)" do
@@ -63,15 +64,16 @@ class Plan::RecalculatorTest < ActiveSupport::TestCase
 
   test "recalculate! executes route before schedule" do
     # route → schedule の順序を確認
-    # Route はスタブなので、両方実行できることを確認
+    # Route は Phase 1 でダミー結果（move_time=0）を返す
     result = Plan::Recalculator.new(@plan).recalculate!(route: true, schedule: true)
 
     assert_equal true, result
 
-    # route が先に実行され、schedule が後に実行されたことを確認
+    # route が先に実行され（move_time=0）、schedule が後に実行される
     @plan_spot.reload
-    assert_equal "09:30", @plan_spot.arrival_time.strftime("%H:%M")
-    assert_equal "10:30", @plan_spot.departure_time.strftime("%H:%M")
+    # 09:00 + 0分(move_time) = 09:00(arrival) + 60分(stay) = 10:00(departure)
+    assert_equal "09:00", @plan_spot.arrival_time.strftime("%H:%M")
+    assert_equal "10:00", @plan_spot.departure_time.strftime("%H:%M")
   end
 
   test "recalculate! returns false when schedule fails" do
