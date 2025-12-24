@@ -76,8 +76,9 @@ const renderRoutePolylines = () => {
   let encodedPolylines = getPolylinesFromDom()
 
   // ✅ 帰宅地点が非表示の場合、最後の区間（最後スポット→帰宅地点）を除外
+  // ただし、2区間以上ある場合のみ（1区間だけの場合は start→spot なので除外しない）
   const goalVisible = isGoalPointVisible()
-  if (!goalVisible && encodedPolylines.length > 0) {
+  if (!goalVisible && encodedPolylines.length > 1) {
     encodedPolylines = encodedPolylines.slice(0, -1)
     console.log("[plan_map_sync] goalPoint hidden, excluding last segment")
   }
