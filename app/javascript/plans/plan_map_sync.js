@@ -14,7 +14,7 @@
 // ================================================================
 
 import { getPlanDataFromPage } from "map/plan_data"
-import { getMapInstance, setRoutePolylines, clearRoutePolylines } from "map/state"
+import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitMarkers } from "map/state"
 
 let bound = false
 let cachedPlanData = null
@@ -183,8 +183,12 @@ export const bindPlanMapSync = () => {
   })
 
   // planbar 差し替え後：planDataを取り直して「全部のピン」を差し直す
+  // ※ スポット削除・入れ替え時もこのイベントが発火する
   document.addEventListener("planbar:updated", async () => {
     console.log("[plan_map_sync] caught planbar:updated")
+
+    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
+    clearSearchHitMarkers()
 
     // ✅ window.planData は古いので、spots だけ DOM から更新する
     const basePlanData = getPlanDataFromPage() || cachedPlanData
@@ -217,6 +221,9 @@ export const bindPlanMapSync = () => {
   document.addEventListener("plan:goal-point-updated", async (e) => {
     console.log("[plan_map_sync] caught plan:goal-point-updated", e?.detail)
 
+    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
+    clearSearchHitMarkers()
+
     // ✅ visible は文字列 "true" を直接セット（boolean禁止）
     const mapEl = document.getElementById("map")
     if (mapEl) {
@@ -247,9 +254,20 @@ export const bindPlanMapSync = () => {
     await refreshGoalMarkerSafe(cachedPlanData)
   })
 
-  // 受信確認用（残してOK）
+  // スポット追加時：検索ヒットマーカーをクリア
   document.addEventListener("plan:spot-added", (e) => {
     console.log("[plan_map_sync] caught plan:spot-added", e?.detail)
+
+    // ✅ 検索ヒットマーカーをクリア（スポット追加後は検索結果を消す）
+    clearSearchHitMarkers()
+  })
+
+  // 出発地点変更時：検索ヒットマーカーをクリア
+  document.addEventListener("plan:start-point-updated", () => {
+    console.log("[plan_map_sync] caught plan:start-point-updated")
+
+    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
+    clearSearchHitMarkers()
   })
 
   // ✅ 経路更新後：polyline を再描画する
