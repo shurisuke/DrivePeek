@@ -7,7 +7,7 @@
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
-  data-controller="plan-spot-memo plan-spot-tags plan-spot-delete plan-spot-settings"
+  data-controller="plan-spot-memo plan-spot-tags plan-spot-delete"
   data-plan-spot-memo-url-value="<%= update_memo_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-plan-spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan-spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
@@ -65,9 +65,9 @@
         <div class="spot-next-move mt-3" data-plan-time-role="spot-next-move">
           <span class="label">次の場所まで</span>
           <span class="km">
-            <%= number_with_precision(plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+            <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
           </span>
-          <span class="time"><%= "#{hours}h #{minutes}m" %></span>
+          <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
         </div>
       </div>
     </div>
@@ -77,6 +77,26 @@
            id="spotDetail-<%= plan_spot.id %>"
            data-plan-spot-memo-target="detail">
         <div class="spot-detail__inner">
+
+          <%# ✅ 有料道路設定行（出発地点の start-toll-row と同じ構造、常時表示） %>
+          <div class="spot-toll-row">
+            <span class="label">有料道路</span>
+
+            <div class="toll-switch">
+              <div class="form-check form-switch m-0">
+                <input
+                  class="form-check-input"
+                  type="checkbox"
+                  role="switch"
+                  aria-label="有料道路の使用を切り替える"
+                  data-toll-used-switch="1"
+                  data-plan-id="<%= plan_spot.plan_id %>"
+                  data-plan-spot-id="<%= plan_spot.id %>"
+                  <%= 'checked="checked"' if plan_spot.toll_used? %>
+                >
+              </div>
+            </div>
+          </div>
 
           <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                data-plan-spot-memo-target="editor"
@@ -106,79 +126,6 @@
 
           <div class="spot-detail-actions">
             <div class="spot-detail-actions__buttons-wrap">
-
-              <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
-                   data-plan-spot-settings-target="panel"
-                   data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#stopPropagation">
-
-                <div class="spot-settings">
-                  <div class="spot-settings__row spot-settings__row--toll">
-                    <div class="spot-settings__toll-left">
-                      <div class="spot-settings__label">有料道路</div>
-
-                      <div class="toll-switch">
-                        <div class="form-check form-switch m-0">
-                          <input
-                            class="form-check-input"
-                            type="checkbox"
-                            role="switch"
-                            aria-label="有料道路の使用を切り替える"
-                            data-toll-used-switch="1"
-                            data-plan-id="<%= plan_spot.plan_id %>"
-                            data-plan-spot-id="<%= plan_spot.id %>"
-                            <%= 'checked="checked"' if plan_spot.toll_used? %>
-                          >
-                        </div>
-                      </div>
-                    </div>
-
-                    <% if plan_spot.toll_used? %>
-                      <div class="spot-settings__price">
-                        <%= plan_spot.move_cost.present? ? number_to_currency(plan_spot.move_cost, unit: "¥ ", precision: 0) : "¥ 〇〇〇〇" %>
-                      </div>
-                    <% end %>
-                  </div>
-
-                  <div class="spot-settings__row spot-settings__row--stay">
-                    <label class="spot-settings__label" for="stayDuration-<%= plan_spot.id %>">滞在時間</label>
-
-                    <select
-                      id="stayDuration-<%= plan_spot.id %>"
-                      class="form-select spot-settings__stay-select"
-                      data-stay-duration-input="1"
-                      data-plan-id="<%= plan_spot.plan_id %>"
-                      data-plan-spot-id="<%= plan_spot.id %>"
-                      data-before-value="<%= plan_spot.stay_duration.to_s %>"
-                    >
-                      <%= options_for_select(
-                            [
-                              ["未設定", ""],
-                              ["15分", 15],
-                              ["30分", 30],
-                              ["45分", 45],
-                              ["60分", 60],
-                              ["90分", 90],
-                              ["120分", 120],
-                              ["150分", 150],
-                              ["180分", 180]
-                            ],
-                            plan_spot.stay_duration
-                          )
-                      %>
-                    </select>
-                  </div>
-
-                  <div class="spot-memo__editor-actions mt-3">
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            data-plan-spot-settings-target="toggle"
-                            data-action="pointerdown->plan-spot-settings#stopPropagation click->plan-spot-settings#close"
-                            aria-expanded="false">
-                      閉じる
-                    </button>
-                  </div>
-                </div>
-              </div>
 
               <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                    data-plan-spot-tags-target="form"
@@ -220,15 +167,6 @@
               </div>
 
               <div class="spot-detail-actions__buttons">
-                <button type="button"
-                        class="btn btn-outline-secondary btn-sm w-100"
-                        data-plan-spot-settings-target="toggle"
-                        data-action="click->plan-spot-settings#toggle"
-                        aria-label="設定を開く"
-                        aria-expanded="false">
-                  <i class="bi bi-gear me-1" aria-hidden="true"></i>
-                </button>
-
                 <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
 
                 <button type="button"
@@ -289,13 +227,33 @@
         <span class="block-time-panel__value"><%= plan_spot.arrival_time&.strftime("%H:%M") || "--:--" %></span>
       </div>
 
-      <%# 滞在時間（設定されている場合のみ） %>
-      <% if plan_spot.stay_duration.present? && plan_spot.stay_duration > 0 %>
-        <div class="block-time-panel__row">
-          <span class="block-time-panel__label">滞在</span>
-          <span class="block-time-panel__value"><%= plan_spot.stay_duration %>分</span>
-        </div>
-      <% end %>
+      <%# ✅ 滞在時間選択（常時表示、出発時間ピッカーと同じスタイル） %>
+      <div class="spot-stay-duration <%= 'spot-stay-duration--set' if plan_spot.stay_duration.present? && plan_spot.stay_duration > 0 %>">
+        <span class="spot-stay-duration__label">滞在</span>
+        <select
+          class="spot-stay-duration__select"
+          data-stay-duration-input="1"
+          data-plan-id="<%= plan_spot.plan_id %>"
+          data-plan-spot-id="<%= plan_spot.id %>"
+          data-before-value="<%= plan_spot.stay_duration.to_s %>"
+        >
+          <%= options_for_select(
+                [
+                  ["0分", ""],
+                  ["15分", 15],
+                  ["30分", 30],
+                  ["45分", 45],
+                  ["60分", 60],
+                  ["90分", 90],
+                  ["120分", 120],
+                  ["150分", 150],
+                  ["180分", 180]
+                ],
+                plan_spot.stay_duration
+              )
+          %>
+        </select>
+      </div>
 
       <div class="block-time-panel__row" data-plan-time-role="spot-departure">
         <span class="block-time-panel__label">出発</span>

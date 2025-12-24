@@ -1,8 +1,9 @@
 <%# app/views/plans/form_components/_start_point_block.html.erb %>
 <% plan ||= @plan %>
 
-<% first_plan_spot = plan.plan_spots.order(:position).first %>
-<% move_minutes = first_plan_spot&.move_time.to_i %>
+<%# ✅ 出発地点から最初のスポットまでの区間情報は start_point に保存される %>
+<% start_point = plan.start_point %>
+<% move_minutes = start_point&.move_time.to_i %>
 <% hours = move_minutes / 60 %>
 <% minutes = move_minutes % 60 %>
 
@@ -79,16 +80,16 @@
         <span class="label">次の場所まで</span>
 
         <span class="km">
-          <% if first_plan_spot&.move_distance.present? %>
-            <%= number_with_precision(first_plan_spot.move_distance.to_f, precision: 1, strip_insignificant_zeros: true) %>km
+          <% if start_point&.move_distance.present? %>
+            <%= format_distance(start_point.move_distance) %><span class="km-unit">km</span>
           <% else %>
-            —km
+            —<span class="km-unit">km</span>
           <% end %>
         </span>
 
         <span class="time">
-          <% if first_plan_spot&.move_time.present? %>
-            <%= "#{hours}h #{minutes}m" %>
+          <% if start_point&.move_time.present? %>
+            <% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span>
           <% else %>
             —
           <% end %>
@@ -118,9 +119,8 @@
                 </div>
               </div>
 
-              <span class="price">
-                <%= first_plan_spot&.move_cost.present? ? number_to_currency(first_plan_spot.move_cost, unit: "¥ ", precision: 0) : "¥ 〇〇〇〇" %>
-              </span>
+              <%# ✅ 料金表示は一旦非表示（料金取得ロジック未実装のため） %>
+              <%#= start_point&.toll_used? && start_point&.move_cost.present? ? number_to_currency(start_point.move_cost, unit: "¥ ", precision: 0) : "¥ —" %>
             </div>
           </div>
         </div>

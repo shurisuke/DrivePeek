@@ -12,6 +12,14 @@ export default class extends Controller {
 
   connect() {
     this.apply();
+
+    // ✅ planbar更新時にも最後スポットのクラスを再計算
+    this.handlePlanbarUpdated = () => this.apply();
+    document.addEventListener("planbar:updated", this.handlePlanbarUpdated);
+  }
+
+  disconnect() {
+    document.removeEventListener("planbar:updated", this.handlePlanbarUpdated);
   }
 
   toggle() {
@@ -23,6 +31,13 @@ export default class extends Controller {
 
     // 帰宅ブロック本体の表示切替
     if (this.hasBlockAreaTarget) this.blockAreaTarget.hidden = !goalVisible;
+
+    // ✅ body に goal-point-visible クラスを追加/削除（CSS判定用）
+    if (goalVisible) {
+      document.body.classList.add("goal-point-visible");
+    } else {
+      document.body.classList.remove("goal-point-visible");
+    }
 
     // 帰宅が非表示なら、最後のスポットの右レール「出発」行と矢印を消す
     this.updateLastSpotRail(goalVisible);
@@ -54,6 +69,11 @@ export default class extends Controller {
       const accPos = Number(acc?.dataset?.position || 0);
       return pos >= accPos ? el : acc;
     }, spotBlocks[0]);
+
+    // ✅ 全スポットから spot-block--last を外し、最後のスポットにだけ付与
+    // これにより CSS で帰宅地点表示状態に応じたトグル出し分けが効く
+    spotBlocks.forEach((el) => el.classList.remove("spot-block--last"));
+    lastSpot.classList.add("spot-block--last");
 
     // spot_block 側で付けた目印
     const nextMoveRow = lastSpot.querySelector('[data-plan-time-role="spot-next-move"]');

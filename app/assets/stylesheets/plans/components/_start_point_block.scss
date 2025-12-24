@@ -251,17 +251,32 @@
   .distance-info .km,
   .distance-info .time {
     font-weight: 400;
+    font-size: calc(1em + 2px);
     color: #2d2d2d;
 
     padding-left: 12px;
     border-left: 1px solid rgba(0, 0, 0, 0.10);
   }
 
+  .distance-info .time-unit {
+    font-size: 13px;
+    margin-left: 2px;
+    margin-right: 2px;
+
+    &:last-child {
+      margin-right: 0;
+    }
+  }
+
+  .distance-info .km-unit {
+    font-size: 13px;
+    margin-left: 2px;
+  }
+
   .start-point-detail-wrap {
     display: flex;
     flex-direction: column;
     align-items: center;
-    gap: 8px;
     width: 100%;
   }
 
@@ -270,25 +285,29 @@
     width: 100%;
   }
 
+  /* ✅ collapsingアニメーション中のがたつき防止 */
+  .start-point-detail.collapsing {
+    overflow: hidden;
+  }
+
   .start-point-detail__inner {
     width: 100%;
     border-radius: 6px;
     background: transparent;
-    padding: 0;
+    padding: 10px 0;
     font-size: 0.9rem;
   }
 
   .start-toll-row {
     width: 265px;
-    margin: 0 auto 8px;
-    margin-top: 10px;
+    margin: 0 auto;
+    padding: 0;
 
     display: grid;
-    grid-template-columns: auto auto 1fr;
+    grid-template-columns: auto auto;
     align-items: center;
 
     gap: 0;
-    padding: 0;
 
     background: transparent;
     border: 0;
@@ -373,17 +392,7 @@
     box-shadow: none !important;
   }
 
-  .start-toll-row .price {
-    justify-self: end;
-    text-align: right;
-
-    white-space: nowrap;
-    font-weight: 400;
-    color: #2d2d2d;
-
-    line-height: 1;
-    min-width: 60px;
-  }
+  /* ✅ .price は料金取得ロジック実装後に復活予定 */
 
   .detail-toggle {
     width: 40px;
@@ -431,4 +440,15 @@
   padding: 6px 6px;
   font-size: 12px;
   text-align: center;
+}
+
+/* ✅ 出発ブロックの時刻レール位置調整 */
+.start-point-block .block-time-panel__main {
+  margin-top: -1px;
+}
+
+/* ✅ 出発ブロックの矢印位置調整 */
+.start-point-block .block-time-panel__arrow {
+  margin-top: -4px;
+  margin-bottom: -1px;
 }

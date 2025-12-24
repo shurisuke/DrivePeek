@@ -64,14 +64,19 @@
 
 .spot-block .block-time-panel__main {
   justify-content: space-between;
+  gap: 10px;
+}
+
+.spot-block .block-time-panel__row {
   gap: 0;
 }
 
 .spot-block .block-time-panel__row:first-child {
-  padding-top: 5px;
+  padding-top: 4px;
 }
 
 .spot-block .block-time-panel__row:last-child {
+  padding-top: 3px;
   padding-bottom: 32px;
 }
 
@@ -160,13 +165,13 @@
   align-items: center;
   justify-content: center;
 
-  padding: 4px 10px;
+  padding: 3px 10px;
   border-radius: 9999px;
 
   font-size: 0.75rem;
-  border: 1px solid rgba(80, 109, 83, 0.25);
-  background: rgba(80, 109, 83, 0.08);
-  color: rgba(80, 109, 83, 0.9);
+  border: 1px solid #ef813d;
+  background: #fff;
+  color: #ef813d;
 }
 
 /* 編集時だけ×分広げて右端固定 */
@@ -202,7 +207,7 @@
   background: transparent;
   border-radius: 9999px;
 
-  color: rgba(80, 109, 83, 0.55);
+  color: rgba(239, 129, 61, 0.6);
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
@@ -211,13 +216,13 @@
 }
 
 .spot-block .spot-tags.is-editing .tag-chip__remove:hover {
-  background: rgba(80, 109, 83, 0.10);
-  color: rgba(80, 109, 83, 0.95);
+  background: rgba(239, 129, 61, 0.1);
+  color: #ef813d;
 }
 
 .spot-block .spot-tags.is-editing .tag-chip__remove:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
+  box-shadow: 0 0 0 3px rgba(239, 129, 61, 0.25);
 }
 
 /* ×の下線を消す（aタグ対策） */
@@ -473,126 +478,62 @@
 }
 
 /* ------------------------------------------
-   設定フォーム（改良）
+   有料道路設定行（トグル内に配置、出発地点と同じ見た目）
 ------------------------------------------ */
 
-.spot-block .spot-settings {
-  width: 100%;
-}
+/* ✅ 有料道路設定行（出発地点の start-toll-row と同じ構造） */
+.spot-block .spot-toll-row {
+  width: 265px;
+  margin: 0 auto;
+  padding: 0 0 10px 0;
 
-/* 1行に収める共通 */
-.spot-block .spot-settings__row {
-  display: flex;
+  display: grid;
+  grid-template-columns: auto auto;
   align-items: center;
-  justify-content: space-between;
-  gap: 12px;
+  gap: 0;
 
-  padding: 8px 0;
+  background: transparent;
+  border: 0;
+  border-radius: 0;
 }
 
-/* ラベル */
-.spot-block .spot-settings__label {
-  font-weight: 700;
-  color: rgba(33, 33, 33, 0.78);
-  font-size: 0.9rem;
-  margin: 0;
-}
-
-/* 有料道路：左側（ラベル + スイッチ） */
-.spot-block .spot-settings__toll-left {
-  display: inline-flex;
-  align-items: center;
-  gap: 10px;
-  min-width: 0;
-}
-
-/* EC料金：右寄せ（ONの時だけHTMLで出る） */
-.spot-block .spot-settings__price {
-  margin-left: auto;
-  font-weight: 800;
-  color: #222;
+.spot-block .spot-toll-row .label {
+  font-size: 0.82rem;
+  font-weight: 500;
+  color: rgb(35, 35, 35);
   white-space: nowrap;
 }
 
-/* 滞在時間行：ラベル + select を1行に */
-.spot-block .spot-settings__row--stay .spot-settings__label {
-  flex: 0 0 auto;
-}
+.spot-block .spot-toll-row .toll-switch {
+  margin-left: 15px;
 
-.spot-block .spot-settings__row--stay .form-select {
-  flex: 1 1 auto;
-  min-width: 0;
-}
-
-/* ✅ 有料道路行：EC料金の見た目に合わせて高さ固定 */
-.spot-block .spot-settings__row--toll {
-  height: 34px;
-  align-items: center;
-  padding: 0;
-}
-
-/* 左側（ラベル+スイッチ）も高さ内に収める */
-.spot-block .spot-settings__toll-left {
-  height: 34px;
-  align-items: center;
-}
-
-/* EC料金：高さブレ防止（数字の上下ズレ対策） */
-.spot-block .spot-settings__price {
-  line-height: 1;
   display: inline-flex;
   align-items: center;
-  height: 34px;
-}
+  justify-content: flex-start;
 
-/* ==========================================
-   ✅ 設定フォームの下半分（滞在時間行）だけブレ防止
-========================================== */
+  height: 16px;
+  min-width: 0;
 
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay {
-  height: 34px;
-  padding: 0;
-  align-items: center;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select {
-  flex: 0 0 100px;
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
-
-  height: 34px;
-  min-height: 34px;
-  box-sizing: border-box;
-
-  margin-left: auto;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus,
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row--stay .form-select:focus-visible {
-  outline: none !important;
+  border-left: 0 !important;
   box-shadow: none !important;
 }
 
-/* トグル（アプリっぽい見た目） + クリック時の枠線を消す */
-.spot-block .spot-settings .form-switch {
+.spot-block .spot-toll-row .form-check.form-switch {
   margin: 0 !important;
   padding: 0 !important;
   min-height: auto !important;
 }
 
-.spot-block .spot-settings .form-check-input {
+.spot-block .spot-toll-row .form-check-input {
   -webkit-appearance: none;
   appearance: none;
 
-  width: 40px;
-  height: 22px;
+  width: 29px;
+  height: 16px;
 
   margin: 0 !important;
-
   border: 0 !important;
   outline: none !important;
-  box-shadow: none !important;
 
   background-image: none !important;
   background-color: #d0d5d2;
@@ -601,37 +542,40 @@
   position: relative;
 
   transition: background-color 0.15s ease;
+  box-shadow: none !important;
 }
 
-.spot-block .spot-settings .form-check-input::after {
+.spot-block .spot-toll-row .form-check-input::after {
   content: "";
   position: absolute;
   top: 2px;
   left: 2px;
 
-  width: 18px;
-  height: 18px;
+  width: 12px;
+  height: 12px;
   border-radius: 9999px;
 
   background: #fff;
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.18);
+  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 
   transition: transform 0.15s ease;
 }
 
-.spot-block .spot-settings .form-check-input:checked {
+.spot-block .spot-toll-row .form-check-input:checked {
   background-color: var(--personal);
 }
 
-.spot-block .spot-settings .form-check-input:checked::after {
-  transform: translateX(18px);
+.spot-block .spot-toll-row .form-check-input:checked::after {
+  transform: translateX(13px);
 }
 
-.spot-block .spot-settings .form-check-input:focus,
-.spot-block .spot-settings .form-check-input:focus-visible {
+.spot-block .spot-toll-row .form-check-input:focus,
+.spot-block .spot-toll-row .form-check-input:focus-visible {
   outline: none !important;
   box-shadow: none !important;
 }
+
+/* ✅ .price は料金取得ロジック実装後に復活予定 */
 
 /* ------------------------------------------
    次の場所まで
@@ -650,8 +594,7 @@
   align-items: center;
   gap: 10px;
 
-  margin: 0 auto 8px;
-  margin-top: 20px;
+  margin: 20px auto 0;
 }
 
 .spot-block .spot-next-move .label {
@@ -663,10 +606,26 @@
 .spot-block .spot-next-move .km,
 .spot-block .spot-next-move .time {
   font-weight: 400;
+  font-size: calc(1em + 2px);
   color: #2d2d2d;
 
   padding-left: 12px;
   border-left: 1px solid rgba(0, 0, 0, 0.10);
+}
+
+.spot-block .spot-next-move .time-unit {
+  font-size: 13px;
+  margin-left: 2px;
+  margin-right: 2px;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.spot-block .spot-next-move .km-unit {
+  font-size: 13px;
+  margin-left: 2px;
 }
 
 /* ------------------------------------------
@@ -712,11 +671,6 @@
   z-index: 1;
 }
 
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor form,
-.spot-block .spot-memo.spot-memo--pin.spot-memo--editor .spot-settings {
-  position: relative;
-  z-index: 1;
-}
 
 .spot-block .spot-memo.spot-memo--editor input.form-control,
 .spot-block .spot-memo.spot-memo--editor textarea.form-control {
@@ -792,132 +746,6 @@
   transition: background-color 9999s ease-out 0s;
 }
 
-/* ==========================================
-   ✅ 設定フォームだけ：左右の内側余白を増やす
-========================================== */
-.spot-block [data-plan-spot-settings-target="panel"].spot-memo.spot-memo--pin.spot-memo--editor {
-  padding-left: 45px !important;
-  padding-right: 45px !important;
-}
-
-/* ==========================================
-   ✅ 滞在時間select：幅固定 + 角丸 + focus枠を消す
-========================================== */
-.spot-block .spot-settings__stay-select {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
-
-  flex: 0 0 100px;
-  box-sizing: border-box;
-
-  border-radius: 10px;
-}
-
-.spot-block .spot-settings__stay-select:focus,
-.spot-block .spot-settings__stay-select:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ==========================================
-   ✅ 設定フォームを「薄く・小さく」まとめる（HTML変更なし）
-========================================== */
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings {
-  font-size: 0.82rem;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__label {
-  font-size: 0.82rem;
-  font-weight: 600;
-  color: rgba(33, 33, 33, 0.70);
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__row {
-  padding: 6px 0;
-  gap: 10px;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings__price {
-  font-size: 0.9rem;
-  font-weight: 500;
-}
-
-/* ==========================================
-   ✅ トグルスイッチ：全体を約 2/3 に縮小
-========================================== */
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input {
-  width: 28px;
-  height: 16px;
-
-  border: 0 !important;
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input::after {
-  top: 2px;
-  left: 2px;
-
-  width: 12px;
-  height: 12px;
-
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:checked::after {
-  transform: translateX(12px);
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus,
-.spot-block [data-plan-spot-settings-target="panel"] .spot-settings .form-check-input:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ==========================================
-   ✅ 滞在時間 select：小型化（設定フォーム内だけ）
-========================================== */
-.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"] {
-  width: 100px;
-  min-width: 100px;
-  max-width: 100px;
-
-  font-size: 0.9rem;
-  line-height: 1.2;
-
-  padding: 6px 28px 6px 10px;
-  min-height: 34px;
-
-  border-radius: 6px;
-
-  font-variant-numeric: tabular-nums;
-  font-feature-settings: "tnum";
-  letter-spacing: 0;
-  transition: none !important;
-  -webkit-font-smoothing: antialiased;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus,
-.spot-block [data-plan-spot-settings-target="panel"] select[id^="stayDuration-"]:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ==========================================
-   ✅ 設定フォームの「閉じる」以外を小さく
-========================================== */
-.spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn {
-  font-size: 0.8rem !important;
-  padding: 0.42rem 0.6rem !important;
-  min-width: 52px !important;
-}
-
-.spot-block [data-plan-spot-settings-target="panel"] .spot-memo__editor-actions .btn.btn-outline-secondary {
-  font-size: 0.8rem !important;
-  padding: 0.5rem 0.7rem !important;
-  min-width: 60px !important;
-}
 
 /* ------------------------------------------
    下部：開閉トグル
@@ -988,7 +816,10 @@
   padding-left: 0;
 }
 
-body:not(.goal-point-visible) .spot-block--last .spot-detail-wrap {
+body:not(.goal-point-visible) .spot-block--last .spot-detail-wrap,
+body:not(.goal-point-visible) .spot-block--last .block-time-panel__toggle-area,
+body:not(.goal-point-visible) .spot-block--last .spot-stay-duration,
+body:not(.goal-point-visible) .spot-block--last [data-plan-time-role="spot-departure"] {
   display: none;
 }
 
@@ -996,6 +827,100 @@ body.goal-point-visible .spot-block--last .spot-detail-wrap {
   display: flex;
 }
 
+body.goal-point-visible .spot-block--last .block-time-panel__toggle-area {
+  display: flex;
+}
+
 .no-collapse-anim .collapsing {
   transition: none !important;
+}
+
+/* ✅ スポットブロックの矢印位置調整 */
+.spot-block .block-time-panel__arrow {
+  margin-top: -7px;
+}
+
+/* ==========================================
+   ✅ 時刻レール内の滞在時間選択（出発時間ピッカーと同じスタイル）
+========================================== */
+
+.spot-stay-duration {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+
+  width: 60px;
+  max-width: 60px;
+  align-items: center;
+  text-align: center;
+
+  /* ✅ 少し右側に移動 */
+  margin-left: 5px;
+  margin-top: 1px;
+}
+
+.spot-stay-duration__label {
+  width: 100%;
+  max-width: 60px;
+
+  /* ✅ 到着ラベル（.block-time-panel__label）と同じスタイル */
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.55);
+
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+  text-align: center;
+
+  white-space: normal;
+  word-break: keep-all;
+
+  /* ✅ 3px下げる */
+  margin-top: 3px;
+}
+
+.spot-stay-duration__select {
+  width: 60px;
+  height: 16px;
+
+  box-sizing: border-box;
+  border: none;
+  border-radius: 6px;
+
+  background: transparent;
+  color: #222;
+  text-align: center;
+  text-align-last: center;
+
+  /* ✅ 色と太さは時刻レールの値と同じ */
+  font-size: 12px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+
+  cursor: pointer;
+
+  -webkit-appearance: none;
+  appearance: none;
+
+  /* ▼ アイコンを非表示にする */
+  background-image: none;
+  padding: 0 4px;
+
+  &:focus {
+    outline: none;
+    box-shadow: none;
+  }
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+}
+
+/* ✅ 設定済み時：よりコンパクトに */
+.spot-stay-duration--set {
+
+  .spot-stay-duration__select {
+    height: 16px;
+    font-size: 12px;
+  }
 }

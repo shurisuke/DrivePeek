@@ -296,10 +296,15 @@ const captureGoalPointVisibilityState = () => {
   const blockArea = section.querySelector('[data-goal-point-visibility-target="blockArea"]')
   if (!switchEl || !blockArea) return null
 
+  // ✅ #map.dataset.goalPointVisible も退避（polyline描画に必要）
+  const mapEl = document.getElementById("map")
+  const mapGoalPointVisible = mapEl?.dataset?.goalPointVisible === "true"
+
   return {
     checked: !!switchEl.checked,
     hidden: !!blockArea.hidden,
     bodyVisible: document.body.classList.contains("goal-point-visible"),
+    mapGoalPointVisible,
   }
 }
 
@@ -319,6 +324,12 @@ const restoreGoalPointVisibilityState = (state) => {
 
   if (state.bodyVisible) document.body.classList.add("goal-point-visible")
   else document.body.classList.remove("goal-point-visible")
+
+  // ✅ #map.dataset.goalPointVisible も復元（polyline描画に必要）
+  const mapEl = document.getElementById("map")
+  if (mapEl) {
+    mapEl.dataset.goalPointVisible = state.mapGoalPointVisible ? "true" : "false"
+  }
 }
 
 // -------------------------------

@@ -99,8 +99,8 @@ const renderRoutePolylines = () => {
       return new google.maps.Polyline({
         path,
         map,
-        strokeColor: "#4285F4",
-        strokeOpacity: 0.8,
+        strokeColor: "#D4846A",  // ダスティコーラル（ピンク寄りオレンジ、柔らかい）
+        strokeOpacity: 0.85,
         strokeWeight: 4,
       })
     } catch (e) {

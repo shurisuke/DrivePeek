@@ -118,7 +118,7 @@ const initSortable = () => {
     draggable: ".spot-block",
 
     filter: "button, a, input, textarea, select, option, label, .detail-toggle",
-    preventOnFilter: true,
+    preventOnFilter: false,
 
     ghostClass: "spot-block--ghost",
     chosenClass: "spot-block--chosen",

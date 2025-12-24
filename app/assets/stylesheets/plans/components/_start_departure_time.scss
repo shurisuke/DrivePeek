@@ -11,6 +11,8 @@
   max-width: 60px;
   align-items: center;
   text-align: center;
+
+  margin-bottom: 2px;
 }
 
 /* ✅ 2行で固定（ERBで<br>を入れる前提） */
@@ -36,11 +38,12 @@
   border-radius: 6px;
 
   background: #fff;
-  color: #111;
+  color: #222;
   text-align: center;
 
-  font-size: 14px;
-  font-weight: 700;
+  /* ✅ 時刻レールの値（.block-time-panel__value）と同じスタイル */
+  font-size: 0.88rem;
+  font-weight: 500;
   letter-spacing: 0.02em;
 
   cursor: pointer;
@@ -72,7 +75,7 @@
 
   .start-departure-time__input {
     height: 28px;
-    font-size: 13px;
+    font-size: 0.88rem;
     border-color: transparent;
     background: transparent;
 

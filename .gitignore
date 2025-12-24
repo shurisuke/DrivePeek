@@ -43,6 +43,6 @@
 /.claude
 
 # Ignore task documents
-/docs/tasks/
+/docs
 
 /CLAUDE.md
