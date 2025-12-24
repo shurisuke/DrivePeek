@@ -138,7 +138,7 @@ body.no-footer {
 
     .plan-info {
       position: fixed;
-      bottom: 2rem;
+      bottom: calc(2rem - 5px);
       right: 2rem;
       background: rgba(255, 255, 255, 0.95);
       padding: 1rem 1.5rem;
@@ -146,37 +146,25 @@ body.no-footer {
       box-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
       z-index: 3;
 
-      p {
+      &__row {
+        display: flex;
+        justify-content: space-between;
+        gap: 15px;
         margin: 0;
         font-size: 0.9rem;
         color: #333;
       }
-    }
 
-    .map-controls {
-      position: fixed;
-      top: 42%;
-      right: 1.5rem;
-      display: flex;
-      flex-direction: column;
-      gap: 0.5rem;
-      z-index: 3;
+      &__label {
+        white-space: nowrap;
+      }
 
-      .zoom-btn {
-        background-color: #fff;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        width: 40px;
-        height: 40px;
-        font-size: 1.5rem;
-        font-weight: bold;
-        cursor: pointer;
-
-        &:hover {
-          background-color: #f0f0f0;
-        }
+      &__value {
+        text-align: right;
+        white-space: nowrap;
       }
     }
+
   }
 }
 

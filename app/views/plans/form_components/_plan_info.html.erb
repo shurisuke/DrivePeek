@@ -1,0 +1,16 @@
+<div class="plan-info">
+  <p class="plan-info__row">
+    <span class="plan-info__label">走行距離</span>
+    <span class="plan-info__value"><%= plan.total_distance %>km</span>
+  </p>
+  <% if plan.has_toll_roads? %>
+    <p class="plan-info__row">
+      <span class="plan-info__label">ETC料金</span>
+      <span class="plan-info__value">¥<%= number_with_delimiter(plan.total_toll_cost) %></span>
+    </p>
+  <% end %>
+  <p class="plan-info__row">
+    <span class="plan-info__label">移動時間</span>
+    <span class="plan-info__value"><%= plan.formatted_move_time %></span>
+  </p>
+</div>
