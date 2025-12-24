@@ -14,8 +14,11 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     # 初期状態を設定
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
-    @plan_spot.update!(move_time: 30, stay_duration: 60)
+    # move_time の保存先ルール:
+    #   - start_point.move_time = start → first_spot
+    #   - plan_spot.move_time = spot → next (goal)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
+    @plan_spot.update!(move_time: 0, stay_duration: 60)  # spot → goal: 0分
   end
 
   test "update departure_time triggers schedule recalculation" do
@@ -42,8 +45,7 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
     # 初期時刻を設定
     @plan_spot.update!(
       arrival_time: Time.zone.parse("09:30"),
-      departure_time: Time.zone.parse("10:30"),
-      move_time: 30
+      departure_time: Time.zone.parse("10:30")
     )
 
     # toll_used を更新 → 経路が変わるため route + schedule 再計算
@@ -64,11 +66,13 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
 
     assert_response :success
 
+    @start_point.reload
     @plan_spot.reload
 
-    # 経路再計算により move_time が更新され、時刻も再計算される
+    # 経路再計算により start_point.move_time が更新され、時刻も再計算される
+    # ✅ Route は from_record（start_point）に保存
+    assert_equal 20, @start_point.move_time
     # departure_time(09:00) + move_time(20分) = arrival_time(09:20)
-    assert_equal 20, @plan_spot.move_time
     assert_equal "09:20", @plan_spot.arrival_time.strftime("%H:%M")
   end
 

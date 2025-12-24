@@ -13,9 +13,12 @@ class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
     sign_in @user
 
     # 初期状態を設定
-    @start_point.update!(departure_time: Time.zone.parse("09:00"))
+    # move_time の保存先ルール:
+    #   - start_point.move_time = start → first_spot
+    #   - plan_spot.move_time = spot → next (goal)
+    @start_point.update!(departure_time: Time.zone.parse("09:00"), move_time: 30)
     @plan_spot.update!(
-      move_time: 30,
+      move_time: 0,  # spot → goal: 0分
       stay_duration: 60,
       arrival_time: Time.zone.parse("09:30"),
       departure_time: Time.zone.parse("10:30")
