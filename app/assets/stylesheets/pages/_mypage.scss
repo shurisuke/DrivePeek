@@ -62,6 +62,10 @@
   color: var(--personal);
 }
 
+.mypage-form {
+  padding-top: 10px;
+}
+
 .mypage-form .form-control,
 .mypage-form .form-select {
   border-radius: 6px;
@@ -69,6 +73,11 @@
   background-color: #ffffff;
   color: #333;
   font-size: 0.95rem;
+}
+
+.mypage-data {
+  font-size: 1.1rem;
+  color: #666;
 }
 
 .mypage-note {
@@ -91,6 +100,10 @@
     width: 600px;
     margin: 0 auto;
     padding: 0.75rem 1.5rem;
+    text-align: center;
+    text-decoration: none;
+    font-size: 1rem;
+    font-weight: bold;
 
     &:hover {
       background-color: var(--personal);
