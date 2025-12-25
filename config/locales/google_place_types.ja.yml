@@ -7,7 +7,7 @@ ja:
     bakery: "パン屋"
     meal_delivery: "デリバリー"
     meal_takeaway: "テイクアウト"
-    food: "フード"
+    food: "料理"
 
     # 観光・レジャー
     tourist_attraction: "観光名所"
@@ -36,6 +36,7 @@ ja:
     shopping_mall: "ショッピングモール"
     department_store: "デパート"
     supermarket: "スーパー"
+    grocery_or_supermarket: "スーパー"
     convenience_store: "コンビニ"
     store: "店舗"
     clothing_store: "衣料品店"
@@ -71,6 +72,7 @@ ja:
     car_wash: "洗車"
 
     # 医療
+    health: "健康施設"
     hospital: "病院"
     doctor: "医院"
     dentist: "歯科"
