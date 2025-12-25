@@ -1,6 +1,6 @@
-<%# スポットがある場合のみ表示 %>
+<%# スポットがある場合のみ表示（帰宅地点トグルOFF時は非表示） %>
 <% if plan.plan_spots.any? %>
-  <div class="plan-info">
+  <div class="plan-info" data-plan-info-total>
     <p class="plan-info__row">
       <span class="plan-info__label">走行距離</span>
       <span class="plan-info__value"><%= plan.total_distance %>km</span>
