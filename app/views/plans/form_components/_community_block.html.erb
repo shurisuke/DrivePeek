@@ -1,1 +1,72 @@
-<div>みんなのプランタブの中身</div>
+<%# みんなのプランタブ: プランカード一覧（ダミーデータ） %>
+
+<%
+  # ダミープランデータ（次Issueで実データに置き換え）
+  dummy_plans = [
+    {
+      title: "栃木日帰りドライブ",
+      spots: [
+        { name: "宇都宮駅", address: "栃木県宇都宮市川向町", tags: ["駅", "観光名所"] },
+        { name: "大谷資料館", address: "栃木県宇都宮市大谷町909", tags: ["博物館", "観光名所"] },
+        { name: "日光東照宮", address: "栃木県日光市山内2301", tags: ["観光名所", "礼拝所"] },
+        { name: "いろは坂", address: "栃木県日光市中宮祠", tags: ["自然"] },
+      ],
+      total_duration: "約6時間30分",
+      total_distance: "約120km",
+      is_favorite: true,
+    },
+    {
+      title: "箱根温泉巡り",
+      spots: [
+        { name: "小田原駅", address: "神奈川県小田原市栄町1丁目", tags: ["駅"] },
+        { name: "箱根湯本", address: "神奈川県足柄下郡箱根町湯本", tags: ["スパ", "宿泊施設"] },
+        { name: "大涌谷", address: "神奈川県足柄下郡箱根町仙石原", tags: ["自然", "観光名所"] },
+        { name: "芦ノ湖", address: "神奈川県足柄下郡箱根町元箱根", tags: ["自然", "公園"] },
+      ],
+      total_duration: "約5時間",
+      total_distance: "約80km",
+      is_favorite: false,
+    },
+    {
+      title: "房総半島ぐるっと一周プラン（長いタイトルのテスト用サンプルです）",
+      spots: [
+        { name: "海ほたるパーキングエリア", address: "千葉県木更津市中島地先海ほたる", tags: ["駐車場", "レストラン"] },
+        { name: "鴨川シーワールド", address: "千葉県鴨川市東町1464-18", tags: ["水族館", "観光名所"] },
+        { name: "野島崎灯台", address: "千葉県南房総市白浜町白浜630", tags: ["観光名所"] },
+      ],
+      total_duration: "約8時間",
+      total_distance: "約200km",
+      is_favorite: false,
+    },
+    {
+      title: "秩父・長瀞ドライブ",
+      spots: [
+        { name: "秩父神社", address: "埼玉県秩父市番場町1-3", tags: ["礼拝所", "観光名所"] },
+        { name: "長瀞岩畳", address: "埼玉県秩父郡長瀞町長瀞", tags: ["自然", "公園"] },
+      ],
+      total_duration: "約4時間",
+      total_distance: "約60km",
+      is_favorite: true,
+    },
+    {
+      title: "スポットなしプラン",
+      spots: [],
+      total_duration: nil,
+      total_distance: nil,
+      is_favorite: false,
+    },
+  ]
+%>
+
+<div class="community-plans">
+  <div class="community-plans__list">
+    <% dummy_plans.each do |plan| %>
+      <%= render "plans/plan_card",
+                 plan_title: plan[:title],
+                 spots: plan[:spots],
+                 total_duration: plan[:total_duration],
+                 total_distance: plan[:total_distance],
+                 is_favorite: plan[:is_favorite] %>
+    <% end %>
+  </div>
+</div>
