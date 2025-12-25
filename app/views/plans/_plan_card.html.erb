@@ -1,12 +1,22 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false %>
 
 <div class="plan-card">
   <div class="plan-card__header">
     <h3 class="plan-card__title"><%= plan_title %></h3>
-    <button type="button" class="plan-card__favorite" aria-label="お気に入り">
-      <i class="bi <%= is_favorite ? 'bi-star-fill' : 'bi-star' %>" aria-hidden="true"></i>
-    </button>
+    <div class="plan-card__actions">
+      <button type="button" class="plan-card__favorite" aria-label="お気に入り">
+        <i class="bi <%= is_favorite ? 'bi-star-fill' : 'bi-star' %>" aria-hidden="true"></i>
+      </button>
+      <% if local_assigns[:can_delete] && local_assigns[:plan] %>
+        <%= button_to plan_path(plan), method: :delete,
+              class: "plan-card__delete",
+              aria: { label: "プランを削除" },
+              data: { turbo_confirm: "このプランを削除しますか？" } do %>
+          <i class="bi bi-trash" aria-hidden="true"></i>
+        <% end %>
+      <% end %>
+    </div>
   </div>
 
   <% unique_tags = collect_unique_tags(spots) %>

@@ -7,6 +7,40 @@
   padding: 20px 16px 16px 16px;
 }
 
+.community-plans__page-title {
+  font-size: 35px;
+  color: var(--personal);
+  border-bottom: 2px solid var(--personal);
+  padding-bottom: 1rem;
+  margin-bottom: 2rem;
+  font-weight: bold;
+  text-align: center;
+}
+
+/* プラン一覧ページ用（2列グリッド） */
+.community-plans--index {
+  padding: 3rem 0 16px 0;
+
+  .community-plans__content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 0 16px;
+  }
+
+  .community-plans__list {
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    gap: 20px;
+  }
+
+  /* モバイル時は1列に */
+  @media (max-width: 600px) {
+    .community-plans__list {
+      grid-template-columns: 1fr;
+    }
+  }
+}
+
 .community-plans__search {
   margin-bottom: 16px;
 }
@@ -127,8 +161,29 @@
   overflow: hidden;
 }
 
-.plan-card__favorite {
+.plan-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
   flex-shrink: 0;
+}
+
+.plan-card__delete {
+  padding: 6px;
+  background: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #999;
+  font-size: 16px;
+  line-height: 1;
+
+  &:hover {
+    background: #e9ecef;
+  }
+}
+
+.plan-card__favorite {
   padding: 4px;
   background: none;
   border: none;
