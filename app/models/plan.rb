@@ -8,7 +8,11 @@ class Plan < ApplicationRecord
   has_many :like_plans, dependent: :destroy
   has_many :liked_by_users, through: :like_plans, source: :user
 
-  # before
+  # Scopes
+  scope :with_spots, -> { joins(:plan_spots).distinct }
+  scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
+
+  # Callbacks
   before_update :set_default_title_if_blank
 
   def marker_data_for_edit
@@ -26,16 +30,26 @@ class Plan < ApplicationRecord
   end
 
   # ✅ 合計走行距離（km）
+  # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
   def total_distance
     distance = start_point&.move_distance.to_f
-    distance += plan_spots.sum(:move_distance)
+    distance += if plan_spots.loaded?
+                  plan_spots.sum(&:move_distance)
+                else
+                  plan_spots.sum(:move_distance)
+                end
     distance.round(1)
   end
 
   # ✅ 合計移動時間（分）
+  # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
   def total_move_time
     time = start_point&.move_time.to_i
-    time += plan_spots.sum(:move_time)
+    time += if plan_spots.loaded?
+              plan_spots.sum(&:move_time)
+            else
+              plan_spots.sum(:move_time)
+            end
     time
   end
 

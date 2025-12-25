@@ -17,6 +17,16 @@ class PlansController < ApplicationController
 
   def edit
     @plan = Plan.includes(:start_point, :goal_point, :plan_spots => :spot).find(params[:id])
+
+    # みんなのプラン: 公開ユーザーのスポットありプランを取得
+    @community_plans = Plan
+      .publicly_visible
+      .with_spots
+      .where.not(id: @plan.id)
+      .includes(:user, :start_point, plan_spots: :spot)
+      .preload(user: { user_spots: :tags })
+      .order(updated_at: :desc)
+      .limit(20)
   end
 
   def update
