@@ -28,6 +28,8 @@
             <% end %>
             <li><%= link_to "みんなのドライブプラン", plans_path %></li>
             <li><%= link_to "作ったドライブプラン", plans_my_plans_path %></li>
+            <li><%= link_to "お気に入りプラン", authenticated_root_path %></li>
+            <li><%= link_to "お気に入りスポット", authenticated_root_path %></li>
             <li><%= link_to "アカウント設定", account_profile_path %></li>
           <% else %>
             <li><%= link_to "TOP", unauthenticated_root_path %></li>
