@@ -26,12 +26,46 @@ bindSpotReorderHandler()
 bindTollUsedHandler()
 bindStayDurationHandler()
 
+/**
+ * Google Maps APIが利用可能になるまで待機する
+ * @param {number} maxWait - 最大待機時間（ミリ秒）
+ * @param {number} interval - チェック間隔（ミリ秒）
+ * @returns {Promise<boolean>} - APIが利用可能になったらtrue
+ */
+const waitForGoogleMaps = (maxWait = 5000, interval = 100) => {
+  return new Promise((resolve) => {
+    if (typeof google !== "undefined" && google.maps) {
+      resolve(true)
+      return
+    }
+
+    const startTime = Date.now()
+    const checkInterval = setInterval(() => {
+      if (typeof google !== "undefined" && google.maps) {
+        clearInterval(checkInterval)
+        resolve(true)
+      } else if (Date.now() - startTime > maxWait) {
+        clearInterval(checkInterval)
+        console.error("[init_map] Google Maps API の読み込みがタイムアウトしました")
+        resolve(false)
+      }
+    }, interval)
+  })
+}
+
 document.addEventListener("turbo:load", async () => {
   console.log("[init_map] turbo:load fired")
 
   const mapElement = document.getElementById("map")
   if (!mapElement) {
     console.log("[init_map] #map not found. skip.")
+    return
+  }
+
+  // Google Maps APIの準備を待つ
+  const isGoogleMapsReady = await waitForGoogleMaps()
+  if (!isGoogleMapsReady) {
+    console.error("[init_map] Google Maps API が利用できません")
     return
   }
 

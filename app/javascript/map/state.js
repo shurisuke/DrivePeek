@@ -97,3 +97,14 @@ export const setRoutePolylines = (polylines) => {
   clearRoutePolylines();
   routePolylines = polylines;
 };
+
+// --- 全状態クリア（ページ遷移時用） ---
+export const clearAllMapState = () => {
+  clearCurrentLocationMarker();
+  clearStartPointMarker();
+  clearEndPointMarker();
+  clearPlanSpotMarkers();
+  clearSearchHitMarkers();
+  clearRoutePolylines();
+  map = null;
+};
