@@ -1,17 +1,20 @@
-<div class="plan-info">
-  <p class="plan-info__row">
-    <span class="plan-info__label">走行距離</span>
-    <span class="plan-info__value"><%= plan.total_distance %>km</span>
-  </p>
-  <%# ✅ ETC料金は一旦非表示（料金取得ロジック未実装のため） %>
-  <%# if plan.has_toll_roads? %>
-    <%#= content_tag :p, class: "plan-info__row" do %>
-      <%#= content_tag :span, "ETC料金", class: "plan-info__label" %>
-      <%#= content_tag :span, "¥#{number_with_delimiter(plan.total_toll_cost)}", class: "plan-info__value" %>
+<%# スポットがある場合のみ表示 %>
+<% if plan.plan_spots.any? %>
+  <div class="plan-info">
+    <p class="plan-info__row">
+      <span class="plan-info__label">走行距離</span>
+      <span class="plan-info__value"><%= plan.total_distance %>km</span>
+    </p>
+    <%# ✅ ETC料金は一旦非表示（料金取得ロジック未実装のため） %>
+    <%# if plan.has_toll_roads? %>
+      <%#= content_tag :p, class: "plan-info__row" do %>
+        <%#= content_tag :span, "ETC料金", class: "plan-info__label" %>
+        <%#= content_tag :span, "¥#{number_with_delimiter(plan.total_toll_cost)}", class: "plan-info__value" %>
+      <%# end %>
     <%# end %>
-  <%# end %>
-  <p class="plan-info__row">
-    <span class="plan-info__label">移動時間</span>
-    <span class="plan-info__value"><%= plan.formatted_move_time %></span>
-  </p>
-</div>
+    <p class="plan-info__row">
+      <span class="plan-info__label">移動時間</span>
+      <span class="plan-info__value"><%= plan.formatted_move_time %></span>
+    </p>
+  </div>
+<% end %>
