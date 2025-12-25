@@ -18,7 +18,7 @@ class PlansController < ApplicationController
   def edit
     @plan = Plan.includes(:start_point, :goal_point, :plan_spots => :spot).find(params[:id])
 
-    # みんなのプラン: 公開ユーザーのスポットありプランを取得
+    # みんなのプラン: 公開ユーザーのスポットありプランを取得（ページネーション対応）
     @community_plans = Plan
       .publicly_visible
       .with_spots
@@ -26,7 +26,8 @@ class PlansController < ApplicationController
       .includes(:user, :start_point, plan_spots: :spot)
       .preload(user: { user_spots: :tags })
       .order(updated_at: :desc)
-      .limit(20)
+      .page(params[:page])
+      .per(10)
   end
 
   def update

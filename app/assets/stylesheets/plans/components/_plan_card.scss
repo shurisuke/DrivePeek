@@ -20,6 +20,38 @@
   font-size: 14px;
 }
 
+.community-plans__pagination {
+  display: flex;
+  justify-content: center;
+  margin-top: 20px;
+
+  .pagination {
+    margin: 0;
+    gap: 4px;
+
+    .page-item {
+      .page-link {
+        border-radius: 6px;
+        border: 1px solid #e5e5e5;
+        color: #506d53;
+        font-size: 13px;
+        padding: 6px 12px;
+
+        &:hover {
+          background-color: #f0f4f0;
+          border-color: #506d53;
+        }
+      }
+
+      &.active .page-link {
+        background-color: #506d53;
+        border-color: #506d53;
+        color: #fff;
+      }
+    }
+  }
+}
+
 /* プランカード */
 .plan-card {
   background-color: #fff;
