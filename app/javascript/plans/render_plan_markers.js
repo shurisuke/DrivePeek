@@ -14,6 +14,25 @@ import {
 } from "map/state"
 import { showInfoWindowForPin } from "map/infowindow"
 
+// ================================================================
+// SVG番号ピン生成
+// - しずく型のオレンジピンに番号を表示
+// - 色はspot-order-pinと同じ #ef813d
+// ================================================================
+const SPOT_PIN_COLOR = "#ef813d"
+
+const createNumberedPinSvg = (number) => {
+  // しずく型SVG（30x40）+ 中央に白い番号
+  const svg = `
+    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40">
+      <path d="M15 0C6.7 0 0 6.7 0 15c0 10.6 15 25 15 25s15-14.4 15-25C30 6.7 23.3 0 15 0z" fill="${SPOT_PIN_COLOR}"/>
+      <text x="15" y="19" text-anchor="middle" font-size="14" font-weight="700" fill="white">${number}</text>
+    </svg>
+  `.trim()
+
+  return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
+}
+
 const normalizeLatLng = (p) => {
   if (!p) return null
   return { lat: Number(p.lat), lng: Number(p.lng) }
@@ -184,6 +203,7 @@ export const renderPlanMarkers = (planData) => {
   }
 
   // スポット（DOMから情報を取得してマーカーに紐付け）
+  // ✅ position順の番号付きSVGピンで表示
   const spotInfoList = getSpotInfoFromDom()
   const spots = Array.isArray(planData?.spots) ? planData.spots : []
 
@@ -192,18 +212,24 @@ export const renderPlanMarkers = (planData) => {
     .filter(Boolean)
     .map((spot, index) => {
       const spotInfo = spotInfoList[index] || {}
+      const spotNumber = index + 1
 
       const marker = new google.maps.Marker({
         map,
         position: spot,
-        title: spotInfo.name || `スポット ${index + 1}`,
+        title: spotInfo.name || `スポット ${spotNumber}`,
+        icon: {
+          url: createNumberedPinSvg(spotNumber),
+          scaledSize: new google.maps.Size(30, 40),
+          anchor: new google.maps.Point(15, 40),
+        },
       })
 
       // ✅ クリックでInfoWindow表示（ボタンなし）
       marker.addListener("click", () => {
         showInfoWindowForPin({
           marker,
-          name: spotInfo.name || `スポット ${index + 1}`,
+          name: spotInfo.name || `スポット ${spotNumber}`,
           address: spotInfo.address,
           photoUrl: spotInfo.photoUrl,
         })
