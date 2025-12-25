@@ -57,6 +57,9 @@ gem "bootstrap", "~> 5.3.3"
 # リスト順序管理
 gem "acts_as_list"
 
+# ページネーション
+gem "kaminari"
+
 # Ruby の SSL 接続を安定化させる
 gem "openssl"
 
