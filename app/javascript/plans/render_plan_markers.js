@@ -16,17 +16,17 @@ import { showInfoWindowForPin } from "map/infowindow"
 
 // ================================================================
 // SVG番号ピン生成
-// - しずく型のオレンジピンに番号を表示
+// - 丸型のオレンジピンに番号を表示
 // - 色はspot-order-pinと同じ #ef813d
 // ================================================================
 const SPOT_PIN_COLOR = "#ef813d"
 
 const createNumberedPinSvg = (number) => {
-  // しずく型SVG（30x40）+ 中央に白い番号
+  // 丸型SVG（36x36）+ 中央に白い番号
   const svg = `
-    <svg xmlns="http://www.w3.org/2000/svg" width="30" height="40" viewBox="0 0 30 40">
-      <path d="M15 0C6.7 0 0 6.7 0 15c0 10.6 15 25 15 25s15-14.4 15-25C30 6.7 23.3 0 15 0z" fill="${SPOT_PIN_COLOR}"/>
-      <text x="15" y="19" text-anchor="middle" font-size="14" font-weight="700" fill="white">${number}</text>
+    <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
+      <circle cx="18" cy="18" r="17" fill="${SPOT_PIN_COLOR}"/>
+      <text x="18" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="white">${number}</text>
     </svg>
   `.trim()
 
@@ -220,8 +220,8 @@ export const renderPlanMarkers = (planData) => {
         title: spotInfo.name || `スポット ${spotNumber}`,
         icon: {
           url: createNumberedPinSvg(spotNumber),
-          scaledSize: new google.maps.Size(30, 40),
-          anchor: new google.maps.Point(15, 40),
+          scaledSize: new google.maps.Size(36, 36),
+          anchor: new google.maps.Point(18, 18),
         },
       })
 
