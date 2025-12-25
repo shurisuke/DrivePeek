@@ -168,6 +168,22 @@
   flex-shrink: 0;
 }
 
+.plan-card__edit {
+  padding: 6px;
+  background: #fff;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  color: #506d53;
+  font-size: 16px;
+  line-height: 1;
+  text-decoration: none;
+
+  &:hover {
+    background: #e9ecef;
+  }
+}
+
 .plan-card__delete {
   padding: 6px;
   background: #fff;
