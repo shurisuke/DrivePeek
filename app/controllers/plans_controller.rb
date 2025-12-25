@@ -48,7 +48,7 @@ class PlansController < ApplicationController
   def destroy
     @plan = current_user.plans.find(params[:id])
     @plan.destroy!
-    redirect_to plans_path, notice: "プランを削除しました"
+    redirect_back fallback_location: plans_path, notice: "プランを削除しました"
   end
 
   private
