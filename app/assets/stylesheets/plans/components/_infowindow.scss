@@ -120,6 +120,7 @@
   padding: 10px 12px;
   cursor: pointer;
   margin: 5px 0;
+  outline: none;
 
   /* ✅ スポットアイコンと同じオレンジ / 白文字 */
   background-color: #f7931e;
@@ -129,6 +130,10 @@
 
   &:hover {
     background-color: #e5850f;
+  }
+
+  &:focus {
+    outline: none;
   }
 
   &:active {

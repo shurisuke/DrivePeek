@@ -504,6 +504,16 @@ export const bindPlanbarRefresh = () => {
     const planId = getPlanId()
     if (!planId) return
     await refreshPlanbar(planId)
+
+    // スポット追加後は一番下にスクロール（DOM更新後に実行）
+    requestAnimationFrame(() => {
+      requestAnimationFrame(() => {
+        const scrollEl = getPlanbarScrollEl()
+        if (scrollEl) {
+          scrollEl.scrollTop = scrollEl.scrollHeight
+        }
+      })
+    })
   })
 
   document.addEventListener("plan:spots-reordered", async () => {
