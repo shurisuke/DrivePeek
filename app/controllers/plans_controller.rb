@@ -23,11 +23,14 @@ class PlansController < ApplicationController
       .publicly_visible
       .with_spots
       .where.not(id: @plan.id)
+      .search_keyword(params[:q])
       .includes(:user, :start_point, plan_spots: :spot)
       .preload(user: { user_spots: :tags })
       .order(updated_at: :desc)
       .page(params[:page])
       .per(5)
+
+    @search_query = params[:q]
   end
 
   def update
