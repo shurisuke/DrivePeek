@@ -169,9 +169,10 @@
   border-radius: 9999px;
 
   font-size: 0.75rem;
-  border: 1px solid #ef813d;
-  background: #fff;
-  color: #ef813d;
+  border: none;
+  background: #f0f4f0;
+  color: #506d53;
+  font-weight: 500;
 }
 
 /* 編集時だけ×分広げて右端固定 */
@@ -207,7 +208,7 @@
   background: transparent;
   border-radius: 9999px;
 
-  color: rgba(239, 129, 61, 0.6);
+  color: rgba(80, 109, 83, 0.6);
   font-size: 14px;
   font-weight: 700;
   line-height: 1;
@@ -216,13 +217,13 @@
 }
 
 .spot-block .spot-tags.is-editing .tag-chip__remove:hover {
-  background: rgba(239, 129, 61, 0.1);
-  color: #ef813d;
+  background: rgba(80, 109, 83, 0.15);
+  color: #506d53;
 }
 
 .spot-block .spot-tags.is-editing .tag-chip__remove:focus-visible {
   outline: none;
-  box-shadow: 0 0 0 3px rgba(239, 129, 61, 0.25);
+  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
 }
 
 /* ×の下線を消す（aタグ対策） */

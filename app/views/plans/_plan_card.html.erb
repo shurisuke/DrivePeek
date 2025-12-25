@@ -1,1 +1,57 @@
-<p>プラン表示画面</p>
+<%# プランカード（一覧表示用の共通部品） %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false %>
+
+<div class="plan-card">
+  <div class="plan-card__header">
+    <h3 class="plan-card__title"><%= plan_title %></h3>
+    <button type="button" class="plan-card__favorite" aria-label="お気に入り">
+      <i class="bi <%= is_favorite ? 'bi-star-fill' : 'bi-star' %>" aria-hidden="true"></i>
+    </button>
+  </div>
+
+  <% unique_tags = collect_unique_tags(spots) %>
+  <% if unique_tags.present? %>
+    <div class="plan-card__tags">
+      <% unique_tags.each do |tag| %>
+        <span class="plan-card__tag"><%= tag %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <div class="plan-card__spots">
+    <% if spots.present? %>
+      <% spots.each_with_index do |spot, index| %>
+        <div class="plan-card__spot">
+          <span class="plan-card__spot-number"><%= index + 1 %></span>
+          <div class="plan-card__spot-info">
+            <div class="plan-card__spot-name"><%= spot[:name] %></div>
+            <% if spot[:address].present? %>
+              <div class="plan-card__spot-address"><%= spot[:address] %></div>
+            <% end %>
+          </div>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="plan-card__no-spots">スポットなし</div>
+    <% end %>
+  </div>
+
+  <div class="plan-card__footer">
+    <% if total_duration.present? || total_distance.present? %>
+      <div class="plan-card__totals">
+        <% if total_duration.present? %>
+          <span class="plan-card__total-item">
+            <i class="bi bi-clock" aria-hidden="true"></i>
+            <%= total_duration %>
+          </span>
+        <% end %>
+        <% if total_distance.present? %>
+          <span class="plan-card__total-item">
+            <i class="bi bi-signpost-2" aria-hidden="true"></i>
+            <%= total_distance %>
+          </span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
+</div>

@@ -1,0 +1,180 @@
+/* ==========================================
+   Plan Card（プラン一覧用カード）
+========================================== */
+
+/* みんなのプランタブのリスト */
+.community-plans {
+  padding: 20px 16px 16px 16px;
+}
+
+.community-plans__list {
+  display: flex;
+  flex-direction: column;
+  gap: 26px;
+}
+
+/* プランカード */
+.plan-card {
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+/* ヘッダー（タイトル + お気に入り） */
+.plan-card__header {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.plan-card__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #333;
+
+  /* 長いタイトルは2行まで */
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.plan-card__favorite {
+  flex-shrink: 0;
+  padding: 4px;
+  background: none;
+  border: none;
+  cursor: pointer;
+  color: #f5a623;
+  font-size: 18px;
+  line-height: 1;
+
+  &:hover {
+    opacity: 0.8;
+  }
+}
+
+/* タグ一覧 */
+.plan-card__tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 12px;
+}
+
+.plan-card__tag {
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #f0f4f0;
+  color: #506d53;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+/* スポット一覧 */
+.plan-card__spots {
+  margin-bottom: 12px;
+}
+
+.plan-card__spot {
+  display: flex;
+  align-items: flex-start;
+  gap: 8px;
+  padding: 8px 0;
+  border-bottom: 1px solid #f0f0f0;
+
+  &:last-child {
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+}
+
+.plan-card__spot-number {
+  flex-shrink: 0;
+  width: 20px;
+  height: 20px;
+  background-color: #506d53;
+  color: #fff;
+  border-radius: 50%;
+  font-size: 11px;
+  font-weight: 600;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-top: 3px;
+}
+
+.plan-card__spot-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.plan-card__spot-name {
+  font-size: 15px;
+  font-weight: 500;
+  color: #506d53;
+  line-height: 1.4;
+  margin-top: 2px;
+  cursor: pointer;
+
+  /* 長い名前は1行省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+
+  &:hover {
+    text-decoration: underline;
+  }
+}
+
+.plan-card__spot-address {
+  font-size: 12px;
+  font-weight: 200;
+  color: #999;
+  line-height: 1.4;
+  margin-top: 2px;
+
+  /* 長い住所は1行省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.plan-card__no-spots {
+  padding: 16px 0;
+  text-align: center;
+  color: #999;
+  font-size: 14px;
+}
+
+/* フッター（合計時間・距離） */
+.plan-card__footer {
+  padding-top: 8px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.plan-card__totals {
+  display: flex;
+  gap: 16px;
+  margin-top: 2px;
+}
+
+.plan-card__total-item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #666;
+
+  i {
+    font-size: 14px;
+    color: #999;
+  }
+}

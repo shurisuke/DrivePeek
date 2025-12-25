@@ -12,4 +12,12 @@ module PlansHelper
       number_with_precision(value, precision: 1, strip_insignificant_zeros: true)
     end
   end
+
+  # スポット配列からタグ名を重複なしで収集
+  # spots: [{ name:, address:, tags: ["tag1", "tag2"] }, ...]
+  def collect_unique_tags(spots)
+    return [] if spots.blank?
+
+    spots.flat_map { |spot| spot[:tags] || [] }.uniq
+  end
 end
