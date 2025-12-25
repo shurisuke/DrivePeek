@@ -114,7 +114,7 @@ body.no-footer {
 
     .plan-save {
       position: fixed;
-      bottom: 2rem;
+      bottom: calc(2rem + 5px); /* ✅ 5px下げる */
       left: 58%;
       transform: translateX(-50%);
       z-index: 3;
@@ -132,6 +132,111 @@ body.no-footer {
 
         &:hover {
           background-color: color-mix(in srgb, var(--personal) 70%, black);
+        }
+
+        &:disabled {
+          opacity: 0.7;
+          cursor: not-allowed;
+        }
+      }
+    }
+
+    /* ✅ プラン保存モーダル */
+    .plan-save-modal {
+      position: fixed;
+      inset: 0;
+      z-index: 1000;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      &[hidden] {
+        display: none;
+      }
+
+      &__overlay {
+        position: absolute;
+        inset: 0;
+        background: rgba(0, 0, 0, 0.5);
+      }
+
+      &__dialog {
+        position: relative;
+        background: #fff;
+        padding: 1.5rem 2rem;
+        border-radius: 12px;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+        min-width: 320px;
+        max-width: 90vw;
+        margin-bottom: 165px; /* 165px上に表示 */
+      }
+
+      &__message {
+        margin: 0 0 1rem;
+        font-size: 1rem;
+        font-weight: 600;
+        color: #333;
+        text-align: center;
+      }
+
+      &__input {
+        width: 100%;
+        padding: 0.75rem 1rem;
+        font-size: 1rem;
+        border: 1px solid #ccc;
+        border-radius: 6px;
+        margin-bottom: 0.5rem;
+
+        &:focus {
+          outline: none;
+          border-color: var(--personal);
+          box-shadow: 0 0 0 2px rgba(80, 109, 83, 0.2);
+        }
+      }
+
+      &__error {
+        margin: 0 0 0.5rem;
+        font-size: 0.85rem;
+        color: #dc3545;
+        text-align: center;
+
+        &[hidden] {
+          display: none;
+        }
+      }
+
+      &__actions {
+        display: flex;
+        gap: 0.75rem;
+        justify-content: center;
+        margin-top: 1rem;
+
+        .btn {
+          padding: 0.6rem 1.5rem;
+          font-size: 0.95rem;
+          font-weight: 600;
+          border-radius: 6px;
+          border: none;
+          cursor: pointer;
+          transition: all 0.2s;
+        }
+
+        .btn-cancel {
+          background: #e9ecef;
+          color: #495057;
+
+          &:hover {
+            background: #dee2e6;
+          }
+        }
+
+        .btn-primary {
+          background: var(--personal);
+          color: #fff;
+
+          &:hover {
+            background: color-mix(in srgb, var(--personal) 70%, black);
+          }
         }
       }
     }
