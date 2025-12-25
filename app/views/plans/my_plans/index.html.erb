@@ -1,0 +1,64 @@
+<%# 作ったドライブプラン一覧（plans/my_plans#index） %>
+
+<div class="community-plans community-plans--index">
+  <h1 class="community-plans__page-title">作ったドライブプラン</h1>
+
+  <div class="community-plans__content">
+  <%# 検索フォーム %>
+  <div class="community-plans__search">
+    <%= form_with url: plans_my_plans_path, method: :get, local: true do %>
+      <div class="community-plans__search-input-wrapper">
+        <%= text_field_tag :q, @search_query,
+                           placeholder: "プラン名・スポット・タグで検索",
+                           class: "community-plans__search-input" %>
+        <button type="submit" class="community-plans__search-button">
+          <i class="bi bi-search" aria-hidden="true"></i>
+        </button>
+      </div>
+    <% end %>
+  </div>
+
+  <% if @plans.present? %>
+    <div class="community-plans__list">
+      <% @plans.each do |plan| %>
+        <%
+          spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
+            spot = ps.spot
+            user_spot = @user_spots[spot.id]
+            tag_names = user_spot&.tags&.map { |tag| t("google_place_types.#{tag.tag_name}", default: tag.tag_name) } || []
+
+            {
+              name: spot.name,
+              address: spot.address,
+              tags: tag_names
+            }
+          end
+        %>
+        <%= render "plans/plan_card",
+                   plan_title: plan.title.presence || "無題のプラン",
+                   spots: spots_data,
+                   total_duration: spots_only_formatted_move_time(plan),
+                   total_distance: "#{spots_only_distance(plan)}km",
+                   is_favorite: false,
+                   plan: plan,
+                   can_delete: true %>
+      <% end %>
+    </div>
+
+    <%# ページネーション %>
+    <% if @plans.total_pages > 1 %>
+      <div class="community-plans__pagination">
+        <%= paginate @plans %>
+      </div>
+    <% end %>
+  <% else %>
+    <div class="community-plans__empty">
+      <% if @search_query.present? %>
+        <p>「<%= @search_query %>」に一致するプランが見つかりませんでした</p>
+      <% else %>
+        <p>まだプランがありません</p>
+      <% end %>
+    </div>
+  <% end %>
+  </div>
+</div>
