@@ -2,7 +2,7 @@
 
 <% tags.each do |tag| %>
   <span class="tag-chip">
-    <%= tag.tag_name %>
+    <%= t("google_place_types.#{tag.tag_name}", default: tag.tag_name) %>
 
     <%= link_to "×",
                 plan_plan_spot_tag_path(plan, plan_spot, tag),
