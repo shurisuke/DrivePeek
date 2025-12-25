@@ -12,6 +12,16 @@ class Plan < ApplicationRecord
   scope :with_spots, -> { joins(:plan_spots).distinct }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
+  # みんなのプラン用のベースRelation（検索・includes・並び順を含む）
+  scope :for_community, ->(keyword: nil) {
+    publicly_visible
+      .with_spots
+      .search_keyword(keyword)
+      .includes(:user, :start_point, plan_spots: :spot)
+      .preload(user: { user_spots: :tags })
+      .order(updated_at: :desc)
+  }
+
   # キーワード検索（プラン名/スポット名/住所/タグで部分一致）
   # 日本語タグ名はI18n逆引きで英語キーに変換して検索
   scope :search_keyword, ->(q) {

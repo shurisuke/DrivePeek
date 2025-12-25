@@ -1,5 +1,7 @@
 class PlansController < ApplicationController
   def index
+    @plans = Plan.for_community(keyword: params[:q]).page(params[:page]).per(10)
+    @search_query = params[:q]
   end
 
   def show
@@ -18,15 +20,9 @@ class PlansController < ApplicationController
   def edit
     @plan = Plan.includes(:start_point, :goal_point, :plan_spots => :spot).find(params[:id])
 
-    # みんなのプラン: 公開ユーザーのスポットありプランを取得（ページネーション対応）
-    @community_plans = Plan
-      .publicly_visible
-      .with_spots
+    # みんなのプラン: 編集中のプランを除外
+    @community_plans = Plan.for_community(keyword: params[:q])
       .where.not(id: @plan.id)
-      .search_keyword(params[:q])
-      .includes(:user, :start_point, plan_spots: :spot)
-      .preload(user: { user_spots: :tags })
-      .order(updated_at: :desc)
       .page(params[:page])
       .per(5)
 
@@ -49,12 +45,15 @@ class PlansController < ApplicationController
     end
   end
 
+  def destroy
+    @plan = current_user.plans.find(params[:id])
+    @plan.destroy!
+    redirect_to plans_path, notice: "プランを削除しました"
+  end
+
   private
 
   def plan_params
     params.require(:plan).permit(:title)
-  end
-
-  def destroy
   end
 end
