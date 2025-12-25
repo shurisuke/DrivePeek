@@ -27,7 +27,7 @@ class PlansController < ApplicationController
       .preload(user: { user_spots: :tags })
       .order(updated_at: :desc)
       .page(params[:page])
-      .per(10)
+      .per(5)
   end
 
   def update
