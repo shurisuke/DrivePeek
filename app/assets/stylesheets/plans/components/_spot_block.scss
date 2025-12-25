@@ -816,19 +816,14 @@
   padding-left: 0;
 }
 
-body:not(.goal-point-visible) .spot-block--last .spot-detail-wrap,
-body:not(.goal-point-visible) .spot-block--last .block-time-panel__toggle-area,
-body:not(.goal-point-visible) .spot-block--last .spot-stay-duration,
+/* 帰宅地点非表示時、最後のスポットの出発時間を非表示 */
 body:not(.goal-point-visible) .spot-block--last [data-plan-time-role="spot-departure"] {
   display: none;
 }
 
-body.goal-point-visible .spot-block--last .spot-detail-wrap {
-  display: flex;
-}
-
-body.goal-point-visible .spot-block--last .block-time-panel__toggle-area {
-  display: flex;
+/* 帰宅地点非表示時、最後のスポットの滞在時間に余白追加 */
+body:not(.goal-point-visible) .spot-block--last .spot-stay-duration {
+  margin-bottom: 31px;
 }
 
 .no-collapse-anim .collapsing {
