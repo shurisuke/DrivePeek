@@ -6,6 +6,11 @@
 
 <%= render "plans/form_components/start_point_block" %>
 
+<%# スポット未追加時のみ案内を表示 %>
+<% if @plan.plan_spots.empty? %>
+  <%= render "plans/form_components/plan_tab_guide" %>
+<% end %>
+
 <% spot_ids = @plan.plan_spots.select(:spot_id) %>
 
 <% user_spots_by_spot_id =
@@ -33,3 +38,6 @@
 
 <%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
 <%= render "plans/form_components/goal_point_block", plan: @plan %>
+
+<%# ✅ 走行距離・移動時間 %>
+<%= render "plans/form_components/plan_info", plan: @plan %>

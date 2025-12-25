@@ -35,13 +35,15 @@
     </button>
   </div>
 
-  <!-- プラン保存ボタン＋モーダル -->
-  <div class="plan-save" data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
-    <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
-      プランを保存
-    </button>
+  <!-- プラン保存ボタン＋モーダル（コントローラは外側のラッパーに） -->
+  <div data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
+    <div class="plan-save">
+      <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
+        プランを保存
+      </button>
+    </div>
 
-    <!-- 保存モーダル（オーバーレイ） -->
+    <!-- 保存モーダル（オーバーレイ）- transform影響を避けるためplan-saveの外に配置 -->
     <div class="plan-save-modal" data-plan-save-modal-target="modal" hidden>
       <div class="plan-save-modal__overlay" data-action="click->plan-save-modal#close"></div>
       <div class="plan-save-modal__dialog">
@@ -62,6 +64,4 @@
     </div>
   </div>
 
-  <!-- 右下: プラン情報 -->
-  <%= render "plans/form_components/plan_info", plan: plan %>
 </div>
