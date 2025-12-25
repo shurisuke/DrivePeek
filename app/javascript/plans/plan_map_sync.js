@@ -59,6 +59,11 @@ const isGoalPointVisible = () => {
   return mapEl?.dataset?.goalPointVisible === "true"
 }
 
+// ✅ スポット数をDOMから取得
+const getSpotCountFromDom = () => {
+  return document.querySelectorAll(".spot-block[data-plan-spot-id]").length
+}
+
 // ✅ polyline をデコードして地図上に描画する
 const renderRoutePolylines = () => {
   const map = getMapInstance()
@@ -70,6 +75,14 @@ const renderRoutePolylines = () => {
   // geometry library がロードされているか確認
   if (!google?.maps?.geometry?.encoding?.decodePath) {
     console.warn("[plan_map_sync] geometry library not loaded")
+    return
+  }
+
+  // ✅ スポットがない場合は経路をクリアして終了
+  const spotCount = getSpotCountFromDom()
+  if (spotCount === 0) {
+    console.log("[plan_map_sync] no spots, clearing polylines")
+    clearRoutePolylines()
     return
   }
 
@@ -202,6 +215,9 @@ export const bindPlanMapSync = () => {
     const planData = mergeSpotsFromDom(basePlanData)
     cachedPlanData = planData
     await renderAllMarkersSafe(planData)
+
+    // ✅ 経路ポリラインも再描画（スポット削除時にクリアされるように）
+    renderRoutePolylines()
   })
 
   // トグルON/OFF：帰宅ピンだけ更新 + polyline 再描画
@@ -267,12 +283,33 @@ export const bindPlanMapSync = () => {
     clearSearchHitMarkers()
   })
 
-  // 出発地点変更時：検索ヒットマーカーをクリア
-  document.addEventListener("plan:start-point-updated", () => {
-    console.log("[plan_map_sync] caught plan:start-point-updated")
+  // 出発地点変更時：検索ヒットマーカーをクリア + マーカー再描画
+  document.addEventListener("plan:start-point-updated", async (e) => {
+    console.log("[plan_map_sync] caught plan:start-point-updated", e?.detail)
 
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
+
+    // ✅ 出発地点の情報を更新してマーカーを再描画
+    const basePlanData = getPlanDataFromPage() || cachedPlanData
+    if (!basePlanData) return
+
+    // 出発地点の座標を更新
+    const startPoint = e?.detail
+    if (startPoint) {
+      cachedPlanData = {
+        ...basePlanData,
+        start_point: {
+          lat: Number(startPoint.lat),
+          lng: Number(startPoint.lng),
+          address: startPoint.address,
+        },
+      }
+    }
+
+    const planData = mergeSpotsFromDom(cachedPlanData)
+    cachedPlanData = planData
+    await renderAllMarkersSafe(planData)
   })
 
   // ✅ 経路更新後：polyline を再描画する
