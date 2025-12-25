@@ -3,8 +3,13 @@ class PlanbarsController < ApplicationController
   before_action :set_plan
 
   def show
-    # 何もしない：format に応じて view を自動で探して描画する
-    # show.turbo_stream.erb / show.html.erb に責務を寄せる
+    # みんなのプラン: 編集中のプランを除外
+    @community_plans = Plan.for_community(keyword: params[:q])
+      .where.not(id: @plan.id)
+      .page(params[:page])
+      .per(5)
+
+    @search_query = params[:q]
   end
 
   private
