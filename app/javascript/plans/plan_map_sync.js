@@ -209,10 +209,22 @@ export const bindPlanMapSync = () => {
     setGoalVisible(goalVisibleFromBody)
 
     // ✅ window.planData は古いので、spots だけ DOM から更新する
-    const basePlanData = getPlanDataFromPage() || cachedPlanData
+    // ただし、cachedPlanData に最新の start_point / end_point がある場合はそれを優先
+    const freshPlanData = getPlanDataFromPage()
+    const basePlanData = freshPlanData || cachedPlanData
     if (!basePlanData) return
 
-    const planData = mergeSpotsFromDom(basePlanData)
+    // ✅ cachedPlanData の start_point / end_point を保持（plan:start-point-updated 等で更新済みの可能性）
+    const mergedPlanData = {
+      ...basePlanData,
+      start_point: cachedPlanData?.start_point || basePlanData.start_point,
+      end_point: cachedPlanData?.end_point || basePlanData.end_point,
+      goal_point: cachedPlanData?.goal_point || basePlanData.goal_point,
+    }
+
+    console.log("[plan_map_sync] planbar:updated mergedPlanData.start_point", mergedPlanData.start_point)
+
+    const planData = mergeSpotsFromDom(mergedPlanData)
     cachedPlanData = planData
     await renderAllMarkersSafe(planData)
 
@@ -228,9 +240,16 @@ export const bindPlanMapSync = () => {
     const goalVisible = e?.detail?.goalVisible ?? false
     setGoalVisible(goalVisible)
 
-    const planData = getPlanDataFromPage()
-    if (!planData) return
+    const freshPlanData = getPlanDataFromPage()
+    if (!freshPlanData && !cachedPlanData) return
 
+    // ✅ cachedPlanData の start_point / end_point を保持（他イベントで更新済みの可能性）
+    const planData = {
+      ...(freshPlanData || cachedPlanData),
+      start_point: cachedPlanData?.start_point || freshPlanData?.start_point,
+      end_point: cachedPlanData?.end_point || freshPlanData?.end_point,
+      goal_point: cachedPlanData?.goal_point || freshPlanData?.goal_point,
+    }
     cachedPlanData = planData
     await refreshGoalMarkerSafe(planData)
 
@@ -283,18 +302,19 @@ export const bindPlanMapSync = () => {
     clearSearchHitMarkers()
   })
 
-  // 出発地点変更時：検索ヒットマーカーをクリア + マーカー再描画
+  // 出発地点変更時：検索ヒットマーカーをクリア
+  // ※ マーカーは start_point_editor_controller で既に正しい位置に作成済みなので、
+  //   ここでは cachedPlanData の更新のみ行い、マーカー再描画はスキップする
   document.addEventListener("plan:start-point-updated", async (e) => {
     console.log("[plan_map_sync] caught plan:start-point-updated", e?.detail)
 
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
 
-    // ✅ 出発地点の情報を更新してマーカーを再描画
+    // ✅ 出発地点の情報を cachedPlanData に保存（後続の planbar:updated で使用）
     const basePlanData = getPlanDataFromPage() || cachedPlanData
     if (!basePlanData) return
 
-    // 出発地点の座標を更新
     const startPoint = e?.detail
     if (startPoint) {
       cachedPlanData = {
@@ -305,11 +325,12 @@ export const bindPlanMapSync = () => {
           address: startPoint.address,
         },
       }
+      console.log("[plan_map_sync] cachedPlanData.start_point updated", cachedPlanData.start_point)
     }
 
-    const planData = mergeSpotsFromDom(cachedPlanData)
-    cachedPlanData = planData
-    await renderAllMarkersSafe(planData)
+    // ✅ マーカーは start_point_editor_controller で既に作成済みなので、ここでは再描画しない
+    // spots の情報だけ更新しておく
+    cachedPlanData = mergeSpotsFromDom(cachedPlanData)
   })
 
   // ✅ 経路更新後：polyline を再描画する
