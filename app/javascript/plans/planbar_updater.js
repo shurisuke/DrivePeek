@@ -199,7 +199,7 @@ const restoreOpenCollapseIds = async (ids) => {
 }
 
 // -------------------------------
-// ✅ spot-block 内フォーム状態（settings/memo/tags）退避/復元
+// ✅ spot-block 内フォーム状態（memo/tags）退避/復元
 // -------------------------------
 const captureSpotBlockUIStates = () => {
   const root = getPlanbarRoot()
@@ -210,16 +210,14 @@ const captureSpotBlockUIStates = () => {
       const planSpotId = block.dataset.planSpotId
       if (!planSpotId) return null
 
-      const settingsPanel = block.querySelector('[data-plan-spot-settings-target="panel"]')
       const memoEditor = block.querySelector('[data-plan-spot-memo-target="editor"]')
       const tagsForm = block.querySelector('[data-plan-spot-tags-target="form"]')
 
-      const settingsOpen = settingsPanel ? !settingsPanel.classList.contains("d-none") : false
       const memoOpen = memoEditor ? !memoEditor.classList.contains("d-none") : false
       const tagsOpen = tagsForm ? !tagsForm.classList.contains("d-none") : false
 
-      if (!settingsOpen && !memoOpen && !tagsOpen) return null
-      return { planSpotId, settingsOpen, memoOpen, tagsOpen }
+      if (!memoOpen && !tagsOpen) return null
+      return { planSpotId, memoOpen, tagsOpen }
     })
     .filter(Boolean)
 }
@@ -260,14 +258,6 @@ const restoreSpotBlockUIStates = async (states) => {
     if (!block) continue
 
     await ensureSpotDetailOpen(block)
-
-    const settingsPanel = block.querySelector('[data-plan-spot-settings-target="panel"]')
-    if (settingsPanel) settingsPanel.classList.toggle("d-none", !st.settingsOpen)
-
-    const settingsToggle = block.querySelector('[data-plan-spot-settings-target="toggle"]')
-    if (settingsToggle) {
-      settingsToggle.setAttribute("aria-expanded", st.settingsOpen ? "true" : "false")
-    }
 
     const memoEditor = block.querySelector('[data-plan-spot-memo-target="editor"]')
     const memoDisplay = block.querySelector('[data-plan-spot-memo-target="memoDisplay"]')
