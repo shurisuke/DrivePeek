@@ -9,10 +9,6 @@ export default class extends Controller {
     this._onMemoOpened = () => this.closeIfOpen()
     this.element.addEventListener("spot:memo-opened", this._onMemoOpened)
 
-    // ✅ 設定が開いたら、タグ側を閉じる（相互排他）
-    this._onSettingsOpened = () => this.closeIfOpen()
-    this.element.addEventListener("spot:settings-opened", this._onSettingsOpened)
-
     // ✅ タグチップが Turbo で再描画されたら、編集モード表示を復元する
     this._onFrameRender = () => this.syncEditingUI()
     if (this.hasChipsTarget) {
@@ -24,7 +20,6 @@ export default class extends Controller {
 
   disconnect() {
     this.element.removeEventListener("spot:memo-opened", this._onMemoOpened)
-    this.element.removeEventListener("spot:settings-opened", this._onSettingsOpened)
 
     if (this.hasChipsTarget) {
       this.chipsTarget.removeEventListener("turbo:frame-render", this._onFrameRender)

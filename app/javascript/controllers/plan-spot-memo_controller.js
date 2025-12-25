@@ -9,15 +9,10 @@ export default class extends Controller {
     // ✅ タグフォームが開いたら、メモ側を閉じる（相互排他）
     this._onTagsOpened = () => this.closeIfOpen()
     this.element.addEventListener("spot:tags-opened", this._onTagsOpened)
-
-    // ✅ 設定が開いたら、メモ側を閉じる（相互排他）
-    this._onSettingsOpened = () => this.closeIfOpen()
-    this.element.addEventListener("spot:settings-opened", this._onSettingsOpened)
   }
 
   disconnect() {
     this.element.removeEventListener("spot:tags-opened", this._onTagsOpened)
-    this.element.removeEventListener("spot:settings-opened", this._onSettingsOpened)
   }
 
   stopPropagation(event) {
