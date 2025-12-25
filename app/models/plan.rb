@@ -12,6 +12,37 @@ class Plan < ApplicationRecord
   scope :with_spots, -> { joins(:plan_spots).distinct }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
+  # キーワード検索（プラン名/スポット名/住所/タグで部分一致）
+  # 日本語タグ名はI18n逆引きで英語キーに変換して検索
+  scope :search_keyword, ->(q) {
+    return all if q.blank?
+
+    keyword = "%#{sanitize_sql_like(q)}%"
+
+    # 日本語タグ名から英語キーを逆引き
+    tag_keys = GooglePlaceTypesDictionary.keys_for(q)
+
+    # spotsとuser_spotsを正しくJOIN
+    # user_spots.spot_id = spots.id かつ user_spots.user_id = plans.user_id で制約
+    base_query = left_joins(:spots)
+      .joins("LEFT OUTER JOIN user_spots ON user_spots.spot_id = spots.id AND user_spots.user_id = plans.user_id")
+      .joins("LEFT OUTER JOIN user_spot_tags ON user_spot_tags.user_spot_id = user_spots.id")
+      .joins("LEFT OUTER JOIN tags ON tags.id = user_spot_tags.tag_id")
+
+    base_conditions = "plans.title ILIKE :q OR spots.name ILIKE :q OR spots.address ILIKE :q OR tags.tag_name ILIKE :q"
+
+    # 逆引きキーがあれば IN 条件を追加
+    if tag_keys.present?
+      base_query
+        .where("#{base_conditions} OR tags.tag_name IN (:keys)", q: keyword, keys: tag_keys)
+        .distinct
+    else
+      base_query
+        .where(base_conditions, q: keyword)
+        .distinct
+    end
+  }
+
   # Callbacks
   before_update :set_default_title_if_blank
 

@@ -2,6 +2,19 @@
 
 <%= turbo_frame_tag "community_plans" do %>
   <div class="community-plans">
+    <%# 検索フォーム %>
+    <div class="community-plans__search">
+      <form action="<%= edit_plan_path(@plan) %>" method="get" data-turbo-frame="community_plans">
+        <div class="community-plans__search-input-wrapper">
+          <%= text_field_tag :q, @search_query,
+                             placeholder: "プラン名・スポット・タグで検索",
+                             class: "community-plans__search-input" %>
+          <button type="submit" class="community-plans__search-button">
+            <i class="bi bi-search" aria-hidden="true"></i>
+          </button>
+        </div>
+      </form>
+    </div>
     <% if @community_plans.present? %>
       <div class="community-plans__list">
         <% @community_plans.each do |plan| %>
@@ -37,7 +50,11 @@
       <% end %>
     <% else %>
       <div class="community-plans__empty">
-        <p>まだ公開プランがありません</p>
+        <% if @search_query.present? %>
+          <p>「<%= @search_query %>」に一致するプランが見つかりませんでした</p>
+        <% else %>
+          <p>まだ公開プランがありません</p>
+        <% end %>
       </div>
     <% end %>
   </div>
