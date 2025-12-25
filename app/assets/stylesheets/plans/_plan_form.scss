@@ -10,7 +10,7 @@ body.no-footer {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --planbar-width: 350px;
     --rail-width: 70px;
-    --map-gap: 20px;
+    --map-gap: 0px;
 
     position: relative;
     width: 100% !important;
