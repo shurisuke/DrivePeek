@@ -1,12 +1,12 @@
-<%# みんなのプラン一覧（plans#index） %>
+<%# 作ったドライブプラン一覧（plans/my_plans#index） %>
 
 <div class="community-plans community-plans--index">
-  <h1 class="community-plans__page-title">みんなのプラン</h1>
+  <h1 class="community-plans__page-title">作ったドライブプラン</h1>
 
   <div class="community-plans__content">
   <%# 検索フォーム %>
   <div class="community-plans__search">
-    <%= form_with url: plans_path, method: :get, local: true do %>
+    <%= form_with url: plans_my_plans_path, method: :get, local: true do %>
       <div class="community-plans__search-input-wrapper">
         <%= text_field_tag :q, @search_query,
                            placeholder: "プラン名・スポット・タグで検索",
@@ -22,11 +22,9 @@
     <div class="community-plans__list">
       <% @plans.each do |plan| %>
         <%
-          # plan_spots を position 順で取得し、_plan_card 用のハッシュ形式に変換
           spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
             spot = ps.spot
-            # ユーザーのuser_spotsからタグを取得
-            user_spot = plan.user.user_spots.find { |us| us.spot_id == spot.id }
+            user_spot = @user_spots[spot.id]
             tag_names = user_spot&.tags&.map { |tag| t("google_place_types.#{tag.tag_name}", default: tag.tag_name) } || []
 
             {
@@ -43,7 +41,8 @@
                    total_distance: "#{spots_only_distance(plan)}km",
                    is_favorite: false,
                    plan: plan,
-                   can_delete: current_user&.id == plan.user_id %>
+                   can_edit: true,
+                   can_delete: true %>
       <% end %>
     </div>
 
@@ -58,7 +57,7 @@
       <% if @search_query.present? %>
         <p>「<%= @search_query %>」に一致するプランが見つかりませんでした</p>
       <% else %>
-        <p>まだ公開プランがありません</p>
+        <p>まだプランがありません</p>
       <% end %>
     </div>
   <% end %>

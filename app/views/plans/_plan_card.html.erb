@@ -1,5 +1,5 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false, can_edit: false %>
 
 <div class="plan-card">
   <div class="plan-card__header">
@@ -8,6 +8,13 @@
       <button type="button" class="plan-card__favorite" aria-label="お気に入り">
         <i class="bi <%= is_favorite ? 'bi-star-fill' : 'bi-star' %>" aria-hidden="true"></i>
       </button>
+      <% if local_assigns[:can_edit] && local_assigns[:plan] %>
+        <%= link_to edit_plan_path(plan),
+              class: "plan-card__edit",
+              aria: { label: "プランを編集" } do %>
+          <i class="bi bi-pencil" aria-hidden="true"></i>
+        <% end %>
+      <% end %>
       <% if local_assigns[:can_delete] && local_assigns[:plan] %>
         <%= button_to plan_path(plan), method: :delete,
               class: "plan-card__delete",

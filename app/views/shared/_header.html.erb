@@ -21,19 +21,20 @@
                 <i class="fas fa-house"></i> HOME
               <% end %>
             </li>
-            <li><%= link_to "みんなのドライブプラン", plans_path %></li>
             <% unless controller_name == 'plans' && action_name.in?(%w[edit]) %>
               <li data-controller="create-plan-trigger">
-                <%= link_to "ドライブプランを作る", "#", data: { action: "click->create-plan-trigger#create" } %>
+                <%= link_to "プランを作る", "#", data: { action: "click->create-plan-trigger#create" } %>
               </li>
             <% end %>
-            <li><%= link_to "スポット検索", authenticated_root_path %></li>
+            <li><%= link_to "みんなのドライブプラン", plans_path %></li>
+            <li><%= link_to "作ったドライブプラン", plans_my_plans_path %></li>
+            <li><%= link_to "お気に入りプラン", authenticated_root_path %></li>
+            <li><%= link_to "お気に入りスポット", authenticated_root_path %></li>
             <li><%= link_to "アカウント設定", account_profile_path %></li>
           <% else %>
             <li><%= link_to "TOP", unauthenticated_root_path %></li>
             <li><%= link_to "新規登録", new_user_registration_path %></li>
             <li><%= link_to "ログイン", new_user_session_path %></li>
-            <li><%= link_to "みんなのドライブプラン", plans_path %></li>
             <li><%= link_to "DrivePeekの使い方", unauthenticated_root_path %></li>
           <% end %>
         </ul>

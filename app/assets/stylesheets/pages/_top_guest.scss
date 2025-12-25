@@ -160,3 +160,50 @@
     border-color: #f47717d5;
   }
 }
+
+/* トップページセクションの余白 */
+.top-section {
+  padding-top: calc(3rem + 100px);
+  padding-bottom: calc(3rem + 100px);
+
+  &:first-of-type {
+    padding-bottom: calc(3rem + 70px);
+  }
+
+  &:last-of-type {
+    padding-top: calc(3rem + 70px);
+    padding-bottom: calc(3rem + 90px);
+  }
+}
+
+/* セクション画像（2分割時の高さ揃え：右基準） */
+.section-images-split {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 1rem;
+
+  .section-image-wrapper {
+    overflow: hidden;
+    border-radius: 0.375rem;
+
+    img {
+      width: 100%;
+      display: block;
+    }
+
+    /* 左の画像：右の高さに合わせる */
+    &:first-child {
+      img {
+        height: 100%;
+        object-fit: cover;
+      }
+    }
+
+    /* 右の画像：自然な高さで基準になる */
+    &:last-child {
+      img {
+        height: auto;
+      }
+    }
+  }
+}

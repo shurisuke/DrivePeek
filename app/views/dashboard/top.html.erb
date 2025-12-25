@@ -1,18 +1,16 @@
 <div class="top-after-login">
   <div class="top-after-logincard">
-    <h1>次の休日、どこ行く？</h1>
-
-    <div class="card mb- mt-4">
+    <div class="card">
       <div class="d-grid gap-4 col-12 col-md-10 mx-auto">
         <button class="btn top-main-btn-after-login btn-xl fw-bold rounded-pill"
                 data-controller="create-plan-trigger"
                 data-action="click->create-plan-trigger#create">
-          <i class="fa-solid fa-pen me-2"></i>
-          現在地でプランを作成
+          <i class="fa-solid fa-map-location-dot me-2"></i>
+          プランを作成
         </button>
 
-        <%= link_to plans_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
-          <i class="fa-solid fa-globe me-2"></i> みんなのドライブプランを見る
+        <%= link_to plans_my_plans_path, class: 'btn top-main-btn-after-login btn-xl fw-bold rounded-pill' do %>
+          <i class="fa-solid fa-globe me-2"></i> 作ったドライブプラン
         <% end %>
       </div>
     </div>

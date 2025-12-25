@@ -10,6 +10,15 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
 
     <%= javascript_importmap_tags %>
+
+    <% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
+      <script
+        id="google-maps-script"
+        data-turbo-permanent
+        async
+        src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places,geometry">
+      </script>
+    <% end %>
   </head>
 
   <body class="<%= content_for?(:body_class) ? yield(:body_class) : '' %>">
@@ -26,14 +35,5 @@
     <%= yield %>
 
     <%= render 'shared/footer' %>
-
-    <% if ENV["GOOGLE_MAPS_API_KEY"].present? %>
-      <script
-        async
-        defer
-        data-turbo="false"
-        src="https://maps.googleapis.com/maps/api/js?key=<%= ENV['GOOGLE_MAPS_API_KEY'] %>&libraries=places,geometry">
-      </script>
-    <% end %>
   </body>
 </html>

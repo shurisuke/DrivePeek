@@ -186,6 +186,7 @@ export const renderPlanMarkers = (planData) => {
 
   // 出発地点
   const start = normalizeLatLng(planData?.start_point)
+  console.log("[render_plan_markers] creating start marker at", start, "from", planData?.start_point)
   if (start) {
     const marker = buildHouseMarker({ map, position: start, title: "出発地点" })
 

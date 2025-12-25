@@ -29,6 +29,10 @@ Rails.application.routes.draw do
   end
 
   # プラン
+  namespace :plans do
+    resources :my_plans, only: %i[index]
+  end
+
   resources :plans, only: %i[index create edit update destroy] do
     resource :planbar, only: %i[show]
     resource :start_point, only: %i[update]

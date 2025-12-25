@@ -10,7 +10,7 @@ body.no-footer {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --planbar-width: 350px;
     --rail-width: 70px;
-    --map-gap: 20px;
+    --map-gap: 0px;
 
     position: relative;
     width: 100% !important;
@@ -270,6 +270,18 @@ body.no-footer {
       }
     }
 
+    /* ✅ 帰宅地点トグルOFFのとき、総距離/総時間を非表示 */
+    .plan-info[data-plan-info-total] {
+      display: none;
+    }
+
+  }
+}
+
+/* ✅ 帰宅地点トグルONのとき、総距離/総時間を表示 */
+body.no-footer.goal-point-visible {
+  .plan-form .plan-info[data-plan-info-total] {
+    display: flex;
   }
 }
 

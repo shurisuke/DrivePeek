@@ -80,6 +80,7 @@ export const renderMap = (center) => {
     center,
     zoom: 12,
     disableDefaultUI: true,
+    keyboardShortcuts: false,
   });
 
   setMapInstance(map);
