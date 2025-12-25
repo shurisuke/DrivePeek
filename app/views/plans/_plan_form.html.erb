@@ -35,9 +35,31 @@
     </button>
   </div>
 
-  <!-- プラン保存ボタン -->
-  <div class="plan-save">
-    <%= button_to "プランを保存", plans_path, method: :post, class: "btn btn-save" %>
+  <!-- プラン保存ボタン＋モーダル -->
+  <div class="plan-save" data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
+    <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
+      プランを保存
+    </button>
+
+    <!-- 保存モーダル（オーバーレイ） -->
+    <div class="plan-save-modal" data-plan-save-modal-target="modal" hidden>
+      <div class="plan-save-modal__overlay" data-action="click->plan-save-modal#close"></div>
+      <div class="plan-save-modal__dialog">
+        <p class="plan-save-modal__message">名前をつけてプランを保存してください</p>
+        <input
+          type="text"
+          class="form-control plan-save-modal__input"
+          placeholder="プラン名を入力"
+          data-plan-save-modal-target="input"
+          data-action="keydown.enter->plan-save-modal#save"
+        >
+        <p class="plan-save-modal__error" data-plan-save-modal-target="error" hidden>プラン名を入力してください</p>
+        <div class="plan-save-modal__actions">
+          <button type="button" class="btn btn-cancel" data-action="click->plan-save-modal#close">キャンセル</button>
+          <button type="button" class="btn btn-primary" data-action="click->plan-save-modal#save">保存</button>
+        </div>
+      </div>
+    </div>
   </div>
 
   <!-- 右下: プラン情報 -->

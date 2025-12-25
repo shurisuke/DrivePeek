@@ -20,6 +20,25 @@ class PlansController < ApplicationController
   end
 
   def update
+    @plan = current_user.plans.find(params[:id])
+
+    if @plan.update(plan_params)
+      respond_to do |format|
+        format.html { redirect_to edit_plan_path(@plan), notice: "プランを保存しました" }
+        format.json { render json: { success: true, message: "プランを保存しました" } }
+      end
+    else
+      respond_to do |format|
+        format.html { redirect_to edit_plan_path(@plan), alert: "保存に失敗しました" }
+        format.json { render json: { success: false, errors: @plan.errors.full_messages }, status: :unprocessable_entity }
+      end
+    end
+  end
+
+  private
+
+  def plan_params
+    params.require(:plan).permit(:title)
   end
 
   def destroy
