@@ -11,6 +11,13 @@ export default class extends Controller {
   static values = { planId: Number };
 
   connect() {
+    // ✅ Turbo更新後の再接続時は、復元された body クラスの状態をスイッチに反映
+    // （サーバーから返る HTML の switch は checked 属性がないため）
+    const restoredVisible = document.body.classList.contains("goal-point-visible")
+    if (restoredVisible && this.hasSwitchTarget && !this.switchTarget.checked) {
+      this.switchTarget.checked = true
+    }
+
     this.apply();
 
     // ✅ planbar更新時にも最後スポットのクラスを再計算

@@ -99,7 +99,7 @@ const renderRoutePolylines = () => {
       return new google.maps.Polyline({
         path,
         map,
-        strokeColor: "#D4846A",  // ダスティコーラル（ピンク寄りオレンジ、柔らかい）
+        strokeColor: "#D4846A",  // ダスティコーラル
         strokeOpacity: 0.85,
         strokeWeight: 4,
       })
@@ -189,6 +189,11 @@ export const bindPlanMapSync = () => {
 
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
+
+    // ✅ 帰宅地点の表示状態を body クラス（復元済み）から #map.dataset に同期
+    // Stimulus controller の再接続で上書きされた可能性があるため、ここで正しい状態に戻す
+    const goalVisibleFromBody = document.body.classList.contains("goal-point-visible")
+    setGoalVisible(goalVisibleFromBody)
 
     // ✅ window.planData は古いので、spots だけ DOM から更新する
     const basePlanData = getPlanDataFromPage() || cachedPlanData
