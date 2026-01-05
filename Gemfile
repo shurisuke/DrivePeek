@@ -9,7 +9,7 @@ gem "rails", "~> 8.1.1"
 gem "propshaft"
 
 # データベース
-gem "pg", "~> 1.1"
+gem "pg", "~> 1.6"
 
 # Webサーバー
 gem "puma", ">= 5.0"
