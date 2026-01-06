@@ -4,4 +4,4 @@ import "bootstrap"
 
 // 地図初期化
 import "plans/init_map"
-import "map/plan_data"
+import "plans/plan_data"
