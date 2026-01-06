@@ -10,6 +10,8 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 # ディレクトリごと pin（今回の分割に合わせる）
 pin_all_from "app/javascript/plans", under: "plans"
 pin_all_from "app/javascript/map", under: "map"
+pin_all_from "app/javascript/planbar", under: "planbar"
+pin_all_from "app/javascript/services", under: "services"
 
 pin "bootstrap", to: "https://ga.jspm.io/npm:bootstrap@5.3.3/dist/js/bootstrap.esm.js", preload: true
 pin "@popperjs/core", to: "https://ga.jspm.io/npm:@popperjs/core@2.11.8/dist/esm/popper.js", preload: true
