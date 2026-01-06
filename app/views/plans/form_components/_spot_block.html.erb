@@ -1,13 +1,12 @@
 <%# app/views/plans/form_components/_spot_block.html.erb %>
-<%# locals: plan_spot:, user_spot: nil, like_spot: nil %>
+<%# locals: plan_spot:, like_spot: nil %>
 
 <% spot = plan_spot.spot %>
-<% tags = user_spot&.tags || [] %>
 
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
-  data-controller="plan-spot-memo plan-spot-tags plan-spot-delete"
+  data-controller="plan-spot-memo plan-spot-delete"
   data-plan-spot-memo-url-value="<%= memo_api_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-plan-spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan-spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
@@ -32,15 +31,6 @@
 
         <% if spot.address.present? %>
           <div class="spot-address"><%= spot.address %></div>
-        <% end %>
-
-        <%= turbo_frame_tag dom_id(plan_spot, :tag_chips),
-                            class: "spot-tags",
-                            data: {
-                              plan_spot_tags_target: "chips",
-                              action: "turbo:frame-render->plan-spot-tags#syncEditingUI"
-                            } do %>
-          <%= render "plan_spots/tags/chips", plan: plan_spot.plan, plan_spot: plan_spot, tags: tags %>
         <% end %>
 
         <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
@@ -126,46 +116,6 @@
 
           <div class="spot-detail-actions">
             <div class="spot-detail-actions__buttons-wrap">
-
-              <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
-                   data-plan-spot-tags-target="form"
-                   data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation">
-
-                <%= form_with(
-                      url: plan_plan_spot_tags_path(plan_spot.plan, plan_spot),
-                      method: :post,
-                      data: {
-                        turbo_frame: dom_id(plan_spot, :tag_chips),
-                        action: "turbo:submit-end->plan-spot-tags#afterSubmit"
-                      }
-                    ) do |f| %>
-
-                  <%= f.text_field :tag_name,
-                                   name: "tag[tag_name]",
-                                   class: "form-control",
-                                   placeholder: "タグを追加",
-                                   autocomplete: "off",
-                                   data: {
-                                     plan_spot_tags_target: "input",
-                                     action: "pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#stopPropagation keydown->plan-spot-tags#stopPropagation"
-                                   } %>
-
-                  <div class="spot-memo__editor-actions">
-                    <button type="button"
-                            class="btn btn-outline-secondary"
-                            data-action="pointerdown->plan-spot-tags#stopPropagation click->plan-spot-tags#close">
-                      閉じる
-                    </button>
-
-                    <button type="submit"
-                            class="btn btn-personal"
-                            data-action="pointerdown->plan-spot-tags#stopPropagation">
-                      追加
-                    </button>
-                  </div>
-                <% end %>
-              </div>
-
               <div class="spot-detail-actions__buttons">
                 <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
 
@@ -174,13 +124,6 @@
                         data-action="click->plan-spot-memo#open"
                         aria-label="メモを編集">
                   <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
-                </button>
-
-                <button type="button"
-                        class="btn btn-outline-secondary btn-sm w-100"
-                        data-action="click->plan-spot-tags#toggle"
-                        aria-label="タグを編集">
-                  <i class="bi bi-tag me-1" aria-hidden="true"></i>
                 </button>
 
                 <%= form_with(

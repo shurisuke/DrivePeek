@@ -13,13 +13,6 @@
 
 <% spot_ids = @plan.plan_spots.select(:spot_id) %>
 
-<% user_spots_by_spot_id =
-     current_user.user_spots
-       .includes(user_spot_tags: :tag)
-       .where(spot_id: spot_ids)
-       .index_by(&:spot_id)
-%>
-
 <% like_spots_by_spot_id =
      current_user.like_spots
        .where(spot_id: spot_ids)
@@ -31,7 +24,6 @@
   <% @plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
     <%= render "plans/form_components/spot_block",
                plan_spot:  plan_spot,
-               user_spot:  user_spots_by_spot_id[plan_spot.spot_id],
                like_spot:  like_spots_by_spot_id[plan_spot.spot_id] %>
   <% end %>
 </div>

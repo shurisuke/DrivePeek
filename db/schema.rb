@@ -10,9 +10,19 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2025_12_24_103122) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_06_073155) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "genres", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "name", null: false
+    t.integer "position", default: 0, null: false
+    t.string "slug", null: false
+    t.datetime "updated_at", null: false
+    t.index ["position"], name: "index_genres_on_position"
+    t.index ["slug"], name: "index_genres_on_slug", unique: true
+  end
 
   create_table "goal_points", force: :cascade do |t|
     t.string "address"
@@ -78,6 +88,16 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_103122) do
     t.index ["user_id"], name: "index_plans_on_user_id"
   end
 
+  create_table "spot_genres", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "genre_id", null: false
+    t.bigint "spot_id", null: false
+    t.datetime "updated_at", null: false
+    t.index ["genre_id"], name: "index_spot_genres_on_genre_id"
+    t.index ["spot_id", "genre_id"], name: "index_spot_genres_on_spot_id_and_genre_id", unique: true
+    t.index ["spot_id"], name: "index_spot_genres_on_spot_id"
+  end
+
   create_table "spots", force: :cascade do |t|
     t.string "address", null: false
     t.string "city"
@@ -114,23 +134,6 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_103122) do
     t.index ["prefecture"], name: "index_start_points_on_prefecture"
   end
 
-  create_table "tags", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.string "tag_name", null: false
-    t.datetime "updated_at", null: false
-    t.index ["tag_name"], name: "index_tags_on_tag_name", unique: true
-  end
-
-  create_table "user_spot_tags", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "tag_id", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_spot_id", null: false
-    t.index ["tag_id"], name: "index_user_spot_tags_on_tag_id"
-    t.index ["user_spot_id", "tag_id"], name: "index_user_spot_tags_on_user_spot_id_and_tag_id", unique: true
-    t.index ["user_spot_id"], name: "index_user_spot_tags_on_user_spot_id"
-  end
-
   create_table "user_spots", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "spot_id", null: false
@@ -164,9 +167,9 @@ ActiveRecord::Schema[8.1].define(version: 2025_12_24_103122) do
   add_foreign_key "plan_spots", "plans"
   add_foreign_key "plan_spots", "spots"
   add_foreign_key "plans", "users"
+  add_foreign_key "spot_genres", "genres"
+  add_foreign_key "spot_genres", "spots"
   add_foreign_key "start_points", "plans"
-  add_foreign_key "user_spot_tags", "tags"
-  add_foreign_key "user_spot_tags", "user_spots"
   add_foreign_key "user_spots", "spots"
   add_foreign_key "user_spots", "users"
 end
