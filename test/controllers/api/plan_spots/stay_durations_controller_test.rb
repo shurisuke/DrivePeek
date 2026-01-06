@@ -2,7 +2,7 @@
 
 require "test_helper"
 
-class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
+class Api::PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
   setup do
     @user = users(:one)
     @plan = plans(:one)
