@@ -3,7 +3,7 @@
 <div class="main-content plan-form"
      data-controller="planbar-resize"
      data-planbar-resize-min-value="300"
-     data-planbar-resize-max-value="700"
+     data-planbar-resize-max-percent-value="88"
      data-planbar-resize-default-value="350">
   <!-- 地図 -->
   <div id="map" class="map" data-plan-id="<%= plan.id %>" data-planbar-resize-target="map"></div>
@@ -13,7 +13,7 @@
     <input
       id="places-search-box"
       type="text"
-      placeholder="スポット名や施設名で検索"
+      placeholder="地名やキーワードで検索"
       class="form-control"
     >
   </div>
@@ -50,7 +50,7 @@
   <div data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
     <div class="plan-save">
       <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
-        プランを保存
+        保存
       </button>
     </div>
 

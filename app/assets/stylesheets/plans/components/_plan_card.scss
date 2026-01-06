@@ -43,6 +43,9 @@
 
 .community-plans__search {
   margin-bottom: 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .community-plans__results-divider {
@@ -386,8 +389,18 @@
 
 .community-plans__list {
   display: flex;
-  flex-direction: column;
+  flex-wrap: wrap;
+  justify-content: center;
   gap: 26px;
+
+  /* カードは300px〜400px */
+  .plan-card,
+  .spot-card {
+    width: 400px;
+    min-width: 300px;
+    max-width: 400px;
+    flex: 1 1 300px;
+  }
 }
 
 .community-plans__empty {

@@ -12,13 +12,18 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     min: { type: Number, default: 300 },
-    max: { type: Number, default: 700 },
+    maxPercent: { type: Number, default: 70 }, // 画面幅の何%まで
     default: { type: Number, default: 350 },
     storageKey: { type: String, default: "drive_peek:planbar_width" },
     collapsedKey: { type: String, default: "drive_peek:planbar_collapsed" },
   }
 
   static targets = ["handle", "map"]
+
+  // 画面幅の指定%を最大値として計算
+  get maxWidth() {
+    return Math.floor(window.innerWidth * this.maxPercentValue / 100)
+  }
 
   connect() {
     this.isDragging = false
@@ -96,7 +101,7 @@ export default class extends Controller {
     }
 
     // 最大値を超えないように
-    newWidth = Math.min(newWidth, this.maxValue)
+    newWidth = Math.min(newWidth, this.maxWidth)
 
     // 収納状態から復帰
     if (this.isCollapsed()) {
@@ -139,7 +144,8 @@ export default class extends Controller {
   // ================================================================
   collapse() {
     this.element.classList.add("planbar--collapsed")
-    this.element.style.setProperty("--planbar-width", "0px")
+    // CSS側で地図の位置・幅を制御するため、--planbar-width は変更しない
+    // プランバーは300px幅を保持しつつ translateX で画面外に移動
     this.saveState()
     this.triggerMapResize()
   }
@@ -167,6 +173,17 @@ export default class extends Controller {
 
   setWidth(width) {
     this.element.style.setProperty("--planbar-width", `${width}px`)
+    this.updateSearchBarVisibility(width)
+  }
+
+  // 80%を超えたら検索バー・保存ボタンを非表示
+  updateSearchBarVisibility(width) {
+    const threshold = Math.floor(window.innerWidth * 0.8)
+    if (width > threshold) {
+      this.element.classList.add("planbar--wide")
+    } else {
+      this.element.classList.remove("planbar--wide")
+    }
   }
 
   // ================================================================
@@ -206,6 +223,9 @@ export default class extends Controller {
         const savedWidth = this.getSavedWidth()
         if (savedWidth) {
           this.setWidth(savedWidth)
+        } else {
+          // デフォルト幅でも検索バーの表示状態を更新
+          this.updateSearchBarVisibility(this.defaultValue)
         }
       }
     } catch (e) {
@@ -218,7 +238,7 @@ export default class extends Controller {
       const saved = localStorage.getItem(this.storageKeyValue)
       if (saved) {
         const width = parseInt(saved, 10)
-        if (width >= this.minValue && width <= this.maxValue) {
+        if (width >= this.minValue && width <= this.maxWidth) {
           return width
         }
       }

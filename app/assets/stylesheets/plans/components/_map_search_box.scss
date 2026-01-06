@@ -3,11 +3,12 @@
 ========================================== */
 .map-search-box {
     position: absolute;
-    top: 10px; /* 上からの余白 */
-    left: calc(50% + 120px); /* ナビバー幅370pxの半分を右にずらす */
+    top: 10px;
+    /* 地図の中央に配置: planbar幅 + 地図幅の半分 - 30px */
+    left: calc(var(--planbar-width) + (100% - var(--planbar-width)) / 2 - 30px);
     transform: translateX(-50%);
     z-index: 10;
-    width: 600px;
+    width: min(600px, calc((100% - var(--planbar-width)) * 0.6));
 
   input.form-control {
     width: 100%;
@@ -17,4 +18,22 @@
     border: 1px solid #9a9a9a;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
   }
+}
+
+/* プランタブ選択時（時計アイコン表示時）：レール幅の半分を考慮 */
+body.no-footer .plan-form:has(.plan-time-toggle-header:not([hidden])) .map-search-box {
+  left: calc(var(--planbar-width) + var(--rail-width) / 2 + (100% - var(--planbar-width) - var(--rail-width) / 2) / 2 - 30px);
+  width: min(600px, calc((100% - var(--planbar-width) - var(--rail-width) / 2) * 0.6));
+}
+
+/* 収納時：ハンドル幅のみ考慮 */
+body.no-footer .plan-form.planbar--collapsed .map-search-box {
+  left: calc(var(--planbar-collapsed-handle-width) + (100% - var(--planbar-collapsed-handle-width)) / 2 - 30px);
+  width: min(600px, calc((100% - var(--planbar-collapsed-handle-width)) * 0.6));
+}
+
+/* プランバーが80%を超えたら検索バー・保存ボタンを非表示 */
+body.no-footer .plan-form.planbar--wide .map-search-box,
+body.no-footer .plan-form.planbar--wide .plan-save {
+  display: none;
 }
