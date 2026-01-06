@@ -45,7 +45,8 @@
       background-size: 100% 100%;
 
       position: absolute;
-      left: 2%;
+      /* プランバー幅に応じてアイコン位置を変化 */
+      left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.30));
       top: 2px;
       transform: translateY(-2px);
 
@@ -238,8 +239,6 @@
 
     margin: 0 auto 8px;
     margin-top: 20px;
-
-    padding: 0 42.5px;
   }
 
   .distance-info .label {
@@ -322,7 +321,7 @@
   }
 
   .start-toll-row .toll-switch {
-    margin-left: 15px;
+    margin-left: 180px;
 
     display: inline-flex;
     align-items: center;

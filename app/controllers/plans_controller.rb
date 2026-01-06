@@ -50,7 +50,7 @@ class PlansController < ApplicationController
         genre_ids: params[:genre_ids]
       ).where.not(id: @plan.id)
         .page(params[:page])
-        .per(5)
+        .per(6)
     end
   end
 

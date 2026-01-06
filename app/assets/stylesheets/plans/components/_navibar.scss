@@ -9,6 +9,18 @@
   display: block;
 }
 
+/* AI提案タブ: 入力エリアを下部固定 */
+.tab-content.tab-ai.active {
+  display: flex;
+  flex-direction: column;
+  height: calc(100vh - 60px); /* タブナビの高さを除いた全高 */
+}
+
+/* AI提案タブ選択時: 親スクロールを無効化 */
+.planbar__content-scroll:has(.tab-ai.active) {
+  overflow-y: hidden;
+}
+
 html { scrollbar-gutter: stable; }
 
 .planbar__content {

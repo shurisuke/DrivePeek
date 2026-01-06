@@ -6,6 +6,16 @@
 ========================================== */
 
 body.no-footer {
+  /* ハンバーガーメニューの位置・サイズ調整（2/3サイズ） */
+  .hamburger {
+    top: 10px;
+    right: 24px;
+    transform: scale(0.70);
+    transform-origin: top right;
+    border: 1px solid #9a9a9a;
+    border-radius: 6px;
+  }
+
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --planbar-width: 350px;
@@ -114,18 +124,21 @@ body.no-footer {
 
     .plan-save {
       position: fixed;
-      bottom: calc(2rem - 10px); /* ✅ 15px下げる */
-      left: 58%;
+      bottom: calc(2rem - 15px); /* 下の余白を5px減 */
+      /* 地図の中央に配置 */
+      left: calc(var(--planbar-width) + (100% - var(--planbar-width)) / 2);
       transform: translateX(-50%);
       z-index: 3;
 
       .btn-save {
         background-color: var(--personal);
         color: #fff;
-        font-size: 1.2rem;
-        padding: 0.8rem 2rem;
+        font-size: calc(1.2rem - 2px);
+        padding: calc(0.8rem - 5px) calc(2rem - 15px);
+        margin: 0;
         border-radius: 8px;
-        font-weight: bold;
+        font-weight: 580;
+        letter-spacing: 3px;
         border: none;
         box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
         transition: all 0.2s;
@@ -290,6 +303,11 @@ body.no-footer.plan-time-open .plan-form .planbar .planbar__content-scroll {
   width: calc(var(--planbar-width) + var(--rail-width));
 }
 
+/* ✅ 時刻レール表示時: 保存ボタンをレール右側の中央に */
+body.no-footer.plan-time-open .plan-form .plan-save {
+  left: calc(var(--planbar-width) + var(--rail-width) + (100% - var(--planbar-width) - var(--rail-width)) / 2);
+}
+
 /* ==========================================
    時計ボタン＋白背景ヘッダー（固定・スクロール非連動）
 ========================================== */
@@ -436,7 +454,8 @@ body.plan-time-open .plan-time-toggle-header::before {
   gap: 0;
 
   box-sizing: border-box;
-  padding: 0 40px;
+  /* プランバー幅に応じて左右余白を変化させる（最小20px、最大30%） */
+  padding: 0 max(20px, 30%);
 }
 
 /* ✅ 左側メイン（将来拡張のため100%基準） */
@@ -537,7 +556,6 @@ body.plan-time-open .plan-form .planbar {
 .block-main-content .spot-block__inner,
 .block-main-content .start-point-main,
 .block-main-content .goal-point-main,
-.block-main-content .distance-info,
 .block-main-content .start-point-detail-wrap,
 .block-main-content .goal-point-toggle,
 .block-main-content .goal-point-section,
@@ -643,4 +661,144 @@ body.plan-time-open.departure-time-unset .spot-block .block-time-panel__toggle-a
 body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__main,
 body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__toggle-area {
   visibility: hidden;
+}
+
+/* ==========================================
+   ✅ プランバーリサイズ機能
+========================================== */
+
+/* リサイズハンドル */
+.planbar-resize-handle {
+  position: fixed;
+  top: 0;
+  left: var(--planbar-width);
+  width: 24px;
+  height: 100%;
+  z-index: 50;
+
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* 中央70pxの白い半透明エリア（リサイズ可能を示す） */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 50%;
+    left: 0;
+    transform: translateY(-50%);
+    width: 100%;
+    height: 70px;
+    background: rgba(255, 255, 255, 0.85);
+    transition: background 0.15s ease;
+  }
+
+  &:hover::before {
+    background: rgba(255, 255, 255, 0.95);
+  }
+
+  /* グリップ（右向き三角でリサイズ可能を示す） */
+  &__grip {
+    width: 0;
+    height: 0;
+    position: relative;
+    z-index: 1;
+    border-top: 8px solid transparent;
+    border-bottom: 8px solid transparent;
+    border-left: 10px solid rgba(80, 109, 83, 0.4);
+    transition: border-color 0.15s ease;
+  }
+
+  &:hover &__grip {
+    border-left-color: rgba(80, 109, 83, 0.7);
+  }
+}
+
+/* ドラッグ中のカーソル固定 */
+body.planbar-resizing {
+  cursor: col-resize !important;
+  user-select: none;
+
+  * {
+    cursor: col-resize !important;
+  }
+}
+
+/* 時刻レール表示時：リサイズハンドルをレールの右に配置 */
+body.plan-time-open .planbar-resize-handle {
+  left: calc(var(--planbar-width) + var(--rail-width));
+}
+
+/* ==========================================
+   ✅ プランバー収納時のスタイル
+========================================== */
+
+body.no-footer .plan-form.planbar--collapsed {
+  /* 収納時は地図を全幅に近づけるための変数（ハンドル幅分のみ確保） */
+  --planbar-collapsed-handle-width: 24px;
+
+  /* プランバー本体は300px幅を保持しつつ左へスライドアウト */
+  .planbar {
+    width: 300px; /* 最小幅を保持（中身の崩れ防止） */
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 時計ボタンも非表示 */
+  .plan-time-toggle-header {
+    display: none !important;
+  }
+
+  /* リサイズハンドルは左端に固定表示 */
+  .planbar-resize-handle {
+    left: 0;
+    width: var(--planbar-collapsed-handle-width);
+    background: rgba(255, 255, 255, 0.95);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+    /* 収納時は中央の半透明エリアを非表示 */
+    &::before {
+      display: none;
+    }
+
+    /* 三角のスタイルはそのまま維持 */
+    &__grip {
+      border-left-color: rgba(80, 109, 83, 0.5);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 1);
+
+      .planbar-resize-handle__grip {
+        border-left-color: rgba(80, 109, 83, 0.8);
+      }
+    }
+  }
+
+  /* 地図を全幅に（ハンドル幅分のみ確保） */
+  .map {
+    left: var(--planbar-collapsed-handle-width);
+    width: calc(100% - var(--planbar-collapsed-handle-width));
+  }
+
+  /* 保存ボタンも地図中央に */
+  .plan-save {
+    left: calc(var(--planbar-collapsed-handle-width) + (100% - var(--planbar-collapsed-handle-width)) / 2);
+  }
+}
+
+/* 収納時のトランジション */
+body.no-footer .plan-form .planbar {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+body.no-footer .plan-form .map {
+  transition: left 0.2s ease, width 0.2s ease;
+}
+
+body.no-footer .plan-form .planbar-resize-handle {
+  transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
 }

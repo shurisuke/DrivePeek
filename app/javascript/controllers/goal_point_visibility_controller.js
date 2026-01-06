@@ -85,7 +85,33 @@ export default class extends Controller {
     // spot_block 側で付けた目印
     const nextMoveRow = lastSpot.querySelector('[data-plan-time-role="spot-next-move"]');
 
-    // goalVisible=true なら表示、false なら非表示（出発時間・矢印は常に表示）
-    if (nextMoveRow) nextMoveRow.hidden = !goalVisible;
+    // goalVisible=false でも表示するが、数値を「--」に置き換える
+    if (nextMoveRow) {
+      nextMoveRow.hidden = false; // 常に表示
+
+      const kmEl = nextMoveRow.querySelector('.km');
+      const timeEl = nextMoveRow.querySelector('.time');
+
+      if (!goalVisible) {
+        // 元の値を保存（初回のみ）
+        if (kmEl && !kmEl.dataset.originalValue) {
+          kmEl.dataset.originalValue = kmEl.innerHTML;
+        }
+        if (timeEl && !timeEl.dataset.originalValue) {
+          timeEl.dataset.originalValue = timeEl.innerHTML;
+        }
+        // 「--」に置き換え
+        if (kmEl) kmEl.innerHTML = '--<span class="km-unit">km</span>';
+        if (timeEl) timeEl.innerHTML = '--<span class="time-unit">時間</span>--<span class="time-unit">分</span>';
+      } else {
+        // 元の値を復元
+        if (kmEl && kmEl.dataset.originalValue) {
+          kmEl.innerHTML = kmEl.dataset.originalValue;
+        }
+        if (timeEl && timeEl.dataset.originalValue) {
+          timeEl.innerHTML = timeEl.dataset.originalValue;
+        }
+      }
+    }
   }
 }
