@@ -1,0 +1,33 @@
+<%# スポットカード（検索結果表示用の共通部品） %>
+<%# locals: spot:, like_spot: nil %>
+
+<div class="spot-card">
+  <div class="spot-card__header">
+    <h3 class="spot-card__name"><%= spot.name %></h3>
+    <div class="spot-card__actions">
+      <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+    </div>
+  </div>
+
+  <% if spot.genres.any? %>
+    <div class="spot-card__genres">
+      <% spot.genres.each do |genre| %>
+        <span class="spot-card__genre"><%= genre.name %></span>
+      <% end %>
+    </div>
+  <% end %>
+
+  <% if spot.address.present? %>
+    <div class="spot-card__address">
+      <i class="bi bi-geo-alt" aria-hidden="true"></i>
+      <%= spot.address %>
+    </div>
+  <% end %>
+
+  <% if spot.prefecture.present? || spot.city.present? %>
+    <div class="spot-card__location">
+      <i class="bi bi-pin-map" aria-hidden="true"></i>
+      <%= [spot.prefecture, spot.city].compact.join(" ") %>
+    </div>
+  <% end %>
+</div>
