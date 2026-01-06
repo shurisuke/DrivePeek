@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_06_073155) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_06_094629) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -85,6 +85,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_073155) do
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
     t.index ["title"], name: "index_plans_on_title"
+    t.index ["updated_at"], name: "index_plans_on_updated_at"
     t.index ["user_id"], name: "index_plans_on_user_id"
   end
 
@@ -157,6 +158,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_06_073155) do
     t.datetime "updated_at", null: false
     t.index ["email"], name: "index_users_on_email", unique: true
     t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
+    t.index ["status"], name: "index_users_on_status"
   end
 
   add_foreign_key "goal_points", "plans"
