@@ -83,6 +83,8 @@ GEM
     annotate (2.6.5)
       activerecord (>= 2.3.0)
       rake (>= 0.8.7)
+    anthropic (1.16.3)
+      connection_pool
     ast (2.4.3)
     base64 (0.3.0)
     bcrypt (3.1.20)
@@ -404,6 +406,7 @@ PLATFORMS
 DEPENDENCIES
   acts_as_list
   annotate
+  anthropic
   bootsnap
   bootstrap (~> 5.3.3)
   brakeman
