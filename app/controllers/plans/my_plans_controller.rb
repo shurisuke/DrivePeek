@@ -7,8 +7,5 @@ class Plans::MyPlansController < ApplicationController
       .order(updated_at: :desc)
       .page(params[:page])
       .per(10)
-
-    # user_spotsをプリロード（タグ表示用）
-    @user_spots = current_user.user_spots.includes(:tags).index_by(&:spot_id)
   end
 end

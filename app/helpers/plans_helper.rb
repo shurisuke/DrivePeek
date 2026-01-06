@@ -13,14 +13,6 @@ module PlansHelper
     end
   end
 
-  # スポット配列からタグ名を重複なしで収集
-  # spots: [{ name:, address:, tags: ["tag1", "tag2"] }, ...]
-  def collect_unique_tags(spots)
-    return [] if spots.blank?
-
-    spots.flat_map { |spot| spot[:tags] || [] }.uniq
-  end
-
   # =============================================
   # plan_card用: スポット間のみの距離・時間・料金
   # スタート地点→最初のスポット、最後のスポット→ゴール地点を除外

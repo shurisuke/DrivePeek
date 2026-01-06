@@ -1,7 +1,7 @@
 // app/javascript/planbar/ui_state.js
 // ================================================================
 // Planbar UI State（単一責務）
-// 用途: planbar 内の UI 状態（collapse, memo/tags フォーム, goal point visibility）の
+// 用途: planbar 内の UI 状態（collapse, memo フォーム, goal point visibility）の
 //       退避・復元を担当
 // ================================================================
 
@@ -50,7 +50,7 @@ export const restoreOpenCollapseIds = async (ids) => {
 }
 
 // -------------------------------
-// spot-block 内フォーム状態（memo/tags）退避/復元
+// spot-block 内フォーム状態（memo）退避/復元
 // -------------------------------
 export const captureSpotBlockUIStates = () => {
   const root = getPlanbarRoot()
@@ -62,13 +62,10 @@ export const captureSpotBlockUIStates = () => {
       if (!planSpotId) return null
 
       const memoEditor = block.querySelector('[data-plan-spot-memo-target="editor"]')
-      const tagsForm = block.querySelector('[data-plan-spot-tags-target="form"]')
-
       const memoOpen = memoEditor ? !memoEditor.classList.contains("d-none") : false
-      const tagsOpen = tagsForm ? !tagsForm.classList.contains("d-none") : false
 
-      if (!memoOpen && !tagsOpen) return null
-      return { planSpotId, memoOpen, tagsOpen }
+      if (!memoOpen) return null
+      return { planSpotId, memoOpen }
     })
     .filter(Boolean)
 }
@@ -114,12 +111,6 @@ export const restoreSpotBlockUIStates = async (states) => {
     const memoDisplay = block.querySelector('[data-plan-spot-memo-target="memoDisplay"]')
     if (memoEditor) memoEditor.classList.toggle("d-none", !st.memoOpen)
     if (memoDisplay) memoDisplay.classList.toggle("is-editing", st.memoOpen)
-
-    const tagsForm = block.querySelector('[data-plan-spot-tags-target="form"]')
-    if (tagsForm) tagsForm.classList.toggle("d-none", !st.tagsOpen)
-
-    const chips = block.querySelector(".spot-tags")
-    if (chips) chips.classList.toggle("is-editing", st.tagsOpen)
   }
 }
 
