@@ -3,11 +3,10 @@ GENRES = [
   # 食
   { name: "グルメ", slug: "gourmet" },
   { name: "カフェ・スイーツ", slug: "cafe" },
-  { name: "酒屋・ワイナリー", slug: "winery" },
   # 自然・景観
-  { name: "公園", slug: "park" },
   { name: "海・海岸", slug: "sea_coast" },
   { name: "山・高原", slug: "mountain" },
+  { name: "公園", slug: "park" },
   { name: "湖・滝", slug: "lake_waterfall" },
   { name: "花・庭園", slug: "garden_flower" },
   { name: "絶景・展望", slug: "scenic_view" },
@@ -25,6 +24,7 @@ GENRES = [
   { name: "宿泊施設", slug: "accommodation" },
   # 買い物
   { name: "道の駅・SA/PA", slug: "roadside_station" },
+  { name: "酒屋・ワイナリー", slug: "winery" },
   { name: "ショッピング", slug: "shopping" }
 ].freeze
 
