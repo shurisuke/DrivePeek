@@ -1,0 +1,22 @@
+<%# app/views/like_plans/_button.html.erb %>
+<%# locals: plan:, like_plan: nil %>
+
+<%= turbo_frame_tag dom_id(plan, :like_button) do %>
+  <% if like_plan.present? %>
+    <%= button_to like_plan_path(like_plan),
+                  method: :delete,
+                  class: "plan-card__favorite plan-card__favorite--active",
+                  "aria-label": "お気に入り解除",
+                  data: { turbo_frame: dom_id(plan, :like_button) } do %>
+      <i class="bi bi-heart-fill" aria-hidden="true"></i>
+    <% end %>
+  <% else %>
+    <%= button_to like_plans_path(plan_id: plan.id),
+                  method: :post,
+                  class: "plan-card__favorite",
+                  "aria-label": "お気に入り登録",
+                  data: { turbo_frame: dom_id(plan, :like_button) } do %>
+      <i class="bi bi-heart" aria-hidden="true"></i>
+    <% end %>
+  <% end %>
+<% end %>

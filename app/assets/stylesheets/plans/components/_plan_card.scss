@@ -42,7 +42,64 @@
 }
 
 .community-plans__search {
+  margin-bottom: 20px;
+}
+
+.community-plans__results-divider {
+  margin-top: 30px;
+  margin-bottom: 10px;
+  text-align: center;
+}
+
+.community-plans__results-label {
+  display: block;
+  padding-top: 10px;
+  margin-bottom: 4px;
+  font-size: 12px;
+  color: #999;
+}
+
+/* 検索タイプ切り替えタブ */
+.community-plans__search-tabs {
+  display: flex;
+  gap: 0;
+  margin-top: 10px;
   margin-bottom: 16px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.community-plans__search-tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 10px 16px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #666;
+  background-color: #f8f8f8;
+  cursor: pointer;
+  transition: all 0.2s;
+  border-right: 1px solid #e5e5e5;
+
+  &:last-child {
+    border-right: none;
+  }
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &:hover {
+    background-color: #f0f4f0;
+  }
+
+  &.is-active {
+    background-color: #506d53;
+    color: #fff;
+  }
 }
 
 .community-plans__filters {
@@ -343,7 +400,8 @@
 .community-plans__pagination {
   display: flex;
   justify-content: center;
-  margin-top: 20px;
+  margin-top: 50px;
+  margin-bottom: 50px;
 
   .pagination {
     margin: 0;
@@ -447,12 +505,17 @@
   background: none;
   border: none;
   cursor: pointer;
-  color: #f5a623;
+  color: #e8a0a8;
   font-size: 18px;
   line-height: 1;
 
   &:hover {
-    opacity: 0.8;
+    color: #e8a0a8;
+    background: transparent;
+  }
+
+  &--active {
+    color: #e8a0a8;
   }
 }
 
@@ -572,5 +635,94 @@
   i {
     font-size: 14px;
     color: #999;
+  }
+}
+
+/* ==========================================
+   Spot Card（スポット検索結果用カード）
+========================================== */
+
+.spot-card {
+  background-color: #fff;
+  border: 1px solid #e5e5e5;
+  border-radius: 12px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+}
+
+.spot-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  margin-bottom: 8px;
+}
+
+.spot-card__name {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: #333;
+  flex: 1;
+}
+
+.spot-card__actions {
+  flex-shrink: 0;
+
+  .btn-fav-icon {
+    border: none;
+    background: transparent;
+    padding: 4px;
+    font-size: 18px;
+    color: #e8a0a8;
+
+    &:hover {
+      color: #e8a0a8;
+      background: transparent;
+    }
+
+    &--active {
+      color: #e8a0a8;
+    }
+  }
+}
+
+.spot-card__genres {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+  margin-bottom: 10px;
+}
+
+.spot-card__genre {
+  display: inline-block;
+  padding: 4px 10px;
+  background-color: #f0f4f0;
+  color: #506d53;
+  font-size: 11px;
+  font-weight: 500;
+  border-radius: 12px;
+}
+
+.spot-card__address,
+.spot-card__location {
+  display: flex;
+  align-items: flex-start;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  line-height: 1.4;
+  margin-bottom: 4px;
+
+  i {
+    color: #999;
+    font-size: 14px;
+    flex-shrink: 0;
+    margin-top: 1px;
+  }
+
+  &:last-child {
+    margin-bottom: 0;
   }
 }

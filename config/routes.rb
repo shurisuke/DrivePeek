@@ -63,6 +63,9 @@ Rails.application.routes.draw do
   # お気に入りスポット
   resources :like_spots, only: %i[create destroy]
 
+  # お気に入りプラン
+  resources :like_plans, only: %i[create destroy]
+
   # ヘルスチェック
   get "up" => "rails/health#show", as: :rails_health_check
 end
