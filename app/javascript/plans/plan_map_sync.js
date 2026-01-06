@@ -13,7 +13,7 @@
 //   - 再描画トリガは turbo:load / planbar:updated / map:route-updated / goal関連イベント
 // ================================================================
 
-import { getPlanDataFromPage } from "map/plan_data"
+import { getPlanDataFromPage } from "plans/plan_data"
 import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitMarkers } from "map/state"
 
 let bound = false

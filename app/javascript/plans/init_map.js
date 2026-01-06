@@ -8,7 +8,7 @@
 
 import { renderMap } from "map/render_map"
 import { addCurrentLocationMarker } from "map/current_location"
-import { getPlanDataFromPage } from "map/plan_data"
+import { getPlanDataFromPage } from "plans/plan_data"
 import { bindSpotAddHandler } from "plans/spot_add_handler"
 import { bindPlanbarRefresh } from "planbar/updater"
 import { bindPlanMapSync } from "plans/plan_map_sync"

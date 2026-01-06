@@ -4,7 +4,7 @@
 // 用途: planbar を Turbo Stream で差し替えて、UI 状態を復元する
 // ================================================================
 
-import { getPlanDataFromPage } from "map/plan_data"
+import { getPlanDataFromPage } from "plans/plan_data"
 import { fetchTurboStream } from "services/api_client"
 
 import {
