@@ -205,7 +205,7 @@ export default class extends Controller {
       this.addressTarget.textContent = displayAddress
 
       // ✅ サーバへ保存
-      const json = await patch(`/plans/${planId}/goal_point`, {
+      const json = await patch(`/api/plans/${planId}/goal_point`, {
         goal_point: {
           address: displayAddress,
           lat,

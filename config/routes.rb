@@ -35,27 +35,29 @@ Rails.application.routes.draw do
 
   resources :plans, only: %i[index create edit update destroy] do
     resource :planbar, only: %i[show]
-    resource :start_point, only: %i[update]
-    resource :goal_point, only: %i[update]
 
-    resources :plan_spots, only: %i[create destroy] do
-      # ✅ タグ（追加/削除）: /plans/:plan_id/plan_spots/:plan_spot_id/tags
+    # Turbo Stream用（destroyのみ残す）
+    resources :plan_spots, only: %i[destroy] do
       resources :tags, only: %i[create destroy], module: :plan_spots
+    end
+  end
 
-      collection do
-        # スポット順並び替え
-        patch :reorder, to: "plan_spots/reorders#update"
-      end
+  # API エンドポイント
+  namespace :api do
+    resources :plans, only: [] do
+      resource :start_point, only: %i[update]
+      resource :goal_point, only: %i[update]
 
-      member do
-        # 有料道路使用切り替え
-        patch :update_toll_used, to: "plan_spots/toll_used#update"
+      resources :plan_spots, only: %i[create] do
+        collection do
+          patch :reorder, to: "plan_spots/reorders#update"
+        end
 
-        # メモ更新
-        patch :update_memo, to: "plan_spots/memos#update"
-
-        # ✅ 滞在時間更新（追加）
-        patch :update_stay_duration, to: "plan_spots/stay_durations#update"
+        member do
+          patch :toll_used, to: "plan_spots/toll_used#update"
+          patch :memo, to: "plan_spots/memos#update"
+          patch :stay_duration, to: "plan_spots/stay_durations#update"
+        end
       end
     end
   end

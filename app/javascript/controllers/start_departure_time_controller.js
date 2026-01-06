@@ -130,7 +130,7 @@ export default class extends Controller {
     if (!timeStr || !this.planIdValue) return
 
     try {
-      await patch(`/plans/${this.planIdValue}/start_point`, {
+      await patch(`/api/plans/${this.planIdValue}/start_point`, {
         start_point: { departure_time: timeStr },
       })
       // 保存成功 → planbar を再描画（時刻計算反映のため）

@@ -8,7 +8,7 @@
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
   data-controller="plan-spot-memo plan-spot-tags plan-spot-delete"
-  data-plan-spot-memo-url-value="<%= update_memo_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
+  data-plan-spot-memo-url-value="<%= memo_api_plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-plan-spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan-spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
   data-spot-id="<%= spot.id %>"

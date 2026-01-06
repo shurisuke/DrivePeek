@@ -23,7 +23,7 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
 
   test "update departure_time triggers schedule recalculation" do
     # 出発時間を10:00に変更
-    patch plan_start_point_path(@plan), params: {
+    patch api_plan_start_point_path(@plan), params: {
       start_point: { departure_time: "10:00" }
     }, as: :json
 
@@ -59,7 +59,7 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
       polyline: "test"
     }
     Plan::DirectionsClient.stub(:fetch, ->(*_args) { stub_response }) do
-      patch plan_start_point_path(@plan), params: {
+      patch api_plan_start_point_path(@plan), params: {
         start_point: { toll_used: true }
       }, as: :json
     end
@@ -77,7 +77,7 @@ class StartPointsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update returns success json response" do
-    patch plan_start_point_path(@plan), params: {
+    patch api_plan_start_point_path(@plan), params: {
       start_point: { departure_time: "08:00" }
     }, as: :json
 

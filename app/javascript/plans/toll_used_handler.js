@@ -15,7 +15,7 @@ import { patch } from "services/api_client"
 // ------------------------------
 const patchPlanSpotTollUsed = async ({ planId, planSpotId, tollUsed }) => {
   return patch(
-    `/plans/${planId}/plan_spots/${planSpotId}/update_toll_used`,
+    `/api/plans/${planId}/plan_spots/${planSpotId}/toll_used`,
     { toll_used: tollUsed }
   )
 }
@@ -26,7 +26,7 @@ const patchPlanSpotTollUsed = async ({ planId, planSpotId, tollUsed }) => {
 // ------------------------------
 const patchStartPointTollUsed = async ({ planId, tollUsed }) => {
   return patch(
-    `/plans/${planId}/start_point`,
+    `/api/plans/${planId}/start_point`,
     { start_point: { toll_used: tollUsed } }
   )
 }

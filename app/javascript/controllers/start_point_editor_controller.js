@@ -225,7 +225,7 @@ export default class extends Controller {
   }
 
   async persistStartPoint({ planId, lat, lng, address }) {
-    const url = `/plans/${planId}/start_point`
+    const url = `/api/plans/${planId}/start_point`
 
     console.log("[start-point-editor] PATCH", { url, lat, lng, address })
 
