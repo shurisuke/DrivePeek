@@ -24,4 +24,22 @@ class PlanbarsController < ApplicationController
   def set_plan
     @plan = current_user.plans.find(params[:plan_id])
   end
+
+  # プランIDからお気に入り情報を取得するハッシュを生成
+  def like_plans_by_plan_id(plans)
+    return {} unless current_user
+
+    plan_ids = plans.map(&:id)
+    current_user.like_plans.where(plan_id: plan_ids).index_by(&:plan_id)
+  end
+  helper_method :like_plans_by_plan_id
+
+  # スポットIDからお気に入り情報を取得するハッシュを生成
+  def like_spots_by_spot_id(spots)
+    return {} unless current_user
+
+    spot_ids = spots.map(&:id)
+    current_user.like_spots.where(spot_id: spot_ids).index_by(&:spot_id)
+  end
+  helper_method :like_spots_by_spot_id
 end

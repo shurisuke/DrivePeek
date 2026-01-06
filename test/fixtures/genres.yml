@@ -1,0 +1,75 @@
+# テスト用ジャンルマスタ
+gourmet:
+  name: "グルメ"
+  slug: "gourmet"
+  position: 1
+
+cafe:
+  name: "カフェ・スイーツ"
+  slug: "cafe"
+  position: 2
+
+winery:
+  name: "酒屋・ワイナリー"
+  slug: "winery"
+  position: 3
+
+park:
+  name: "公園"
+  slug: "park"
+  position: 4
+
+sea_coast:
+  name: "海・海岸"
+  slug: "sea_coast"
+  position: 5
+
+mountain:
+  name: "山・高原"
+  slug: "mountain"
+  position: 6
+
+scenic_view:
+  name: "絶景・展望"
+  slug: "scenic_view"
+  position: 9
+
+sightseeing:
+  name: "観光名所"
+  slug: "sightseeing"
+  position: 10
+
+shrine_temple:
+  name: "神社仏閣"
+  slug: "shrine_temple"
+  position: 11
+
+museum:
+  name: "博物館・美術館"
+  slug: "museum"
+  position: 13
+
+theme_park:
+  name: "テーマパーク"
+  slug: "theme_park"
+  position: 14
+
+zoo_aquarium:
+  name: "動物園・水族館"
+  slug: "zoo_aquarium"
+  position: 15
+
+onsen:
+  name: "温泉・スパ"
+  slug: "onsen"
+  position: 17
+
+accommodation:
+  name: "宿泊施設"
+  slug: "accommodation"
+  position: 18
+
+shopping:
+  name: "ショッピング"
+  slug: "shopping"
+  position: 20
