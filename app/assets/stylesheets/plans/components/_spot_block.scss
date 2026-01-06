@@ -95,7 +95,8 @@
 .spot-block .spot-order-pin {
   position: absolute;
   top: 1%;
-  left: 1%;
+  /* プランバー幅に応じてアイコン位置を変化 */
+  left: calc(0px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.30));
 
   width: 34px;
   height: 34px;
@@ -126,6 +127,8 @@
   text-align: center;
   color: #222;
 
+  max-width: 500px;
+  margin: 0 auto;
   padding: 0 var(--spot-fav-safe);
 
   white-space: nowrap;
@@ -220,7 +223,8 @@
 
   position: absolute;
   top: 50%;
-  right: 15px;
+  /* プランバー幅に応じて位置を変化（アイコンと同じ伸縮感・右側バージョン） */
+  right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.40));
   transform: translateY(-50%);
 
   z-index: 30;
@@ -447,7 +451,7 @@
 }
 
 .spot-block .spot-toll-row .toll-switch {
-  margin-left: 15px;
+  margin-left: 180px;
 
   display: inline-flex;
   align-items: center;
@@ -581,7 +585,10 @@
   box-shadow: none !important;
 
   padding: 30px 18px 24px !important;
-  margin: 0 !important;
+  margin: 0 auto !important;
+
+  min-width: 280px;
+  max-width: 500px;
 
   min-height: auto !important;
   overflow: visible !important;

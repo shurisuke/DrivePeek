@@ -454,7 +454,8 @@ body.plan-time-open .plan-time-toggle-header::before {
   gap: 0;
 
   box-sizing: border-box;
-  padding: 0 40px;
+  /* プランバー幅に応じて左右余白を変化させる（最小20px、最大30%） */
+  padding: 0 max(20px, 30%);
 }
 
 /* ✅ 左側メイン（将来拡張のため100%基準） */
