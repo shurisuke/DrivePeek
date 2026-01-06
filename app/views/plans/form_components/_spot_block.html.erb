@@ -32,6 +32,14 @@
           <div class="spot-address"><%= spot.address %></div>
         <% end %>
 
+        <% if spot.genres.any? %>
+          <div class="spot-genres">
+            <% spot.genres.each do |genre| %>
+              <span class="genre-chip"><%= genre.name %></span>
+            <% end %>
+          </div>
+        <% end %>
+
         <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
              data-plan-spot-memo-target="memoDisplay">
           <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">

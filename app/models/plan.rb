@@ -17,7 +17,7 @@ class Plan < ApplicationRecord
     publicly_visible
       .with_spots
       .search_keyword(keyword)
-      .includes(:user, :start_point, plan_spots: :spot)
+      .includes(:user, :start_point, plan_spots: { spot: :genres })
       .order(updated_at: :desc)
   }
 

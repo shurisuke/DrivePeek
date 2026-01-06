@@ -21,7 +21,7 @@
 
 <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
 <div id="plan-spots-sortable" data-sortable="plan-spots">
-  <% @plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
+  <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
     <%= render "plans/form_components/spot_block",
                plan_spot:  plan_spot,
                like_spot:  like_spots_by_spot_id[plan_spot.spot_id] %>

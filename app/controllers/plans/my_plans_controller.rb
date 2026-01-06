@@ -3,7 +3,7 @@ class Plans::MyPlansController < ApplicationController
     @search_query = params[:q]
     @plans = current_user.plans
       .search_keyword(@search_query)
-      .includes(:start_point, plan_spots: :spot)
+      .includes(:start_point, plan_spots: { spot: :genres })
       .order(updated_at: :desc)
       .page(params[:page])
       .per(10)

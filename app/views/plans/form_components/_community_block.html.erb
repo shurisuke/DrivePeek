@@ -27,10 +27,13 @@
                 address: spot.address
               }
             end
+            # 全スポットからユニークなジャンル名を収集
+            genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
           %>
           <%= render "plans/plan_card",
                      plan_title: plan.title.presence || "無題のプラン",
                      spots: spots_data,
+                     genres: genre_names,
                      total_duration: spots_only_formatted_move_time(plan),
                      total_distance: "#{spots_only_distance(plan)}km",
                      is_favorite: false %>

@@ -1,5 +1,5 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false, can_edit: false %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false, can_edit: false, genres: [] %>
 
 <div class="plan-card">
   <div class="plan-card__header">
@@ -25,6 +25,14 @@
       <% end %>
     </div>
   </div>
+
+  <% if local_assigns[:genres].present? %>
+    <div class="plan-card__genres">
+      <% genres.each do |genre_name| %>
+        <span class="plan-card__genre"><%= genre_name %></span>
+      <% end %>
+    </div>
+  <% end %>
 
   <div class="plan-card__spots">
     <% if spots.present? %>
