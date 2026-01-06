@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { getCsrfToken } from "services/api_client"
 
 // ================================================================
 // プラン作成トリガー
@@ -31,11 +32,12 @@ export default class extends Controller {
   }
 
   sendRequest(lat, lng) {
+    // NOTE: リダイレクトレスポンスを期待するため api_client.post は使用しない
     fetch(this.urlValue, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content
+        "X-CSRF-Token": getCsrfToken()
       },
       body: JSON.stringify({ lat, lng })
     }).then((response) => {

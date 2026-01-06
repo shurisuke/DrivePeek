@@ -1,5 +1,6 @@
 // app/javascript/controllers/plan_spot_memo_controller.js
 import { Controller } from "@hotwired/stimulus"
+import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["detail", "editor", "textarea", "memoDisplay", "memoContent"]
@@ -109,25 +110,12 @@ export default class extends Controller {
   }
 
   async _patchMemo(memo) {
-    const token = document.querySelector('meta[name="csrf-token"]')?.content
-
-    const res = await fetch(this.urlValue, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "Accept": "application/json",
-        "X-CSRF-Token": token
-      },
-      body: JSON.stringify({ plan_spot: { memo } })
-    })
-
-    if (!res.ok) {
-      const err = await res.json().catch(() => ({}))
-      alert(err.message || "メモの保存に失敗しました")
+    try {
+      return await patch(this.urlValue, { plan_spot: { memo } })
+    } catch (error) {
+      alert(error.message || "メモの保存に失敗しました")
       return null
     }
-
-    return await res.json()
   }
 
   _showCollapse(element) {

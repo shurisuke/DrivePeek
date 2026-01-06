@@ -4,6 +4,7 @@
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
+import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["modal", "input", "error"]
@@ -34,19 +35,9 @@ export default class extends Controller {
     this.errorTarget.hidden = true
 
     try {
-      const response = await fetch(`/plans/${this.planIdValue}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": this.csrfToken,
-          "Accept": "application/json",
-        },
-        body: JSON.stringify({ plan: { title } }),
-      })
+      const data = await patch(`/plans/${this.planIdValue}`, { plan: { title } })
 
-      const data = await response.json()
-
-      if (response.ok && data.success) {
+      if (data.success) {
         this.close()
         // 保存成功のフィードバック（シンプルに通知）
         this.showSuccessMessage()
@@ -76,9 +67,5 @@ export default class extends Controller {
         saveBtn.disabled = false
       }, 2000)
     }
-  }
-
-  get csrfToken() {
-    return document.querySelector('meta[name="csrf-token"]')?.content || ""
   }
 }

@@ -3,10 +3,7 @@
 // 用途: InfoWindow の「プランに追加」ボタン押下時の処理
 // ================================================================
 
-const getCsrfToken = () => {
-  const meta = document.querySelector('meta[name="csrf-token"]')
-  return meta?.getAttribute("content") || ""
-}
+import { post } from "services/api_client"
 
 const getPlanId = () => {
   const el = document.getElementById("map")
@@ -41,23 +38,7 @@ const postSpotToRails = async (planId, detail) => {
     },
   }
 
-  const res = await fetch(url, {
-    method: "POST",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": getCsrfToken(),
-      Accept: "application/json",
-    },
-    credentials: "same-origin",
-    body: JSON.stringify(body),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || "保存に失敗しました")
-  }
-
-  return res.json()
+  return post(url, body)
 }
 
 const handleSpotAdd = async (event) => {

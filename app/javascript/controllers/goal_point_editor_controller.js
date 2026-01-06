@@ -19,6 +19,7 @@ import {
   clearEndPointMarker,
   setEndPointMarker,
 } from "map/state"
+import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["address", "toggle", "editArea", "input"]
@@ -204,33 +205,13 @@ export default class extends Controller {
       this.addressTarget.textContent = displayAddress
 
       // ✅ サーバへ保存
-      const payload = {
+      const json = await patch(`/plans/${planId}/goal_point`, {
         goal_point: {
           address: displayAddress,
           lat,
           lng,
         },
-      }
-
-      const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-
-      const res = await fetch(`/plans/${planId}/goal_point`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-          Accept: "application/json",
-        },
-        credentials: "same-origin",
-        body: JSON.stringify(payload),
       })
-
-      if (!res.ok) {
-        const err = await res.json().catch(() => ({}))
-        throw new Error(err.message || "帰宅地点の更新に失敗しました")
-      }
-
-      const json = await res.json().catch(() => ({}))
       console.log("[goal-point-editor] update OK", json)
 
       // サーバ確定値で最終上書き（表示ズレ防止）

@@ -7,33 +7,17 @@
 //   - start_point: [data-start-point-toll-used-switch="1"]
 // ================================================================
 
-const getCsrfToken = () => {
-  const meta = document.querySelector('meta[name="csrf-token"]')
-  return meta?.getAttribute("content") || ""
-}
+import { patch } from "services/api_client"
 
 // ------------------------------
 // plan_spots
 // PATCH /plans/:plan_id/plan_spots/:id/update_toll_used
 // ------------------------------
 const patchPlanSpotTollUsed = async ({ planId, planSpotId, tollUsed }) => {
-  const res = await fetch(`/plans/${planId}/plan_spots/${planSpotId}/update_toll_used`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": getCsrfToken(),
-      Accept: "application/json",
-    },
-    credentials: "same-origin",
-    body: JSON.stringify({ toll_used: tollUsed }),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || "有料道路の更新に失敗しました")
-  }
-
-  return res.json()
+  return patch(
+    `/plans/${planId}/plan_spots/${planSpotId}/update_toll_used`,
+    { toll_used: tollUsed }
+  )
 }
 
 // ------------------------------
@@ -41,23 +25,10 @@ const patchPlanSpotTollUsed = async ({ planId, planSpotId, tollUsed }) => {
 // PATCH /plans/:plan_id/start_point
 // ------------------------------
 const patchStartPointTollUsed = async ({ planId, tollUsed }) => {
-  const res = await fetch(`/plans/${planId}/start_point`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": getCsrfToken(),
-      Accept: "application/json",
-    },
-    credentials: "same-origin",
-    body: JSON.stringify({ start_point: { toll_used: tollUsed } }),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || "出発地点の有料道路設定の更新に失敗しました")
-  }
-
-  return res.json()
+  return patch(
+    `/plans/${planId}/start_point`,
+    { start_point: { toll_used: tollUsed } }
+  )
 }
 
 // ------------------------------
