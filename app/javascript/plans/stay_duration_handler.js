@@ -7,29 +7,13 @@
 // PATCH /plans/:plan_id/plan_spots/:id/update_stay_duration
 // ================================================================
 
-const getCsrfToken = () => {
-  const meta = document.querySelector('meta[name="csrf-token"]')
-  return meta?.getAttribute("content") || ""
-}
+import { patch } from "services/api_client"
 
 const patchStayDuration = async ({ planId, planSpotId, stayDuration }) => {
-  const res = await fetch(`/plans/${planId}/plan_spots/${planSpotId}/update_stay_duration`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": getCsrfToken(),
-      Accept: "application/json",
-    },
-    credentials: "same-origin",
-    body: JSON.stringify({ stay_duration: stayDuration }),
-  })
-
-  if (!res.ok) {
-    const err = await res.json().catch(() => ({}))
-    throw new Error(err.message || "滞在時間の更新に失敗しました")
-  }
-
-  return res.json()
+  return patch(
+    `/plans/${planId}/plan_spots/${planSpotId}/update_stay_duration`,
+    { stay_duration: stayDuration }
+  )
 }
 
 const handleChange = async (e) => {

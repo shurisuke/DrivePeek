@@ -8,6 +8,7 @@
 
 import { Controller } from "@hotwired/stimulus"
 import flatpickr from "flatpickr"
+import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["input"]
@@ -129,21 +130,11 @@ export default class extends Controller {
     if (!timeStr || !this.planIdValue) return
 
     try {
-      const res = await fetch(`/plans/${this.planIdValue}/start_point`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
-        },
-        body: JSON.stringify({ start_point: { departure_time: timeStr } }),
+      await patch(`/plans/${this.planIdValue}/start_point`, {
+        start_point: { departure_time: timeStr },
       })
-
-      if (res.ok) {
-        // 保存成功 → planbar を再描画（時刻計算反映のため）
-        document.dispatchEvent(new CustomEvent("plan:departure-time-updated"))
-      } else {
-        console.warn("[start-departure-time] save failed", await res.text())
-      }
+      // 保存成功 → planbar を再描画（時刻計算反映のため）
+      document.dispatchEvent(new CustomEvent("plan:departure-time-updated"))
     } catch (e) {
       console.error("[start-departure-time] save error", e)
     }

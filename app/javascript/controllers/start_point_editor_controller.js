@@ -20,6 +20,7 @@ import {
   setStartPointMarker,
 } from "map/state"
 import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
+import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["toggle", "editArea", "input", "address"]
@@ -224,28 +225,14 @@ export default class extends Controller {
   }
 
   async persistStartPoint({ planId, lat, lng, address }) {
-    const token = document.querySelector('meta[name="csrf-token"]')?.content
     const url = `/plans/${planId}/start_point`
 
     console.log("[start-point-editor] PATCH", { url, lat, lng, address })
 
-    const res = await fetch(url, {
-      method: "PATCH",
-      credentials: "same-origin",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": token,
-        Accept: "application/json",
-      },
-      body: JSON.stringify({
-        start_point: { lat, lng, address },
-      }),
-    })
+    const json = await patch(url, { start_point: { lat, lng, address } })
 
-    const json = await res.json().catch(() => ({}))
-
-    if (!res.ok || json.ok !== true) {
-      const msg = (json?.errors || []).join(", ") || json?.message || `status=${res.status}`
+    if (json.ok !== true) {
+      const msg = (json?.errors || []).join(", ") || json?.message || "unknown error"
       throw new Error(`start_point update failed: ${msg}`)
     }
 

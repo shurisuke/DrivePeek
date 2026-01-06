@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { patch } from "services/api_client"
 
 // ================================================================
 // プロフィール公開設定の非同期更新
@@ -8,29 +9,19 @@ export default class extends Controller {
     url: String
   }
 
-  update(event) {
+  async update(event) {
     const status = event.target.value
 
-    fetch(this.urlValue, {
-      method: "PATCH",
-      headers: {
-        "Content-Type": "application/json",
-        "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]').content,
-        "Accept": "application/json"
-      },
-      body: JSON.stringify({ user: { status: status } })
-    })
-    .then(response => response.json())
-    .then(data => {
+    try {
+      const data = await patch(this.urlValue, { user: { status: status } })
       if (data.success) {
         this.showMessage("設定を更新しました", "success")
       } else {
         this.showMessage("更新に失敗しました", "error")
       }
-    })
-    .catch(() => {
+    } catch {
       this.showMessage("更新に失敗しました", "error")
-    })
+    }
   }
 
   showMessage(message, type) {

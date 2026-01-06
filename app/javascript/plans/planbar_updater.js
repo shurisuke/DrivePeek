@@ -20,6 +20,7 @@
 // ================================================================
 
 import { getPlanDataFromPage } from "map/plan_data"
+import { fetchTurboStream } from "services/api_client"
 
 let bound = false
 
@@ -433,17 +434,11 @@ const refreshPlanbar = async (planId) => {
 
   let html = null
   try {
-    const res = await fetch(`/plans/${planId}/planbar`, {
-      headers: { Accept: "text/vnd.turbo-stream.html" },
-      credentials: "same-origin",
-    })
-    if (!res.ok) {
-      console.warn("[planbar_updater] refreshPlanbar failed", { planId, status: res.status })
-      return
-    }
-    html = await res.text()
-  } finally {
-    // unlockは最後に
+    html = await fetchTurboStream(`/plans/${planId}/planbar`)
+  } catch (err) {
+    console.warn("[planbar_updater] refreshPlanbar failed", { planId, error: err.message })
+    unlockPlanbarUI()
+    return
   }
 
   if (!window.Turbo) {

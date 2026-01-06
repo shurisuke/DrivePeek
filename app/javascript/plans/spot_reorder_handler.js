@@ -12,6 +12,7 @@
 // ================================================================
 
 import Sortable from "sortablejs"
+import { patch } from "services/api_client"
 
 let sortableInstance = null
 let bound = false
@@ -44,25 +45,9 @@ const getOrderedPlanSpotIds = (container) => {
 }
 
 const saveReorder = async (planId, orderedIds) => {
-  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-
-  const res = await fetch(`/plans/${planId}/plan_spots/reorder`, {
-    method: "PATCH",
-    headers: {
-      "Content-Type": "application/json",
-      "X-CSRF-Token": csrfToken,
-      Accept: "application/json",
-    },
-    credentials: "same-origin",
-    body: JSON.stringify({ ordered_plan_spot_ids: orderedIds }),
+  return patch(`/plans/${planId}/plan_spots/reorder`, {
+    ordered_plan_spot_ids: orderedIds,
   })
-
-  if (!res.ok) {
-    const errorData = await res.json().catch(() => ({}))
-    throw new Error(errorData.message || "並び替えの保存に失敗しました")
-  }
-
-  return res
 }
 
 const getExistingSortable = (container) => {
