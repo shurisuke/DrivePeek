@@ -85,4 +85,29 @@ class GenreMapperTest < ActiveSupport::TestCase
   test "mappable? returns false for unmappable types" do
     assert_not GenreMapper.mappable?(["natural_feature"])
   end
+
+  # 観光名所（sightseeing）のフォールバック動作テスト
+  test "map excludes sightseeing when more specific genre matches" do
+    # 公園 + 観光名所 の場合は公園のみ
+    result = GenreMapper.map(["park", "tourist_attraction"])
+
+    assert_includes result, genres(:park).id
+    assert_not_includes result, genres(:sightseeing).id
+  end
+
+  test "map returns sightseeing when no other genre matches" do
+    # 観光名所のみの場合は観光名所を返す
+    result = GenreMapper.map(["tourist_attraction"])
+
+    assert_includes result, genres(:sightseeing).id
+  end
+
+  test "map excludes sightseeing with multiple specific genres" do
+    # レストラン + 公園 + 観光名所 の場合は観光名所を除外
+    result = GenreMapper.map(["restaurant", "park", "tourist_attraction"])
+
+    assert_includes result, genres(:gourmet).id
+    assert_includes result, genres(:park).id
+    assert_not_includes result, genres(:sightseeing).id
+  end
 end

@@ -81,6 +81,9 @@ class GenreMapper
     roadside_station
   ].freeze
 
+  # 他のジャンルがマッチした場合に除外する汎用ジャンル
+  FALLBACK_GENRES = %w[sightseeing].freeze
+
   class << self
     # Google types 配列から Genre IDs を返す
     # マッピングできない場合は空配列を返す
@@ -93,6 +96,9 @@ class GenreMapper
       slugs = types.filter_map { |type| MAPPING[type] }.uniq
       return [] if slugs.empty?
 
+      # 具体的なジャンルがある場合は汎用ジャンル（観光名所など）を除外
+      slugs = exclude_fallback_genres(slugs)
+
       Genre.where(slug: slugs).pluck(:id)
     end
 
@@ -102,6 +108,13 @@ class GenreMapper
     # @return [Boolean]
     def mappable?(types)
       map(types).present?
+    end
+
+    private
+
+    def exclude_fallback_genres(slugs)
+      specific_slugs = slugs - FALLBACK_GENRES
+      specific_slugs.present? ? specific_slugs : slugs
     end
   end
 end
