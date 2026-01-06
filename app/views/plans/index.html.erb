@@ -7,6 +7,20 @@
   <%# 検索フォーム %>
   <div class="community-plans__search">
     <%= form_with url: plans_path, method: :get, local: true do %>
+      <%# 検索タイプ切り替えタブ %>
+      <div class="community-plans__search-tabs">
+        <label class="community-plans__search-tab <%= 'is-active' if @search_type != 'spot' %>">
+          <input type="radio" name="search_type" value="plan" <%= 'checked' if @search_type != 'spot' %>
+                 onchange="this.form.requestSubmit()">
+          <span>プラン検索</span>
+        </label>
+        <label class="community-plans__search-tab <%= 'is-active' if @search_type == 'spot' %>">
+          <input type="radio" name="search_type" value="spot" <%= 'checked' if @search_type == 'spot' %>
+                 onchange="this.form.requestSubmit()">
+          <span>スポット検索</span>
+        </label>
+      </div>
+
       <div class="community-plans__filters">
         <div class="multi-select" data-controller="multi-select" data-multi-select-name="cities[]" data-multi-select-placeholder-value="エリア">
           <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
@@ -89,47 +103,76 @@
     <% end %>
   </div>
 
-  <% if @plans.present? %>
-    <div class="community-plans__list">
-      <% @plans.each do |plan| %>
-        <%
-          # plan_spots を position 順で取得し、_plan_card 用のハッシュ形式に変換
-          spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
-            spot = ps.spot
-            {
-              name: spot.name,
-              address: spot.address
-            }
-          end
-          # 全スポットからユニークなジャンル名を収集
-          genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
-        %>
-        <%= render "plans/plan_card",
-                   plan_title: plan.title.presence || "無題のプラン",
-                   spots: spots_data,
-                   genres: genre_names,
-                   total_duration: spots_only_formatted_move_time(plan),
-                   total_distance: "#{spots_only_distance(plan)}km",
-                   is_favorite: false,
-                   plan: plan,
-                   can_delete: current_user&.id == plan.user_id %>
-      <% end %>
-    </div>
+  <% if @search_type == "spot" %>
+    <%# スポット検索結果 %>
+    <% if @community_spots.present? %>
+      <% like_spots_map = like_spots_by_spot_id(@community_spots) %>
+      <div class="community-plans__list">
+        <% @community_spots.each do |spot| %>
+          <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
+        <% end %>
+      </div>
 
-    <%# ページネーション %>
-    <% if @plans.total_pages > 1 %>
-      <div class="community-plans__pagination">
-        <%= paginate @plans %>
+      <%# ページネーション %>
+      <% if @community_spots.total_pages > 1 %>
+        <div class="community-plans__pagination">
+          <%= paginate @community_spots %>
+        </div>
+      <% end %>
+    <% else %>
+      <div class="community-plans__empty">
+        <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
+          <p>条件に一致するスポットが見つかりませんでした</p>
+        <% else %>
+          <p>まだスポットがありません</p>
+        <% end %>
       </div>
     <% end %>
   <% else %>
-    <div class="community-plans__empty">
-      <% if @search_query.present? || @selected_prefectures.present? || @selected_genre_ids.present? %>
-        <p>条件に一致するプランが見つかりませんでした</p>
-      <% else %>
-        <p>まだ公開プランがありません</p>
+    <%# プラン検索結果 %>
+    <% if @plans.present? %>
+      <% like_plans_map = like_plans_by_plan_id(@plans) %>
+      <div class="community-plans__list">
+        <% @plans.each do |plan| %>
+          <%
+            # plan_spots を position 順で取得し、_plan_card 用のハッシュ形式に変換
+            spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
+              spot = ps.spot
+              {
+                name: spot.name,
+                address: spot.address
+              }
+            end
+            # 全スポットからユニークなジャンル名を収集
+            genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
+          %>
+          <%= render "plans/plan_card",
+                     plan_title: plan.title.presence || "無題のプラン",
+                     spots: spots_data,
+                     genres: genre_names,
+                     total_duration: spots_only_formatted_move_time(plan),
+                     total_distance: "#{spots_only_distance(plan)}km",
+                     plan: plan,
+                     like_plan: like_plans_map[plan.id],
+                     can_delete: current_user&.id == plan.user_id %>
+        <% end %>
+      </div>
+
+      <%# ページネーション %>
+      <% if @plans.total_pages > 1 %>
+        <div class="community-plans__pagination">
+          <%= paginate @plans %>
+        </div>
       <% end %>
-    </div>
+    <% else %>
+      <div class="community-plans__empty">
+        <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
+          <p>条件に一致するプランが見つかりませんでした</p>
+        <% else %>
+          <p>まだ公開プランがありません</p>
+        <% end %>
+      </div>
+    <% end %>
   <% end %>
   </div>
 </div>
