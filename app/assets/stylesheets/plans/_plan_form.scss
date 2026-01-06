@@ -644,3 +644,125 @@ body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__ma
 body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__toggle-area {
   visibility: hidden;
 }
+
+/* ==========================================
+   ✅ プランバーリサイズ機能
+========================================== */
+
+/* リサイズハンドル */
+.planbar-resize-handle {
+  position: fixed;
+  top: 0;
+  left: var(--planbar-width);
+  width: 12px;
+  height: 100%;
+  z-index: 100;
+
+  cursor: col-resize;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  /* ホバー時の背景 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: transparent;
+    transition: background 0.15s ease;
+  }
+
+  &:hover::before {
+    background: rgba(80, 109, 83, 0.08);
+  }
+
+  /* グリップ（ドラッグ可能を示す縦線） */
+  &__grip {
+    width: 4px;
+    height: 48px;
+    background: rgba(80, 109, 83, 0.25);
+    border-radius: 2px;
+    transition: all 0.15s ease;
+    position: relative;
+    z-index: 1;
+  }
+
+  &:hover &__grip {
+    background: rgba(80, 109, 83, 0.5);
+    height: 64px;
+  }
+}
+
+/* ドラッグ中のカーソル固定 */
+body.planbar-resizing {
+  cursor: col-resize !important;
+  user-select: none;
+
+  * {
+    cursor: col-resize !important;
+  }
+}
+
+/* ==========================================
+   ✅ プランバー収納時のスタイル
+========================================== */
+
+.plan-form.planbar--collapsed {
+  --planbar-width: 0px;
+
+  /* プランバー本体を非表示 */
+  .planbar {
+    transform: translateX(-100%);
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* 時計ボタンも非表示 */
+  .plan-time-toggle-header {
+    display: none !important;
+  }
+
+  /* リサイズハンドルは左端に固定表示 */
+  .planbar-resize-handle {
+    left: 0;
+    width: 24px;
+    background: rgba(255, 255, 255, 0.95);
+    border-right: 1px solid rgba(0, 0, 0, 0.1);
+    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+
+    &__grip {
+      height: 64px;
+      background: rgba(80, 109, 83, 0.4);
+    }
+
+    &:hover {
+      background: rgba(255, 255, 255, 1);
+
+      .planbar-resize-handle__grip {
+        background: rgba(80, 109, 83, 0.6);
+      }
+    }
+  }
+
+  /* 地図を全幅に */
+  .map {
+    left: 24px;
+    width: calc(100% - 24px);
+  }
+}
+
+/* 収納時のトランジション */
+body.no-footer .plan-form .planbar {
+  transition: transform 0.2s ease, opacity 0.2s ease;
+}
+
+body.no-footer .plan-form .map {
+  transition: left 0.2s ease, width 0.2s ease;
+}
+
+body.no-footer .plan-form .planbar-resize-handle {
+  transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
+}

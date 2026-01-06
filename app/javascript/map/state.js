@@ -24,6 +24,8 @@ export const getMapInstance = () => map;
 
 export const setMapInstance = (newMap) => {
   map = newMap;
+  // Stimulus コントローラーからアクセスできるように window にもセット
+  window.mapInstance = newMap;
 };
 
 // --- 現在地マーカー ---
@@ -107,4 +109,5 @@ export const clearAllMapState = () => {
   clearSearchHitMarkers();
   clearRoutePolylines();
   map = null;
+  window.mapInstance = null;
 };
