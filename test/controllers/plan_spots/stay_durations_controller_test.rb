@@ -28,7 +28,7 @@ class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "update stay_duration triggers schedule recalculation" do
     # 滞在時間を60分から120分に変更
-    patch update_stay_duration_plan_plan_spot_path(@plan, @plan_spot), params: {
+    patch stay_duration_api_plan_plan_spot_path(@plan, @plan_spot), params: {
       stay_duration: 120
     }, as: :json
 
@@ -47,7 +47,7 @@ class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
 
   test "update stay_duration to shorter value recalculates times" do
     # 滞在時間を60分から30分に変更
-    patch update_stay_duration_plan_plan_spot_path(@plan, @plan_spot), params: {
+    patch stay_duration_api_plan_plan_spot_path(@plan, @plan_spot), params: {
       stay_duration: 30
     }, as: :json
 
@@ -64,7 +64,7 @@ class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update stay_duration to empty value clears duration" do
-    patch update_stay_duration_plan_plan_spot_path(@plan, @plan_spot), params: {
+    patch stay_duration_api_plan_plan_spot_path(@plan, @plan_spot), params: {
       stay_duration: ""
     }, as: :json
 
@@ -76,7 +76,7 @@ class PlanSpots::StayDurationsControllerTest < ActionDispatch::IntegrationTest
   end
 
   test "update returns json response with plan_spot_id and stay_duration" do
-    patch update_stay_duration_plan_plan_spot_path(@plan, @plan_spot), params: {
+    patch stay_duration_api_plan_plan_spot_path(@plan, @plan_spot), params: {
       stay_duration: 90
     }, as: :json
 

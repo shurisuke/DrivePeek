@@ -25,7 +25,7 @@ const filterTopTypes = (types) => {
 }
 
 const postSpotToRails = async (planId, detail) => {
-  const url = `/plans/${planId}/plan_spots`
+  const url = `/api/plans/${planId}/plan_spots`
   const body = {
     spot: {
       place_id: detail.place_id,

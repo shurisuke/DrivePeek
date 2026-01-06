@@ -1,4 +1,6 @@
 # app/controllers/plan_spots_controller.rb
+# Turbo Stream 用（destroy のみ）
+# create は Api::PlanSpotsController へ移動済み
 class PlanSpotsController < ApplicationController
   include Recalculable
 
@@ -6,32 +8,11 @@ class PlanSpotsController < ApplicationController
   before_action :set_plan
   before_action :set_plan_spot, only: %i[destroy]
 
-  def create
-    result = SpotSetupService.new(
-      plan: @plan,
-      user: current_user,
-      spot_params: spot_params
-    ).setup
-
-    if result.success?
-      # ✅ スポット追加後に route → schedule を再計算
-      recalculate_route_and_schedule!(@plan)
-
-      render json: {
-        plan_spot_id: result.plan_spot.id,
-        spot_id: result.spot.id,
-        position: result.plan_spot.position
-      }, status: :created
-    else
-      render json: { message: result.error_message, details: result.errors }, status: :unprocessable_entity
-    end
-  end
-
   def destroy
-    target_id = helpers.dom_id(@plan_spot) # 先に退避しておくと安心
+    target_id = helpers.dom_id(@plan_spot)
     @plan_spot.destroy!
 
-    # ✅ スポット削除後に route → schedule を再計算
+    # スポット削除後に route → schedule を再計算
     recalculate_route_and_schedule!(@plan)
 
     respond_to do |format|
@@ -53,12 +34,5 @@ class PlanSpotsController < ApplicationController
 
   def set_plan_spot
     @plan_spot = @plan.plan_spots.find(params[:id])
-  end
-
-  def spot_params
-    params.require(:spot).permit(
-      :place_id, :name, :address, :lat, :lng,
-      :photo_reference, top_types: []
-    )
   end
 end

@@ -11,7 +11,7 @@ import { patch } from "services/api_client"
 
 const patchStayDuration = async ({ planId, planSpotId, stayDuration }) => {
   return patch(
-    `/plans/${planId}/plan_spots/${planSpotId}/update_stay_duration`,
+    `/api/plans/${planId}/plan_spots/${planSpotId}/stay_duration`,
     { stay_duration: stayDuration }
   )
 }

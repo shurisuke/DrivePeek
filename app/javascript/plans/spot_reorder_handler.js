@@ -45,7 +45,7 @@ const getOrderedPlanSpotIds = (container) => {
 }
 
 const saveReorder = async (planId, orderedIds) => {
-  return patch(`/plans/${planId}/plan_spots/reorder`, {
+  return patch(`/api/plans/${planId}/plan_spots/reorder`, {
     ordered_plan_spot_ids: orderedIds,
   })
 }
