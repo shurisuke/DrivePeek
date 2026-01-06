@@ -3,7 +3,7 @@ GENRES = [
   # 食
   { name: "グルメ", slug: "gourmet" },
   { name: "カフェ・スイーツ", slug: "cafe" },
-  { name: "酒蔵・ワイナリー", slug: "winery" },
+  { name: "酒屋・ワイナリー", slug: "winery" },
   # 自然・景観
   { name: "公園", slug: "park" },
   { name: "海・海岸", slug: "sea_coast" },
