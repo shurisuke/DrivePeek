@@ -3,12 +3,9 @@ class Plans::MyPlansController < ApplicationController
     @search_query = params[:q]
     @plans = current_user.plans
       .search_keyword(@search_query)
-      .includes(:start_point, plan_spots: :spot)
+      .includes(:start_point, plan_spots: { spot: :genres })
       .order(updated_at: :desc)
       .page(params[:page])
       .per(10)
-
-    # user_spotsをプリロード（タグ表示用）
-    @user_spots = current_user.user_spots.includes(:tags).index_by(&:spot_id)
   end
 end

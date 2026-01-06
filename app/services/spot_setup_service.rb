@@ -9,13 +9,12 @@ class SpotSetupService
     @spot_params = spot_params.to_h.with_indifferent_access
   end
 
-  # トランザクション内で Spot / PlanSpot / UserSpot / Tags を一貫して作成
+  # トランザクション内で Spot / PlanSpot / UserSpot を一貫して作成
   def setup
     ActiveRecord::Base.transaction do
       spot = find_or_create_spot
       plan_spot = create_plan_spot(spot)
       user_spot = find_or_create_user_spot(spot)
-      user_spot.attach_top_types!(spot_params[:top_types])
 
       Result.new(success?: true, spot: spot, plan_spot: plan_spot, user_spot: user_spot)
     end

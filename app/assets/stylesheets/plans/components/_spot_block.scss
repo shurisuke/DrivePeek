@@ -147,10 +147,10 @@
 }
 
 /* ------------------------------------------
-   タグ
+   ジャンル
 ------------------------------------------ */
 
-.spot-block .spot-tags {
+.spot-block .spot-genres {
   margin-top: 8px;
   display: flex;
   flex-wrap: wrap;
@@ -160,7 +160,7 @@
   padding: 0 var(--spot-fav-safe);
 }
 
-.spot-block .tag-chip {
+.spot-block .genre-chip {
   display: inline-flex;
   align-items: center;
   justify-content: center;
@@ -173,65 +173,6 @@
   background: #f0f4f0;
   color: #506d53;
   font-weight: 500;
-}
-
-/* 編集時だけ×分広げて右端固定 */
-.spot-block .spot-tags .tag-chip {
-  position: relative;
-  display: inline-flex;
-  align-items: center;
-}
-
-.spot-block .spot-tags .tag-chip__remove {
-  display: none;
-}
-
-.spot-block .spot-tags.is-editing .tag-chip {
-  padding-right: 28px;
-}
-
-.spot-block .spot-tags.is-editing .tag-chip__remove {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  position: absolute;
-  top: 50%;
-  right: 8px;
-  transform: translateY(-50%);
-
-  width: 18px;
-  height: 18px;
-  padding: 0;
-
-  border: 0;
-  background: transparent;
-  border-radius: 9999px;
-
-  color: rgba(80, 109, 83, 0.6);
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-
-  cursor: pointer;
-}
-
-.spot-block .spot-tags.is-editing .tag-chip__remove:hover {
-  background: rgba(80, 109, 83, 0.15);
-  color: #506d53;
-}
-
-.spot-block .spot-tags.is-editing .tag-chip__remove:focus-visible {
-  outline: none;
-  box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
-}
-
-/* ×の下線を消す（aタグ対策） */
-.spot-block .spot-tags .tag-chip__remove,
-.spot-block .spot-tags .tag-chip__remove:hover,
-.spot-block .spot-tags .tag-chip__remove:focus,
-.spot-block .spot-tags .tag-chip__remove:focus-visible {
-  text-decoration: none !important;
 }
 
 /* ------------------------------------------
@@ -397,7 +338,7 @@
   justify-content: center;
 }
 
-/* 丸アイコンボタン化（メモ/タグ/お気に入り/設定/削除） */
+/* 丸アイコンボタン化（メモ/お気に入り/削除） */
 .spot-block .spot-detail-actions__buttons .btn {
   width: 44px !important;
   min-width: 44px !important;
@@ -630,7 +571,7 @@
 }
 
 /* ------------------------------------------
-   編集パネル共通（メモ編集/タグ追加/設定）
+   編集パネル共通（メモ編集）
 ------------------------------------------ */
 
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor {

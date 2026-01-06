@@ -37,9 +37,7 @@ Rails.application.routes.draw do
     resource :planbar, only: %i[show]
 
     # Turbo Stream用（destroyのみ残す）
-    resources :plan_spots, only: %i[destroy] do
-      resources :tags, only: %i[create destroy], module: :plan_spots
-    end
+    resources :plan_spots, only: %i[destroy]
   end
 
   # API エンドポイント

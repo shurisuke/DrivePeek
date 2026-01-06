@@ -6,6 +6,8 @@ class Spot < ApplicationRecord
   has_many :liked_by_users, through: :like_spots, source: :user
   has_many :plan_spots, dependent: :destroy
   has_many :plans, through: :plan_spots
+  has_many :spot_genres, dependent: :destroy
+  has_many :genres, through: :spot_genres
 
   # Validations
   validates :place_id, presence: true, uniqueness: true

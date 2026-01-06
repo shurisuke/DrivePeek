@@ -1,5 +1,5 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false, can_edit: false %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, is_favorite: false, plan: nil, can_delete: false, can_edit: false, genres: [] %>
 
 <div class="plan-card">
   <div class="plan-card__header">
@@ -26,11 +26,10 @@
     </div>
   </div>
 
-  <% unique_tags = collect_unique_tags(spots) %>
-  <% if unique_tags.present? %>
-    <div class="plan-card__tags">
-      <% unique_tags.each do |tag| %>
-        <span class="plan-card__tag"><%= tag %></span>
+  <% if local_assigns[:genres].present? %>
+    <div class="plan-card__genres">
+      <% genres.each do |genre_name| %>
+        <span class="plan-card__genre"><%= genre_name %></span>
       <% end %>
     </div>
   <% end %>

@@ -7,7 +7,7 @@
       <form action="<%= edit_plan_path(@plan) %>" method="get" data-turbo-frame="community_plans">
         <div class="community-plans__search-input-wrapper">
           <%= text_field_tag :q, @search_query,
-                             placeholder: "プラン名・スポット・タグで検索",
+                             placeholder: "地名・スポット名・住所などでフリーワード検索",
                              class: "community-plans__search-input" %>
           <button type="submit" class="community-plans__search-button">
             <i class="bi bi-search" aria-hidden="true"></i>
@@ -22,20 +22,18 @@
             # plan_spots を position 順で取得し、_plan_card 用のハッシュ形式に変換
             spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
               spot = ps.spot
-              # ユーザーのuser_spotsからタグを取得
-              user_spot = plan.user.user_spots.find { |us| us.spot_id == spot.id }
-              tag_names = user_spot&.tags&.map { |tag| t("google_place_types.#{tag.tag_name}", default: tag.tag_name) } || []
-
               {
                 name: spot.name,
-                address: spot.address,
-                tags: tag_names
+                address: spot.address
               }
             end
+            # 全スポットからユニークなジャンル名を収集
+            genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
           %>
           <%= render "plans/plan_card",
                      plan_title: plan.title.presence || "無題のプラン",
                      spots: spots_data,
+                     genres: genre_names,
                      total_duration: spots_only_formatted_move_time(plan),
                      total_distance: "#{spots_only_distance(plan)}km",
                      is_favorite: false %>

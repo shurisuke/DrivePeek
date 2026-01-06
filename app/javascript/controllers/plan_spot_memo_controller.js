@@ -7,13 +7,9 @@ export default class extends Controller {
   static values = { url: String }
 
   connect() {
-    // ✅ タグフォームが開いたら、メモ側を閉じる（相互排他）
-    this._onTagsOpened = () => this.closeIfOpen()
-    this.element.addEventListener("spot:tags-opened", this._onTagsOpened)
   }
 
   disconnect() {
-    this.element.removeEventListener("spot:tags-opened", this._onTagsOpened)
   }
 
   stopPropagation(event) {
