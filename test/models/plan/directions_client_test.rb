@@ -190,10 +190,10 @@ class Plan::DirectionsClientTest < ActiveSupport::TestCase
     mock_response.expect(:body, response_body.to_json)
 
     mock_http = Minitest::Mock.new
-    mock_http.expect(:use_ssl=, nil, [true])
-    mock_http.expect(:open_timeout=, nil, [10])
-    mock_http.expect(:read_timeout=, nil, [10])
-    mock_http.expect(:request, mock_response, [Net::HTTP::Get])
+    mock_http.expect(:use_ssl=, nil, [ true ])
+    mock_http.expect(:open_timeout=, nil, [ 10 ])
+    mock_http.expect(:read_timeout=, nil, [ 10 ])
+    mock_http.expect(:request, mock_response, [ Net::HTTP::Get ])
 
     Net::HTTP.stub(:new, mock_http) do
       yield

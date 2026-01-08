@@ -48,9 +48,9 @@ class Plan::Schedule
         #   - 2番目以降: 前のスポットの move_time（spot[n-1] → spot[n]）
         move_time = if index == 0
                       plan.start_point.move_time.to_i
-                    else
+        else
                       plan_spots[index - 1].move_time.to_i
-                    end
+        end
 
         current_minutes += move_time
         plan_spot.arrival_time = minutes_to_time(current_minutes)

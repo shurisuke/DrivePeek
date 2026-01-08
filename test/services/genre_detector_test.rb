@@ -39,7 +39,7 @@ class GenreDetectorTest < ActiveSupport::TestCase
     Anthropic::Client.stub :new, mock_client do
       result = GenreDetector.detect(@spot)
 
-      assert_equal [genres(:gourmet).id], result
+      assert_equal [ genres(:gourmet).id ], result
     end
   end
 
@@ -70,7 +70,7 @@ class GenreDetectorTest < ActiveSupport::TestCase
 
   def mock_claude_response(text)
     OpenStruct.new(
-      content: [{ type: "text", text: text }]
+      content: [ { type: "text", text: text } ]
     )
   end
 

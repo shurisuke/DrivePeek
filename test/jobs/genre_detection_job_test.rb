@@ -6,7 +6,7 @@ class GenreDetectionJobTest < ActiveJob::TestCase
   end
 
   test "creates SpotGenre when GenreDetector returns genre IDs" do
-    genre_ids = [genres(:gourmet).id, genres(:cafe).id]
+    genre_ids = [ genres(:gourmet).id, genres(:cafe).id ]
 
     GenreDetector.stub :detect, genre_ids do
       assert_difference "SpotGenre.count", 2 do
@@ -21,7 +21,7 @@ class GenreDetectionJobTest < ActiveJob::TestCase
   test "skips when spot already has genres" do
     SpotGenre.create!(spot: @spot, genre: genres(:gourmet))
 
-    GenreDetector.stub :detect, [genres(:cafe).id] do
+    GenreDetector.stub :detect, [ genres(:cafe).id ] do
       assert_no_difference "SpotGenre.count" do
         GenreDetectionJob.perform_now(@spot.id)
       end
@@ -43,7 +43,7 @@ class GenreDetectionJobTest < ActiveJob::TestCase
   end
 
   test "does not duplicate SpotGenre records" do
-    genre_ids = [genres(:gourmet).id]
+    genre_ids = [ genres(:gourmet).id ]
 
     GenreDetector.stub :detect, genre_ids do
       GenreDetectionJob.perform_now(@spot.id)

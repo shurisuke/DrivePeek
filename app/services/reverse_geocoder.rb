@@ -1,14 +1,14 @@
-require 'net/http'
-require 'uri'
-require 'json'
+require "net/http"
+require "uri"
+require "json"
 
 class ReverseGeocoder
   FALLBACK_LOCATION = {
     lat: 35.681236,
     lng: 139.767125,
-    address: '東京都千代田区丸の内一丁目',
-    prefecture: '東京都',
-    city: '千代田区'
+    address: "東京都千代田区丸の内一丁目",
+    prefecture: "東京都",
+    city: "千代田区"
   }
 
   GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"

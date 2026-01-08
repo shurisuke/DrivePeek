@@ -32,9 +32,9 @@ class Plan < ApplicationRecord
     conditions = valid_cities.map do |city|
       prefecture, city_name = city.split("/", 2)
       if city_name.present?
-        sanitize_sql_array(["(spots.prefecture = ? AND spots.city = ?)", prefecture, city_name])
+        sanitize_sql_array([ "(spots.prefecture = ? AND spots.city = ?)", prefecture, city_name ])
       else
-        sanitize_sql_array(["spots.prefecture = ?", prefecture])
+        sanitize_sql_array([ "spots.prefecture = ?", prefecture ])
       end
     end
 
@@ -83,9 +83,9 @@ class Plan < ApplicationRecord
     distance = start_point&.move_distance.to_f
     distance += if plan_spots.loaded?
                   plan_spots.sum(&:move_distance)
-                else
+    else
                   plan_spots.sum(:move_distance)
-                end
+    end
     distance.round(1)
   end
 
@@ -95,9 +95,9 @@ class Plan < ApplicationRecord
     time = start_point&.move_time.to_i
     time += if plan_spots.loaded?
               plan_spots.sum(&:move_time)
-            else
+    else
               plan_spots.sum(:move_time)
-            end
+    end
     time
   end
 
@@ -142,9 +142,9 @@ class Plan < ApplicationRecord
       cities = spots.map(&:city).uniq.compact
      self.title = if cities.any?
                      "#{cities.join('・')}の旅"
-                   else
+     else
                      "ドライブプラン"
-                   end
+     end
     end
   end
 end

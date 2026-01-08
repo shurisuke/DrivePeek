@@ -104,7 +104,7 @@ class Plan::RouteTest < ActiveSupport::TestCase
 
     Plan::DirectionsClient.stub(:fetch, ->(*_args) { call_count += 1; mock_result }) do
       # 同一セグメントを2回処理
-      route.send(:process_segments, [segment, segment])
+      route.send(:process_segments, [ segment, segment ])
 
       # APIは1回しか呼ばれない
       assert_equal 1, call_count
@@ -351,7 +351,7 @@ class Plan::RouteTest < ActiveSupport::TestCase
     )
 
     stub_directions_client do
-      route.recalculate_segments!([segment])
+      route.recalculate_segments!([ segment ])
 
       # plan_spot は更新される
       @plan_spot.reload

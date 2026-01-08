@@ -38,9 +38,9 @@ class Spot < ApplicationRecord
     conditions = valid_cities.map do |city|
       prefecture, city_name = city.split("/", 2)
       if city_name.present?
-        sanitize_sql_array(["(spots.prefecture = ? AND spots.city = ?)", prefecture, city_name])
+        sanitize_sql_array([ "(spots.prefecture = ? AND spots.city = ?)", prefecture, city_name ])
       else
-        sanitize_sql_array(["spots.prefecture = ?", prefecture])
+        sanitize_sql_array([ "spots.prefecture = ?", prefecture ])
       end
     end
 
@@ -67,7 +67,7 @@ class Spot < ApplicationRecord
   # 戻り値: { "北海道" => ["札幌市", "函館市", ...], "東京都" => [...], ... }
   def self.cities_by_prefecture
     Rails.cache.fetch(CITIES_CACHE_KEY, expires_in: 1.hour) do
-      where.not(prefecture: [nil, ""]).where.not(city: [nil, ""])
+      where.not(prefecture: [ nil, "" ]).where.not(city: [ nil, "" ])
            .distinct.pluck(:prefecture, :city)
            .group_by(&:first)
            .transform_values { |pairs| pairs.map(&:last).sort }
