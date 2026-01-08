@@ -7,6 +7,22 @@ on:
     branches: [main]
 
 jobs:
+  lint:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Run RuboCop
+        run: bundle exec rubocop --format github
+
   test:
     runs-on: ubuntu-latest
 
@@ -55,9 +71,6 @@ jobs:
         run: |
           bin/rails db:create
           bin/rails db:schema:load
-
-      - name: Run RuboCop
-        run: bundle exec rubocop --format github
 
       - name: Run tests
         run: bin/rails test
