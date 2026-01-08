@@ -19,6 +19,12 @@ import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitM
 let bound = false
 let cachedPlanData = null
 
+// ✅ 編集画面かどうかを判定（show画面では plan_map_sync を動かさない）
+const isEditPage = () => {
+  const mapElement = document.getElementById("map")
+  return mapElement && mapElement.dataset.mapMode === "edit"
+}
+
 // ✅ DOM から最新のスポット情報を収集する
 const getSpotsFromDom = () => {
   const spotBlocks = document.querySelectorAll(".spot-block[data-lat][data-lng]")
@@ -183,6 +189,12 @@ export const bindPlanMapSync = () => {
 
   // ✅ Turbo遷移後もキャッシュを最新化（bound=trueで再バインドされないため）
   document.addEventListener("turbo:load", () => {
+    // ✅ show画面ではスキップ（init_map_show.js が独自に処理する）
+    if (!isEditPage()) {
+      console.log("[plan_map_sync] turbo:load - not edit page, skip")
+      return
+    }
+
     const fresh = getPlanDataFromPage()
     if (fresh) {
       cachedPlanData = fresh
