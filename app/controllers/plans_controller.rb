@@ -21,6 +21,10 @@ class PlansController < ApplicationController
   def show
   end
 
+  def new
+    @latest_plan = current_user.plans.order(updated_at: :desc).first
+  end
+
   def create
     lat = params[:lat]
     lng = params[:lng]
