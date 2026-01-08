@@ -48,7 +48,7 @@ class Plan::DirectionsClient
     private
 
     def valid_coordinates?(origin, destination)
-      [origin[:lat], origin[:lng], destination[:lat], destination[:lng]].all?(&:present?)
+      [ origin[:lat], origin[:lng], destination[:lat], destination[:lng] ].all?(&:present?)
     end
 
     def call_api(origin, destination, toll_used)

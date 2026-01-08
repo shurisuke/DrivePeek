@@ -32,7 +32,7 @@ class PlansController < ApplicationController
   end
 
   def edit
-    @plan = Plan.includes(:start_point, :goal_point, :plan_spots => :spot).find(params[:id])
+    @plan = Plan.includes(:start_point, :goal_point, plan_spots: :spot).find(params[:id])
 
     set_filter_variables
 

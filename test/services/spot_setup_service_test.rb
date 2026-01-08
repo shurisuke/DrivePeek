@@ -13,7 +13,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
       lng: 139.6503,
       prefecture: "Tokyo",
       city: "Shibuya",
-      top_types: ["restaurant", "food", "establishment"]
+      top_types: [ "restaurant", "food", "establishment" ]
     }
   end
 
@@ -29,7 +29,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
   end
 
   test "enqueues GenreDetectionJob when types are not mappable" do
-    @spot_params[:top_types] = ["natural_feature", "locality"]
+    @spot_params[:top_types] = [ "natural_feature", "locality" ]
     service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
 
     assert_enqueued_with(job: GenreDetectionJob) do
@@ -49,7 +49,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
     # GenreMapper がマッピング可能な types を使用
     spot_params = @spot_params.merge(
       place_id: existing_spot.place_id,
-      top_types: ["restaurant", "food"]
+      top_types: [ "restaurant", "food" ]
     )
     service = SpotSetupService.new(plan: other_plan, user: @user, spot_params: spot_params)
 
@@ -63,7 +63,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
   end
 
   test "assigns multiple genres when multiple types match" do
-    @spot_params[:top_types] = ["restaurant", "cafe", "establishment"]
+    @spot_params[:top_types] = [ "restaurant", "cafe", "establishment" ]
     service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
 
     result = service.setup

@@ -45,7 +45,7 @@ module Api
     end
 
     def only_toll_used_param?
-      start_point_params.keys == ["toll_used"]
+      start_point_params.keys == [ "toll_used" ]
     end
 
     def route_affecting_params?
