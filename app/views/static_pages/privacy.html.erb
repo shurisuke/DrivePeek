@@ -1,0 +1,88 @@
+<div class="legal-page">
+  <div class="legal-card">
+    <h1 class="legal-title">プライバシーポリシー</h1>
+    <p class="legal-updated">最終更新日: <%= Date.today.strftime("%Y年%m月%d日") %></p>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">1. はじめに</h2>
+      <p>DrivePeek（以下「本サービス」といいます）は、ユーザーの皆様のプライバシーを尊重し、個人情報の保護に努めます。本プライバシーポリシーでは、本サービスにおける個人情報の取り扱いについて説明します。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">2. 公開される情報について</h2>
+      <p>本サービスでは、作成したプランを他のユーザーと共有することができます。プランを公開した場合、以下の情報が他のユーザーに表示されます。</p>
+      <ul>
+        <li>プランのタイトル</li>
+        <li>プランに含まれるスポット情報</li>
+      </ul>
+      <div class="legal-highlight">
+        <p><strong>※ 出発地点・帰宅地点、メモ、ユーザー名は公開されません。</strong></p>
+      </div>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">3. 取得する情報</h2>
+      <p>本サービスでは、以下の情報を取得することがあります。</p>
+      <ul>
+        <li><strong>アカウント情報:</strong> メールアドレス、ユーザー名、パスワード（暗号化して保存）</li>
+        <li><strong>位置情報:</strong> プラン作成時に出発地点・帰宅地点を設定するために使用（ブラウザの許可が必要です）</li>
+        <li><strong>プランデータ:</strong> 作成したドライブプラン、追加したスポット、メモ等</li>
+        <li><strong>アクセス情報:</strong> IPアドレス、ブラウザ情報、アクセス日時等</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">4. 利用目的</h2>
+      <p>取得した情報は、以下の目的で利用します。</p>
+      <ul>
+        <li>本サービスの提供・運営</li>
+        <li>ユーザー認証・アカウント管理</li>
+        <li>ドライブプランの作成・保存・共有機能の提供</li>
+        <li>サービスの改善・新機能の開発</li>
+        <li>お問い合わせへの対応</li>
+        <li>不正利用の防止</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">5. 第三者提供</h2>
+      <p>本サービスは、以下の場合を除き、ユーザーの個人情報を第三者に提供することはありません。</p>
+      <ul>
+        <li>ユーザーの同意がある場合</li>
+        <li>法令に基づく場合</li>
+        <li>人の生命・身体・財産の保護のために必要な場合</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">6. 外部サービスの利用</h2>
+      <p>本サービスでは、以下の外部サービスを利用しています。これらのサービスにおける情報の取り扱いについては、各サービスのプライバシーポリシーをご確認ください。</p>
+      <ul>
+        <li><strong>Google Maps Platform:</strong> 地図表示、スポット検索、ルート計算に使用</li>
+        <li><strong>Anthropic Claude API:</strong> AIによるスポット提案機能に使用</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">7. Cookie・アクセス解析</h2>
+      <p>本サービスでは、ログイン状態の維持やサービス改善のためにCookieを使用しています。ブラウザの設定でCookieを無効にすることも可能ですが、一部の機能が正常に動作しなくなる場合があります。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">8. プライバシーポリシーの変更</h2>
+      <p>本プライバシーポリシーは、必要に応じて変更することがあります。重要な変更がある場合は、本サービス上でお知らせします。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">9. お問い合わせ</h2>
+      <p>本プライバシーポリシーに関するお問い合わせは、本サービスのお問い合わせフォームよりお願いいたします。</p>
+    </section>
+
+    <div class="text-center mt-4">
+      <%= link_to "/", class: "legal-back-btn" do %>
+        <i class="bi bi-arrow-left"></i>
+        トップページへ戻る
+      <% end %>
+    </div>
+  </div>
+</div>
