@@ -90,7 +90,7 @@ body {
   transition: .3s cubic-bezier(.11, .24, .64, 1);
 
   &.js-open {
-    z-index: 100;
+    z-index: 9998;
     opacity: 1;
     visibility: visible;
   }

@@ -1,6 +1,4 @@
 Rails.application.routes.draw do
-  get "dashboard/top"
-
   # Devise関連
   devise_for :users, controllers: {
     registrations: "users/registrations", # 新規登録画面
@@ -10,7 +8,7 @@ Rails.application.routes.draw do
 
   # ログイン時のルート
   authenticated :user do
-    root to: "dashboard#top", as: :authenticated_root
+    root to: "plans#new", as: :authenticated_root
   end
 
   # 非ログイン時のルート
@@ -33,7 +31,7 @@ Rails.application.routes.draw do
     resources :my_plans, only: %i[index]
   end
 
-  resources :plans, only: %i[index create edit update destroy] do
+  resources :plans, only: %i[index new create edit update destroy] do
     resource :planbar, only: %i[show]
 
     # Turbo Stream用（destroyのみ残す）

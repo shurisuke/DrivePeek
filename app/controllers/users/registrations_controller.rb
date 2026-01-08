@@ -2,9 +2,9 @@ class Users::RegistrationsController < Devise::RegistrationsController
   # Deviseの時だけname属性を許可する
   before_action :configure_permitted_parameters
 
-  # サインアップ後のリダイレクト先を変更したい場合
+  # サインアップ後のリダイレクト先をプラン作成エントリー画面に変更
   def after_sign_up_path_for(resource)
-    authenticated_root_path # 例：サインアップ後はログイン後トップページへ
+    new_plan_path
   end
 
   protected
