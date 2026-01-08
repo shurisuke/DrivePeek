@@ -1,7 +1,7 @@
 class Users::SessionsController < Devise::SessionsController
-  # ログイン後のリダイレクト先をログイン後トップページに変更
+  # ログイン後のリダイレクト先をプラン作成エントリー画面に変更
   def after_sign_in_path_for(resource)
-    authenticated_root_path
+    new_plan_path
   end
 
   # ログアウト後のリダイレクト先をログイン前トップページへ変更
