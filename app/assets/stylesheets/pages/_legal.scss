@@ -1,0 +1,131 @@
+/* ==========================================
+     pages/_legal.scss
+     利用規約・プライバシーポリシー
+========================================== */
+.legal-page {
+  background-color: var(--gray-bg, #f8f9fa);
+  min-height: 100vh;
+  padding: 3rem 1rem;
+}
+
+.legal-card {
+  background-color: #ffffff;
+  max-width: 800px;
+  margin: 0 auto;
+  padding: 2.5rem 3rem;
+  border-radius: 16px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+}
+
+.legal-title {
+  font-size: 1.75rem;
+  font-weight: bold;
+  color: var(--personal, #506d53);
+  text-align: center;
+  padding-bottom: 1rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 2px solid var(--personal, #506d53);
+}
+
+.legal-updated {
+  text-align: center;
+  color: #888;
+  font-size: 0.875rem;
+  margin-bottom: 2rem;
+}
+
+.legal-section {
+  margin-bottom: 2rem;
+  padding-bottom: 1.5rem;
+  border-bottom: 1px solid #eee;
+
+  &:last-of-type {
+    border-bottom: none;
+    margin-bottom: 0;
+  }
+}
+
+.legal-section-title {
+  font-size: 1.1rem;
+  font-weight: bold;
+  color: var(--personal, #506d53);
+  margin-bottom: 0.75rem;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+
+  &::before {
+    content: "";
+    display: inline-block;
+    width: 4px;
+    height: 1.1rem;
+    background-color: var(--personal, #506d53);
+    border-radius: 2px;
+  }
+}
+
+.legal-section p,
+.legal-section ul {
+  color: #555;
+  line-height: 1.8;
+  font-size: 0.95rem;
+}
+
+.legal-section ul {
+  padding-left: 1.5rem;
+  margin: 0.5rem 0;
+
+  li {
+    margin-bottom: 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+.legal-section strong {
+  color: #333;
+}
+
+.legal-highlight {
+  background-color: rgba(80, 109, 83, 0.08);
+  padding: 1rem;
+  border-radius: 8px;
+  border-left: 4px solid var(--personal, #506d53);
+  margin: 1rem 0;
+
+  p {
+    margin: 0;
+  }
+}
+
+.legal-back-btn {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.5rem;
+  background-color: #ffffff;
+  color: var(--personal, #506d53);
+  border: 2px solid var(--personal, #506d53);
+  border-radius: 50px;
+  padding: 0.75rem 2rem;
+  font-weight: 600;
+  text-decoration: none;
+  transition: all 0.2s ease;
+
+  &:hover {
+    background-color: var(--personal, #506d53);
+    color: #ffffff;
+  }
+}
+
+@media (max-width: 768px) {
+  .legal-card {
+    padding: 1.5rem;
+    margin: 0 0.5rem;
+  }
+
+  .legal-title {
+    font-size: 1.5rem;
+  }
+}

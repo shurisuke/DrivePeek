@@ -66,4 +66,8 @@ Rails.application.routes.draw do
 
   # ヘルスチェック
   get "up" => "rails/health#show", as: :rails_health_check
+
+  # 静的ページ（利用規約・プライバシーポリシー）
+  get "terms" => "static_pages#terms", as: :terms
+  get "privacy" => "static_pages#privacy", as: :privacy
 end

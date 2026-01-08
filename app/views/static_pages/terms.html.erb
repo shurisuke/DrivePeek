@@ -1,0 +1,56 @@
+<div class="legal-page">
+  <div class="legal-card">
+    <h1 class="legal-title">利用規約</h1>
+    <p class="legal-updated">最終更新日: <%= Date.today.strftime("%Y年%m月%d日") %></p>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第1条（適用）</h2>
+      <p>本規約は、DrivePeek（以下「本サービス」といいます）の利用条件を定めるものです。ユーザーの皆様には、本規約に従って本サービスをご利用いただきます。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第2条（サービス概要）</h2>
+      <p>本サービスは、ドライブプランの作成・共有を目的としたWebアプリケーションです。ユーザーは地図上でスポットを選択し、ドライブプランを作成・保存・共有することができます。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第3条（禁止事項）</h2>
+      <p>ユーザーは、本サービスの利用にあたり、以下の行為をしてはなりません。</p>
+      <ul>
+        <li>法令または公序良俗に違反する行為</li>
+        <li>犯罪行為に関連する行為</li>
+        <li>本サービスの運営を妨害する行為</li>
+        <li>他のユーザーに迷惑をかける行為</li>
+        <li>他者の知的財産権、プライバシー権等を侵害する行為</li>
+        <li>不正アクセス、クローリング等の行為</li>
+        <li>その他、運営者が不適切と判断する行為</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第4条（免責事項）</h2>
+      <ul>
+        <li>本サービスで提供される情報（ルート、所要時間、スポット情報等）は参考情報であり、正確性・完全性を保証するものではありません。</li>
+        <li>本サービスの利用により生じた損害について、運営者は一切の責任を負いません。</li>
+        <li>実際のドライブの際は、現地の交通状況や規制を必ずご確認ください。</li>
+      </ul>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第5条（サービスの変更・停止）</h2>
+      <p>運営者は、事前の通知なく本サービスの内容を変更、または提供を停止することがあります。これによりユーザーに生じた損害について、運営者は一切の責任を負いません。</p>
+    </section>
+
+    <section class="legal-section">
+      <h2 class="legal-section-title">第6条（規約の変更）</h2>
+      <p>運営者は、必要と判断した場合には、ユーザーに通知することなく本規約を変更することができます。変更後の利用規約は、本サービス上に掲載した時点から効力を生じるものとします。</p>
+    </section>
+
+    <div class="text-center mt-4">
+      <%= link_to "/", class: "legal-back-btn" do %>
+        <i class="bi bi-arrow-left"></i>
+        トップページへ戻る
+      <% end %>
+    </div>
+  </div>
+</div>
