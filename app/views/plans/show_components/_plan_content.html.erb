@@ -1,0 +1,9 @@
+<%# スポット一覧のみ表示（出発地点・帰宅地点・総距離はプライバシー保護のため非表示） %>
+<% plan_spots = plan.plan_spots.includes(spot: :genres).order(:position) %>
+<% last_position = plan_spots.last&.position %>
+<% plan_spots.each do |plan_spot| %>
+  <% is_last_spot = plan_spot.position == last_position %>
+  <%= render "plans/show_components/spot_block_show",
+             plan_spot: plan_spot,
+             is_last_spot: is_last_spot %>
+<% end %>

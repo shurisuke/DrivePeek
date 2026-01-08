@@ -1,0 +1,39 @@
+<% content_for :body_class, "no-footer" %>
+
+<script>
+  window.planData = <%= raw(json_escape(@plan.marker_data_for_public_view.to_json)) %>;
+</script>
+
+<div class="main-content plan-detail"
+     data-controller="planbar-resize"
+     data-planbar-resize-min-value="300"
+     data-planbar-resize-max-percent-value="88"
+     data-planbar-resize-default-value="350">
+  <!-- 地図 -->
+  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-planbar-resize-target="map"></div>
+
+  <!-- リサイズハンドル -->
+  <div class="planbar-resize-handle"
+       data-planbar-resize-target="handle"
+       data-action="mousedown->planbar-resize#startResize touchstart->planbar-resize#startResize click->planbar-resize#handleClick">
+    <div class="planbar-resize-handle__grip"></div>
+  </div>
+
+  <!-- ナビバー（詳細用・1タブ） -->
+  <aside class="planbar planbar--show">
+    <div class="planbar__header">
+      <h1 class="planbar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
+      <div class="planbar__author">
+        by <%= @plan.user.name %>
+      </div>
+    </div>
+
+    <div class="planbar__content">
+      <div class="planbar__content-scroll">
+        <div class="planbar__blocks">
+          <%= render "plans/show_components/plan_content", plan: @plan %>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>
