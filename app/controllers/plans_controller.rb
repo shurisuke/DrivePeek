@@ -19,6 +19,9 @@ class PlansController < ApplicationController
   end
 
   def show
+    @plan = Plan.publicly_visible
+                .includes(:user, :start_point, :goal_point, plan_spots: { spot: :genres })
+                .find(params[:id])
   end
 
   def new
