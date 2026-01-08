@@ -11,9 +11,6 @@ Rails.application.routes.draw do
     root to: "plans#new", as: :authenticated_root
   end
 
-  # 旧ダッシュボードからのリダイレクト（後方互換）
-  get "dashboard/top", to: redirect("/plans/new")
-
   # 非ログイン時のルート
   unauthenticated do
     root to: "static_pages#top", as: :unauthenticated_root
