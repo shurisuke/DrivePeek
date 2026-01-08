@@ -53,21 +53,25 @@
   </div>
 
   <div class="plan-card__footer">
-    <% if total_duration.present? || total_distance.present? %>
-      <div class="plan-card__totals">
-        <% if total_duration.present? %>
-          <span class="plan-card__total-item">
-            <i class="bi bi-clock" aria-hidden="true"></i>
-            <%= total_duration %>
-          </span>
-        <% end %>
-        <% if total_distance.present? %>
-          <span class="plan-card__total-item">
-            <i class="bi bi-signpost-2" aria-hidden="true"></i>
-            <%= total_distance %>
-          </span>
-        <% end %>
-      </div>
+    <div class="plan-card__totals">
+      <% if total_duration.present? %>
+        <span class="plan-card__total-item">
+          <i class="bi bi-clock" aria-hidden="true"></i>
+          <%= total_duration %>
+        </span>
+      <% end %>
+      <% if total_distance.present? %>
+        <span class="plan-card__total-item">
+          <i class="bi bi-signpost-2" aria-hidden="true"></i>
+          <%= total_distance %>
+        </span>
+      <% end %>
+    </div>
+    <% if local_assigns[:plan] %>
+      <%= link_to plan_path(plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
+        <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        地図で見る
+      <% end %>
     <% end %>
   </div>
 </div>

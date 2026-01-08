@@ -628,6 +628,9 @@
 
 /* フッター（合計時間・距離） */
 .plan-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
   padding-top: 8px;
   border-top: 1px solid #f0f0f0;
 }
@@ -635,7 +638,6 @@
 .plan-card__totals {
   display: flex;
   gap: 16px;
-  margin-top: 2px;
 }
 
 .plan-card__total-item {
@@ -648,6 +650,24 @@
   i {
     font-size: 14px;
     color: #999;
+  }
+}
+
+.plan-card__detail-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 12px;
+  color: #888;
+  text-decoration: none;
+  transition: color 0.2s;
+
+  &:hover {
+    color: #506d53;
+  }
+
+  i {
+    font-size: 13px;
   }
 }
 
