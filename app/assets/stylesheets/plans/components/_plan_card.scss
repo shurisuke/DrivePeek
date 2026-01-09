@@ -5,6 +5,8 @@
 /* みんなのプランタブのリスト */
 .community-plans {
   padding: 20px 16px 16px 16px;
+  background: linear-gradient(180deg, #f5f6f5 0%, #fafbfa 100%);
+  min-height: 100%;
 }
 
 .community-plans__page-title {
@@ -49,28 +51,31 @@
 }
 
 .community-plans__results-divider {
-  margin-top: 30px;
-  margin-bottom: 10px;
+  margin-top: 24px;
+  margin-bottom: 16px;
   text-align: center;
 }
 
 .community-plans__results-label {
-  display: block;
-  padding-top: 10px;
-  margin-bottom: 4px;
-  font-size: 12px;
-  color: #999;
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #888;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  letter-spacing: 0.5px;
 }
 
-/* 検索タイプ切り替えタブ */
+/* 検索タイプ切り替えタブ（セグメントコントロール） */
 .community-plans__search-tabs {
   display: flex;
-  gap: 0;
+  gap: 4px;
   margin-top: 10px;
   margin-bottom: 16px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  overflow: hidden;
+  padding: 4px;
+  background-color: #f0f0f0;
+  border-radius: 10px;
 }
 
 .community-plans__search-tab {
@@ -78,30 +83,28 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 10px 16px;
-  font-size: 14px;
+  padding: 8px 16px;
+  font-size: 13px;
   font-weight: 500;
   color: #666;
-  background-color: #f8f8f8;
+  background-color: transparent;
+  border: none;
+  border-radius: 7px;
   cursor: pointer;
-  transition: all 0.2s;
-  border-right: 1px solid #e5e5e5;
-
-  &:last-child {
-    border-right: none;
-  }
+  transition: all 0.2s ease;
 
   input[type="radio"] {
     display: none;
   }
 
-  &:hover {
-    background-color: #f0f4f0;
+  &:hover:not(.is-active) {
+    color: #444;
   }
 
   &.is-active {
-    background-color: #506d53;
-    color: #fff;
+    background-color: #fff;
+    color: #333;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
   }
 }
 
@@ -114,28 +117,31 @@
 
 .community-plans__search-input {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
   font-size: 14px;
   outline: none;
   margin-bottom: 10px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
 
   &:focus {
-    border-color: #506d53;
+    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.15);
   }
 
   &::placeholder {
-    color: #999;
+    color: #aaa;
   }
 }
 
 .community-plans__search-button {
   width: 100%;
-  padding: 10px 16px;
-  background-color: #506d53;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #5a7d5d, #4a6a4d);
   border: none;
-  border-radius: 8px;
+  border-radius: 10px;
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -144,9 +150,16 @@
   gap: 6px;
   font-size: 14px;
   font-weight: 500;
+  box-shadow: 0 2px 6px rgba(80, 109, 83, 0.3);
+  transition: all 0.2s ease;
 
   &:hover {
-    background-color: darken(#506d53, 5%);
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(80, 109, 83, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
   }
 
   i {
@@ -190,9 +203,9 @@
 
 .multi-select__trigger {
   width: 100%;
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
   font-size: 14px;
   background-color: #fff;
   cursor: pointer;
@@ -201,14 +214,16 @@
   align-items: center;
   gap: 8px;
   text-align: left;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  transition: box-shadow 0.2s ease;
 
   &:hover {
-    border-color: #ccc;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
   }
 
   &:focus {
     outline: none;
-    border-color: #506d53;
+    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.15);
   }
 
   span {
@@ -218,12 +233,12 @@
     white-space: nowrap;
 
     &.is-placeholder {
-      color: #999;
+      color: #aaa;
     }
   }
 
   i {
-    color: #666;
+    color: #888;
     font-size: 12px;
     flex-shrink: 0;
   }
@@ -235,11 +250,13 @@
   top: 100%;
   left: 0;
   right: 0;
-  margin-top: 4px;
+  margin-top: 6px;
   background: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  border: none;
+  border-radius: 12px;
+  box-shadow:
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 0 0 1px rgba(0, 0, 0, 0.04);
   max-height: 280px;
   overflow-y: auto;
   z-index: 100;
@@ -404,10 +421,18 @@
 }
 
 .community-plans__empty {
-  padding: 40px 16px;
+  padding: 48px 24px;
   text-align: center;
-  color: #999;
-  font-size: 14px;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+
+  p {
+    margin: 0;
+    color: #888;
+    font-size: 14px;
+    line-height: 1.6;
+  }
 }
 
 .community-plans__pagination {
@@ -443,13 +468,25 @@
   }
 }
 
-/* プランカード */
+/* ==========================================
+   Plan Card - iOS/macOS Style
+========================================== */
 .plan-card {
   background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.1);
+  }
 }
 
 /* ヘッダー（タイトル + お気に入り） */
@@ -458,15 +495,16 @@
   align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .plan-card__title {
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 1.4;
-  color: #333;
+  line-height: 1.45;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
 
   /* 長いタイトルは2行まで */
   display: -webkit-box;
@@ -478,53 +516,56 @@
 .plan-card__actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 2px;
   flex-shrink: 0;
+  margin-top: -2px;
+  margin-right: -4px;
 }
 
-.plan-card__edit {
+.plan-card__edit,
+.plan-card__delete {
   padding: 6px;
-  background: #fff;
+  background: transparent;
   border: none;
-  border-radius: 4px;
+  border-radius: 8px;
   cursor: pointer;
-  color: #506d53;
   font-size: 16px;
   line-height: 1;
   text-decoration: none;
+  transition: background-color 0.15s ease;
+}
+
+.plan-card__edit {
+  color: #506d53;
 
   &:hover {
-    background: #e9ecef;
+    background: rgba(80, 109, 83, 0.08);
   }
 }
 
 .plan-card__delete {
-  padding: 6px;
-  background: #fff;
-  border: none;
-  border-radius: 4px;
-  cursor: pointer;
-  color: #999;
-  font-size: 16px;
-  line-height: 1;
+  color: #aaa;
 
   &:hover {
-    background: #e9ecef;
+    background: rgba(0, 0, 0, 0.05);
+    color: #888;
   }
 }
 
 .plan-card__favorite {
-  padding: 4px;
-  background: none;
+  padding: 6px;
+  background: transparent;
   border: none;
+  border-radius: 8px;
   cursor: pointer;
-  color: #e8a0a8;
+  color: #ddd;
   font-size: 18px;
   line-height: 1;
+  transition: all 0.15s ease;
 
   &:hover {
     color: #e8a0a8;
-    background: transparent;
+    background: rgba(232, 160, 168, 0.08);
   }
 
   &--active {
@@ -537,50 +578,55 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 12px;
+  margin-bottom: 14px;
 }
 
 .plan-card__genre {
   display: inline-block;
-  padding: 4px 10px;
-  background-color: #f0f4f0;
+  padding: 5px 10px;
+  background-color: rgba(80, 109, 83, 0.08);
   color: #506d53;
   font-size: 11px;
   font-weight: 500;
-  border-radius: 12px;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
 }
 
 /* スポット一覧 */
 .plan-card__spots {
-  margin-bottom: 12px;
+  margin-bottom: 14px;
+  background: #f9faf9;
+  border-radius: 12px;
+  padding: 4px 0;
 }
 
 .plan-card__spot {
   display: flex;
   align-items: flex-start;
-  gap: 8px;
-  padding: 8px 0;
-  border-bottom: 1px solid #f0f0f0;
+  gap: 10px;
+  padding: 10px 14px;
+  border-radius: 10px;
+  margin: 2px 4px;
+  transition: background-color 0.15s ease;
 
-  &:last-child {
-    border-bottom: none;
-    padding-bottom: 0;
+  &:hover {
+    background: rgba(80, 109, 83, 0.04);
   }
 }
 
 .plan-card__spot-number {
   flex-shrink: 0;
-  width: 20px;
-  height: 20px;
-  background-color: #506d53;
+  width: 22px;
+  height: 22px;
+  background: linear-gradient(135deg, #5a7d5d, #4a6a4d);
   color: #fff;
-  border-radius: 50%;
+  border-radius: 7px;
   font-size: 11px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 3px;
+  margin-top: 1px;
 }
 
 .plan-card__spot-info {
@@ -589,11 +635,10 @@
 }
 
 .plan-card__spot-name {
-  font-size: 15px;
+  font-size: 14px;
   font-weight: 500;
-  color: #506d53;
+  color: #333;
   line-height: 1.4;
-  margin-top: 2px;
   cursor: pointer;
 
   /* 長い名前は1行省略 */
@@ -602,14 +647,14 @@
   text-overflow: ellipsis;
 
   &:hover {
-    text-decoration: underline;
+    color: #506d53;
   }
 }
 
 .plan-card__spot-address {
   font-size: 12px;
-  font-weight: 200;
-  color: #999;
+  font-weight: 400;
+  color: #888;
   line-height: 1.4;
   margin-top: 2px;
 
@@ -620,10 +665,10 @@
 }
 
 .plan-card__no-spots {
-  padding: 16px 0;
+  padding: 20px 16px;
   text-align: center;
-  color: #999;
-  font-size: 14px;
+  color: #aaa;
+  font-size: 13px;
 }
 
 /* フッター（合計時間・距離） */
@@ -631,21 +676,22 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
-  padding-top: 8px;
-  border-top: 1px solid #f0f0f0;
+  padding-top: 14px;
+  margin-top: 2px;
 }
 
 .plan-card__totals {
   display: flex;
-  gap: 16px;
+  gap: 14px;
 }
 
 .plan-card__total-item {
   display: flex;
   align-items: center;
-  gap: 4px;
-  font-size: 12px;
-  color: #666;
+  gap: 5px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #555;
 
   i {
     font-size: 14px;
@@ -657,62 +703,82 @@
   display: flex;
   align-items: center;
   gap: 4px;
+  padding: 6px 10px;
   font-size: 12px;
+  font-weight: 500;
   color: #888;
   text-decoration: none;
-  transition: color 0.2s;
+  border-radius: 6px;
+  transition: all 0.15s ease;
 
   &:hover {
     color: #506d53;
+    background: rgba(80, 109, 83, 0.08);
   }
 
   i {
-    font-size: 13px;
+    font-size: 12px;
   }
 }
 
 /* ==========================================
-   Spot Card（スポット検索結果用カード）
+   Spot Card - iOS/macOS Style
 ========================================== */
 
 .spot-card {
   background-color: #fff;
-  border: 1px solid #e5e5e5;
-  border-radius: 12px;
-  padding: 16px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.06);
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+  transition: transform 0.2s ease, box-shadow 0.2s ease;
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow:
+      0 2px 6px rgba(0, 0, 0, 0.06),
+      0 8px 24px rgba(0, 0, 0, 0.1);
+  }
 }
 
 .spot-card__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 8px;
+  margin-bottom: 12px;
 }
 
 .spot-card__name {
   margin: 0;
-  font-size: 17px;
+  font-size: 16px;
   font-weight: 600;
-  line-height: 1.4;
-  color: #333;
+  line-height: 1.45;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
   flex: 1;
 }
 
 .spot-card__actions {
   flex-shrink: 0;
+  margin-top: -2px;
+  margin-right: -4px;
 
   .btn-fav-icon {
     border: none;
     background: transparent;
-    padding: 4px;
+    padding: 6px;
     font-size: 18px;
-    color: #e8a0a8;
+    color: #ddd;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
 
     &:hover {
       color: #e8a0a8;
-      background: transparent;
+      background: rgba(232, 160, 168, 0.08);
     }
 
     &--active {
@@ -725,34 +791,41 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 10px;
+  margin-bottom: 14px;
 }
 
 .spot-card__genre {
   display: inline-block;
-  padding: 4px 10px;
-  background-color: #f0f4f0;
+  padding: 5px 10px;
+  background-color: rgba(80, 109, 83, 0.08);
   color: #506d53;
   font-size: 11px;
   font-weight: 500;
+  border-radius: 6px;
+  letter-spacing: 0.2px;
+}
+
+.spot-card__info {
+  background: #f9faf9;
   border-radius: 12px;
+  padding: 12px 14px;
 }
 
 .spot-card__address,
 .spot-card__location {
   display: flex;
   align-items: flex-start;
-  gap: 6px;
+  gap: 8px;
   font-size: 13px;
-  color: #666;
-  line-height: 1.4;
-  margin-bottom: 4px;
+  color: #555;
+  line-height: 1.5;
+  margin-bottom: 6px;
 
   i {
-    color: #999;
+    color: #888;
     font-size: 14px;
     flex-shrink: 0;
-    margin-top: 1px;
+    margin-top: 2px;
   }
 
   &:last-child {

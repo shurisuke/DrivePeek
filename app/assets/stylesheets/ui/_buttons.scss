@@ -1,0 +1,32 @@
+// app/assets/stylesheets/ui/_buttons.scss
+// ================================================================
+// 共通ボタンスタイル
+// ================================================================
+
+// ✅ ポイント編集キャンセルボタン（出発地点・帰宅地点共通）
+.point-edit__cancel-btn {
+  display: block;
+  width: 100%;
+  margin-top: 0.6rem;
+  padding: 0.5rem 1rem;
+
+  border: 1px solid rgba(80, 109, 83, 0.25);
+  border-radius: 8px;
+  background: #fff;
+
+  font-size: 0.85rem;
+  font-weight: 500;
+  color: rgba(80, 109, 83, 0.8);
+
+  cursor: pointer;
+  transition: background-color 0.12s, border-color 0.12s;
+
+  &:hover {
+    background: rgba(80, 109, 83, 0.06);
+    border-color: rgba(80, 109, 83, 0.35);
+  }
+
+  &:active {
+    background: rgba(80, 109, 83, 0.10);
+  }
+}
