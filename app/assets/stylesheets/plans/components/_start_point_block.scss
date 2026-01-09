@@ -12,149 +12,120 @@
   overflow: visible;
 
   /* ------------------------------------------
-     上段：出発（アイコン/住所/編集）
-     - アイコンは absolute（中央計算に参加させない）
-     - 出発/住所はど真ん中
-     - 編集ボタンは「出発」の右隣
+     上段：出発（3カラムFlexbox構造）
+     - [アイコン] [ラベル] [地図ボタン]
   ------------------------------------------ */
   .start-point-main {
     display: flex;
-    align-items: center;
-    gap: 8px;
+    align-items: flex-start;
+    gap: 10px;
     margin-bottom: 12px;
 
-    .start-label {
-      flex: 1 1 auto;
-      min-width: 0;
-      margin: 0;
+    /* プランバー幅に応じて両端に余白を追加 */
+    padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+    padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+  }
+
+  /* 左: 家アイコン */
+  .start-point-icon {
+    flex-shrink: 0;
+    margin-top: -10px;
+
+    width: 40px;
+    height: 43px;
+
+    background: url(house-icon.png) no-repeat center / contain;
+    background-size: 100% 100%;
+  }
+
+  /* 中央: ラベル */
+  .start-label {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .start-title-row {
+    position: relative;
+    text-align: center;
+    margin-bottom: 6px;
+  }
+
+  .start-title {
+    display: inline;
+    font-weight: 700;
+    color: #111;
+    font-size: 17px;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .address {
+    width: 100%;
+    min-width: 0;
+
+    color: #525252c5;
+    font-size: 13px;
+
+    text-align: center;
+    line-height: 1.2;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: block;
+  }
+
+  /* 編集ボタン（タイトルの右隣に絶対配置でタイトルを真ん中に保つ） */
+  .start-point-change-btn {
+    position: absolute;
+    margin-left: 8px;
+    margin-top: -3px;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    border-radius: 50%;
+    background: #fff;
+
+    border: 1px solid transparent;
+    box-shadow: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+    i {
+      font-size: 14px;
+      line-height: 1;
+      color: var(--personal);
+      transform: translateY(-0.5px);
     }
 
-    .start-label__row {
-      position: relative;
-      min-width: 0;
-
-      /* goal と同じく、中央要素だけが通常フローに乗る */
-      display: block;
+    &:hover {
+      border: 1px solid rgba(80, 109, 83, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
     }
 
-    .icon {
-      width: 40px;
-      height: 42px;
-
-      background: url(house-icon.png) no-repeat center / contain;
-      background-size: 100% 100%;
-
-      position: absolute;
-      /* プランバー幅に応じてアイコン位置を変化 */
-      left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.30));
-      top: 2px;
-      transform: translateY(-2px);
-
-      pointer-events: none;
+    &:active {
+      opacity: 0.95;
     }
 
-    .start-text {
-      min-width: 0;
-
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-
-      /* アイコン分だけ安全領域を見込んで中央固定 */
-      width: calc(100% - 60px);
-      margin: 0 auto;
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
     }
 
-    /* 出発 + 編集（右隣） */
-    .start-title-row {
-      width: 100%;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      gap: 8px;
-      margin-bottom: 10px;
-
-      /* goal と同様に、視覚中心の微調整（必要に応じて数値だけ触る） */
-      transform: translateX(20px);
-    }
-
-    .start-title {
-      font-weight: 700;
-      color: #111;
-      font-size: 17px;
-      line-height: 1.1;
-      margin: 0;
-
-      text-align: center;
-    }
-
-    .address {
-      width: 100%;
-      min-width: 0;
-
-      color: #525252c5;
-      font-size: 13px;
-
-      text-align: center;
-      line-height: 1.2;
-
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-
-      display: block;
-      transform: none !important;
-    }
-
-    /* 編集ボタン（goal と同じ挙動・見た目） */
-    .start-point-change-btn {
-      width: 30px;
-      height: 30px;
-      padding: 0;
-
-      border-radius: 0;
-      background: #fff;
-
-      border: 0;
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
       box-shadow: none;
-
-      display: inline-flex;
-      align-items: center;
-      justify-content: center;
-
-      cursor: pointer;
-
-      transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
-
-      i {
-        font-size: 14px;
-        line-height: 1;
-        color: var(--personal);
-        transform: translateY(-0.5px);
-      }
-
-      &:hover {
-        border: 1px solid rgba(80, 109, 83, 0.28);
-        box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-      }
-
-      &:active {
-        opacity: 0.95;
-      }
-
-      &:focus-visible {
-        outline: none;
-        box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
-        box-shadow: none;
-        border: 0;
-      }
+      border: 0;
     }
   }
 

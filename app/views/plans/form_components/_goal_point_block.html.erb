@@ -12,6 +12,30 @@
       <%# ✅ 左側: 既存コンテンツ（350px） %>
       <div class="block-main-content">
         <div class="goal-point-main">
+          <span class="goal-point-icon" aria-hidden="true"></span>
+
+          <div class="goal-label">
+            <div class="goal-title-row">
+              <span class="goal-title">帰宅</span>
+
+              <button
+                type="button"
+                class="goal-point-change-btn"
+                data-goal-point-editor-target="toggle"
+                data-action="click->goal-point-editor#toggle"
+                aria-expanded="false"
+                aria-controls="goal-point-edit-<%= plan.id %>"
+              >
+                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+                <span class="visually-hidden">帰宅地点を変更</span>
+              </button>
+            </div>
+
+            <span class="address" data-goal-point-editor-target="address">
+              <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
+            </span>
+          </div>
+
           <button type="button"
                   class="point-map-btn"
                   data-point-type="goal"
@@ -20,35 +44,6 @@
                   aria-label="地図で表示">
             <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
           </button>
-
-          <div class="goal-label">
-            <div class="goal-label__row">
-              <span class="icon" aria-hidden="true"></span>
-
-              <div class="goal-text">
-                <div class="goal-title-row">
-                  <span class="goal-title">帰宅</span>
-
-                  <button
-                    type="button"
-                    class="goal-point-change-btn"
-                    data-goal-point-editor-target="toggle"
-                    data-action="click->goal-point-editor#toggle"
-                    aria-expanded="false"
-                    aria-controls="goal-point-edit-<%= plan.id %>"
-                  >
-                    <i class="bi bi-pencil-fill" aria-hidden="true"></i>
-                    <span class="visually-hidden">帰宅地点を変更</span>
-                  </button>
-                </div>
-
-                <span class="address" data-goal-point-editor-target="address">
-                  <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
-                </span>
-              </div>
-            </div>
-          </div>
-
         </div>
 
         <div
@@ -74,7 +69,7 @@
 
             <button
               type="button"
-              class="goal-point-edit__cancel-btn"
+              class="point-edit__cancel-btn"
               data-action="click->goal-point-editor#toggle"
             >
               キャンセル

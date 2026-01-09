@@ -20,6 +20,30 @@
   <%# ✅ 左側: 既存コンテンツ（350px） %>
   <div class="block-main-content">
     <div class="start-point-main">
+      <span class="start-point-icon" aria-hidden="true"></span>
+
+      <div class="start-label">
+        <div class="start-title-row">
+          <span class="start-title">出発</span>
+
+          <button
+            type="button"
+            class="start-point-change-btn"
+            data-start-point-editor-target="toggle"
+            data-action="click->start-point-editor#toggle"
+            aria-expanded="false"
+            aria-controls="start-point-edit-<%= plan.id %>"
+          >
+            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
+            <span class="visually-hidden">出発地点を変更</span>
+          </button>
+        </div>
+
+        <span class="address" data-start-point-editor-target="address">
+          <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
+        </span>
+      </div>
+
       <button type="button"
               class="point-map-btn"
               data-point-type="start"
@@ -28,34 +52,6 @@
               aria-label="地図で表示">
         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
       </button>
-
-      <div class="start-label">
-        <div class="start-label__row">
-          <span class="icon" aria-hidden="true"></span>
-
-          <div class="start-text">
-            <div class="start-title-row">
-              <span class="start-title">出発</span>
-
-              <button
-                type="button"
-                class="start-point-change-btn"
-                data-start-point-editor-target="toggle"
-                data-action="click->start-point-editor#toggle"
-                aria-expanded="false"
-                aria-controls="start-point-edit-<%= plan.id %>"
-              >
-                <i class="bi bi-pencil-fill" aria-hidden="true"></i>
-                <span class="visually-hidden">出発地点を変更</span>
-              </button>
-            </div>
-
-            <span class="address" data-start-point-editor-target="address">
-              <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
-            </span>
-          </div>
-        </div>
-      </div>
     </div>
 
     <div
@@ -83,7 +79,7 @@
 
         <button
           type="button"
-          class="start-point-edit__cancel-btn"
+          class="point-edit__cancel-btn"
           data-action="click->start-point-editor#toggle"
         >
           キャンセル
