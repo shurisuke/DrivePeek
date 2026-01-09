@@ -6,4 +6,9 @@
   <%= render "plans/show_components/spot_block_show",
              plan_spot: plan_spot,
              is_last_spot: is_last_spot %>
+  <% unless is_last_spot %>
+    <div class="spot-arrow" aria-hidden="true">
+      <i class="bi bi-arrow-down-short"></i>
+    </div>
+  <% end %>
 <% end %>
