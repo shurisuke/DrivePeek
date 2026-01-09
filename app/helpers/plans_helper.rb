@@ -15,18 +15,21 @@ module PlansHelper
   PREFECTURES = PREFECTURES_BY_REGION.values.flatten.freeze
 
   # 移動時間をフォーマットして表示（分 → "X時間Y分" or "Y分"）
+  # 単位は <span class="plan-summary__unit"> でラップ
   def format_move_time(minutes)
     minutes = minutes.to_i
-    return "0分" if minutes.zero?
-
     hours = minutes / 60
     remaining_minutes = minutes % 60
 
+    parts = []
     if hours.positive?
-      "#{hours}時間#{remaining_minutes}分"
-    else
-      "#{remaining_minutes}分"
+      parts << hours.to_s
+      parts << content_tag(:span, "時間", class: "plan-summary__unit")
     end
+    parts << remaining_minutes.to_s
+    parts << content_tag(:span, "分", class: "plan-summary__unit")
+
+    safe_join(parts)
   end
 
   # 距離をフォーマットして表示
