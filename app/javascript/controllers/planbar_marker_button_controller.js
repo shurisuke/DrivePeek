@@ -12,6 +12,7 @@ import {
   getStartPointMarker,
   getEndPointMarker,
 } from "map/state"
+import { showInfoWindowForPin } from "map/infowindow"
 
 export default class extends Controller {
   // スポットのボタンクリック
@@ -24,9 +25,27 @@ export default class extends Controller {
   // 出発・帰宅のボタンクリック
   point(e) {
     const type = e.currentTarget.dataset.pointType
-    const marker = type === "start"
-      ? getStartPointMarker()
-      : getEndPointMarker()
+    const goalMarker = getEndPointMarker()
+    const startMarker = getStartPointMarker()
+
+    let marker = type === "start" ? startMarker : goalMarker
+
+    // ✅ 帰宅マーカーが存在しない場合（出発地点と近すぎて省略された場合）
+    // 出発マーカーの位置にパンし、帰宅用のInfoWindowを表示
+    if (!marker && type === "goal" && startMarker) {
+      const map = getMapInstance()
+      if (map) {
+        map.panTo(startMarker.getPosition())
+        const address = this.#getGoalAddressFromDom()
+        showInfoWindowForPin({
+          marker: startMarker,
+          name: "帰宅",
+          address,
+        })
+      }
+      return
+    }
+
     if (marker) this.#panAndTriggerClick(marker)
   }
 
@@ -34,5 +53,11 @@ export default class extends Controller {
   #panAndTriggerClick(marker) {
     getMapInstance()?.panTo(marker.getPosition())
     google.maps.event.trigger(marker, "click")
+  }
+
+  // DOMから帰宅地点の住所を取得
+  #getGoalAddressFromDom() {
+    const el = document.querySelector(".goal-point-block .address")
+    return el?.textContent?.trim() || null
   }
 }
