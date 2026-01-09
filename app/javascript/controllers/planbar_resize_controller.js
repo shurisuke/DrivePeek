@@ -13,12 +13,18 @@ export default class extends Controller {
     min: { type: Number, default: 300 },
     maxPercent: { type: Number, default: 70 },
     default: { type: Number, default: 350 },
+    railWidth: { type: Number, default: 70 },
     storageKey: { type: String, default: "drive_peek:planbar_width" },
     collapsedKey: { type: String, default: "drive_peek:planbar_collapsed" },
   }
 
   get maxWidth() {
     return Math.floor(window.innerWidth * this.maxPercentValue / 100)
+  }
+
+  get maxSlide() {
+    const railOpen = this.element.classList.contains("plan-form--time-rail-on")
+    return this.minValue + (railOpen ? this.railWidthValue : 0)
   }
 
   connect() {
@@ -82,9 +88,9 @@ export default class extends Controller {
 
     // スライド中（収納状態から復帰中）
     if (this.startSlide > 0) {
-      const newSlide = Math.max(0, Math.min(this.startSlide - delta, this.minValue))
+      const newSlide = Math.max(0, Math.min(this.startSlide - delta, this.maxSlide))
       this.setWidthAndSlide(this.minValue, newSlide)
-      this.updateCollapsedState(newSlide >= this.minValue)
+      this.updateCollapsedState(newSlide >= this.maxSlide)
 
       if (newSlide > 0) return
 
@@ -99,9 +105,9 @@ export default class extends Controller {
 
     // 収納方向（幅が最小値未満）
     if (newWidth < this.minValue) {
-      const slideAmount = Math.min(this.minValue - newWidth, this.minValue)
+      const slideAmount = Math.min(this.minValue - newWidth, this.maxSlide)
       this.setWidthAndSlide(this.minValue, slideAmount)
-      this.updateCollapsedState(slideAmount >= this.minValue)
+      this.updateCollapsedState(slideAmount >= this.maxSlide)
       return
     }
 
@@ -164,7 +170,7 @@ export default class extends Controller {
 
   setWidthAndSlide(width, slide) {
     const w = Math.round(Math.max(this.minValue, Math.min(width, this.maxWidth)))
-    const s = Math.round(Math.max(0, Math.min(slide, this.minValue)))
+    const s = Math.round(Math.max(0, Math.min(slide, this.maxSlide)))
     this.element.style.setProperty("--planbar-width", `${w}px`)
     this.element.style.setProperty("--planbar-slide", `${s}px`)
   }
@@ -189,7 +195,7 @@ export default class extends Controller {
       const collapsed = localStorage.getItem(this.collapsedKeyValue) === "1"
       if (collapsed) {
         this.element.classList.add("planbar--collapsed")
-        this.setWidthAndSlide(this.minValue, this.minValue)
+        this.setWidthAndSlide(this.minValue, this.maxSlide)
       } else {
         const width = this.getSavedWidth() || this.defaultValue
         this.setWidthAndSlide(width, 0)
