@@ -15,10 +15,20 @@
   data-lat="<%= spot.lat %>"
   data-lng="<%= spot.lng %>"
   data-polyline="<%= plan_spot.polyline %>"
+  data-place-id="<%= spot.place_id %>"
 >
   <div class="block-main-content">
     <div class="spot-main">
       <div class="spot-order-pin" aria-hidden="true"><%= plan_spot.position %></div>
+
+      <button type="button"
+              class="spot-map-btn"
+              data-spot-index="<%= plan_spot.position - 1 %>"
+              data-controller="planbar-marker-button"
+              data-action="click->planbar-marker-button#spot"
+              aria-label="地図で表示">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+      </button>
 
       <div class="spot-body">
         <% if spot.name.present? %>
@@ -34,14 +44,6 @@
             <% spot.genres.each do |genre| %>
               <span class="genre-chip"><%= genre.name %></span>
             <% end %>
-          </div>
-        <% end %>
-
-        <% if plan_spot.memo.present? %>
-          <div class="spot-memo spot-memo--pin">
-            <div class="spot-memo__content">
-              <%= simple_format(h(plan_spot.memo.to_s)) %>
-            </div>
           </div>
         <% end %>
 

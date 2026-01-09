@@ -12,6 +12,15 @@
       <%# ✅ 左側: 既存コンテンツ（350px） %>
       <div class="block-main-content">
         <div class="goal-point-main">
+          <button type="button"
+                  class="point-map-btn"
+                  data-point-type="goal"
+                  data-controller="planbar-marker-button"
+                  data-action="click->planbar-marker-button#point"
+                  aria-label="地図で表示">
+            <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          </button>
+
           <div class="goal-label">
             <div class="goal-label__row">
               <span class="icon" aria-hidden="true"></span>
@@ -62,6 +71,14 @@
             >
 
             <div class="goal-point-edit__help">Enterで検索 → 更新</div>
+
+            <button
+              type="button"
+              class="goal-point-edit__cancel-btn"
+              data-action="click->goal-point-editor#toggle"
+            >
+              キャンセル
+            </button>
           </div>
         </div>
       </div>
