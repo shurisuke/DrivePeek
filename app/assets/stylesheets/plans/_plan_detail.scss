@@ -7,6 +7,7 @@
 
 body.no-footer .plan-detail {
   --planbar-width: 350px;
+  --planbar-slide: 0px;
   --map-gap: 0px;
 
   position: relative;
@@ -19,18 +20,20 @@ body.no-footer .plan-detail {
     background-position: center;
     position: absolute;
 
-    left: var(--planbar-width);
-    width: calc(100% - (var(--planbar-width) + var(--map-gap)));
+    left: calc(var(--planbar-width) - var(--planbar-slide));
+    width: calc(100% - (var(--planbar-width) - var(--planbar-slide) + var(--map-gap)));
 
     height: 100%;
     top: 0;
     z-index: 1;
+
+    transition: left 0.2s ease, width 0.2s ease;
   }
 
   .planbar {
     position: fixed;
     top: 0;
-    left: 0;
+    left: calc(-1 * var(--planbar-slide));
 
     width: var(--planbar-width);
     height: 100%;
@@ -43,33 +46,46 @@ body.no-footer .plan-detail {
     display: flex;
     flex-direction: column;
     overflow: visible;
+
+    transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
+  }
+
+  .planbar-resize-handle {
+    transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
   }
 
   /* ✅ 詳細画面用ヘッダー */
   .planbar__header {
     padding: 20px 24px;
-    border-bottom: 1px solid #e5e5e5;
+    border-bottom: 2px solid #e5e5e5;
     background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
   }
 
   .planbar__title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #1a1a1a;
-    margin: 0 0 4px 0;
+    margin: 5px 0 0 0;
     line-height: 1.4;
-  }
-
-  .planbar__author {
-    font-size: 0.85rem;
-    color: #666;
+    text-align: center;
   }
 
   .planbar__content {
     flex: 1 1 auto;
     min-height: 0;
-    overflow: visible;
+    overflow: hidden;
     position: relative;
+  }
+
+  .planbar__footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+    flex-shrink: 0;
+    z-index: 10;
   }
 
   .planbar__content-scroll {
@@ -79,7 +95,7 @@ body.no-footer .plan-detail {
 
     overflow-y: auto;
     width: 100%;
-    height: calc(100vh - 80px);
+    height: 100%;
 
     -webkit-overflow-scrolling: touch;
     overscroll-behavior: contain;
@@ -175,30 +191,47 @@ body.no-footer .plan-detail {
     }
   }
 
+  /* ✅ スポット間の矢印 */
+  .spot-arrow {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    color: var(--personal);
+    font-size: 1.75rem;
+  }
+
   /* ✅ 詳細画面用のスポットブロック */
   .spot-block--show {
-    padding: 16px 24px;
-    border-bottom: 1px solid #f0f0f0;
+    padding: 16px 0; /* 左右は .spot-main の動的パディングで制御 */
+
+    &:last-child {
+      margin-bottom: 100px;
+    }
 
     .spot-main {
       display: flex;
       align-items: flex-start;
       gap: 12px;
       width: 100%;
+
+      /* プランバー幅に応じて両端に余白を追加 */
+      padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+      padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
     }
 
-    .spot-order-pin {
-      width: 28px;
-      height: 28px;
+    .spot-order-icon {
+      width: 30px;
+      height: 30px;
       background: var(--personal);
       color: #fff;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
-      font-size: 0.85rem;
+      font-size: 1rem;
       font-weight: 700;
       flex-shrink: 0;
+      margin-top: -5px;
     }
 
     .spot-body {
@@ -210,14 +243,23 @@ body.no-footer .plan-detail {
       font-size: 1rem;
       font-weight: 600;
       color: #1a1a1a;
-      margin-bottom: 4px;
+      margin-bottom: 15px;
       line-height: 1.4;
+
+      &--clickable {
+        cursor: pointer;
+        transition: color 0.2s;
+
+        &:hover {
+          color: var(--personal);
+        }
+      }
     }
 
     .spot-address {
       font-size: 0.85rem;
       color: #666;
-      margin-bottom: 8px;
+      margin-bottom: 12px;
       line-height: 1.4;
     }
 
@@ -381,3 +423,50 @@ body.no-footer .plan-detail {
     }
   }
 }
+
+/* ==========================================
+   ✅ プランバー収納時のスタイル（詳細画面）
+========================================== */
+body.no-footer .plan-detail.planbar--collapsed {
+  /* 収納時のハンドル幅 */
+  --planbar-collapsed-handle-width: 24px;
+
+  /* プランバー本体は非表示 */
+  .planbar {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* リサイズハンドルは収納時のスタイル */
+  .planbar-resize-handle {
+    width: var(--planbar-collapsed-handle-width);
+
+    /* 収納時は ::before を背景付きで表示 */
+    &::before {
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 三角のスタイルはそのまま維持 */
+    &__grip {
+      border-left-color: rgba(80, 109, 83, 0.5);
+    }
+
+    &:hover::before {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    &:hover .planbar-resize-handle__grip {
+      border-left-color: rgba(80, 109, 83, 0.8);
+    }
+  }
+}
+
+/* ✅ ドラッグ中はトランジションを無効化（ラグ防止） */
+body.planbar-resizing .plan-detail .planbar,
+body.planbar-resizing .plan-detail .map,
+body.planbar-resizing .plan-detail .planbar-resize-handle {
+  transition: none !important;
+}
+
