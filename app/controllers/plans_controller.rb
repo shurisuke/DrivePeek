@@ -1,4 +1,6 @@
 class PlansController < ApplicationController
+  before_action :authenticate_user!, except: %i[index show]
+
   def index
     set_filter_variables
 
@@ -19,6 +21,9 @@ class PlansController < ApplicationController
   end
 
   def show
+    @plan = Plan.publicly_visible
+                .includes(:user, :start_point, :goal_point, plan_spots: { spot: :genres })
+                .find(params[:id])
   end
 
   def new
@@ -36,7 +41,7 @@ class PlansController < ApplicationController
   end
 
   def edit
-    @plan = Plan.includes(:start_point, :goal_point, plan_spots: :spot).find(params[:id])
+    @plan = current_user.plans.includes(:start_point, :goal_point, plan_spots: :spot).find(params[:id])
 
     set_filter_variables
 

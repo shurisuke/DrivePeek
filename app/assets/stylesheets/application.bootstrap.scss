@@ -13,6 +13,8 @@
 @use "base/variables";
 @use "base/utilities";
 
+@use "ui/buttons";
+
 @use "shared/alerts";
 @use "shared/logo";
 @use "shared/header";
@@ -24,6 +26,7 @@
 @use "pages/legal";
 
 @use "plans/plan_form.scss";
+@use "plans/plan_detail";
 @use "plans/plan_entry";
 @use "plans/components/start_point_block";
 @use "plans/components/spot_block";
@@ -35,3 +38,5 @@
 @use "plans/components/ai_suggestion_chat";
 @use "plans/components/plan_card";
 @use "plans/components/plan_tab_guide";
+@use "plans/components/plan_summary";
+@use "plans/components/map_button";

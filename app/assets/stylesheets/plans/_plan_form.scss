@@ -19,6 +19,7 @@ body.no-footer {
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --planbar-width: 350px;
+    --planbar-slide: 0px;
     --rail-width: 70px;
     --map-gap: 0px;
 
@@ -32,8 +33,8 @@ body.no-footer {
       background-position: center;
       position: absolute;
 
-      left: var(--planbar-width);
-      width: calc(100% - (var(--planbar-width) + var(--map-gap)));
+      left: calc(var(--planbar-width) - var(--planbar-slide));
+      width: calc(100% - (var(--planbar-width) - var(--planbar-slide) + var(--map-gap)));
 
       height: 100%;
       top: 0;
@@ -47,6 +48,7 @@ body.no-footer {
 
       width: var(--planbar-width);
       height: 100%;
+      transform: translateX(calc(-1 * var(--planbar-slide)));
 
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -69,7 +71,7 @@ body.no-footer {
         height: 60px;
 
         .tab-btn {
-          font-size: 17px;
+          font-size: 16px;
           color: #797979;
           flex: 1;
           padding: 1.2rem 0rem 0.8rem 0rem;
@@ -80,6 +82,10 @@ body.no-footer {
           transition: all 0.2s ease;
           border-bottom: 3px solid transparent;
 
+          &:hover:not(.active) {
+            color: var(--personal);
+          }
+
           &.active {
             border-bottom: 3px solid var(--personal);
             color: #1d4928;
@@ -87,7 +93,11 @@ body.no-footer {
         }
 
         .tab-community {
-          font-size: 14px;
+          font-size: 15px;
+        }
+
+        .tab-ai {
+          font-size: 16px;
         }
       }
 
@@ -106,7 +116,7 @@ body.no-footer {
 
         overflow-y: auto;
         width: 100%; /* ✅ 350固定をやめる（親=planbarの幅に追従） */
-        height: calc(100vh - 60px);
+        height: 100%;
 
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
@@ -120,13 +130,28 @@ body.no-footer {
         width: 100%;
         box-sizing: border-box;
       }
+
+      /* ✅ プランタブ用フッター（距離・時間表示） */
+      &__footer {
+        padding: 16px 24px;
+        border-top: 1px solid #e5e5e5;
+        background: #fff;
+        flex-shrink: 0;
+        z-index: 10;
+        display: none; /* デフォルト非表示、プランタブ時のみ表示 */
+      }
+    }
+
+    /* ✅ プランタブがアクティブな時のみフッターを表示 */
+    .planbar__footer[data-tab="plan"] {
+      display: block;
     }
 
     .plan-save {
       position: fixed;
       bottom: calc(2rem - 15px); /* 下の余白を5px減 */
-      /* 地図の中央に配置 */
-      left: calc(var(--planbar-width) + (100% - var(--planbar-width)) / 2);
+      /* 地図の中央に配置（スライド量を考慮） */
+      left: calc((var(--planbar-width) - var(--planbar-slide)) + (100% - (var(--planbar-width) - var(--planbar-slide))) / 2);
       transform: translateX(-50%);
       z-index: 3;
 
@@ -303,9 +328,20 @@ body.no-footer.plan-time-open .plan-form .planbar .planbar__content-scroll {
   width: calc(var(--planbar-width) + var(--rail-width));
 }
 
+/* ✅ ON時: 地図を時刻レール右側に配置 */
+body.no-footer.plan-time-open .plan-form .map {
+  left: calc(var(--planbar-width) + var(--rail-width) - var(--planbar-slide));
+  width: calc(100% - (var(--planbar-width) + var(--rail-width) - var(--planbar-slide) + var(--map-gap)));
+}
+
+/* ✅ ON時: フッターも planbar + rail に拡張 */
+body.no-footer.plan-time-open .plan-form .planbar .planbar__footer {
+  width: calc(var(--planbar-width) + var(--rail-width));
+}
+
 /* ✅ 時刻レール表示時: 保存ボタンをレール右側の中央に */
 body.no-footer.plan-time-open .plan-form .plan-save {
-  left: calc(var(--planbar-width) + var(--rail-width) + (100% - var(--planbar-width) - var(--rail-width)) / 2);
+  left: calc((var(--planbar-width) + var(--rail-width) - var(--planbar-slide)) + (100% - (var(--planbar-width) + var(--rail-width) - var(--planbar-slide))) / 2);
 }
 
 /* ==========================================
@@ -315,7 +351,7 @@ body.no-footer.plan-time-open .plan-form .plan-save {
 .plan-time-toggle-header {
   position: fixed;
   top: 0;
-  left: var(--planbar-width);
+  left: calc(var(--planbar-width) - var(--planbar-slide));
   width: var(--rail-width);
   height: 60px;
 
@@ -344,6 +380,52 @@ body.no-footer.plan-time-open .plan-form .plan-save {
 
 body.plan-time-open .plan-time-toggle-header::before {
   opacity: 1;
+}
+
+/* ==========================================
+   スクロール内：出発・帰宅時間サマリー
+========================================== */
+
+.plan-time-summary-section {
+  display: none; /* デフォルト非表示 */
+  padding: 16px 24px;
+  background: #f8f9fa;
+  border-top: 1px solid #e5e5e5;
+  margin-top: 16px;
+}
+
+.plan-time-summary {
+  display: flex;
+  justify-content: center;
+  gap: 24px;
+}
+
+.plan-time-summary__item {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.plan-time-summary__label {
+  font-size: 0.75rem;
+  color: var(--personal);
+  font-weight: 600;
+}
+
+.plan-time-summary__item--goal .plan-time-summary__label {
+  color: #dc3545;
+}
+
+.plan-time-summary__value {
+  font-size: 0.95rem;
+  font-weight: 600;
+  color: #333;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ✅ 時刻レールON + 帰宅地点ON時のみ表示 */
+body.plan-time-open.goal-point-visible .plan-time-summary-section {
+  display: block;
 }
 
 /* ✅ 時計ボタン */
@@ -389,7 +471,7 @@ body.plan-time-open .plan-time-toggle-header::before {
 
 .plan-time-slot {
   position: fixed;
-  left: var(--planbar-width);
+  left: calc(var(--planbar-width) - var(--planbar-slide));
   width: var(--rail-width);
 
   pointer-events: none;
@@ -671,7 +753,7 @@ body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__to
 .planbar-resize-handle {
   position: fixed;
   top: 0;
-  left: var(--planbar-width);
+  left: calc(var(--planbar-width) - var(--planbar-slide));
   width: 24px;
   height: 100%;
   z-index: 50;
@@ -689,8 +771,9 @@ body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__to
     left: 0;
     transform: translateY(-50%);
     width: 100%;
+    border-radius: 0 6px 6px 0; /* 右上・右下のみ丸み */
     height: 70px;
-    background: rgba(255, 255, 255, 0.85);
+    background: rgba(255, 255, 255, 0.6);
     transition: background 0.15s ease;
   }
 
@@ -706,12 +789,12 @@ body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__to
     z-index: 1;
     border-top: 8px solid transparent;
     border-bottom: 8px solid transparent;
-    border-left: 10px solid rgba(80, 109, 83, 0.4);
+    border-left: 10px solid rgba(80, 109, 83, 0.45);
     transition: border-color 0.15s ease;
   }
 
   &:hover &__grip {
-    border-left-color: rgba(80, 109, 83, 0.7);
+    border-left-color: rgba(80, 109, 83, 0.9);
   }
 }
 
@@ -727,21 +810,23 @@ body.planbar-resizing {
 
 /* 時刻レール表示時：リサイズハンドルをレールの右に配置 */
 body.plan-time-open .planbar-resize-handle {
-  left: calc(var(--planbar-width) + var(--rail-width));
+  left: calc(var(--planbar-width) + var(--rail-width) - var(--planbar-slide));
 }
+
+/* ✅ 収納時の位置はスライド量（--planbar-slide）で自動計算される
+   時刻レールON時は maxSlide = 370px, OFF時は maxSlide = 300px
+   これにより left: calc(planbar-width + rail-width - slide) = 0 となる */
 
 /* ==========================================
    ✅ プランバー収納時のスタイル
 ========================================== */
 
 body.no-footer .plan-form.planbar--collapsed {
-  /* 収納時は地図を全幅に近づけるための変数（ハンドル幅分のみ確保） */
+  /* 収納時のハンドル幅 */
   --planbar-collapsed-handle-width: 24px;
 
-  /* プランバー本体は300px幅を保持しつつ左へスライドアウト */
+  /* プランバー本体は300px幅を保持、スライドはCSS変数で制御 */
   .planbar {
-    width: 300px; /* 最小幅を保持（中身の崩れ防止） */
-    transform: translateX(-100%);
     opacity: 0;
     pointer-events: none;
   }
@@ -751,17 +836,15 @@ body.no-footer .plan-form.planbar--collapsed {
     display: none !important;
   }
 
-  /* リサイズハンドルは左端に固定表示 */
+  /* リサイズハンドルは収納時のスタイル */
   .planbar-resize-handle {
-    left: 0;
     width: var(--planbar-collapsed-handle-width);
-    background: rgba(255, 255, 255, 0.95);
-    border-right: 1px solid rgba(0, 0, 0, 0.1);
-    box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
 
-    /* 収納時は中央の半透明エリアを非表示 */
+    /* 収納時は ::before を背景付きで表示 */
     &::before {
-      display: none;
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
     }
 
     /* 三角のスタイルはそのまま維持 */
@@ -769,24 +852,13 @@ body.no-footer .plan-form.planbar--collapsed {
       border-left-color: rgba(80, 109, 83, 0.5);
     }
 
-    &:hover {
+    &:hover::before {
       background: rgba(255, 255, 255, 1);
-
-      .planbar-resize-handle__grip {
-        border-left-color: rgba(80, 109, 83, 0.8);
-      }
     }
-  }
 
-  /* 地図を全幅に（ハンドル幅分のみ確保） */
-  .map {
-    left: var(--planbar-collapsed-handle-width);
-    width: calc(100% - var(--planbar-collapsed-handle-width));
-  }
-
-  /* 保存ボタンも地図中央に */
-  .plan-save {
-    left: calc(var(--planbar-collapsed-handle-width) + (100% - var(--planbar-collapsed-handle-width)) / 2);
+    &:hover .planbar-resize-handle__grip {
+      border-left-color: rgba(80, 109, 83, 0.8);
+    }
   }
 }
 
@@ -802,3 +874,19 @@ body.no-footer .plan-form .map {
 body.no-footer .plan-form .planbar-resize-handle {
   transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
 }
+
+body.no-footer .plan-form .plan-time-toggle-header,
+body.no-footer .plan-form .plan-time-slot {
+  transition: left 0.2s ease;
+}
+
+/* ✅ ドラッグ中はトランジションを無効化（ラグ防止） */
+body.planbar-resizing .plan-form .planbar,
+body.planbar-resizing .plan-form .map,
+body.planbar-resizing .plan-form .planbar-resize-handle,
+body.planbar-resizing .plan-form .plan-time-toggle-header,
+body.planbar-resizing .plan-form .plan-time-slot,
+body.planbar-resizing .plan-form .plan-save {
+  transition: none !important;
+}
+

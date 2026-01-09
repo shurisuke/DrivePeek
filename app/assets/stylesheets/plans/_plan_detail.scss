@@ -1,0 +1,472 @@
+/* app/assets/stylesheets/plans/_plan_detail.scss */
+/* ==========================================
+   プラン詳細画面（閲覧専用）
+   - plan_form.scss のスタイルを継承
+   - 編集機能を除去したシンプルなレイアウト
+========================================== */
+
+body.no-footer .plan-detail {
+  --planbar-width: 350px;
+  --planbar-slide: 0px;
+  --map-gap: 0px;
+
+  position: relative;
+  width: 100% !important;
+  height: 100vh;
+  overflow: hidden;
+
+  .map {
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+
+    left: calc(var(--planbar-width) - var(--planbar-slide));
+    width: calc(100% - (var(--planbar-width) - var(--planbar-slide) + var(--map-gap)));
+
+    height: 100%;
+    top: 0;
+    z-index: 1;
+
+    transition: left 0.2s ease, width 0.2s ease;
+  }
+
+  .planbar {
+    position: fixed;
+    top: 0;
+    left: calc(-1 * var(--planbar-slide));
+
+    width: var(--planbar-width);
+    height: 100%;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+
+    transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
+  }
+
+  .planbar-resize-handle {
+    transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
+  }
+
+  /* ✅ 詳細画面用ヘッダー */
+  .planbar__header {
+    padding: 20px 24px;
+    border-bottom: 2px solid #e5e5e5;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .planbar__title {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 5px 0 0 0;
+    line-height: 1.4;
+    text-align: center;
+  }
+
+  .planbar__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .planbar__footer {
+    padding: 16px 24px;
+    border-top: 1px solid #e5e5e5;
+    background: #fff;
+    flex-shrink: 0;
+    z-index: 10;
+  }
+
+  .planbar__content-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+
+    background: rgba(255, 255, 255, 0.95);
+    box-sizing: border-box;
+  }
+
+  .planbar__blocks {
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  /* ✅ 詳細画面用の出発地点ブロック */
+  .start-point-block--show {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .start-point-main {
+      width: 100%;
+    }
+
+    .start-label__row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      background: var(--personal);
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: 2px;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+      }
+    }
+
+    .start-text {
+      flex: 1;
+    }
+
+    .start-title {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: var(--personal);
+      margin-bottom: 4px;
+    }
+
+    .address {
+      display: block;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+    }
+
+    .distance-info {
+      margin-top: 12px;
+      padding-left: 36px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      font-size: 0.8rem;
+      color: #666;
+
+      .label {
+        color: #888;
+      }
+
+      .km, .time {
+        font-weight: 600;
+        color: #333;
+      }
+
+      .km-unit, .time-unit {
+        font-weight: normal;
+        font-size: 0.75rem;
+        color: #666;
+      }
+    }
+  }
+
+  /* ✅ スポット間の矢印 */
+  .spot-arrow {
+    display: flex;
+    justify-content: center;
+    padding: 10px 0;
+    color: var(--personal);
+    font-size: 1.75rem;
+  }
+
+  /* ✅ 詳細画面用のスポットブロック */
+  .spot-block--show {
+    padding: 16px 0; /* 左右は .spot-main の動的パディングで制御 */
+
+    &:last-child {
+      margin-bottom: 100px;
+    }
+
+    .spot-main {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+      width: 100%;
+
+      /* プランバー幅に応じて両端に余白を追加 */
+      padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+      padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+    }
+
+    .spot-order-icon {
+      width: 30px;
+      height: 30px;
+      background: var(--personal);
+      color: #fff;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      margin-top: -5px;
+    }
+
+    .spot-body {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .spot-name {
+      font-size: 1rem;
+      font-weight: 600;
+      color: #1a1a1a;
+      margin-bottom: 15px;
+      line-height: 1.4;
+
+      &--clickable {
+        cursor: pointer;
+        transition: color 0.2s;
+
+        &:hover {
+          color: var(--personal);
+        }
+      }
+    }
+
+    .spot-address {
+      font-size: 0.85rem;
+      color: #666;
+      margin-bottom: 12px;
+      line-height: 1.4;
+    }
+
+    .spot-genres {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 6px;
+      margin-bottom: 8px;
+    }
+
+    .genre-chip {
+      font-size: 0.7rem;
+      background: #f0f0f0;
+      color: #555;
+      padding: 2px 8px;
+      border-radius: 12px;
+    }
+
+    .spot-memo {
+      background: #f8f9fa;
+      border-left: 3px solid var(--personal);
+      padding: 8px 12px;
+      margin: 8px 0;
+      border-radius: 0 4px 4px 0;
+
+      &__content {
+        font-size: 0.85rem;
+        color: #333;
+        line-height: 1.5;
+
+        p {
+          margin: 0;
+        }
+      }
+    }
+
+    .spot-next-move {
+      width: 265px;
+      font-size: 0.9rem;
+
+      display: grid;
+      grid-template-columns: 1fr auto auto;
+      align-items: center;
+      gap: 10px;
+
+      margin: 20px auto 0;
+
+      .label {
+        font-size: 0.82rem;
+        font-weight: 500;
+        color: rgb(35, 35, 35);
+      }
+
+      .km, .time {
+        font-weight: 400;
+        font-size: calc(1em + 2px);
+        color: #2d2d2d;
+        padding-left: 12px;
+        border-left: 1px solid rgba(0, 0, 0, 0.10);
+      }
+
+      .km-unit, .time-unit {
+        font-size: 13px;
+        margin-left: 2px;
+      }
+    }
+
+    .toll-indicator {
+      text-align: center;
+      margin-top: 8px;
+      font-size: 0.75rem;
+      color: #888;
+    }
+  }
+
+  /* ✅ 詳細画面用の帰宅地点ブロック */
+  .goal-point-block--show {
+    padding: 16px 24px;
+    border-bottom: 1px solid #f0f0f0;
+
+    .goal-point-main {
+      width: 100%;
+    }
+
+    .goal-label__row {
+      display: flex;
+      align-items: flex-start;
+      gap: 12px;
+    }
+
+    .icon {
+      width: 24px;
+      height: 24px;
+      background: #dc3545;
+      border-radius: 50%;
+      flex-shrink: 0;
+      position: relative;
+      margin-top: 2px;
+
+      &::after {
+        content: "";
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        width: 8px;
+        height: 8px;
+        background: #fff;
+        border-radius: 50%;
+      }
+    }
+
+    .goal-text {
+      flex: 1;
+    }
+
+    .goal-title {
+      display: block;
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #dc3545;
+      margin-bottom: 4px;
+    }
+
+    .address {
+      display: block;
+      font-size: 0.9rem;
+      color: #333;
+      line-height: 1.5;
+    }
+  }
+
+  /* ✅ plan_info は既存スタイルを継承 */
+  .plan-info {
+    background: #f8f9fa;
+    border-top: 1px solid #e5e5e5;
+    padding: 16px 24px;
+    margin-top: 0;
+
+    display: flex;
+    justify-content: center;
+    gap: 32px;
+
+    &__row {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin: 0;
+      font-size: 14px;
+      color: #333;
+    }
+
+    &__label {
+      white-space: nowrap;
+      color: #666;
+    }
+
+    &__value {
+      font-weight: 600;
+      white-space: nowrap;
+    }
+  }
+}
+
+/* ==========================================
+   ✅ プランバー収納時のスタイル（詳細画面）
+========================================== */
+body.no-footer .plan-detail.planbar--collapsed {
+  /* 収納時のハンドル幅 */
+  --planbar-collapsed-handle-width: 24px;
+
+  /* プランバー本体は非表示 */
+  .planbar {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  /* リサイズハンドルは収納時のスタイル */
+  .planbar-resize-handle {
+    width: var(--planbar-collapsed-handle-width);
+
+    /* 収納時は ::before を背景付きで表示 */
+    &::before {
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    /* 三角のスタイルはそのまま維持 */
+    &__grip {
+      border-left-color: rgba(80, 109, 83, 0.5);
+    }
+
+    &:hover::before {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    &:hover .planbar-resize-handle__grip {
+      border-left-color: rgba(80, 109, 83, 0.8);
+    }
+  }
+}
+
+/* ✅ ドラッグ中はトランジションを無効化（ラグ防止） */
+body.planbar-resizing .plan-detail .planbar,
+body.planbar-resizing .plan-detail .map,
+body.planbar-resizing .plan-detail .planbar-resize-handle {
+  transition: none !important;
+}
+

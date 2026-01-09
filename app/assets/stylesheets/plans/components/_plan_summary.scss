@@ -1,0 +1,65 @@
+// app/assets/stylesheets/plans/components/_plan_summary.scss
+// ================================================================
+// Plan Summary（距離・時間サマリー共通スタイル）
+// 用途: 編集画面フッター、詳細画面フッターで共通使用
+// ================================================================
+
+.plan-summary {
+  display: flex;
+  justify-content: center;
+  gap: 32px;
+}
+
+.plan-summary__item {
+  display: flex;
+  align-items: baseline;
+  gap: 6px;
+  color: #333;
+  font-size: 0.9rem;
+
+  i {
+    color: var(--personal);
+    font-size: 1rem;
+    align-self: center;
+  }
+}
+
+.plan-summary__value {
+  font-weight: 500;
+  font-size: 1.1rem;
+  display: inline-flex;
+  align-items: baseline;
+}
+
+.plan-summary__unit {
+  font-size: 13px;
+  margin-left: 1px;
+  margin-right: 2px;
+  color: #666;
+
+  &:last-child {
+    margin-right: 0;
+  }
+}
+
+.plan-summary__minutes {
+  margin-left: 2px;
+}
+
+// ✅ 帰宅地点トグルによる切り替え用
+.plan-summary--spots-only {
+  display: flex;
+}
+
+.plan-summary--with-goal {
+  display: none;
+}
+
+// ✅ 帰宅地点ON時: 帰宅込みの値に切り替え
+body.goal-point-visible .plan-summary--spots-only {
+  display: none;
+}
+
+body.goal-point-visible .plan-summary--with-goal {
+  display: flex;
+}

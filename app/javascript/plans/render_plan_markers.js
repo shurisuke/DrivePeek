@@ -17,7 +17,7 @@ import { showInfoWindowForPin } from "map/infowindow"
 // ================================================================
 // SVG番号ピン生成
 // - 丸型のオレンジピンに番号を表示
-// - 色はspot-order-pinと同じ #ef813d
+// - 色はspot-order-iconと同じ #ef813d
 // ================================================================
 const SPOT_PIN_COLOR = "#ef813d"
 
@@ -118,7 +118,7 @@ const getSpotInfoFromDom = () => {
       address: addressEl?.textContent?.trim() || null,
       lat: Number(block.dataset.lat),
       lng: Number(block.dataset.lng),
-      photoUrl: block.dataset.photoUrl || null,
+      placeId: block.dataset.placeId || null,
     })
   })
 
@@ -227,13 +227,33 @@ export const renderPlanMarkers = (planData) => {
       })
 
       // ✅ クリックでInfoWindow表示（ボタンなし）
+      // placeIdがあればPlaces APIから写真を取得
       marker.addListener("click", () => {
-        showInfoWindowForPin({
-          marker,
-          name: spotInfo.name || `スポット ${spotNumber}`,
-          address: spotInfo.address,
-          photoUrl: spotInfo.photoUrl,
-        })
+        if (spotInfo.placeId && google.maps.places) {
+          const service = new google.maps.places.PlacesService(map)
+          service.getDetails(
+            { placeId: spotInfo.placeId, fields: ["photos"] },
+            (place, status) => {
+              let photoUrl = null
+              if (status === google.maps.places.PlacesServiceStatus.OK && place?.photos?.[0]) {
+                photoUrl = place.photos[0].getUrl({ maxWidth: 520 })
+              }
+              showInfoWindowForPin({
+                marker,
+                name: spotInfo.name || `スポット ${spotNumber}`,
+                address: spotInfo.address,
+                photoUrl,
+              })
+            }
+          )
+        } else {
+          showInfoWindowForPin({
+            marker,
+            name: spotInfo.name || `スポット ${spotNumber}`,
+            address: spotInfo.address,
+            photoUrl: null,
+          })
+        }
       })
 
       return marker

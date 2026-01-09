@@ -15,6 +15,8 @@
 
 import { getPlanDataFromPage } from "plans/plan_data"
 import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitMarkers } from "map/state"
+import { isEditPage } from "map/utils"
+import { ROUTE_POLYLINE_STYLE } from "map/constants"
 
 let bound = false
 let cachedPlanData = null
@@ -112,9 +114,7 @@ const renderRoutePolylines = () => {
       return new google.maps.Polyline({
         path,
         map,
-        strokeColor: "#D4846A",  // ダスティコーラル
-        strokeOpacity: 0.85,
-        strokeWeight: 4,
+        ...ROUTE_POLYLINE_STYLE,
       })
     } catch (e) {
       console.warn("[plan_map_sync] Failed to decode polyline:", e)
@@ -183,6 +183,12 @@ export const bindPlanMapSync = () => {
 
   // ✅ Turbo遷移後もキャッシュを最新化（bound=trueで再バインドされないため）
   document.addEventListener("turbo:load", () => {
+    // ✅ show画面ではスキップ（init_map_show.js が独自に処理する）
+    if (!isEditPage()) {
+      console.log("[plan_map_sync] turbo:load - not edit page, skip")
+      return
+    }
+
     const fresh = getPlanDataFromPage()
     if (fresh) {
       cachedPlanData = fresh

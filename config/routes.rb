@@ -31,7 +31,7 @@ Rails.application.routes.draw do
     resources :my_plans, only: %i[index]
   end
 
-  resources :plans, only: %i[index new create edit update destroy] do
+  resources :plans, only: %i[index show new create edit update destroy] do
     resource :planbar, only: %i[show]
 
     # Turbo Stream用（destroyのみ残す）

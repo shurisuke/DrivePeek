@@ -54,6 +54,8 @@ export const setStartPointMarker = (marker) => {
   startPointMarker = marker;
 };
 
+export const getStartPointMarker = () => startPointMarker;
+
 // --- 帰宅地点マーカー ---
 export const clearEndPointMarker = () => {
   if (endPointMarker) {
@@ -67,6 +69,8 @@ export const setEndPointMarker = (marker) => {
   endPointMarker = marker;
 };
 
+export const getEndPointMarker = () => endPointMarker;
+
 // --- プラン内スポットマーカー ---
 export const clearPlanSpotMarkers = () => {
   planSpotMarkers.forEach((m) => m.setMap(null));
@@ -77,6 +81,8 @@ export const setPlanSpotMarkers = (markers) => {
   clearPlanSpotMarkers();
   planSpotMarkers = markers;
 };
+
+export const getPlanSpotMarkers = () => planSpotMarkers;
 
 // --- 検索ヒットマーカー ---
 export const clearSearchHitMarkers = () => {

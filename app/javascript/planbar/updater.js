@@ -114,6 +114,9 @@ export const bindPlanbarRefresh = () => {
     if (!planId) return
     await refreshPlanbar(planId)
     scrollToBottom()
+
+    // スポット追加後はプランタブをアクティブにする
+    document.dispatchEvent(new CustomEvent("navibar:activate-tab", { detail: { tab: "plan" } }))
   })
 
   document.addEventListener("plan:spots-reordered", async () => {

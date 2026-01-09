@@ -1,0 +1,28 @@
+<% if plan.plan_spots.size >= 1 %>
+  <div class="planbar__footer" data-navibar-target="footer" data-tab="plan">
+    <%# 帰宅地点OFF時の表示（出発地点→最後のスポットまで） %>
+    <div class="plan-summary plan-summary--spots-only">
+      <div class="plan-summary__item">
+        <i class="bi bi-signpost-2" aria-hidden="true"></i>
+        <span class="plan-summary__value"><%= plan.start_to_last_spot_distance %></span>
+        <span class="plan-summary__unit">km</span>
+      </div>
+      <div class="plan-summary__item">
+        <i class="bi bi-clock" aria-hidden="true"></i>
+        <span class="plan-summary__value"><%= format_move_time(plan.start_to_last_spot_move_time) %></span>
+      </div>
+    </div>
+    <%# 帰宅地点ON時の表示（出発地点→帰宅地点まで） %>
+    <div class="plan-summary plan-summary--with-goal">
+      <div class="plan-summary__item">
+        <i class="bi bi-signpost-2" aria-hidden="true"></i>
+        <span class="plan-summary__value"><%= plan.total_distance %></span>
+        <span class="plan-summary__unit">km</span>
+      </div>
+      <div class="plan-summary__item">
+        <i class="bi bi-clock" aria-hidden="true"></i>
+        <span class="plan-summary__value"><%= format_move_time(plan.total_move_time) %></span>
+      </div>
+    </div>
+  </div>
+<% end %>
