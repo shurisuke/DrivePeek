@@ -15,15 +15,11 @@
 
 import { getPlanDataFromPage } from "plans/plan_data"
 import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitMarkers } from "map/state"
+import { isEditPage } from "map/utils"
+import { ROUTE_POLYLINE_STYLE } from "map/constants"
 
 let bound = false
 let cachedPlanData = null
-
-// ✅ 編集画面かどうかを判定（show画面では plan_map_sync を動かさない）
-const isEditPage = () => {
-  const mapElement = document.getElementById("map")
-  return mapElement && mapElement.dataset.mapMode === "edit"
-}
 
 // ✅ DOM から最新のスポット情報を収集する
 const getSpotsFromDom = () => {
@@ -118,9 +114,7 @@ const renderRoutePolylines = () => {
       return new google.maps.Polyline({
         path,
         map,
-        strokeColor: "#D4846A",  // ダスティコーラル
-        strokeOpacity: 0.85,
-        strokeWeight: 4,
+        ...ROUTE_POLYLINE_STYLE,
       })
     } catch (e) {
       console.warn("[plan_map_sync] Failed to decode polyline:", e)
