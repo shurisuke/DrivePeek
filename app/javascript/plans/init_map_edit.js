@@ -6,7 +6,7 @@
 //       - 地図生成
 //       - 検索ボックス
 //       - POIクリック（追加ボタンあり）
-//       - 各種ハンドラー
+//       - 編集画面専用ハンドラーのバインド
 // ================================================================
 
 import { renderMap } from "map/render_map"
@@ -14,6 +14,7 @@ import { setupSearchBox } from "map/search_box"
 import { setupPoiClickForEdit } from "map/poi_click"
 import { addCurrentLocationMarker } from "map/current_location"
 import { getPlanDataFromPage } from "plans/plan_data"
+import { waitForGoogleMaps, isEditPage } from "map/utils"
 import { bindSpotAddHandler } from "plans/spot_add_handler"
 import { bindPlanbarRefresh } from "planbar/updater"
 import { bindPlanMapSync } from "plans/plan_map_sync"
@@ -23,45 +24,13 @@ import { bindStayDurationHandler } from "plans/stay_duration_handler"
 
 console.log("[init_map_edit] module loaded")
 
-// プラン編集画面で必要な "購読" はここで一括バインド（複数回呼んでも内部でガード）
+// 編集画面専用ハンドラーをバインド（各ハンドラーは内部で二重バインド防止済み）
 bindSpotAddHandler()
 bindPlanbarRefresh()
 bindPlanMapSync()
 bindSpotReorderHandler()
 bindTollUsedHandler()
 bindStayDurationHandler()
-
-/**
- * Google Maps APIが利用可能になるまで待機する
- */
-const waitForGoogleMaps = (maxWait = 5000, interval = 100) => {
-  return new Promise((resolve) => {
-    if (typeof google !== "undefined" && google.maps) {
-      resolve(true)
-      return
-    }
-
-    const startTime = Date.now()
-    const checkInterval = setInterval(() => {
-      if (typeof google !== "undefined" && google.maps) {
-        clearInterval(checkInterval)
-        resolve(true)
-      } else if (Date.now() - startTime > maxWait) {
-        clearInterval(checkInterval)
-        console.error("[init_map_edit] Google Maps API の読み込みがタイムアウトしました")
-        resolve(false)
-      }
-    }, interval)
-  })
-}
-
-/**
- * 編集画面かどうかを判定
- */
-const isEditPage = () => {
-  const mapElement = document.getElementById("map")
-  return mapElement && mapElement.dataset.mapMode === "edit"
-}
 
 document.addEventListener("turbo:load", async () => {
   console.log("[init_map_edit] turbo:load fired")
