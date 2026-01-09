@@ -49,8 +49,7 @@
   background: #ffffff;
   border-radius: 6px;
 
-  padding: 0.5rem 0.5rem 1rem 0.5rem;
-  padding-top: 20px;
+  padding: 20px 0 1rem 0; /* 左右は .spot-main の動的パディングで制御 */
 
   box-sizing: border-box;
 }
@@ -90,16 +89,19 @@
   gap: 10px;
   margin-bottom: 6px;
   position: relative;
+
+  /* プランバー幅に応じて両端に余白を追加 */
+  padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+  padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
 }
 
-.spot-block .spot-order-pin {
-  position: absolute;
-  top: 1%;
-  /* プランバー幅に応じてアイコン位置を変化 */
-  left: calc(0px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.30));
+.spot-block .spot-order-icon {
+  flex-shrink: 0;
+  margin-top: -5px;
+  margin-left: 3px;
 
-  width: 34px;
-  height: 34px;
+  width: 30px;
+  height: 30px;
   border-radius: 9999px;
 
   background: #ef813de9;
@@ -126,10 +128,7 @@
   font-weight: 700;
   text-align: center;
   color: #222;
-
-  max-width: 500px;
-  margin: 0 auto;
-  padding: 0 var(--spot-fav-safe);
+  margin-bottom: 4px;
 
   white-space: nowrap;
   overflow: hidden;
@@ -137,12 +136,9 @@
 }
 
 .spot-block .spot-address {
-  margin-top: 4px;
   font-size: 13px;
   text-align: center;
   color: rgba(82, 82, 82, 0.78);
-
-  padding: 0 var(--spot-fav-safe);
 
   white-space: nowrap;
   overflow: hidden;
@@ -159,8 +155,6 @@
   flex-wrap: wrap;
   justify-content: center;
   gap: 6px;
-
-  padding: 0 var(--spot-fav-safe);
 }
 
 .spot-block .genre-chip {
@@ -168,14 +162,13 @@
   align-items: center;
   justify-content: center;
 
-  padding: 3px 10px;
-  border-radius: 9999px;
+  padding: 2px 8px;
+  border-radius: 12px;
 
-  font-size: 0.75rem;
+  font-size: 0.7rem;
   border: none;
-  background: #f0f4f0;
-  color: #506d53;
-  font-weight: 500;
+  background: #f0f0f0;
+  color: #555;
 }
 
 /* ------------------------------------------

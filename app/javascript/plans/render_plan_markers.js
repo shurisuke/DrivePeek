@@ -17,7 +17,7 @@ import { showInfoWindowForPin } from "map/infowindow"
 // ================================================================
 // SVG番号ピン生成
 // - 丸型のオレンジピンに番号を表示
-// - 色はspot-order-pinと同じ #ef813d
+// - 色はspot-order-iconと同じ #ef813d
 // ================================================================
 const SPOT_PIN_COLOR = "#ef813d"
 

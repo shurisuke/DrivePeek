@@ -21,16 +21,7 @@
   <%# ✅ 左側: 既存コンテンツ（350px） %>
   <div class="block-main-content">
     <div class="spot-main">
-      <div class="spot-order-pin" aria-hidden="true"><%= plan_spot.position %></div>
-
-      <button type="button"
-              class="spot-map-btn"
-              data-spot-index="<%= plan_spot.position - 1 %>"
-              data-controller="planbar-marker-button"
-              data-action="click->planbar-marker-button#spot"
-              aria-label="地図で表示">
-        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-      </button>
+      <div class="spot-order-icon" aria-hidden="true"><%= plan_spot.position %></div>
 
       <div class="spot-body">
         <% if spot.name.present? %>
@@ -62,20 +53,29 @@
             ×
           </button>
         </div>
-
-        <%# ✅ 次の場所まで（最後のスポット＆帰宅地点非表示時はJSで非表示） %>
-        <% move_minutes = plan_spot.move_time.to_i %>
-        <% hours = move_minutes / 60 %>
-        <% minutes = move_minutes % 60 %>
-
-        <div class="spot-next-move mt-3" data-plan-time-role="spot-next-move">
-          <span class="label">次の場所まで</span>
-          <span class="km">
-            <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
-          </span>
-          <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
-        </div>
       </div>
+
+      <button type="button"
+              class="spot-map-btn"
+              data-spot-index="<%= plan_spot.position - 1 %>"
+              data-controller="planbar-marker-button"
+              data-action="click->planbar-marker-button#spot"
+              aria-label="地図で表示">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+      </button>
+    </div>
+
+    <%# ✅ 次の場所まで（3カラム構造の外に配置） %>
+    <% move_minutes = plan_spot.move_time.to_i %>
+    <% hours = move_minutes / 60 %>
+    <% minutes = move_minutes % 60 %>
+
+    <div class="spot-next-move" data-plan-time-role="spot-next-move">
+      <span class="label">次の場所まで</span>
+      <span class="km">
+        <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
+      </span>
+      <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
     </div>
 
     <div class="spot-detail-wrap">
