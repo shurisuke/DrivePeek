@@ -14,6 +14,21 @@ module PlansHelper
   # 全都道府県のフラットリスト
   PREFECTURES = PREFECTURES_BY_REGION.values.flatten.freeze
 
+  # 移動時間をフォーマットして表示（分 → "X時間Y分" or "Y分"）
+  def format_move_time(minutes)
+    minutes = minutes.to_i
+    return "0分" if minutes.zero?
+
+    hours = minutes / 60
+    remaining_minutes = minutes % 60
+
+    if hours.positive?
+      "#{hours}時間#{remaining_minutes}分"
+    else
+      "#{remaining_minutes}分"
+    end
+  end
+
   # 距離をフォーマットして表示
   # - 10km以上（整数部2桁以上）: 整数部のみ表示
   # - 10km未満: 小数点以下1桁まで表示
@@ -53,17 +68,7 @@ module PlansHelper
 
   # スポット間のみの合計移動時間（フォーマット済み文字列）
   def spots_only_formatted_move_time(plan)
-    minutes = spots_only_move_time(plan)
-    return "0分" if minutes.zero?
-
-    hours = minutes / 60
-    remaining_minutes = minutes % 60
-
-    if hours.positive?
-      "#{hours}時間#{remaining_minutes}分"
-    else
-      "#{remaining_minutes}分"
-    end
+    format_move_time(spots_only_move_time(plan))
   end
 
   # スポット間のみの合計ETC料金

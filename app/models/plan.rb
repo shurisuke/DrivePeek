@@ -101,6 +101,46 @@ class Plan < ApplicationRecord
     time
   end
 
+  # ✅ スポット間のみの合計距離（公開用：start→spot1 と lastSpot→goal を除く）
+  def spots_only_distance
+    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+    return 0.0 if ordered_spots.size < 2
+
+    # 最後のスポット以外の move_distance を合計
+    ordered_spots[0..-2].sum(&:move_distance).to_f.round(1)
+  end
+
+  # ✅ スポット間のみの合計時間（公開用：start→spot1 と lastSpot→goal を除く）
+  def spots_only_move_time
+    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+    return 0 if ordered_spots.size < 2
+
+    # 最後のスポット以外の move_time を合計
+    ordered_spots[0..-2].sum(&:move_time).to_i
+  end
+
+  # ✅ 出発地点→最後のスポットまでの距離（帰宅地点を除く）
+  def start_to_last_spot_distance
+    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+    return 0.0 if ordered_spots.empty?
+
+    distance = start_point&.move_distance.to_f
+    # 最後のスポット以外の move_distance を合計（最後のスポットは帰宅地点への距離）
+    distance += ordered_spots[0..-2].sum(&:move_distance) if ordered_spots.size > 1
+    distance.round(1)
+  end
+
+  # ✅ 出発地点→最後のスポットまでの時間（帰宅地点を除く）
+  def start_to_last_spot_move_time
+    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+    return 0 if ordered_spots.empty?
+
+    time = start_point&.move_time.to_i
+    # 最後のスポット以外の move_time を合計（最後のスポットは帰宅地点への時間）
+    time += ordered_spots[0..-2].sum(&:move_time) if ordered_spots.size > 1
+    time
+  end
+
   # ✅ 合計移動時間（フォーマット済み文字列）
   def formatted_move_time
     minutes = total_move_time
