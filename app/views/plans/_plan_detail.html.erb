@@ -5,38 +5,38 @@
 </script>
 
 <div class="main-content plan-detail"
-     data-controller="planbar-resize"
-     data-planbar-resize-min-value="300"
-     data-planbar-resize-max-percent-value="88"
-     data-planbar-resize-default-value="350"
-     data-planbar-resize-storage-key-value="drive_peek:planbar_detail_width"
-     data-planbar-resize-collapsed-key-value="drive_peek:planbar_detail_collapsed"
-     data-planbar-resize-slide-key-value="drive_peek:planbar_detail_slide">
+     data-controller="navibar-resize"
+     data-navibar-resize-min-value="300"
+     data-navibar-resize-max-percent-value="88"
+     data-navibar-resize-default-value="350"
+     data-navibar-resize-storage-key-value="drive_peek:planbar_detail_width"
+     data-navibar-resize-collapsed-key-value="drive_peek:planbar_detail_collapsed"
+     data-navibar-resize-slide-key-value="drive_peek:planbar_detail_slide">
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-planbar-resize-target="map"></div>
+  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-navibar-resize-target="map"></div>
 
   <!-- リサイズハンドル -->
-  <div class="planbar-resize-handle"
-       data-planbar-resize-target="handle"
-       data-action="mousedown->planbar-resize#startResize touchstart->planbar-resize#startResize click->planbar-resize#handleClick">
-    <div class="planbar-resize-handle__grip"></div>
+  <div class="navibar-resize-handle"
+       data-navibar-resize-target="handle"
+       data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
+    <div class="navibar-resize-handle__grip"></div>
   </div>
 
   <!-- ナビバー（詳細用・1タブ） -->
-  <aside class="planbar planbar--show">
-    <div class="planbar__content">
-      <div class="planbar__content-scroll">
-        <div class="planbar__header">
-          <h1 class="planbar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
+  <aside class="navibar navibar--show">
+    <div class="navibar__content">
+      <div class="navibar__content-scroll">
+        <div class="navibar__header">
+          <h1 class="navibar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
         </div>
-        <div class="planbar__blocks">
+        <div class="navibar__blocks">
           <%= render "plans/plan_content_show", plan: @plan %>
         </div>
       </div>
     </div>
 
     <% if @plan.plan_spots.size >= 2 %>
-      <div class="planbar__footer">
+      <div class="navibar__footer">
         <div class="plan-summary">
           <div class="plan-summary__item">
             <i class="bi bi-signpost-2" aria-hidden="true"></i>

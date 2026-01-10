@@ -1,4 +1,4 @@
-<aside class="planbar" data-controller="navibar">
+<aside class="navibar" data-controller="navibar">
   <div class="plan-tab-nav">
     <button class="tab-btn tab-community"
             data-tab="community"
@@ -22,17 +22,17 @@
     </button>
   </div>
 
-  <div class="planbar__content" id="planbar_content">
+  <div class="navibar__content" id="navibar_content">
     <%# ✅ スクロールコンテナ: OFF時350px / ON時430px %>
-    <div class="planbar__content-scroll">
+    <div class="navibar__content-scroll">
       <%# ブロック一覧（常時350px） %>
-      <div class="planbar__blocks" id="planbar_blocks">
-        <%= render "plans/planbar_tabs", plan: plan %>
+      <div class="navibar__blocks" id="navibar_blocks">
+        <%= render "plans/navibar_tabs", plan: plan %>
       </div>
     </div>
   </div>
 
-  <div id="planbar_footer">
-    <%= render "plans/planbar_footer", plan: plan %>
+  <div id="navibar_footer">
+    <%= render "plans/navibar_footer", plan: plan %>
   </div>
 </aside>
