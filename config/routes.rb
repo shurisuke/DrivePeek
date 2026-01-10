@@ -41,6 +41,7 @@ Rails.application.routes.draw do
   # API エンドポイント
   namespace :api do
     resources :plans, only: [] do
+      resource :preview, only: %i[show], controller: "plans/previews"
       resource :start_point, only: %i[update]
       resource :goal_point, only: %i[update]
 
