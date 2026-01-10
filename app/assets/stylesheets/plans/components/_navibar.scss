@@ -17,13 +17,13 @@
 }
 
 /* AI提案タブ選択時: 親スクロールを無効化 */
-.planbar__content-scroll:has(.tab-ai.active) {
+.navibar__content-scroll:has(.tab-ai.active) {
   overflow-y: hidden;
 }
 
 html { scrollbar-gutter: stable; }
 
-.planbar__content {
+.navibar__content {
   overflow-y: scroll;        /* auto → scroll */
   scrollbar-gutter: stable;
   min-height: 0;

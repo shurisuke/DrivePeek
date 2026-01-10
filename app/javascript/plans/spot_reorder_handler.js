@@ -6,8 +6,8 @@
 //       並び替え完了時にサーバーへ position を保存する
 //
 // ✅ 安定化ポイント
-// - planbar差し替え直前(planbar:will-update)に destroy してリーク/多重を防ぐ
-// - planbar差し替え直後(planbar:updated)に init（差し替え後DOMにだけ付ける）
+// - navibar差し替え直前(navibar:will-update)に destroy してリーク/多重を防ぐ
+// - navibar差し替え直後(navibar:updated)に init（差し替え後DOMにだけ付ける）
 // - Sortable.get(container) で「既に付いているか」を判定して多重生成を防ぐ
 // ================================================================
 
@@ -30,8 +30,8 @@ const requestInitSortable = (delay = 0) => {
 }
 
 const getContainer = () => {
-  // planbar内のものだけを拾う（将来の拡張にも強い）
-  const el = document.querySelector(".planbar #plan-spots-sortable")
+  // navibar内のものだけを拾う（将来の拡張にも強い）
+  const el = document.querySelector(".navibar #plan-spots-sortable")
   return el || document.getElementById("plan-spots-sortable")
 }
 
@@ -122,7 +122,7 @@ const initSortable = () => {
         alert(err.message)
         document.dispatchEvent(new CustomEvent("plan:spots-reordered"))
       }
-      // ✅ ここでは再initしない（planbar_updater が差し替えて planbar:updated を出す）
+      // ✅ ここでは再initしない（navibar_updater が差し替えて navibar:updated を出す）
     },
   })
 
@@ -138,9 +138,9 @@ export const bindSpotReorderHandler = () => {
   // 初回
   document.addEventListener("turbo:load", () => requestInitSortable(0))
 
-  // ✅ planbar差し替えとペアで運用（これが最重要）
-  document.addEventListener("planbar:will-update", destroySortable)
-  document.addEventListener("planbar:updated", () => requestInitSortable(0))
+  // ✅ navibar差し替えとペアで運用（これが最重要）
+  document.addEventListener("navibar:will-update", destroySortable)
+  document.addEventListener("navibar:updated", () => requestInitSortable(0))
 
   // キャッシュ時
   document.addEventListener("turbo:before-cache", destroySortable)

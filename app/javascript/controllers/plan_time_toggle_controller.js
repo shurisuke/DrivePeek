@@ -2,7 +2,7 @@
 // ================================================================
 // 時刻表示のON/OFFトグル
 // - body.plan-time-open を切り替える（表示状態の唯一の真実）
-// - Turbo Frame(planbar) 再描画後に
+// - Turbo Frame(navibar) 再描画後に
 //   1) 開閉状態（body class）を復元
 //   2) scrollTop を復元
 //   3) スクロールコンテナ幅を再適用（CSSが効かない時の保険で inline も使う）
@@ -12,8 +12,8 @@ import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   static values = {
-    planbarSelector: { type: String, default: ".planbar" },
-    frameId: { type: String, default: "planbar" },
+    navibarSelector: { type: String, default: ".navibar" },
+    frameId: { type: String, default: "navibar" },
     storageKey: { type: String, default: "drive_peek:plan_time_open" },
   }
 
@@ -175,7 +175,7 @@ export default class extends Controller {
     }
 
     // ✅ open の時だけ rail分の幅を確実に確保
-    scroll.style.width = "calc(var(--planbar-width) + var(--rail-width))"
+    scroll.style.width = "calc(var(--navibar-width) + var(--rail-width))"
 
     // ついでに再描画直後のレイアウト確定を促す（スクロール不能対策の保険）
     // ※副作用が少ない read
@@ -183,8 +183,8 @@ export default class extends Controller {
   }
 
   findPlanbarScroll() {
-    const planbar = document.querySelector(this.planbarSelectorValue)
-    return planbar ? planbar.querySelector(".planbar__content-scroll") : null
+    const navibar = document.querySelector(this.navibarSelectorValue)
+    return navibar ? navibar.querySelector(".navibar__content-scroll") : null
   }
 
   // ------------------------------------------------------------
@@ -224,10 +224,10 @@ export default class extends Controller {
   }
 
   isPlanActive() {
-    const planbar = document.querySelector(this.planbarSelectorValue)
-    if (!planbar) return false
+    const navibar = document.querySelector(this.navibarSelectorValue)
+    if (!navibar) return false
 
-    const planBtn = planbar.querySelector('[data-tab="plan"]')
+    const planBtn = navibar.querySelector('[data-tab="plan"]')
     return !!planBtn && planBtn.classList.contains("active")
   }
 }

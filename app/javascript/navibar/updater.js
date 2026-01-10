@@ -1,7 +1,7 @@
-// app/javascript/planbar/updater.js
+// app/javascript/navibar/updater.js
 // ================================================================
 // Planbar Updater（単一責務）
-// 用途: planbar を Turbo Stream で差し替えて、UI 状態を復元する
+// 用途: navibar を Turbo Stream で差し替えて、UI 状態を復元する
 // ================================================================
 
 import { getPlanDataFromPage } from "plans/plan_data"
@@ -16,7 +16,7 @@ import {
   restoreGoalPointVisibilityState,
   updateDepartureTimeClass,
   withNoCollapseAnimation,
-} from "planbar/ui_state"
+} from "navibar/ui_state"
 
 import {
   getPlanbarScrollEl,
@@ -27,7 +27,7 @@ import {
   capturePlanbarScrollState,
   restorePlanbarScrollState,
   scrollToBottom,
-} from "planbar/scroll_state"
+} from "navibar/scroll_state"
 
 let bound = false
 
@@ -52,21 +52,21 @@ const refreshPlanbar = async (planId) => {
   const scrollState = capturePlanbarScrollState()
   const goalPointState = captureGoalPointVisibilityState()
 
-  document.dispatchEvent(new CustomEvent("planbar:will-update"))
+  document.dispatchEvent(new CustomEvent("navibar:will-update"))
 
   lockPlanbarUI()
 
   let html = null
   try {
-    html = await fetchTurboStream(`/plans/${planId}/planbar`)
+    html = await fetchTurboStream(`/plans/${planId}/navibar`)
   } catch (err) {
-    console.warn("[planbar/updater] refreshPlanbar failed", { planId, error: err.message })
+    console.warn("[navibar/updater] refreshPlanbar failed", { planId, error: err.message })
     unlockPlanbarUI()
     return
   }
 
   if (!window.Turbo) {
-    console.error("[planbar/updater] Turbo is not available on window")
+    console.error("[navibar/updater] Turbo is not available on window")
     unlockPlanbarUI()
     return
   }
@@ -94,7 +94,7 @@ const refreshPlanbar = async (planId) => {
       restorePlanbarScrollState(scrollState)
     })
 
-    document.dispatchEvent(new CustomEvent("planbar:updated"))
+    document.dispatchEvent(new CustomEvent("navibar:updated"))
     document.dispatchEvent(new CustomEvent("map:route-updated"))
   } finally {
     endPlanbarUpdate()

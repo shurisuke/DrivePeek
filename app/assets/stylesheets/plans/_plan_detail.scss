@@ -6,8 +6,8 @@
 ========================================== */
 
 body.no-footer .plan-detail {
-  --planbar-width: 350px;
-  --planbar-slide: 0px;
+  --navibar-width: 350px;
+  --navibar-slide: 0px;
   --map-gap: 0px;
 
   position: relative;
@@ -20,8 +20,8 @@ body.no-footer .plan-detail {
     background-position: center;
     position: absolute;
 
-    left: calc(var(--planbar-width) - var(--planbar-slide));
-    width: calc(100% - (var(--planbar-width) - var(--planbar-slide) + var(--map-gap)));
+    left: calc(var(--navibar-width) - var(--navibar-slide));
+    width: calc(100% - (var(--navibar-width) - var(--navibar-slide) + var(--map-gap)));
 
     height: 100%;
     top: 0;
@@ -30,12 +30,12 @@ body.no-footer .plan-detail {
     transition: left 0.2s ease, width 0.2s ease;
   }
 
-  .planbar {
+  .navibar {
     position: fixed;
     top: 0;
-    left: calc(-1 * var(--planbar-slide));
+    left: calc(-1 * var(--navibar-slide));
 
-    width: var(--planbar-width);
+    width: var(--navibar-width);
     height: 100%;
 
     background: rgba(255, 255, 255, 0.95);
@@ -50,12 +50,12 @@ body.no-footer .plan-detail {
     transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
   }
 
-  .planbar-resize-handle {
+  .navibar-resize-handle {
     transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
   }
 
   /* ✅ 詳細画面用ヘッダー */
-  .planbar__header {
+  .navibar__header {
     padding: 20px 24px;
     border-bottom: 2px solid #e5e5e5;
     background: #fff;
@@ -64,7 +64,7 @@ body.no-footer .plan-detail {
     justify-content: center;
   }
 
-  .planbar__title {
+  .navibar__title {
     font-size: 1.25rem;
     font-weight: 700;
     color: #1a1a1a;
@@ -73,14 +73,14 @@ body.no-footer .plan-detail {
     text-align: center;
   }
 
-  .planbar__content {
+  .navibar__content {
     flex: 1 1 auto;
     min-height: 0;
     overflow: hidden;
     position: relative;
   }
 
-  .planbar__footer {
+  .navibar__footer {
     padding: 16px 24px;
     border-top: 1px solid #e5e5e5;
     background: #fff;
@@ -88,7 +88,7 @@ body.no-footer .plan-detail {
     z-index: 10;
   }
 
-  .planbar__content-scroll {
+  .navibar__content-scroll {
     position: absolute;
     top: 0;
     left: 0;
@@ -104,7 +104,7 @@ body.no-footer .plan-detail {
     box-sizing: border-box;
   }
 
-  .planbar__blocks {
+  .navibar__blocks {
     width: 100%;
     box-sizing: border-box;
   }
@@ -215,8 +215,8 @@ body.no-footer .plan-detail {
       width: 100%;
 
       /* プランバー幅に応じて両端に余白を追加 */
-      padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
-      padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+      padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+      padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
     }
 
     .spot-order-icon {
@@ -427,19 +427,19 @@ body.no-footer .plan-detail {
 /* ==========================================
    ✅ プランバー収納時のスタイル（詳細画面）
 ========================================== */
-body.no-footer .plan-detail.planbar--collapsed {
+body.no-footer .plan-detail.navibar--collapsed {
   /* 収納時のハンドル幅 */
-  --planbar-collapsed-handle-width: 24px;
+  --navibar-collapsed-handle-width: 24px;
 
   /* プランバー本体は非表示 */
-  .planbar {
+  .navibar {
     opacity: 0;
     pointer-events: none;
   }
 
   /* リサイズハンドルは収納時のスタイル */
-  .planbar-resize-handle {
-    width: var(--planbar-collapsed-handle-width);
+  .navibar-resize-handle {
+    width: var(--navibar-collapsed-handle-width);
 
     /* 収納時は ::before を背景付きで表示 */
     &::before {
@@ -457,16 +457,16 @@ body.no-footer .plan-detail.planbar--collapsed {
       background: rgba(255, 255, 255, 1);
     }
 
-    &:hover .planbar-resize-handle__grip {
+    &:hover .navibar-resize-handle__grip {
       border-left-color: rgba(80, 109, 83, 0.8);
     }
   }
 }
 
 /* ✅ ドラッグ中はトランジションを無効化（ラグ防止） */
-body.planbar-resizing .plan-detail .planbar,
-body.planbar-resizing .plan-detail .map,
-body.planbar-resizing .plan-detail .planbar-resize-handle {
+body.navibar-resizing .plan-detail .navibar,
+body.navibar-resizing .plan-detail .map,
+body.navibar-resizing .plan-detail .navibar-resize-handle {
   transition: none !important;
 }
 

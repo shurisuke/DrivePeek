@@ -1,4 +1,4 @@
-// app/javascript/controllers/planbar_resize_controller.js
+// app/javascript/controllers/navibar_resize_controller.js
 // ================================================================
 // プランバーのリサイズ機能
 // - ドラッグでプランバー幅を 300px〜画面幅の指定% に調整
@@ -14,8 +14,8 @@ export default class extends Controller {
     maxPercent: { type: Number, default: 70 },
     default: { type: Number, default: 350 },
     railWidth: { type: Number, default: 70 },
-    storageKey: { type: String, default: "drive_peek:planbar_width" },
-    collapsedKey: { type: String, default: "drive_peek:planbar_collapsed" },
+    storageKey: { type: String, default: "drive_peek:navibar_width" },
+    collapsedKey: { type: String, default: "drive_peek:navibar_collapsed" },
   }
 
   get maxWidth() {
@@ -61,7 +61,7 @@ export default class extends Controller {
     this.startWidth = this.getCurrentWidth()
     this.startSlide = this.getCurrentSlide()
 
-    document.body.classList.add("planbar-resizing")
+    document.body.classList.add("navibar-resizing")
 
     if (event.type.includes("touch")) {
       document.addEventListener("touchmove", this.boundOnTouchMove, { passive: false })
@@ -126,7 +126,7 @@ export default class extends Controller {
     document.removeEventListener("touchend", this.boundOnTouchEnd)
 
     this.saveState()
-    document.body.classList.remove("planbar-resizing")
+    document.body.classList.remove("navibar-resizing")
 
     this.justDragged = true
     setTimeout(() => { this.justDragged = false }, 100)
@@ -138,11 +138,11 @@ export default class extends Controller {
   // 収納・展開
   // ================================================================
   updateCollapsedState(collapsed) {
-    this.element.classList.toggle("planbar--collapsed", collapsed)
+    this.element.classList.toggle("navibar--collapsed", collapsed)
   }
 
   isCollapsed() {
-    return this.element.classList.contains("planbar--collapsed")
+    return this.element.classList.contains("navibar--collapsed")
   }
 
   handleClick(event) {
@@ -151,7 +151,7 @@ export default class extends Controller {
       event.preventDefault()
       const width = this.getSavedWidth() || this.defaultValue
       this.setWidthAndSlide(width, 0)
-      this.element.classList.remove("planbar--collapsed")
+      this.element.classList.remove("navibar--collapsed")
       this.saveState()
       this.triggerMapResize()
     }
@@ -161,18 +161,18 @@ export default class extends Controller {
   // CSS変数の操作
   // ================================================================
   getCurrentWidth() {
-    return parseInt(getComputedStyle(this.element).getPropertyValue("--planbar-width"), 10) || this.defaultValue
+    return parseInt(getComputedStyle(this.element).getPropertyValue("--navibar-width"), 10) || this.defaultValue
   }
 
   getCurrentSlide() {
-    return parseInt(getComputedStyle(this.element).getPropertyValue("--planbar-slide"), 10) || 0
+    return parseInt(getComputedStyle(this.element).getPropertyValue("--navibar-slide"), 10) || 0
   }
 
   setWidthAndSlide(width, slide) {
     const w = Math.round(Math.max(this.minValue, Math.min(width, this.maxWidth)))
     const s = Math.round(Math.max(0, Math.min(slide, this.maxSlide)))
-    this.element.style.setProperty("--planbar-width", `${w}px`)
-    this.element.style.setProperty("--planbar-slide", `${s}px`)
+    this.element.style.setProperty("--navibar-width", `${w}px`)
+    this.element.style.setProperty("--navibar-slide", `${s}px`)
   }
 
   // ================================================================
@@ -194,7 +194,7 @@ export default class extends Controller {
     try {
       const collapsed = localStorage.getItem(this.collapsedKeyValue) === "1"
       if (collapsed) {
-        this.element.classList.add("planbar--collapsed")
+        this.element.classList.add("navibar--collapsed")
         this.setWidthAndSlide(this.minValue, this.maxSlide)
       } else {
         const width = this.getSavedWidth() || this.defaultValue

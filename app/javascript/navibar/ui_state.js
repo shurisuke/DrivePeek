@@ -1,14 +1,14 @@
-// app/javascript/planbar/ui_state.js
+// app/javascript/navibar/ui_state.js
 // ================================================================
 // Planbar UI State（単一責務）
-// 用途: planbar 内の UI 状態（collapse, memo フォーム, goal point visibility）の
+// 用途: navibar 内の UI 状態（collapse, memo フォーム, goal point visibility）の
 //       退避・復元を担当
 // ================================================================
 
 // -------------------------------
-// planbar root 取得
+// navibar root 取得
 // -------------------------------
-export const getPlanbarRoot = () => document.querySelector(".planbar") || document
+export const getPlanbarRoot = () => document.querySelector(".navibar") || document
 
 // -------------------------------
 // Bootstrap Collapse 状態の退避/復元
