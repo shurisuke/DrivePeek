@@ -150,3 +150,6 @@ Figma : https://www.figma.com/design/zVyh2Km9Ee9HdvpGK358XV/%E7%84%A1%E9%A1%8C?n
 
 ## ER図
 Gyazo : https://gyazo.com/4a3303abf555dfa506b27c614f31b870
+
+## MVPリリース
+12/26実装
