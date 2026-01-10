@@ -3,14 +3,14 @@
 // ================================================================
 // Plan Map Sync（単一責務）
 // 用途: プラン画面で発生するイベントを購読し、地図表示を同期する。
-//       - マーカー描画: planbar差し替え後に DOM から最新座標を拾って再描画
+//       - マーカー描画: navibar差し替え後に DOM から最新座標を拾って再描画
 //       - 経路描画: DB保存済み polyline を DOM から収集し、API非依存で再描画
 //       - 帰宅地点トグル: goal の表示状態に合わせて「最後区間」を描く/描かないを切替
 //
 // 重要:
 //   - 経路は Directions / Routes API を一切呼ばず、geometry.decodePath で描画する
 //   - polyline の参照は map/state.js に保持し、再描画前に必ず clear する
-//   - 再描画トリガは turbo:load / planbar:updated / map:route-updated / goal関連イベント
+//   - 再描画トリガは turbo:load / navibar:updated / map:route-updated / goal関連イベント
 // ================================================================
 
 import { getPlanDataFromPage } from "plans/plan_data"
@@ -201,10 +201,10 @@ export const bindPlanMapSync = () => {
     }, 100)
   })
 
-  // planbar 差し替え後：planDataを取り直して「全部のピン」を差し直す
+  // navibar 差し替え後：planDataを取り直して「全部のピン」を差し直す
   // ※ スポット削除・入れ替え時もこのイベントが発火する
-  document.addEventListener("planbar:updated", async () => {
-    console.log("[plan_map_sync] caught planbar:updated")
+  document.addEventListener("navibar:updated", async () => {
+    console.log("[plan_map_sync] caught navibar:updated")
 
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
@@ -228,7 +228,7 @@ export const bindPlanMapSync = () => {
       goal_point: cachedPlanData?.goal_point || basePlanData.goal_point,
     }
 
-    console.log("[plan_map_sync] planbar:updated mergedPlanData.start_point", mergedPlanData.start_point)
+    console.log("[plan_map_sync] navibar:updated mergedPlanData.start_point", mergedPlanData.start_point)
 
     const planData = mergeSpotsFromDom(mergedPlanData)
     cachedPlanData = planData
@@ -317,7 +317,7 @@ export const bindPlanMapSync = () => {
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
 
-    // ✅ 出発地点の情報を cachedPlanData に保存（後続の planbar:updated で使用）
+    // ✅ 出発地点の情報を cachedPlanData に保存（後続の navibar:updated で使用）
     const basePlanData = getPlanDataFromPage() || cachedPlanData
     if (!basePlanData) return
 

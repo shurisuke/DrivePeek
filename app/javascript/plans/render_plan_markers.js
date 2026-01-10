@@ -38,7 +38,7 @@ const normalizeLatLng = (p) => {
   return { lat: Number(p.lat), lng: Number(p.lng) }
 }
 
-// ✅ planbar内のDOMを正として「スポット件数」を判定する（必要なら他用途で使える）
+// ✅ navibar内のDOMを正として「スポット件数」を判定する（必要なら他用途で使える）
 const getSpotCountFromDom = () => {
   return document.querySelectorAll(".spot-block[data-plan-spot-id]").length
 }

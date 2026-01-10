@@ -1,7 +1,7 @@
-// app/javascript/planbar/scroll_state.js
+// app/javascript/navibar/scroll_state.js
 // ================================================================
 // Planbar Scroll State（単一責務）
-// 用途: planbar のスクロール位置の退避・復元を担当
+// 用途: navibar のスクロール位置の退避・復元を担当
 //       アンカー方式でズレを最小化
 // ================================================================
 
@@ -9,8 +9,8 @@
 // スクロール要素の取得
 // -------------------------------
 export const getPlanbarScrollEl = () =>
-  document.querySelector(".planbar__content-scroll") ||
-  document.querySelector(".planbar__content") ||
+  document.querySelector(".navibar__content-scroll") ||
+  document.querySelector(".navibar__content") ||
   null
 
 // -------------------------------

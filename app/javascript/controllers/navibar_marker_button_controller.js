@@ -1,4 +1,4 @@
-// app/javascript/controllers/planbar_marker_button_controller.js
+// app/javascript/controllers/navibar_marker_button_controller.js
 //
 // ================================================================
 // プランバー内マーカーボタン

@@ -3,7 +3,7 @@
 // Start Departure Time Controller（単一責務）
 // 用途: 出発ブロックの「出発時間」入力に flatpickr(time only) を適用し、
 //       変更時にAPIで保存する
-// 前提: Turbo Frame で planbar が差し替わっても、connect で確実に再初期化される
+// 前提: Turbo Frame で navibar が差し替わっても、connect で確実に再初期化される
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -133,7 +133,7 @@ export default class extends Controller {
       await patch(`/api/plans/${this.planIdValue}/start_point`, {
         start_point: { departure_time: timeStr },
       })
-      // 保存成功 → planbar を再描画（時刻計算反映のため）
+      // 保存成功 → navibar を再描画（時刻計算反映のため）
       document.dispatchEvent(new CustomEvent("plan:departure-time-updated"))
     } catch (e) {
       console.error("[start-departure-time] save error", e)

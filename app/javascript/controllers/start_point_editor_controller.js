@@ -4,7 +4,7 @@
 // StartPoint Editor（単一責務）
 // 用途:
 // - 「変更」ボタンでフォームを開閉
-// - 変更フォームを「ボタンの右側」に position: fixed で表示し、planbar の overflow から脱出
+// - 変更フォームを「ボタンの右側」に position: fixed で表示し、navibar の overflow から脱出
 // - Enterで住所をGeocodingして、出発地点ピンを差し替え
 // - 検索ヒットピンがあれば全消去
 // - 地図をズーム/フォーカス（viewportがあればfitBounds）
@@ -57,7 +57,7 @@ export default class extends Controller {
       this.editAreaTarget.hidden = false
       this.toggleTarget.setAttribute("aria-expanded", "true")
 
-      // ✅ planbar の overflow の影響を受けないように fixed で出す
+      // ✅ navibar の overflow の影響を受けないように fixed で出す
       this.editAreaTarget.style.position = "fixed"
       this.editAreaTarget.style.zIndex = "9999"
 

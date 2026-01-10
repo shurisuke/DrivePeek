@@ -7,7 +7,7 @@
 //
 // 追加:
 // - 変更フォームを「ボタンの右側」に position: fixed で表示し、
-//   planbar__content の overflow クリップから脱出させる
+//   navibar__content の overflow クリップから脱出させる
 // - デバッグ用の console.log を追加
 // ================================================================
 
@@ -56,7 +56,7 @@ export default class extends Controller {
       this.editAreaTarget.hidden = false
       this.toggleTarget.setAttribute("aria-expanded", "true")
 
-      // ✅ planbarのoverflowの影響を受けないように fixed で出す
+      // ✅ navibarのoverflowの影響を受けないように fixed で出す
       this.editAreaTarget.style.position = "fixed"
       this.editAreaTarget.style.zIndex = "9999"
 

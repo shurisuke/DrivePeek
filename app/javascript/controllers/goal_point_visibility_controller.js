@@ -20,13 +20,13 @@ export default class extends Controller {
 
     this.apply();
 
-    // ✅ planbar更新時にも最後スポットのクラスを再計算
+    // ✅ navibar更新時にも最後スポットのクラスを再計算
     this.handlePlanbarUpdated = () => this.apply();
-    document.addEventListener("planbar:updated", this.handlePlanbarUpdated);
+    document.addEventListener("navibar:updated", this.handlePlanbarUpdated);
   }
 
   disconnect() {
-    document.removeEventListener("planbar:updated", this.handlePlanbarUpdated);
+    document.removeEventListener("navibar:updated", this.handlePlanbarUpdated);
   }
 
   toggle() {
@@ -61,9 +61,9 @@ export default class extends Controller {
   // 帰宅地点の表示状態に応じて、最後のスポットの右レールを調整
   // ------------------------------------------------------------
   updateLastSpotRail(goalVisible) {
-    // ✅ このコントローラが置かれている planbar（または近い親）配下だけを対象にする
+    // ✅ このコントローラが置かれている navibar（または近い親）配下だけを対象にする
     const scope =
-      this.element.closest(".planbar") ||
+      this.element.closest(".navibar") ||
       this.element.closest(".plan-form") ||
       document;
 
