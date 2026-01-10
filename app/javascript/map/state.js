@@ -19,6 +19,10 @@ let planSpotMarkers = [];         // プラン内スポット（配列）
 let searchHitMarkers = [];        // 検索ヒット（配列）
 let routePolylines = [];          // 経路ポリライン（配列）
 
+// --- コミュニティプランプレビュー用 ---
+let communityPreviewMarkers = [];   // コミュニティプランのスポット（配列）
+let communityPreviewPolylines = []; // コミュニティプランの経路（配列）
+
 // --- map instance ---
 export const getMapInstance = () => map;
 
@@ -106,6 +110,36 @@ export const setRoutePolylines = (polylines) => {
   routePolylines = polylines;
 };
 
+// --- コミュニティプランプレビュー用マーカー ---
+export const clearCommunityPreviewMarkers = () => {
+  communityPreviewMarkers.forEach((m) => m.setMap(null));
+  communityPreviewMarkers = [];
+};
+
+export const setCommunityPreviewMarkers = (markers) => {
+  clearCommunityPreviewMarkers();
+  communityPreviewMarkers = markers;
+};
+
+export const getCommunityPreviewMarkers = () => communityPreviewMarkers;
+
+// --- コミュニティプランプレビュー用ポリライン ---
+export const clearCommunityPreviewPolylines = () => {
+  communityPreviewPolylines.forEach((p) => p.setMap(null));
+  communityPreviewPolylines = [];
+};
+
+export const setCommunityPreviewPolylines = (polylines) => {
+  clearCommunityPreviewPolylines();
+  communityPreviewPolylines = polylines;
+};
+
+// --- コミュニティプレビュー全クリア ---
+export const clearCommunityPreview = () => {
+  clearCommunityPreviewMarkers();
+  clearCommunityPreviewPolylines();
+};
+
 // --- 全状態クリア（ページ遷移時用） ---
 export const clearAllMapState = () => {
   clearCurrentLocationMarker();
@@ -114,6 +148,8 @@ export const clearAllMapState = () => {
   clearPlanSpotMarkers();
   clearSearchHitMarkers();
   clearRoutePolylines();
+  clearCommunityPreviewMarkers();
+  clearCommunityPreviewPolylines();
   map = null;
   window.mapInstance = null;
 };
