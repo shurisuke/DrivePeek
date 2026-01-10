@@ -4,11 +4,11 @@
     メモ: spot-block の並び替え（SortableJS）の親コンテナを提供する
 ================================================================ %>
 
-<%= render "plans/form_components/start_point_block" %>
+<%= render "plans/start_point_block" %>
 
 <%# スポット未追加時のみ案内を表示 %>
 <% if @plan.plan_spots.empty? %>
-  <%= render "plans/form_components/plan_tab_guide" %>
+  <%= render "plans/plan_tab_guide" %>
 <% end %>
 
 <% spot_ids = @plan.plan_spots.select(:spot_id) %>
@@ -22,14 +22,14 @@
 <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
 <div id="plan-spots-sortable" data-sortable="plan-spots">
   <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
-    <%= render "plans/form_components/spot_block",
+    <%= render "plans/spot_block",
                plan_spot:  plan_spot,
                like_spot:  like_spots_by_spot_id[plan_spot.spot_id] %>
   <% end %>
 </div>
 
 <%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
-<%= render "plans/form_components/goal_point_block", plan: @plan %>
+<%= render "plans/goal_point_block", plan: @plan %>
 
 <%# ✅ 出発・帰宅時間サマリー（時刻レールON + 帰宅地点ON時のみ表示） %>
 <div class="plan-time-summary-section">
