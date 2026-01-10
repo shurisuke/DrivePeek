@@ -22,8 +22,8 @@
     margin-bottom: 12px;
 
     /* プランバー幅に応じて両端に余白を追加 */
-    padding-left: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
-    padding-right: calc(5px + max(0px, (var(--planbar-width, 350px) - 350px) * 0.25));
+    padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+    padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
   }
 
   /* 左: 家アイコン */
