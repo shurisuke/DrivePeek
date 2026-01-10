@@ -1,7 +1,7 @@
 <%= turbo_stream.update "planbar_blocks" do %>
-  <%= render "plans/form_components/planbar_content", plan: @plan %>
+  <%= render "plans/planbar_tabs", plan: @plan %>
 <% end %>
 
 <%= turbo_stream.update "planbar_footer" do %>
-  <%= render "plans/form_components/planbar_footer", plan: @plan %>
+  <%= render "plans/planbar_footer", plan: @plan %>
 <% end %>

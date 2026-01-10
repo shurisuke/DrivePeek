@@ -30,7 +30,7 @@
           <h1 class="planbar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
         </div>
         <div class="planbar__blocks">
-          <%= render "plans/show_components/plan_content", plan: @plan %>
+          <%= render "plans/plan_content_show", plan: @plan %>
         </div>
       </div>
     </div>

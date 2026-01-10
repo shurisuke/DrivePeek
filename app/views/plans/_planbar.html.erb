@@ -27,12 +27,12 @@
     <div class="planbar__content-scroll">
       <%# ブロック一覧（常時350px） %>
       <div class="planbar__blocks" id="planbar_blocks">
-        <%= render "plans/form_components/planbar_content", plan: plan %>
+        <%= render "plans/planbar_tabs", plan: plan %>
       </div>
     </div>
   </div>
 
   <div id="planbar_footer">
-    <%= render "plans/form_components/planbar_footer", plan: plan %>
+    <%= render "plans/planbar_footer", plan: plan %>
   </div>
 </aside>
