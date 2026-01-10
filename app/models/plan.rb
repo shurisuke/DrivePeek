@@ -77,6 +77,24 @@ class Plan < ApplicationRecord
     }
   end
 
+  # コミュニティプランプレビュー用（マーカー + ポリライン）
+  def preview_data
+    ordered_plan_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+
+    {
+      spots: ordered_plan_spots.map do |ps|
+        {
+          lat: ps.spot.lat,
+          lng: ps.spot.lng,
+          name: ps.spot.name,
+          address: ps.spot.address
+        }
+      end,
+      # スポット間のポリラインのみ（最後のスポット→帰宅は除外）
+      polylines: ordered_plan_spots[0..-2].map(&:polyline).compact
+    }
+  end
+
   # ✅ 合計走行距離（km）
   # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
   def total_distance

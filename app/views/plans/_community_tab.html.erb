@@ -154,7 +154,8 @@
                        total_duration: spots_only_formatted_move_time(plan),
                        total_distance: "#{spots_only_distance(plan)}km",
                        plan: plan,
-                       like_plan: like_plans_map[plan.id] %>
+                       like_plan: like_plans_map[plan.id],
+                       preview_mode: true %>
           <% end %>
         </div>
 

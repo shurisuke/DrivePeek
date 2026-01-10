@@ -17,6 +17,15 @@ const getInfoWindow = () => {
 }
 
 /**
+ * InfoWindow を閉じる
+ */
+export const closeInfoWindow = () => {
+  if (infoWindow) {
+    infoWindow.close()
+  }
+}
+
+/**
  * InfoWindow用HTMLを生成
  * @param {Object} options
  * @param {string} options.photoUrl - 写真URL（なければプレースホルダー）

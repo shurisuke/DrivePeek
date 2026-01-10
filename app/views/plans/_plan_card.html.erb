@@ -1,5 +1,5 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, plan: nil, like_plan: nil, can_delete: false, can_edit: false, genres: [] %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, plan: nil, like_plan: nil, can_delete: false, can_edit: false, genres: [], preview_mode: false %>
 
 <div class="plan-card">
   <div class="plan-card__header">
@@ -68,9 +68,23 @@
       <% end %>
     </div>
     <% if local_assigns[:plan] %>
-      <%= link_to plan_path(plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
-        <i class="bi bi-geo-alt" aria-hidden="true"></i>
-        地図で見る
+      <% if local_assigns[:preview_mode] %>
+        <%# 編集画面内：地図にプレビュー表示 %>
+        <button type="button"
+                class="plan-card__detail-link"
+                aria-label="地図でプレビュー"
+                data-controller="community-plan-preview"
+                data-community-plan-preview-plan-id-value="<%= plan.id %>"
+                data-action="click->community-plan-preview#show">
+          <i class="bi bi-geo-alt" aria-hidden="true"></i>
+          地図で見る
+        </button>
+      <% else %>
+        <%# 一覧画面：詳細ページへ遷移 %>
+        <%= link_to plan_path(plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
+          <i class="bi bi-geo-alt" aria-hidden="true"></i>
+          地図で見る
+        <% end %>
       <% end %>
     <% end %>
   </div>
