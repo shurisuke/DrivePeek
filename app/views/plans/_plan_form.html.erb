@@ -18,6 +18,17 @@
     >
   </div>
 
+  <!-- コミュニティプランプレビュー閉じるボタン -->
+  <button type="button"
+          id="community-preview-close"
+          class="community-preview-close"
+          hidden
+          data-controller="community-plan-preview"
+          data-action="click->community-plan-preview#hide">
+    <i class="bi bi-x-lg" aria-hidden="true"></i>
+    プレビューを閉じる
+  </button>
+
   <!-- 左ナビバー（Turbo Frame化） -->
   <%= turbo_frame_tag "navibar" do %>
     <%= render "plans/navibar", plan: plan %>
