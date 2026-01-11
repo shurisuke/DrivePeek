@@ -59,6 +59,9 @@ Rails.application.routes.draw do
     end
   end
 
+  # スポット
+  resources :spots, only: %i[show]
+
   # お気に入りスポット
   resources :like_spots, only: %i[create destroy]
 

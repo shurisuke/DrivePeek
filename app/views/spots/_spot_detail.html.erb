@@ -1,0 +1,75 @@
+<% content_for :body_class, "no-footer" %>
+
+<script>
+  window.spotData = {
+    lat: <%= @spot.lat %>,
+    lng: <%= @spot.lng %>,
+    name: "<%= j @spot.name %>",
+    address: "<%= j @spot.address.to_s %>",
+    placeId: "<%= j @spot.place_id %>"
+  };
+</script>
+
+<div class="main-content spot-detail"
+     data-controller="navibar-resize"
+     data-navibar-resize-min-value="300"
+     data-navibar-resize-max-percent-value="88"
+     data-navibar-resize-default-value="350"
+     data-navibar-resize-storage-key-value="drive_peek:navibar_spot_width"
+     data-navibar-resize-collapsed-key-value="drive_peek:navibar_spot_collapsed"
+     data-navibar-resize-slide-key-value="drive_peek:navibar_spot_slide">
+  <!-- 地図 -->
+  <div id="map" class="map" data-map-mode="spot_show" data-spot-id="<%= @spot.id %>" data-navibar-resize-target="map"></div>
+
+  <!-- リサイズハンドル -->
+  <div class="navibar-resize-handle"
+       data-navibar-resize-target="handle"
+       data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
+    <div class="navibar-resize-handle__grip"></div>
+  </div>
+
+  <!-- ナビバー（スポット詳細用） -->
+  <aside class="navibar navibar--show">
+    <div class="navibar__content">
+      <div class="navibar__content-scroll">
+        <!-- ヘッダー -->
+        <div class="navibar__header">
+          <%= link_to :back, class: "spot-detail__back-link" do %>
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          <% end %>
+          <span class="navibar__title">スポット詳細</span>
+        </div>
+
+        <!-- コンテンツ -->
+        <div class="navibar__blocks">
+          <div class="spot-detail__main">
+            <div class="spot-detail__name">
+              <h1><%= @spot.name %></h1>
+              <div class="spot-detail__name-actions">
+                <%= render "like_spots/button", spot: @spot, like_spot: @like_spot %>
+              </div>
+            </div>
+
+            <% if @spot.address.present? %>
+              <div class="spot-detail__address"><%= @spot.address %></div>
+            <% end %>
+
+            <% if @spot.genres.any? %>
+              <div class="spot-detail__genres">
+                <% @spot.genres.each do |genre| %>
+                  <span class="spot-detail__genre"><%= genre.name %></span>
+                <% end %>
+              </div>
+            <% end %>
+          </div>
+
+          <% if @spot.photo_url.present? %>
+            <div class="spot-detail__photo">
+              <%= image_tag @spot.photo_url, alt: @spot.name, loading: "lazy" %>
+            </div>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </aside>
+</div>

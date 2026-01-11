@@ -23,7 +23,7 @@ let routePolylines = [];          // 経路ポリライン（配列）
 let communityPreviewMarkers = [];   // コミュニティプランのスポット（配列）
 let communityPreviewPolylines = []; // コミュニティプランの経路（配列）
 
-// --- 単一スポットピン（カードから地図表示用） ---
+// --- 単一スポットピン（カード・スポット詳細から地図表示用） ---
 let spotPinMarker = null;           // 単一スポットピン（単体）
 
 // --- map instance ---
