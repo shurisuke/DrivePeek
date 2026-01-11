@@ -1,3 +1,5 @@
-<li class="page-item">
-  <%= link_to raw(t 'views.pagination.next'), url, rel: 'next', class: 'page-link', data: { turbo_frame: 'community_plans' } %>
+<li class="page-item page-item--nav">
+  <%= link_to url, rel: 'next', class: 'page-link', data: { turbo_frame: 'community_plans' }, aria: { label: '次のページ' } do %>
+    <i class="bi bi-chevron-right" aria-hidden="true"></i>
+  <% end %>
 </li>

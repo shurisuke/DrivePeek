@@ -10,7 +10,7 @@ class NavibarsController < ApplicationController
       genre_ids: params[:genre_ids]
     ).where.not(id: @plan.id)
       .page(params[:page])
-      .per(5)
+      .per(6)
 
     @search_query = params[:q]
     @selected_cities = Array(params[:cities]).reject(&:blank?)

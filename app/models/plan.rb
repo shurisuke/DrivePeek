@@ -10,12 +10,16 @@ class Plan < ApplicationRecord
 
   # Scopes
   scope :with_spots, -> { joins(:plan_spots).distinct }
+  scope :with_multiple_spots, -> {
+    where("(SELECT COUNT(*) FROM plan_spots WHERE plan_spots.plan_id = plans.id) >= 2")
+  }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
   # みんなのプラン用のベースRelation（検索・includes・並び順を含む）
+  # スポットが2つ以上あるプランのみ表示
   scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil) {
     publicly_visible
-      .with_spots
+      .with_multiple_spots
       .search_keyword(keyword)
       .filter_by_cities(cities)
       .filter_by_genres(genre_ids)

@@ -7,6 +7,8 @@
   padding: 20px 16px 16px 16px;
   background: linear-gradient(180deg, #f5f6f5 0%, #fafbfa 100%);
   min-height: 100%;
+  container-type: inline-size;
+  container-name: community-plans;
 }
 
 .community-plans__page-title {
@@ -128,7 +130,7 @@
   transition: box-shadow 0.2s ease;
 
   &:focus {
-    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.15);
+    box-shadow: 0 0 0 3px rgba(48, 115, 240, 0.15);
   }
 
   &::placeholder {
@@ -139,7 +141,7 @@
 .community-plans__search-button {
   width: 100%;
   padding: 11px 16px;
-  background: linear-gradient(135deg, #5a7d5d, #4a6a4d);
+  background: linear-gradient(135deg, #506d53, #45604a);
   border: none;
   border-radius: 10px;
   color: #fff;
@@ -184,7 +186,7 @@
   padding-right: 32px;
 
   &:focus {
-    border-color: #506d53;
+    border-color: #3073F0;
   }
 
   /* 未選択時（デフォルト値）のスタイル */
@@ -223,7 +225,7 @@
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.15);
+    box-shadow: 0 0 0 3px rgba(48, 115, 240, 0.15);
   }
 
   span {
@@ -279,8 +281,8 @@
   padding: 4px 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #506d53;
-  background: #f8f9f8;
+  color: #3073F0;
+  background: #f8f9fb;
 }
 
 /* 階層型エリア選択用スタイル */
@@ -296,8 +298,8 @@
   padding: 8px 12px;
   font-size: 12px;
   font-weight: 600;
-  color: #506d53;
-  background: #f8f9f8;
+  color: #3073F0;
+  background: #f8f9fb;
 }
 
 .multi-select__prefecture-group {
@@ -330,7 +332,7 @@
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #506d53;
+    accent-color: #3073F0;
     cursor: pointer;
   }
 }
@@ -372,7 +374,7 @@
   input[type="checkbox"] {
     width: 16px;
     height: 16px;
-    accent-color: #506d53;
+    accent-color: #3073F0;
     cursor: pointer;
   }
 
@@ -405,19 +407,11 @@
 }
 
 .community-plans__list {
-  display: flex;
-  flex-wrap: wrap;
-  justify-content: center;
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   gap: 26px;
-
-  /* カードは300px〜400px */
-  .plan-card,
-  .spot-card {
-    width: 400px;
-    min-width: 300px;
-    max-width: 400px;
-    flex: 1 1 300px;
-  }
+  max-width: 850px;
+  margin: 0 auto;
 }
 
 .community-plans__empty {
@@ -438,31 +432,71 @@
 .community-plans__pagination {
   display: flex;
   justify-content: center;
-  margin-top: 50px;
-  margin-bottom: 50px;
+  margin-top: 40px;
+  margin-bottom: 40px;
 
   .pagination {
+    display: flex;
+    align-items: center;
+    gap: 6px;
     margin: 0;
-    gap: 4px;
+    padding: 6px;
+    background: #fff;
+    border-radius: 999px;
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.06);
 
     .page-item {
       .page-link {
-        border-radius: 6px;
-        border: 1px solid #e5e5e5;
-        color: #506d53;
-        font-size: 13px;
-        padding: 6px 12px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        min-width: 36px;
+        height: 36px;
+        padding: 0 12px;
+        border: none;
+        border-radius: 999px;
+        background: transparent;
+        color: #666;
+        font-size: 16px;
+        font-weight: 500;
+        text-decoration: none;
+        transition: all 0.15s ease;
 
         &:hover {
-          background-color: #f0f4f0;
-          border-color: #506d53;
+          background: #f5f5f5;
+          color: #333;
         }
       }
 
+      /* ナビゲーションボタン（前後・最初最後） */
+      &--nav .page-link {
+        min-width: 32px;
+        height: 32px;
+        color: #999;
+        font-size: 16px;
+        -webkit-text-stroke: 0.5px currentColor;
+
+        &:hover {
+          color: #666;
+          background: #f5f5f5;
+        }
+      }
+
+      /* アクティブページ */
       &.active .page-link {
-        background-color: #506d53;
-        border-color: #506d53;
+        background: #506d53;
         color: #fff;
+        font-weight: 600;
+
+        &:hover {
+          background: #45604a;
+        }
+      }
+
+      /* 無効状態 */
+      &.disabled .page-link {
+        color: #ccc;
+        pointer-events: none;
       }
     }
   }
@@ -472,6 +506,9 @@
    Plan Card - iOS/macOS Style
 ========================================== */
 .plan-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background-color: #fff;
   border: none;
   border-radius: 16px;
@@ -489,19 +526,28 @@
   }
 }
 
-/* ヘッダー（タイトル + お気に入り） */
+/* ヘッダー（タイトル + アクション + お気に入り） */
 .plan-card__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 14px;
+}
+
+.plan-card__header-actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-right: -6px;
 }
 
 .plan-card__title {
+  flex: 1;
+  min-width: 0;
   margin: 0;
-  font-size: 16px;
-  font-weight: 600;
+  font-size: 18px;
+  font-weight: 500;
   line-height: 1.45;
   color: #1a1a1a;
   letter-spacing: -0.2px;
@@ -513,63 +559,51 @@
   overflow: hidden;
 }
 
+/* メタ情報（ジャンル） */
+.plan-card__meta {
+  margin-bottom: 14px;
+}
+
 .plan-card__actions {
   display: flex;
   align-items: center;
   gap: 2px;
-  flex-shrink: 0;
-  margin-top: -2px;
-  margin-right: -4px;
+
+  form {
+    display: flex;
+    align-items: center;
+    margin: 0;
+    padding: 0;
+    line-height: 0;
+  }
 }
 
-.plan-card__edit,
-.plan-card__delete {
-  padding: 6px;
+.plan-card__action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  margin: 0;
   background: transparent;
   border: none;
-  border-radius: 8px;
+  border-radius: 50%;
   cursor: pointer;
-  font-size: 16px;
+  font-size: 17px;
   line-height: 1;
   text-decoration: none;
-  transition: background-color 0.15s ease;
-}
-
-.plan-card__edit {
-  color: #506d53;
-
-  &:hover {
-    background: rgba(80, 109, 83, 0.08);
-  }
-}
-
-.plan-card__delete {
-  color: #aaa;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
-    color: #888;
-  }
-}
-
-.plan-card__favorite {
-  padding: 6px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #ddd;
-  font-size: 18px;
-  line-height: 1;
+  color: #999;
   transition: all 0.15s ease;
 
   &:hover {
-    color: #e8a0a8;
-    background: rgba(232, 160, 168, 0.08);
+    background: rgba(0, 0, 0, 0.05);
+    color: #666;
   }
 
-  &--active {
-    color: #e8a0a8;
+  &--delete:hover {
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.08);
   }
 }
 
@@ -578,115 +612,84 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
-  margin-bottom: 14px;
+  margin-top: 8px;
+  flex: 1;
+  min-width: 0;
 }
 
 .plan-card__genre {
   display: inline-block;
-  padding: 5px 10px;
-  background-color: rgba(80, 109, 83, 0.08);
-  color: #506d53;
+  padding: 5px 12px;
+  background-color: #f0f0f0;
+  color: #666;
   font-size: 11px;
-  font-weight: 500;
-  border-radius: 6px;
+  font-weight: 400;
+  border-radius: 999px;
   letter-spacing: 0.2px;
 }
 
 /* スポット一覧 */
 .plan-card__spots {
+  flex-grow: 1;
   margin-bottom: 14px;
-  background: #f9faf9;
-  border-radius: 12px;
-  padding: 4px 0;
 }
 
 .plan-card__spot {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   gap: 10px;
-  padding: 10px 14px;
-  border-radius: 10px;
-  margin: 2px 4px;
-  transition: background-color 0.15s ease;
-
-  &:hover {
-    background: rgba(80, 109, 83, 0.04);
-  }
+  padding: 6px 0;
 
   &--clickable {
     cursor: pointer;
+    transition: background-color 0.15s ease;
 
     &:hover {
-      background: rgba(59, 130, 246, 0.08);
+      background: rgba(48, 115, 240, 0.08);
     }
 
     &:active {
-      background: rgba(59, 130, 246, 0.12);
+      background: rgba(48, 115, 240, 0.12);
     }
   }
 }
 
 .plan-card__spot-number {
   flex-shrink: 0;
-  width: 22px;
-  height: 22px;
-  background: linear-gradient(135deg, #5a7d5d, #4a6a4d);
+  width: 24px;
+  height: 24px;
+  background: #3073F0;
   color: #fff;
-  border-radius: 7px;
-  font-size: 11px;
+  border-radius: 50%;
+  font-size: 12px;
   font-weight: 600;
   display: flex;
   align-items: center;
   justify-content: center;
-  margin-top: 1px;
-}
-
-.plan-card__spot-info {
-  flex: 1;
-  min-width: 0;
-}
-
-.plan-card__spot-pin {
-  flex-shrink: 0;
-  color: #3B82F6;
-  font-size: 18px;
-  line-height: 1;
-  margin-left: auto;
-
-  // 塗りつぶしアイコンを使用
-  .bi-geo-alt::before {
-    content: "\f3e7"; // bi-geo-alt-fill
-  }
 }
 
 .plan-card__spot-name {
+  flex: 1;
   font-size: 14px;
   font-weight: 500;
   color: #333;
   line-height: 1.4;
-  cursor: pointer;
 
   /* 長い名前は1行省略 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-
-  &:hover {
-    color: #506d53;
-  }
 }
 
-.plan-card__spot-address {
-  font-size: 12px;
-  font-weight: 400;
-  color: #888;
-  line-height: 1.4;
-  margin-top: 2px;
+.plan-card__spot--clickable:hover .plan-card__spot-name {
+  color: #3073F0;
+}
 
-  /* 長い住所は1行省略 */
+.plan-card__spot-location {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #999;
   white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
 }
 
 .plan-card__no-spots {
@@ -701,52 +704,79 @@
   display: flex;
   align-items: center;
   justify-content: space-between;
+  margin-top: auto;
   padding-top: 14px;
-  margin-top: 2px;
+  border-top: 1px solid #f0f0f0;
+  gap: 8px;
 }
 
 .plan-card__totals {
   display: flex;
-  gap: 14px;
+  flex-wrap: nowrap;
+  gap: 10px;
 }
 
 .plan-card__total-item {
   display: flex;
-  align-items: center;
-  gap: 5px;
-  font-size: 13px;
+  align-items: baseline;
+  flex-wrap: nowrap;
+  gap: 4px;
+  font-size: 14px;
   font-weight: 500;
   color: #555;
+  white-space: nowrap;
 
   i {
-    font-size: 14px;
+    font-size: 15px;
     color: #999;
+    align-self: center;
+  }
+
+  .plan-summary__unit {
+    font-size: 11px;
+    font-weight: 400;
+    color: #888;
+    margin-left: -4px;
+    margin-right: -1px;
   }
 }
 
 .plan-card__detail-link {
   display: flex;
   align-items: center;
+  flex-shrink: 0;
+  white-space: nowrap;
   gap: 4px;
-  padding: 6px 10px;
-  font-size: 12px;
+  padding: 6px 8px;
+  font-size: 13px;
   font-weight: 500;
   color: #888;
   text-decoration: none;
   border-radius: 6px;
   transition: all 0.15s ease;
-  // ボタン要素のリセット（プレビューモード時）
   border: none;
   background: none;
   cursor: pointer;
 
   &:hover {
-    color: #506d53;
-    background: rgba(80, 109, 83, 0.08);
+    color: #3073F0;
+    background: rgba(48, 115, 240, 0.08);
   }
 
   i {
-    font-size: 12px;
+    font-size: 14px;
+  }
+}
+
+/* 長いコンテンツ時かつ狭いコンテナ時のみマージン調整 */
+@container community-plans (max-width: 280px) {
+  .plan-card__footer--long {
+    .plan-card__totals {
+      margin-left: -8px;
+    }
+    .plan-card__detail-link {
+      margin-right: -8px;
+    }
   }
 }
 
@@ -755,6 +785,9 @@
 ========================================== */
 
 .spot-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background-color: #fff;
   border: none;
   border-radius: 16px;
@@ -774,16 +807,15 @@
 
 .spot-card__header {
   display: flex;
-  align-items: flex-start;
+  align-items: center;
   justify-content: space-between;
   gap: 12px;
-  margin-bottom: 12px;
 }
 
 .spot-card__name {
   margin: 0;
   font-size: 16px;
-  font-weight: 600;
+  font-weight: 500;
   line-height: 1.45;
   color: #1a1a1a;
   letter-spacing: -0.2px;
@@ -797,47 +829,20 @@
   flex-shrink: 0;
   margin-top: -2px;
   margin-right: -4px;
-
-  .btn-fav-icon {
-    border: none;
-    background: transparent;
-    padding: 6px;
-    font-size: 18px;
-    color: #ddd;
-    border-radius: 8px;
-    cursor: pointer;
-    transition: all 0.15s ease;
-
-    &:hover {
-      color: #e8a0a8;
-      background: rgba(232, 160, 168, 0.08);
-    }
-
-    &--active {
-      color: #e8a0a8;
-    }
-  }
 }
 
-.spot-card__pin {
-  padding: 6px;
-  background: transparent;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
-  color: #3B82F6;
-  font-size: 20px;
-  line-height: 1;
-  transition: all 0.15s ease;
 
-  // 塗りつぶしアイコンを使用
-  .bi-geo-alt::before {
-    content: "\f3e7"; // bi-geo-alt-fill
-  }
+.spot-card__location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 10px;
 
-  &:hover {
-    color: #2563EB;
-    transform: scale(1.1);
+  i {
+    color: #999;
+    font-size: 14px;
   }
 }
 
@@ -845,44 +850,70 @@
   display: flex;
   flex-wrap: wrap;
   gap: 6px;
+  flex-grow: 1;
+  align-content: flex-start;
   margin-bottom: 14px;
 }
 
 .spot-card__genre {
   display: inline-block;
   padding: 5px 10px;
-  background-color: rgba(80, 109, 83, 0.08);
-  color: #506d53;
+  background-color: #f0f0f0;
+  color: #666;
   font-size: 11px;
-  font-weight: 500;
-  border-radius: 6px;
+  font-weight: 400;
+  border-radius: 999px;
   letter-spacing: 0.2px;
 }
 
-.spot-card__info {
-  background: #f9faf9;
-  border-radius: 12px;
-  padding: 12px 14px;
+.spot-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
 }
 
-.spot-card__address,
-.spot-card__location {
+.spot-card__plans-count {
   display: flex;
-  align-items: flex-start;
-  gap: 8px;
+  align-items: center;
+  gap: 4px;
   font-size: 13px;
-  color: #555;
-  line-height: 1.5;
-  margin-bottom: 6px;
+  color: #888;
 
   i {
-    color: #888;
     font-size: 14px;
-    flex-shrink: 0;
-    margin-top: 2px;
+    color: #999;
   }
 
-  &:last-child {
-    margin-bottom: 0;
+  span {
+    font-weight: 600;
+    color: #555;
+  }
+}
+
+.spot-card__map-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #888;
+  text-decoration: none;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #3073F0;
+    background: rgba(48, 115, 240, 0.08);
+  }
+
+  i {
+    font-size: 12px;
   }
 }

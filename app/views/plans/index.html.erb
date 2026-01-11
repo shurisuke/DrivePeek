@@ -140,7 +140,9 @@
               spot = ps.spot
               {
                 name: spot.name,
-                address: spot.address
+                address: spot.address,
+                prefecture: spot.prefecture,
+                city: spot.city
               }
             end
             # 全スポットからユニークなジャンル名を収集
@@ -153,8 +155,7 @@
                      total_duration: spots_only_formatted_move_time(plan),
                      total_distance: "#{spots_only_distance(plan)}km",
                      plan: plan,
-                     like_plan: like_plans_map[plan.id],
-                     can_delete: current_user&.id == plan.user_id %>
+                     like_plan: like_plans_map[plan.id] %>
         <% end %>
       </div>
 
