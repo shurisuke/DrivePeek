@@ -17,14 +17,17 @@ class Plan < ApplicationRecord
 
   # みんなのプラン用のベースRelation（検索・includes・並び順を含む）
   # スポットが2つ以上あるプランのみ表示
-  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil) {
-    publicly_visible
+  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil) {
+    base = publicly_visible
       .with_multiple_spots
       .search_keyword(keyword)
       .filter_by_cities(cities)
       .filter_by_genres(genre_ids)
-      .includes(:user, :start_point, plan_spots: { spot: :genres })
-      .order(updated_at: :desc)
+
+    base = base.liked_by(liked_by_user) if liked_by_user
+
+    base.includes(:user, :start_point, plan_spots: { spot: :genres })
+        .order(updated_at: :desc)
   }
 
   # 市区町村で絞り込み（複数対応）
@@ -43,6 +46,13 @@ class Plan < ApplicationRecord
     end
 
     joins(:spots).where(conditions.join(" OR ")).distinct
+  }
+
+  # 特定ユーザーがお気に入りしたプランのみ
+  scope :liked_by, ->(user) {
+    return none unless user
+
+    joins(:like_plans).where(like_plans: { user_id: user.id })
   }
 
   # ジャンルで絞り込み（複数対応）
