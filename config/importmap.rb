@@ -9,6 +9,7 @@ pin_all_from "app/javascript/controllers", under: "controllers"
 
 # ディレクトリごと pin（今回の分割に合わせる）
 pin_all_from "app/javascript/plans", under: "plans"
+pin_all_from "app/javascript/spots", under: "spots"
 pin_all_from "app/javascript/map", under: "map"
 pin_all_from "app/javascript/navibar", under: "navibar"
 pin_all_from "app/javascript/services", under: "services"

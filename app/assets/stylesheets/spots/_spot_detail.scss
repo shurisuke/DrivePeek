@@ -1,0 +1,280 @@
+/* app/assets/stylesheets/spots/_spot_detail.scss */
+/* ==========================================
+   スポット詳細画面（閲覧専用）
+   - plan_detail.scss のレイアウトパターンを継承
+   - スポット情報表示に特化
+========================================== */
+
+body.no-footer .spot-detail {
+  --navibar-width: 350px;
+  --navibar-slide: 0px;
+  --map-gap: 0px;
+
+  position: relative;
+  width: 100% !important;
+  height: 100vh;
+  overflow: hidden;
+
+  .map {
+    background-size: cover;
+    background-position: center;
+    position: absolute;
+
+    left: calc(var(--navibar-width) - var(--navibar-slide));
+    width: calc(100% - (var(--navibar-width) - var(--navibar-slide) + var(--map-gap)));
+
+    height: 100%;
+    top: 0;
+    z-index: 1;
+
+    transition: left 0.2s ease, width 0.2s ease;
+  }
+
+  .navibar {
+    position: fixed;
+    top: 0;
+    left: calc(-1 * var(--navibar-slide));
+
+    width: var(--navibar-width);
+    height: 100%;
+
+    background: rgba(255, 255, 255, 0.95);
+    backdrop-filter: blur(10px);
+    z-index: 2;
+    box-shadow: 4px 0 16px rgba(0, 0, 0, 0.15);
+
+    display: flex;
+    flex-direction: column;
+    overflow: visible;
+
+    transition: left 0.2s ease, width 0.2s ease, opacity 0.2s ease;
+  }
+
+  .navibar-resize-handle {
+    transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
+  }
+
+  .navibar__content {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+    position: relative;
+  }
+
+  .navibar__content-scroll {
+    position: absolute;
+    top: 0;
+    left: 0;
+
+    overflow-y: auto;
+    width: 100%;
+    height: 100%;
+
+    -webkit-overflow-scrolling: touch;
+    overscroll-behavior: contain;
+
+    background: rgba(255, 255, 255, 0.95);
+    box-sizing: border-box;
+  }
+}
+
+/* ==========================================
+   スポット詳細ナビバーヘッダー
+========================================== */
+
+body.no-footer .spot-detail {
+  .navibar__header {
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e5e5;
+    background: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: 12px;
+  }
+
+  .navibar__title {
+    font-size: 1rem;
+    font-weight: 600;
+    color: #1a1a1a;
+    margin: 0;
+    flex: 1;
+    text-align: center;
+  }
+}
+
+.spot-detail__back-link {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  color: #506d53;
+  text-decoration: none;
+  border-radius: 6px;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(80, 109, 83, 0.08);
+  }
+
+  i {
+    font-size: 20px;
+  }
+}
+
+/* ==========================================
+   スポット詳細コンテンツ
+========================================== */
+
+.spot-detail__main {
+  padding: 32px 0 16px;
+}
+
+.spot-detail__name {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0 calc(max(16px, calc(25% - 71.5px)) + 44px);
+  margin-bottom: 8px;
+
+  h1 {
+    font-size: 1.25rem;
+    font-weight: 700;
+    color: #1a1a1a;
+    margin: 0;
+    line-height: 1.4;
+    text-align: center;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    max-width: 100%;
+  }
+}
+
+.spot-detail__name-actions {
+  position: absolute;
+  right: max(16px, calc(25% - 71.5px));
+  top: 50%;
+  transform: translateY(-50%);
+
+  .btn-fav-icon {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px !important;
+    min-width: 40px !important;
+    max-width: 40px !important;
+    height: 40px !important;
+    min-height: 40px !important;
+    max-height: 40px !important;
+    padding: 0 !important;
+    border: 1px solid #e0e0e0 !important;
+    background: #fff !important;
+    font-size: 18px;
+    color: #ddd;
+    border-radius: 50% !important;
+    cursor: pointer;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    transition: all 0.15s ease;
+    line-height: 1 !important;
+
+    &:hover {
+      color: #e8a0a8;
+      border-color: rgba(232, 160, 168, 0.3) !important;
+      box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
+      transform: translateY(-1px);
+    }
+
+    &--active {
+      color: #e8a0a8;
+    }
+  }
+}
+
+.spot-detail__address {
+  font-size: 14px;
+  text-align: center;
+  color: #333;
+  padding: 0 24px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spot-detail__genres {
+  display: flex;
+  flex-wrap: wrap;
+  justify-content: center;
+  gap: 6px;
+  margin-top: 12px;
+  padding: 0 24px;
+}
+
+.spot-detail__genre {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.7rem;
+  border: none;
+  background: #f0f0f0;
+  color: #555;
+}
+
+.spot-detail__photo {
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  overflow: hidden;
+  background: #f0f0f0;
+  margin-top: 16px;
+
+  img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+  }
+}
+
+/* ==========================================
+   プランバー収納時のスタイル（スポット詳細画面）
+========================================== */
+body.no-footer .spot-detail.navibar--collapsed {
+  --navibar-collapsed-handle-width: 24px;
+
+  .navibar {
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  .navibar-resize-handle {
+    width: var(--navibar-collapsed-handle-width);
+
+    &::before {
+      background: rgba(255, 255, 255, 0.95);
+      border-right: 1px solid rgba(0, 0, 0, 0.1);
+      box-shadow: 2px 0 8px rgba(0, 0, 0, 0.1);
+    }
+
+    &__grip {
+      border-left-color: rgba(80, 109, 83, 0.5);
+    }
+
+    &:hover::before {
+      background: rgba(255, 255, 255, 1);
+    }
+
+    &:hover .navibar-resize-handle__grip {
+      border-left-color: rgba(80, 109, 83, 0.8);
+    }
+  }
+}
+
+/* ドラッグ中はトランジションを無効化 */
+body.navibar-resizing .spot-detail .navibar,
+body.navibar-resizing .spot-detail .map,
+body.navibar-resizing .spot-detail .navibar-resize-handle {
+  transition: none !important;
+}

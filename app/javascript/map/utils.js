@@ -41,9 +41,17 @@ export const isEditPage = () => {
 }
 
 /**
- * 詳細画面かどうかを判定
+ * プラン詳細画面かどうかを判定
  */
 export const isShowPage = () => {
   const mapElement = document.getElementById("map")
   return mapElement && mapElement.dataset.mapMode === "show"
+}
+
+/**
+ * スポット詳細画面かどうかを判定
+ */
+export const isSpotShowPage = () => {
+  const mapElement = document.getElementById("map")
+  return mapElement && mapElement.dataset.mapMode === "spot_show"
 }
