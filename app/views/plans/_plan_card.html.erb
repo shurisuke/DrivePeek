@@ -1,43 +1,64 @@
 <%# プランカード（一覧表示用の共通部品） %>
 <%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, plan: nil, like_plan: nil, can_delete: false, can_edit: false, genres: [], preview_mode: false %>
 
+<%
+  _can_edit = local_assigns.fetch(:can_edit, false)
+  _can_delete = local_assigns.fetch(:can_delete, false)
+  _plan = local_assigns.fetch(:plan, nil)
+  _like_plan = local_assigns.fetch(:like_plan, nil)
+  _preview_mode = local_assigns.fetch(:preview_mode, false)
+%>
+
 <div class="plan-card">
+  <%# ヘッダー：タイトル + アクション + お気に入り %>
   <div class="plan-card__header">
     <h3 class="plan-card__title"><%= plan_title %></h3>
-    <div class="plan-card__actions">
-      <% if local_assigns[:plan] %>
-        <%= render "like_plans/button", plan: plan, like_plan: like_plan %>
+    <div class="plan-card__header-actions">
+      <% if _can_edit || _can_delete %>
+        <div class="plan-card__actions">
+          <% if _can_edit && _plan %>
+            <%= link_to edit_plan_path(_plan),
+                  class: "plan-card__action",
+                  aria: { label: "プランを編集" } do %>
+              <i class="bi bi-pencil" aria-hidden="true"></i>
+            <% end %>
+          <% end %>
+          <% if _can_delete && _plan %>
+            <%= button_to plan_path(_plan), method: :delete,
+                  class: "plan-card__action plan-card__action--delete",
+                  aria: { label: "プランを削除" },
+                  data: { turbo_confirm: "このプランを削除しますか？" } do %>
+              <i class="bi bi-trash" aria-hidden="true"></i>
+            <% end %>
+          <% end %>
+        </div>
       <% end %>
-      <% if local_assigns[:can_edit] && local_assigns[:plan] %>
-        <%= link_to edit_plan_path(plan),
-              class: "plan-card__edit",
-              aria: { label: "プランを編集" } do %>
-          <i class="bi bi-pencil" aria-hidden="true"></i>
-        <% end %>
-      <% end %>
-      <% if local_assigns[:can_delete] && local_assigns[:plan] %>
-        <%= button_to plan_path(plan), method: :delete,
-              class: "plan-card__delete",
-              aria: { label: "プランを削除" },
-              data: { turbo_confirm: "このプランを削除しますか？" } do %>
-          <i class="bi bi-trash" aria-hidden="true"></i>
-        <% end %>
+      <% if _plan %>
+        <%= render "like_plans/button", plan: _plan, like_plan: _like_plan %>
       <% end %>
     </div>
   </div>
 
-  <% if local_assigns[:genres].present? %>
-    <div class="plan-card__genres">
-      <% genres.each do |genre_name| %>
-        <span class="plan-card__genre"><%= genre_name %></span>
-      <% end %>
-    </div>
-  <% end %>
+  <%# ジャンルタグ %>
+  <div class="plan-card__meta">
+    <% if local_assigns[:genres].present? %>
+      <div class="plan-card__genres">
+        <% genres.each do |genre_name| %>
+          <span class="plan-card__genre"><%= genre_name %></span>
+        <% end %>
+      </div>
+    <% end %>
+  </div>
 
+  <%# スポット一覧 %>
   <div class="plan-card__spots">
     <% if spots.present? %>
       <% spots.each_with_index do |spot, index| %>
-        <% if local_assigns[:preview_mode] && spot[:lat].present? && spot[:lng].present? %>
+        <%
+          # 都道府県/市区町村の表示文字列を構築
+          spot_location = [spot[:prefecture], spot[:city]].compact.reject(&:blank?).join("/")
+        %>
+        <% if _preview_mode && spot[:lat].present? && spot[:lng].present? %>
           <div class="plan-card__spot plan-card__spot--clickable"
                data-controller="single-spot-preview"
                data-single-spot-preview-lat-value="<%= spot[:lat] %>"
@@ -49,25 +70,18 @@
                role="button"
                tabindex="0">
             <span class="plan-card__spot-number"><%= index + 1 %></span>
-            <div class="plan-card__spot-info">
-              <div class="plan-card__spot-name"><%= spot[:name] %></div>
-              <% if spot[:address].present? %>
-                <div class="plan-card__spot-address"><%= spot[:address] %></div>
-              <% end %>
-            </div>
-            <span class="plan-card__spot-pin" aria-hidden="true">
-              <i class="bi bi-geo-alt"></i>
-            </span>
+            <span class="plan-card__spot-name"><%= spot[:name] %></span>
+            <% if spot_location.present? %>
+              <span class="plan-card__spot-location"><%= spot_location %></span>
+            <% end %>
           </div>
         <% else %>
           <div class="plan-card__spot">
             <span class="plan-card__spot-number"><%= index + 1 %></span>
-            <div class="plan-card__spot-info">
-              <div class="plan-card__spot-name"><%= spot[:name] %></div>
-              <% if spot[:address].present? %>
-                <div class="plan-card__spot-address"><%= spot[:address] %></div>
-              <% end %>
-            </div>
+            <span class="plan-card__spot-name"><%= spot[:name] %></span>
+            <% if spot_location.present? %>
+              <span class="plan-card__spot-location"><%= spot_location %></span>
+            <% end %>
           </div>
         <% end %>
       <% end %>
@@ -76,7 +90,14 @@
     <% end %>
   </div>
 
-  <div class="plan-card__footer">
+  <%# フッター %>
+  <%
+    # HTMLタグを除去してから時間を抽出
+    duration_text = strip_tags(total_duration.to_s)
+    hours = duration_text.match(/(\d+)時間/)&.[](1).to_i
+    long_content = hours >= 10
+  %>
+  <div class="plan-card__footer<%= ' plan-card__footer--long' if long_content %>">
     <div class="plan-card__totals">
       <% if total_duration.present? %>
         <span class="plan-card__total-item">
@@ -91,23 +112,21 @@
         </span>
       <% end %>
     </div>
-    <% if local_assigns[:plan] %>
-      <% if local_assigns[:preview_mode] %>
-        <%# 編集画面内：地図にプレビュー表示 %>
+    <% if _plan %>
+      <% if _preview_mode %>
         <button type="button"
                 class="plan-card__detail-link"
                 aria-label="ルートをプレビュー"
                 data-controller="community-plan-preview"
-                data-community-plan-preview-plan-id-value="<%= plan.id %>"
+                data-community-plan-preview-plan-id-value="<%= _plan.id %>"
                 data-action="click->community-plan-preview#show">
-          <i class="bi bi-map" aria-hidden="true"></i>
-          ルートを見る
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          ルート
         </button>
       <% else %>
-        <%# 一覧画面：詳細ページへ遷移 %>
-        <%= link_to plan_path(plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
-          <i class="bi bi-geo-alt" aria-hidden="true"></i>
-          地図で見る
+        <%= link_to plan_path(_plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
+          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          ルート
         <% end %>
       <% end %>
     <% end %>
