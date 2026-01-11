@@ -5,7 +5,7 @@
    - スポット情報表示に特化
 ========================================== */
 
-body.no-footer .spot-detail {
+body.no-footer .main-content.spot-detail {
   --navibar-width: 350px;
   --navibar-slide: 0px;
   --map-gap: 0px;
@@ -82,7 +82,7 @@ body.no-footer .spot-detail {
    スポット詳細ナビバーヘッダー
 ========================================== */
 
-body.no-footer .spot-detail {
+body.no-footer .main-content.spot-detail {
   .navibar__header {
     padding: 16px 20px;
     border-bottom: 1px solid #e5e5e5;
@@ -241,7 +241,7 @@ body.no-footer .spot-detail {
 /* ==========================================
    プランバー収納時のスタイル（スポット詳細画面）
 ========================================== */
-body.no-footer .spot-detail.navibar--collapsed {
+body.no-footer .main-content.spot-detail.navibar--collapsed {
   --navibar-collapsed-handle-width: 24px;
 
   .navibar {
@@ -273,8 +273,8 @@ body.no-footer .spot-detail.navibar--collapsed {
 }
 
 /* ドラッグ中はトランジションを無効化 */
-body.navibar-resizing .spot-detail .navibar,
-body.navibar-resizing .spot-detail .map,
-body.navibar-resizing .spot-detail .navibar-resize-handle {
+body.navibar-resizing .main-content.spot-detail .navibar,
+body.navibar-resizing .main-content.spot-detail .map,
+body.navibar-resizing .main-content.spot-detail .navibar-resize-handle {
   transition: none !important;
 }
