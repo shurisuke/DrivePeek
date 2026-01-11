@@ -159,36 +159,16 @@ body.no-footer .main-content.spot-detail {
   top: 50%;
   transform: translateY(-50%);
 
-  .btn-fav-icon {
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    width: 40px !important;
-    min-width: 40px !important;
-    max-width: 40px !important;
-    height: 40px !important;
-    min-height: 40px !important;
-    max-height: 40px !important;
-    padding: 0 !important;
-    border: 1px solid #e0e0e0 !important;
-    background: #fff !important;
-    font-size: 18px;
-    color: #ddd;
-    border-radius: 50% !important;
-    cursor: pointer;
+  /* スポット詳細用のお気に入りボタン上書き */
+  .fav-button {
+    border: 1px solid #e0e0e0;
+    background: #fff;
     box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-    transition: all 0.15s ease;
-    line-height: 1 !important;
 
     &:hover {
-      color: #e8a0a8;
-      border-color: rgba(232, 160, 168, 0.3) !important;
+      border-color: rgba(232, 160, 168, 0.3);
       box-shadow: 0 3px 10px rgba(0, 0, 0, 0.12);
       transform: translateY(-1px);
-    }
-
-    &--active {
-      color: #e8a0a8;
     }
   }
 }
