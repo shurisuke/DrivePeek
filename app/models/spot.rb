@@ -21,12 +21,15 @@ class Spot < ApplicationRecord
   CITIES_CACHE_KEY = "spots/cities_by_prefecture".freeze
 
   # みんなのスポット用のベースRelation（検索・includes・並び順を含む）
-  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil) {
-    search_keyword(keyword)
+  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil) {
+    base = search_keyword(keyword)
       .filter_by_cities(cities)
       .filter_by_genres(genre_ids)
-      .includes(:genres)
-      .order(updated_at: :desc)
+
+    base = base.liked_by(liked_by_user) if liked_by_user
+
+    base.includes(:genres)
+        .order(updated_at: :desc)
   }
 
   # 市区町村で絞り込み（複数対応）
@@ -45,6 +48,13 @@ class Spot < ApplicationRecord
     end
 
     where(conditions.join(" OR "))
+  }
+
+  # 特定ユーザーがお気に入りしたスポットのみ
+  scope :liked_by, ->(user) {
+    return none unless user
+
+    joins(:like_spots).where(like_spots: { user_id: user.id })
   }
 
   # ジャンルで絞り込み（複数対応）

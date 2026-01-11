@@ -12,12 +12,12 @@
         <label class="community-plans__search-tab <%= 'is-active' if @search_type != 'spot' %>">
           <input type="radio" name="search_type" value="plan" <%= 'checked' if @search_type != 'spot' %>
                  onchange="this.form.requestSubmit()">
-          <span>プラン検索</span>
+          <span>プラン</span>
         </label>
         <label class="community-plans__search-tab <%= 'is-active' if @search_type == 'spot' %>">
           <input type="radio" name="search_type" value="spot" <%= 'checked' if @search_type == 'spot' %>
                  onchange="this.form.requestSubmit()">
-          <span>スポット検索</span>
+          <span>スポット</span>
         </label>
       </div>
 
@@ -95,6 +95,17 @@
       <%= text_field_tag :q, @search_query,
                          placeholder: "フリーワード検索",
                          class: "community-plans__search-input" %>
+
+      <% if user_signed_in? %>
+        <%# お気に入りフィルター %>
+        <label class="community-plans__favorites-toggle">
+          <input type="checkbox" name="favorites_only" value="1"
+                 <%= 'checked' if @favorites_only %>
+                 onchange="this.form.requestSubmit()">
+          <span class="community-plans__favorites-toggle-switch"></span>
+          <span>お気に入りのみ</span>
+        </label>
+      <% end %>
 
       <button type="submit" class="community-plans__search-button">
         <i class="bi bi-search" aria-hidden="true"></i>
