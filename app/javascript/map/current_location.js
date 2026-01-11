@@ -4,6 +4,7 @@
 // ================================================================
 
 import { getMapInstance, setCurrentLocationMarker } from "map/state";
+import { COLORS } from "map/constants";
 
 export const addCurrentLocationMarker = () => {
   console.log("🟢 addCurrentLocationMarker が呼び出されました");
@@ -33,7 +34,7 @@ export const addCurrentLocationMarker = () => {
         icon: {
           path: google.maps.SymbolPath.CIRCLE,
           scale: 8,
-          fillColor: "#4285F4",
+          fillColor: COLORS.CURRENT_LOCATION,
           fillOpacity: 0.9,
           strokeWeight: 2,
           strokeColor: "white",

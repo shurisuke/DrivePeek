@@ -13,13 +13,14 @@ import {
   setPlanSpotMarkers,
 } from "map/state"
 import { showInfoWindowForPin } from "map/infowindow"
+import { COLORS } from "map/constants"
 
 // ================================================================
 // SVG番号ピン生成
-// - 丸型のオレンジピンに番号を表示
-// - 色はspot-order-iconと同じ #ef813d
+// - 丸型ピンに番号を表示
+// - 色は map/constants.js で管理
 // ================================================================
-const SPOT_PIN_COLOR = "#ef813d"
+const SPOT_PIN_COLOR = COLORS.MY_PLAN
 
 const createNumberedPinSvg = (number) => {
   // 丸型SVG（36x36）+ 中央に白い番号

@@ -3,8 +3,10 @@ import {
   getMapInstance,
   setSpotPinMarker,
   clearSpotPinMarker,
+  getCommunityPreviewMarkers,
 } from "map/state"
 import { showInfoWindow, closeInfoWindow } from "map/infowindow"
+import { COLORS } from "map/constants"
 
 // ================================================================
 // SingleSpotPreviewController
@@ -12,7 +14,7 @@ import { showInfoWindow, closeInfoWindow } from "map/infowindow"
 //       該当スポットを地図上にピン表示する
 // ================================================================
 
-const SPOT_PIN_COLOR = "#3B82F6"
+const SPOT_PIN_COLOR = COLORS.COMMUNITY
 
 // PlacesService のキャッシュ
 let placesService = null
@@ -56,9 +58,27 @@ export default class extends Controller {
     }
 
     closeInfoWindow()
-    clearSpotPinMarker()
 
     const position = { lat: this.latValue, lng: this.lngValue }
+
+    // プランプレビュー表示中は既存のマーカーを使用
+    const communityMarkers = getCommunityPreviewMarkers()
+    const existingMarker = communityMarkers.find((m) => {
+      const pos = m.getPosition()
+      if (!pos) return false
+      return Math.abs(pos.lat() - position.lat) < 0.0001 &&
+             Math.abs(pos.lng() - position.lng) < 0.0001
+    })
+
+    if (existingMarker) {
+      // 既存マーカーがあればそれを使用（新しいマーカーは作らない）
+      map.panTo(position)
+      this.#showInfoWindowWithPhoto(existingMarker)
+      return
+    }
+
+    // 既存マーカーがなければ新規作成
+    clearSpotPinMarker()
 
     const marker = new google.maps.Marker({
       map,

@@ -10,6 +10,7 @@ import {
 } from "map/state"
 import { showInfoWindowForPin, closeInfoWindow } from "map/infowindow"
 import { get } from "services/api_client"
+import { COLORS, COMMUNITY_ROUTE_STYLE } from "map/constants"
 
 // ================================================================
 // CommunityPlanPreviewController
@@ -17,8 +18,7 @@ import { get } from "services/api_client"
 //       該当プランの経路線・スポットピンを地図上にプレビュー表示
 // ================================================================
 
-const COMMUNITY_PIN_COLOR = "#3B82F6"
-const COMMUNITY_ROUTE_COLOR = "#3B82F6"
+const COMMUNITY_PIN_COLOR = COLORS.COMMUNITY
 
 const createCommunityPinSvg = (number) => {
   const svg = `
@@ -132,9 +132,7 @@ export default class extends Controller {
         return new google.maps.Polyline({
           path,
           map,
-          strokeColor: COMMUNITY_ROUTE_COLOR,
-          strokeOpacity: 0.85,
-          strokeWeight: 4,
+          ...COMMUNITY_ROUTE_STYLE,
         })
       } catch (e) {
         console.warn("[community-plan-preview] Failed to decode polyline:", e)
