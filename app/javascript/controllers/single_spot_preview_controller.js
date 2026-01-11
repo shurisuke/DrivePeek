@@ -100,6 +100,7 @@ export default class extends Controller {
           "vicinity",
           "geometry",
           "photos",
+          "types",
         ],
       },
       (place, status) => {
@@ -108,10 +109,13 @@ export default class extends Controller {
           return
         }
 
+        const buttonId = `dp-add-spot-preview-${place.place_id}`
+
         showInfoWindow({
           anchor: marker,
           place,
-          showButton: false,
+          buttonId,
+          showButton: true,
         })
       }
     )
