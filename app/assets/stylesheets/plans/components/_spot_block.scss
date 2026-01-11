@@ -336,7 +336,8 @@
 }
 
 /* 丸アイコンボタン化（メモ/お気に入り/削除） */
-.spot-block .spot-detail-actions__buttons .btn {
+.spot-block .spot-detail-actions__buttons .btn,
+.spot-block .spot-detail-actions__buttons .fav-button {
   width: 44px !important;
   min-width: 44px !important;
   height: 44px !important;
@@ -357,48 +358,52 @@
   line-height: 1 !important;
 }
 
-.spot-block .spot-detail-actions__buttons .btn:hover {
+.spot-block .spot-detail-actions__buttons .btn:hover,
+.spot-block .spot-detail-actions__buttons .fav-button:hover {
   background: var(--spot-action-bg-hover) !important;
   border-color: var(--spot-action-border-hover) !important;
   transform: translateY(-1px);
   box-shadow: 0 3px 10px rgba(0, 0, 0, 0.08) !important;
 }
 
-.spot-block .spot-detail-actions__buttons .btn:active {
+.spot-block .spot-detail-actions__buttons .btn:active,
+.spot-block .spot-detail-actions__buttons .fav-button:active {
   transform: translateY(0);
   box-shadow: none !important;
   background: rgba(80, 109, 83, 0.14) !important;
 }
 
-.spot-block .spot-detail-actions__buttons .btn:focus-visible {
+.spot-block .spot-detail-actions__buttons .btn:focus-visible,
+.spot-block .spot-detail-actions__buttons .fav-button:focus-visible {
   outline: none;
   box-shadow: none !important;
 }
 
-.spot-block .spot-detail-actions__buttons .btn i {
+.spot-block .spot-detail-actions__buttons .btn i,
+.spot-block .spot-detail-actions__buttons .fav-button i {
   margin: 0 !important;
   display: block !important;
   line-height: 1 !important;
   font-size: 1.1rem;
 }
 
-.spot-block .spot-detail-actions__buttons .btn i.bi::before {
+.spot-block .spot-detail-actions__buttons .btn i.bi::before,
+.spot-block .spot-detail-actions__buttons .fav-button i.bi::before {
   position: relative;
   top: 2px;
 }
 
 /* 余計な文字幅を消す（アイコンだけ表示） */
-.spot-block .spot-detail-actions__buttons .btn:not(.btn-fav-icon) {
+.spot-block .spot-detail-actions__buttons .btn:not(.fav-button) {
   font-size: 0;
 }
 
 /* お気に入り：ハートだけ少し小さく */
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon i {
+.spot-block .spot-detail-actions__buttons .fav-button i {
   font-size: 0.95rem !important;
 }
 
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i,
-.spot-block .spot-detail-actions__buttons .btn.btn-fav-icon.btn-fav-icon--active i.bi::before {
+.spot-block .spot-detail-actions__buttons .fav-button.fav-button--active i {
   color: var(--personal) !important;
 }
 
