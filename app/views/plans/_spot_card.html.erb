@@ -5,6 +5,19 @@
   <div class="spot-card__header">
     <h3 class="spot-card__name"><%= spot.name %></h3>
     <div class="spot-card__actions">
+      <% if spot.lat.present? && spot.lng.present? %>
+        <button type="button"
+                class="spot-card__pin"
+                aria-label="地図でこのスポットを見る"
+                data-controller="single-spot-preview"
+                data-single-spot-preview-lat-value="<%= spot.lat %>"
+                data-single-spot-preview-lng-value="<%= spot.lng %>"
+                data-single-spot-preview-name-value="<%= spot.name %>"
+                data-single-spot-preview-address-value="<%= spot.address %>"
+                data-action="click->single-spot-preview#show">
+          <i class="bi bi-geo-alt" aria-hidden="true"></i>
+        </button>
+      <% end %>
       <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
     </div>
   </div>

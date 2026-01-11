@@ -37,15 +37,38 @@
   <div class="plan-card__spots">
     <% if spots.present? %>
       <% spots.each_with_index do |spot, index| %>
-        <div class="plan-card__spot">
-          <span class="plan-card__spot-number"><%= index + 1 %></span>
-          <div class="plan-card__spot-info">
-            <div class="plan-card__spot-name"><%= spot[:name] %></div>
-            <% if spot[:address].present? %>
-              <div class="plan-card__spot-address"><%= spot[:address] %></div>
-            <% end %>
+        <% if local_assigns[:preview_mode] && spot[:lat].present? && spot[:lng].present? %>
+          <div class="plan-card__spot plan-card__spot--clickable"
+               data-controller="single-spot-preview"
+               data-single-spot-preview-lat-value="<%= spot[:lat] %>"
+               data-single-spot-preview-lng-value="<%= spot[:lng] %>"
+               data-single-spot-preview-name-value="<%= spot[:name] %>"
+               data-single-spot-preview-address-value="<%= spot[:address] %>"
+               data-action="click->single-spot-preview#show"
+               role="button"
+               tabindex="0">
+            <span class="plan-card__spot-number"><%= index + 1 %></span>
+            <div class="plan-card__spot-info">
+              <div class="plan-card__spot-name"><%= spot[:name] %></div>
+              <% if spot[:address].present? %>
+                <div class="plan-card__spot-address"><%= spot[:address] %></div>
+              <% end %>
+            </div>
+            <span class="plan-card__spot-pin" aria-hidden="true">
+              <i class="bi bi-geo-alt"></i>
+            </span>
           </div>
-        </div>
+        <% else %>
+          <div class="plan-card__spot">
+            <span class="plan-card__spot-number"><%= index + 1 %></span>
+            <div class="plan-card__spot-info">
+              <div class="plan-card__spot-name"><%= spot[:name] %></div>
+              <% if spot[:address].present? %>
+                <div class="plan-card__spot-address"><%= spot[:address] %></div>
+              <% end %>
+            </div>
+          </div>
+        <% end %>
       <% end %>
     <% else %>
       <div class="plan-card__no-spots">スポットなし</div>
@@ -72,12 +95,12 @@
         <%# 編集画面内：地図にプレビュー表示 %>
         <button type="button"
                 class="plan-card__detail-link"
-                aria-label="地図でプレビュー"
+                aria-label="ルートをプレビュー"
                 data-controller="community-plan-preview"
                 data-community-plan-preview-plan-id-value="<%= plan.id %>"
                 data-action="click->community-plan-preview#show">
-          <i class="bi bi-geo-alt" aria-hidden="true"></i>
-          地図で見る
+          <i class="bi bi-map" aria-hidden="true"></i>
+          ルートを見る
         </button>
       <% else %>
         <%# 一覧画面：詳細ページへ遷移 %>

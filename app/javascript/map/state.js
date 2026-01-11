@@ -23,6 +23,9 @@ let routePolylines = [];          // 経路ポリライン（配列）
 let communityPreviewMarkers = [];   // コミュニティプランのスポット（配列）
 let communityPreviewPolylines = []; // コミュニティプランの経路（配列）
 
+// --- 単一スポットピン（カードから地図表示用） ---
+let spotPinMarker = null;           // 単一スポットピン（単体）
+
 // --- map instance ---
 export const getMapInstance = () => map;
 
@@ -140,6 +143,21 @@ export const clearCommunityPreview = () => {
   clearCommunityPreviewPolylines();
 };
 
+// --- 単一スポットピン ---
+export const clearSpotPinMarker = () => {
+  if (spotPinMarker) {
+    spotPinMarker.setMap(null);
+    spotPinMarker = null;
+  }
+};
+
+export const setSpotPinMarker = (marker) => {
+  clearSpotPinMarker();
+  spotPinMarker = marker;
+};
+
+export const getSpotPinMarker = () => spotPinMarker;
+
 // --- 全状態クリア（ページ遷移時用） ---
 export const clearAllMapState = () => {
   clearCurrentLocationMarker();
@@ -150,6 +168,7 @@ export const clearAllMapState = () => {
   clearRoutePolylines();
   clearCommunityPreviewMarkers();
   clearCommunityPreviewPolylines();
+  clearSpotPinMarker();
   map = null;
   window.mapInstance = null;
 };

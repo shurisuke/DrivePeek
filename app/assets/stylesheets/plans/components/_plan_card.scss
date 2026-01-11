@@ -612,6 +612,18 @@
   &:hover {
     background: rgba(80, 109, 83, 0.04);
   }
+
+  &--clickable {
+    cursor: pointer;
+
+    &:hover {
+      background: rgba(59, 130, 246, 0.08);
+    }
+
+    &:active {
+      background: rgba(59, 130, 246, 0.12);
+    }
+  }
 }
 
 .plan-card__spot-number {
@@ -632,6 +644,19 @@
 .plan-card__spot-info {
   flex: 1;
   min-width: 0;
+}
+
+.plan-card__spot-pin {
+  flex-shrink: 0;
+  color: #3B82F6;
+  font-size: 18px;
+  line-height: 1;
+  margin-left: auto;
+
+  // 塗りつぶしアイコンを使用
+  .bi-geo-alt::before {
+    content: "\f3e7"; // bi-geo-alt-fill
+  }
 }
 
 .plan-card__spot-name {
@@ -766,6 +791,9 @@
 }
 
 .spot-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 2px;
   flex-shrink: 0;
   margin-top: -2px;
   margin-right: -4px;
@@ -788,6 +816,28 @@
     &--active {
       color: #e8a0a8;
     }
+  }
+}
+
+.spot-card__pin {
+  padding: 6px;
+  background: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  color: #3B82F6;
+  font-size: 20px;
+  line-height: 1;
+  transition: all 0.15s ease;
+
+  // 塗りつぶしアイコンを使用
+  .bi-geo-alt::before {
+    content: "\f3e7"; // bi-geo-alt-fill
+  }
+
+  &:hover {
+    color: #2563EB;
+    transform: scale(1.1);
   }
 }
 
