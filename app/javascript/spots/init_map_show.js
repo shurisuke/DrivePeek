@@ -14,10 +14,11 @@ import { setupPoiClickForView } from "map/poi_click"
 import { getMapInstance, setSpotPinMarker } from "map/state"
 import { showInfoWindow } from "map/infowindow"
 import { waitForGoogleMaps, isSpotShowPage } from "map/utils"
+import { COLORS } from "map/constants"
 
 console.log("[spots/init_map_show] module loaded")
 
-const SPOT_PIN_COLOR = "#3B82F6"
+const SPOT_PIN_COLOR = COLORS.COMMUNITY
 
 // PlacesService のキャッシュ
 let placesService = null
