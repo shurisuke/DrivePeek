@@ -4,7 +4,7 @@ import {
   setSpotPinMarker,
   clearSpotPinMarker,
 } from "map/state"
-import { showInfoWindowForPin, closeInfoWindow } from "map/infowindow"
+import { showInfoWindow, closeInfoWindow } from "map/infowindow"
 
 // ================================================================
 // SingleSpotPreviewController
@@ -13,6 +13,18 @@ import { showInfoWindowForPin, closeInfoWindow } from "map/infowindow"
 // ================================================================
 
 const SPOT_PIN_COLOR = "#3B82F6"
+
+// PlacesService のキャッシュ
+let placesService = null
+
+const getPlacesService = () => {
+  if (!placesService) {
+    const map = getMapInstance()
+    if (!map) return null
+    placesService = new google.maps.places.PlacesService(map)
+  }
+  return placesService
+}
 
 const createSpotPinSvg = () => {
   const svg = `
@@ -30,6 +42,7 @@ export default class extends Controller {
     lng: Number,
     name: String,
     address: String,
+    placeId: String,
   }
 
   show(event) {
@@ -59,19 +72,48 @@ export default class extends Controller {
     })
 
     marker.addListener("click", () => {
-      showInfoWindowForPin({
-        marker,
-        name: this.nameValue,
-        address: this.addressValue,
-      })
+      this.#showInfoWindowWithPhoto(marker)
     })
 
     setSpotPinMarker(marker)
     map.panTo(position)
-    showInfoWindowForPin({
-      marker,
-      name: this.nameValue,
-      address: this.addressValue,
-    })
+    this.#showInfoWindowWithPhoto(marker)
+  }
+
+  // Places APIから詳細を取得してInfoWindowを表示
+  #showInfoWindowWithPhoto(marker) {
+    if (!this.placeIdValue) {
+      console.warn("[single_spot_preview] placeId not found")
+      return
+    }
+
+    const service = getPlacesService()
+    if (!service) return
+
+    service.getDetails(
+      {
+        placeId: this.placeIdValue,
+        fields: [
+          "place_id",
+          "name",
+          "formatted_address",
+          "vicinity",
+          "geometry",
+          "photos",
+        ],
+      },
+      (place, status) => {
+        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
+          console.warn("[single_spot_preview] Place詳細取得失敗:", status)
+          return
+        }
+
+        showInfoWindow({
+          anchor: marker,
+          place,
+          showButton: false,
+        })
+      }
+    )
   }
 }

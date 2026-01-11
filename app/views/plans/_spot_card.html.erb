@@ -5,7 +5,7 @@
   <div class="spot-card__header">
     <h3 class="spot-card__name"><%= spot.name %></h3>
     <div class="spot-card__actions">
-      <% if spot.lat.present? && spot.lng.present? %>
+      <% if spot.lat.present? && spot.lng.present? && spot.place_id.present? %>
         <button type="button"
                 class="spot-card__pin"
                 aria-label="地図でこのスポットを見る"
@@ -14,6 +14,7 @@
                 data-single-spot-preview-lng-value="<%= spot.lng %>"
                 data-single-spot-preview-name-value="<%= spot.name %>"
                 data-single-spot-preview-address-value="<%= spot.address %>"
+                data-single-spot-preview-place-id-value="<%= spot.place_id %>"
                 data-action="click->single-spot-preview#show">
           <i class="bi bi-geo-alt" aria-hidden="true"></i>
         </button>
