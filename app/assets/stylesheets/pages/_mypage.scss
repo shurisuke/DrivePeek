@@ -32,13 +32,14 @@
 }
 
 .mypage-title {
-  font-size: 35px;
-  color: var(--personal);
-  border-bottom: 2px solid var(--personal);
-  padding-bottom: 1rem;
-  margin-bottom: 2rem;
-  font-weight: bold;
+  font-size: 28px;
+  font-weight: 500;
+  color: #1d1d1f;
+  letter-spacing: -0.3px;
   text-align: center;
+  margin: 0 0 24px 0;
+  padding-bottom: 16px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
 }
 
 .mypage-card {

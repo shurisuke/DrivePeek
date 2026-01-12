@@ -1,7 +1,8 @@
 <%# スポットカード（検索結果表示用の共通部品） %>
-<%# locals: spot:, like_spot: nil %>
+<%# locals: spot:, like_spot: nil, preview_mode: false %>
 
 <%
+  _preview_mode = local_assigns.fetch(:preview_mode, false)
   spot_location = [spot.prefecture, spot.city].compact.reject(&:blank?).join("/")
   plans_count = spot.plans.count
 %>
@@ -14,18 +15,18 @@
     </div>
   </div>
 
-  <% if spot_location.present? %>
-    <div class="spot-card__location">
-      <i class="bi bi-geo-alt" aria-hidden="true"></i>
-      <%= spot_location %>
-    </div>
-  <% end %>
-
   <% if spot.genres.any? %>
     <div class="spot-card__genres">
       <% spot.genres.each do |genre| %>
         <span class="spot-card__genre"><%= genre.name %></span>
       <% end %>
+    </div>
+  <% end %>
+
+  <% if spot_location.present? %>
+    <div class="spot-card__location">
+      <i class="bi bi-geo-alt" aria-hidden="true"></i>
+      <%= spot_location %>
     </div>
   <% end %>
 
@@ -35,9 +36,9 @@
       <span><%= plans_count %></span>人がドライブしました
     </div>
 
-    <% if spot.lat.present? && spot.lng.present? && spot.place_id.present? %>
+    <% if _preview_mode && spot.lat.present? && spot.lng.present? && spot.place_id.present? %>
       <button type="button"
-              class="spot-card__map-link"
+              class="spot-card__map-link spot-card__map-link--preview"
               aria-label="地図でこのスポットを見る"
               data-controller="single-spot-preview"
               data-single-spot-preview-lat-value="<%= spot.lat %>"
@@ -46,9 +47,14 @@
               data-single-spot-preview-address-value="<%= spot.address %>"
               data-single-spot-preview-place-id-value="<%= spot.place_id %>"
               data-action="click->single-spot-preview#show">
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+        地図で見る
+      </button>
+    <% else %>
+      <%= link_to spot_path(spot), class: "spot-card__map-link", aria: { label: "スポット詳細を見る" } do %>
         地図で見る
         <i class="bi bi-chevron-right" aria-hidden="true"></i>
-      </button>
+      <% end %>
     <% end %>
   </div>
 </div>

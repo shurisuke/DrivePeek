@@ -9,7 +9,7 @@
   _preview_mode = local_assigns.fetch(:preview_mode, false)
 %>
 
-<div class="plan-card">
+<div class="plan-card<%= ' plan-card--preview' if _preview_mode %>">
   <%# ヘッダー：タイトル + アクション + お気に入り %>
   <div class="plan-card__header">
     <h3 class="plan-card__title"><%= plan_title %></h3>
@@ -108,14 +108,14 @@
       <% if total_distance.present? %>
         <span class="plan-card__total-item">
           <i class="bi bi-signpost-2" aria-hidden="true"></i>
-          <%= total_distance %>
+          <span><%= total_distance %><span class="plan-card__unit">km</span></span>
         </span>
       <% end %>
     </div>
     <% if _plan %>
       <% if _preview_mode %>
         <button type="button"
-                class="plan-card__detail-link"
+                class="plan-card__detail-link plan-card__detail-link--preview"
                 aria-label="ルートをプレビュー"
                 data-controller="community-plan-preview"
                 data-community-plan-preview-plan-id-value="<%= _plan.id %>"
@@ -125,8 +125,8 @@
         </button>
       <% else %>
         <%= link_to plan_path(_plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
-          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-          ルート
+          地図で見る
+          <i class="bi bi-chevron-right" aria-hidden="true"></i>
         <% end %>
       <% end %>
     <% end %>

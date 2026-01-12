@@ -15,6 +15,7 @@ import { setupPoiClickForView } from "map/poi_click"
 import { getPlanDataFromPage } from "plans/plan_data"
 import { renderRoutePolylinesForShow, fitMapToSpots } from "plans/route_renderer_show"
 import { waitForGoogleMaps, isShowPage } from "map/utils"
+import { COLORS } from "map/constants"
 
 console.log("[init_map_show] module loaded")
 
@@ -58,7 +59,7 @@ document.addEventListener("turbo:load", async () => {
 
   console.log("[init_map_show] planData found. renderPlanMarkers()")
   const { renderPlanMarkers } = await import("plans/render_plan_markers")
-  renderPlanMarkers(planData)
+  renderPlanMarkers(planData, { pinColor: COLORS.COMMUNITY })
 
   // スポット間の経路線を描画
   renderRoutePolylinesForShow()

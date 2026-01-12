@@ -6,11 +6,11 @@
 ========================================== */
 
 body.no-footer {
-  /* ハンバーガーメニューの位置・サイズ調整（2/3サイズ） */
+  /* ハンバーガーメニューの位置・サイズ調整 */
   .hamburger {
     top: 10px;
     right: 24px;
-    transform: scale(0.70);
+    transform: scale(0.95);
     transform-origin: top right;
     border: 1px solid #9a9a9a;
     border-radius: 6px;

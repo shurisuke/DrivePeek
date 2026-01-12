@@ -4,21 +4,110 @@
   <h1 class="community-plans__page-title">お気に入り</h1>
 
   <div class="community-plans__content">
-    <%# タブ切り替え %>
-    <div class="community-plans__search">
+  <%# 左サイドバー: 検索フォーム %>
+  <div class="community-plans__sidebar">
+  <div class="community-plans__search">
+    <%= form_with url: favorites_path, method: :get, local: true do %>
+      <%# 検索タイプ切り替えタブ %>
       <div class="community-plans__search-tabs">
-        <%= link_to favorites_path(tab: "plan"),
-                    class: "community-plans__search-tab #{'is-active' if @tab != 'spot'}" do %>
+        <label class="community-plans__search-tab <%= 'is-active' if @search_type != 'spot' %>">
+          <input type="radio" name="search_type" value="plan" <%= 'checked' if @search_type != 'spot' %>
+                 onchange="this.form.requestSubmit()">
           <span>プラン</span>
-        <% end %>
-        <%= link_to favorites_path(tab: "spot"),
-                    class: "community-plans__search-tab #{'is-active' if @tab == 'spot'}" do %>
+        </label>
+        <label class="community-plans__search-tab <%= 'is-active' if @search_type == 'spot' %>">
+          <input type="radio" name="search_type" value="spot" <%= 'checked' if @search_type == 'spot' %>
+                 onchange="this.form.requestSubmit()">
           <span>スポット</span>
-        <% end %>
+        </label>
       </div>
-    </div>
 
-    <% if @tab == "spot" %>
+      <div class="community-plans__filters">
+        <div class="multi-select" data-controller="multi-select" data-multi-select-name="cities[]" data-multi-select-placeholder-value="エリア">
+          <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
+            <span data-multi-select-target="label" class="is-placeholder">エリア</span>
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="multi-select__dropdown" data-multi-select-target="dropdown">
+            <% PlansHelper::PREFECTURES_BY_REGION.each do |region, prefs| %>
+              <div class="multi-select__region">
+                <div class="multi-select__region-label"><%= region %></div>
+                <% prefs.each do |pref| %>
+                  <% cities = @cities_by_prefecture[pref] || [] %>
+                  <% if cities.any? %>
+                    <div class="multi-select__prefecture-group" data-multi-select-target="prefectureGroup">
+                      <div class="multi-select__prefecture-header" data-action="click->multi-select#togglePrefecture">
+                        <div class="multi-select__prefecture-label">
+                          <input type="checkbox"
+                                 data-multi-select-target="prefectureCheckbox"
+                                 data-action="click->multi-select#stopPropagation change->multi-select#selectPrefecture">
+                          <span><%= pref %></span>
+                        </div>
+                        <i class="bi bi-chevron-right multi-select__expand-icon"></i>
+                      </div>
+                      <div class="multi-select__cities">
+                        <% cities.each do |city| %>
+                          <% city_value = "#{pref}/#{city}" %>
+                          <label class="multi-select__option">
+                            <input type="checkbox" value="<%= city_value %>" data-label="<%= city %>"
+                                   data-multi-select-target="checkbox" data-action="change->multi-select#select"
+                                   <%= 'checked' if @selected_cities&.include?(city_value) %>>
+                            <span><%= city %></span>
+                          </label>
+                        <% end %>
+                      </div>
+                    </div>
+                  <% end %>
+                <% end %>
+              </div>
+            <% end %>
+            <div class="multi-select__footer">
+              <button type="button" class="multi-select__close-btn" data-action="click->multi-select#close">閉じる</button>
+            </div>
+          </div>
+          <% @selected_cities&.each do |city| %>
+            <input type="hidden" name="cities[]" value="<%= city %>" data-multi-select-target="hiddenField">
+          <% end %>
+        </div>
+        <div class="multi-select" data-controller="multi-select" data-multi-select-name="genre_ids[]" data-multi-select-placeholder-value="ジャンル">
+          <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
+            <span data-multi-select-target="label" class="is-placeholder">ジャンル</span>
+            <i class="bi bi-chevron-down"></i>
+          </button>
+          <div class="multi-select__dropdown" data-multi-select-target="dropdown">
+            <% @genres.each do |genre| %>
+              <label class="multi-select__option">
+                <input type="checkbox" value="<%= genre.id %>" data-label="<%= genre.name %>"
+                       data-multi-select-target="checkbox" data-action="change->multi-select#select"
+                       <%= 'checked' if @selected_genre_ids&.include?(genre.id) %>>
+                <span><%= genre.name %></span>
+              </label>
+            <% end %>
+            <div class="multi-select__footer">
+              <button type="button" class="multi-select__close-btn" data-action="click->multi-select#close">閉じる</button>
+            </div>
+          </div>
+          <% @selected_genre_ids&.each do |gid| %>
+            <input type="hidden" name="genre_ids[]" value="<%= gid %>" data-multi-select-target="hiddenField">
+          <% end %>
+        </div>
+      </div>
+
+      <%= text_field_tag :q, @search_query,
+                         placeholder: "フリーワード検索",
+                         class: "community-plans__search-input" %>
+
+      <button type="submit" class="community-plans__search-button">
+        <i class="bi bi-search" aria-hidden="true"></i>
+        <span>検索</span>
+      </button>
+    <% end %>
+  </div>
+  </div>
+
+  <%# 右メイン: カード一覧 + ページネーション %>
+  <div class="community-plans__main">
+  <% if @search_type == "spot" %>
       <%# スポット一覧 %>
       <% if @spots.present? %>
         <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @spots.map(&:id)) %>
@@ -35,7 +124,11 @@
         <% end %>
       <% else %>
         <div class="community-plans__empty">
-          <p>お気に入りスポットがありません</p>
+          <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
+            <p>条件に一致するお気に入りスポットが見つかりませんでした</p>
+          <% else %>
+            <p>お気に入りスポットがありません</p>
+          <% end %>
         </div>
       <% end %>
     <% else %>
@@ -61,7 +154,7 @@
                        spots: spots_data,
                        genres: genre_names,
                        total_duration: format_move_time(plan.spots_only_move_time),
-                       total_distance: "#{plan.spots_only_distance}km",
+                       total_distance: format_distance(plan.spots_only_distance),
                        plan: plan,
                        like_plan: like_plans_map[plan.id] %>
           <% end %>
@@ -74,9 +167,14 @@
         <% end %>
       <% else %>
         <div class="community-plans__empty">
-          <p>お気に入りプランがありません</p>
+          <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
+            <p>条件に一致するお気に入りプランが見つかりませんでした</p>
+          <% else %>
+            <p>お気に入りプランがありません</p>
+          <% end %>
         </div>
       <% end %>
     <% end %>
+  </div>
   </div>
 </div>

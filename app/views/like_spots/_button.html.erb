@@ -5,7 +5,7 @@
   <% if like_spot.present? %>
     <%= button_to like_spot_path(like_spot),
                   method: :delete,
-                  class: "fav-button fav-button--heart fav-button--active",
+                  class: "fav-button fav-button--heart fav-button--sm fav-button--active",
                   "aria-label": "お気に入り解除",
                   data: { turbo_frame: dom_id(spot, :like_button) } do %>
       <i class="bi bi-heart-fill" aria-hidden="true"></i>
@@ -13,7 +13,7 @@
   <% else %>
     <%= button_to like_spots_path(spot_id: spot.id),
                   method: :post,
-                  class: "fav-button fav-button--heart",
+                  class: "fav-button fav-button--heart fav-button--sm",
                   "aria-label": "お気に入り登録",
                   data: { turbo_frame: dom_id(spot, :like_button) } do %>
       <i class="bi bi-heart" aria-hidden="true"></i>

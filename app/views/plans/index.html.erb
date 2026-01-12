@@ -4,7 +4,8 @@
   <h1 class="community-plans__page-title">みんなの旅</h1>
 
   <div class="community-plans__content">
-  <%# 検索フォーム %>
+  <%# 左サイドバー: 検索フォーム %>
+  <div class="community-plans__sidebar">
   <div class="community-plans__search">
     <%= form_with url: plans_path, method: :get, local: true do %>
       <%# 検索タイプ切り替えタブ %>
@@ -96,24 +97,16 @@
                          placeholder: "フリーワード検索",
                          class: "community-plans__search-input" %>
 
-      <% if user_signed_in? %>
-        <%# お気に入りフィルター %>
-        <label class="community-plans__favorites-toggle">
-          <input type="checkbox" name="favorites_only" value="1"
-                 <%= 'checked' if @favorites_only %>
-                 onchange="this.form.requestSubmit()">
-          <span class="community-plans__favorites-toggle-switch"></span>
-          <span>お気に入りのみ</span>
-        </label>
-      <% end %>
-
       <button type="submit" class="community-plans__search-button">
         <i class="bi bi-search" aria-hidden="true"></i>
         <span>検索</span>
       </button>
     <% end %>
   </div>
+  </div>
 
+  <%# 右メイン: カード一覧 + ページネーション %>
+  <div class="community-plans__main">
   <% if @search_type == "spot" %>
     <%# スポット検索結果 %>
     <% if @community_spots.present? %>
@@ -164,7 +157,7 @@
                      spots: spots_data,
                      genres: genre_names,
                      total_duration: format_move_time(plan.spots_only_move_time),
-                     total_distance: "#{plan.spots_only_distance}km",
+                     total_distance: format_distance(plan.spots_only_distance),
                      plan: plan,
                      like_plan: like_plans_map[plan.id] %>
         <% end %>
@@ -186,5 +179,6 @@
       </div>
     <% end %>
   <% end %>
+  </div>
   </div>
 </div>
