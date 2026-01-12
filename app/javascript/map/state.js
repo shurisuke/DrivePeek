@@ -155,20 +155,3 @@ export const setSpotPinMarker = (marker) => {
   clearSpotPinMarker();
   spotPinMarker = marker;
 };
-
-export const getSpotPinMarker = () => spotPinMarker;
-
-// --- 全状態クリア（ページ遷移時用） ---
-export const clearAllMapState = () => {
-  clearCurrentLocationMarker();
-  clearStartPointMarker();
-  clearEndPointMarker();
-  clearPlanSpotMarkers();
-  clearSearchHitMarkers();
-  clearRoutePolylines();
-  clearCommunityPreviewMarkers();
-  clearCommunityPreviewPolylines();
-  clearSpotPinMarker();
-  map = null;
-  window.mapInstance = null;
-};

@@ -2,10 +2,6 @@
 // ================================================================
 // 時刻表示のON/OFFトグル
 // - body.plan-time-open を切り替える（表示状態の唯一の真実）
-// - Turbo Frame(navibar) 再描画後に
-//   1) 開閉状態（body class）を復元
-//   2) scrollTop を復元
-//   3) スクロールコンテナ幅を再適用（CSSが効かない時の保険で inline も使う）
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -13,52 +9,49 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static values = {
     navibarSelector: { type: String, default: ".navibar" },
-    frameId: { type: String, default: "navibar" },
     storageKey: { type: String, default: "drive_peek:plan_time_open" },
   }
 
   connect() {
-    console.log("[plan-time-toggle] connect")
-
     this.boundOnTabClick = this.onTabClick.bind(this)
-    this.boundBeforeFrameRender = this.beforeFrameRender.bind(this)
-    this.boundAfterFrameRender = this.afterFrameRender.bind(this)
+    this.boundOnNavibarUpdated = this.onNavibarUpdated.bind(this)
 
     this.checkVisibility()
     this.restoreOpenState()
     this.updateDepartureTimeClass()
 
     document.addEventListener("click", this.boundOnTabClick)
-
-    // ✅ Turbo Frame の差し替えをフック（これが安定）
-    document.addEventListener("turbo:before-frame-render", this.boundBeforeFrameRender)
-    document.addEventListener("turbo:frame-render", this.boundAfterFrameRender)
+    // ✅ turbo_stream 更新後に状態を再適用
+    document.addEventListener("navibar:updated", this.boundOnNavibarUpdated)
   }
 
   disconnect() {
     document.removeEventListener("click", this.boundOnTabClick)
-    document.removeEventListener("turbo:before-frame-render", this.boundBeforeFrameRender)
-    document.removeEventListener("turbo:frame-render", this.boundAfterFrameRender)
+    document.removeEventListener("navibar:updated", this.boundOnNavibarUpdated)
+  }
+
+  // turbo_stream で DOM が更新された後に呼ばれる
+  onNavibarUpdated() {
+    const isOpen = document.body.classList.contains("plan-time-open")
+
+    // 出発時刻の状態を再適用
+    this.updateDepartureTimeClass()
+
+    // 幅の再適用（時刻レール表示中の場合）
+    this.applyScrollWidthFallback(isOpen)
   }
 
   // ------------------------------------------------------------
   // UI操作
   // ------------------------------------------------------------
   toggle() {
-    console.log("[plan-time-toggle] toggle clicked")
-
-    if (!this.isPlanActive()) {
-      console.log("[plan-time-toggle] not plan tab, abort")
-      return
-    }
+    if (!this.isPlanActive()) return
 
     const nextOpen = !document.body.classList.contains("plan-time-open")
     this.setOpen(nextOpen, { save: true })
   }
 
   setOpen(isOpen, { save = false } = {}) {
-    console.log("[plan-time-toggle] setOpen =>", isOpen)
-
     document.body.classList.toggle("plan-time-open", isOpen)
 
     // ✅ 出発時刻の状態に応じて departure-time-unset クラスを切り替え
@@ -86,15 +79,13 @@ export default class extends Controller {
   saveOpenState(isOpen) {
     try {
       localStorage.setItem(this.storageKeyValue, isOpen ? "1" : "0")
-      console.log("[plan-time-toggle] save storage", { isOpen })
-    } catch (e) {
-      console.log("[plan-time-toggle] save storage failed", e)
+    } catch (_) {
+      // localStorage が使えない場合は無視
     }
   }
 
   restoreOpenState() {
     if (!this.isPlanActive()) {
-      console.log("[plan-time-toggle] restore: not plan tab -> close")
       this.setOpen(false, { save: false })
       return
     }
@@ -102,65 +93,17 @@ export default class extends Controller {
     let stored = null
     try {
       stored = localStorage.getItem(this.storageKeyValue)
-    } catch (e) {
-      console.log("[plan-time-toggle] restore: storage read failed", e)
+    } catch (_) {
+      // localStorage が使えない場合は無視
     }
 
     if (stored === null) {
-      console.log("[plan-time-toggle] restore: no storage")
       this.setOpen(false, { save: false })
       return
     }
 
     const isOpen = stored === "1"
-    console.log("[plan-time-toggle] restore:", { isOpen })
     this.setOpen(isOpen, { save: false })
-  }
-
-  // ------------------------------------------------------------
-  // Turbo Frame 再描画対応（スクロール状態を保持）
-  // ------------------------------------------------------------
-  beforeFrameRender(event) {
-    const frame = event.target
-    if (!(frame instanceof HTMLElement)) return
-    if (frame.id !== this.frameIdValue) return
-
-    // 差し替え直前に scrollTop を退避
-    const scroll = this.findPlanbarScroll()
-    this.cachedScrollTop = scroll ? scroll.scrollTop : 0
-
-    console.log("[plan-time-toggle] turbo:before-frame-render", {
-      cachedScrollTop: this.cachedScrollTop,
-      hasScroll: !!scroll,
-    })
-  }
-
-  afterFrameRender(event) {
-    const frame = event.target
-    if (!(frame instanceof HTMLElement)) return
-    if (frame.id !== this.frameIdValue) return
-
-    // ✅ 差し替え後：状態を必ず再適用
-    const isOpen = document.body.classList.contains("plan-time-open")
-
-    console.log("[plan-time-toggle] turbo:frame-render -> reapply", { isOpen })
-
-    // 1) 幅の再適用（CSS/inline保険）
-    this.applyScrollWidthFallback(isOpen)
-
-    // 2) 出発時刻の状態を再適用
-    this.updateDepartureTimeClass()
-
-    // 3) scrollTop 復元
-    const scroll = this.findPlanbarScroll()
-    if (scroll) {
-      scroll.scrollTop = this.cachedScrollTop || 0
-    }
-
-    console.log("[plan-time-toggle] turbo:frame-render -> restored", {
-      restoredScrollTop: this.cachedScrollTop || 0,
-      hasScroll: !!scroll,
-    })
   }
 
   // CSSが効けば不要だが、再描画直後に一瞬効かず崩れるケースがあるので保険で入れる
@@ -203,7 +146,6 @@ export default class extends Controller {
   checkVisibility() {
     const shouldShow = this.isPlanActive()
     this.element.hidden = !shouldShow
-    console.log("[plan-time-toggle] checkVisibility", { shouldShow })
   }
 
   closeIfNotPlan() {
@@ -219,8 +161,6 @@ export default class extends Controller {
 
     // 念のため、幅の上書きも解除
     this.applyScrollWidthFallback(false)
-
-    console.log("[plan-time-toggle] closeIfNotPlan")
   }
 
   isPlanActive() {

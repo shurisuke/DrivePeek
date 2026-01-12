@@ -8,7 +8,7 @@
 
 import { Controller } from "@hotwired/stimulus"
 import flatpickr from "flatpickr"
-import { patch } from "services/api_client"
+import { patchTurboStream } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["input"]
@@ -130,11 +130,10 @@ export default class extends Controller {
     if (!timeStr || !this.planIdValue) return
 
     try {
-      await patch(`/api/plans/${this.planIdValue}/start_point`, {
+      await patchTurboStream(`/api/plans/${this.planIdValue}/start_point`, {
         start_point: { departure_time: timeStr },
       })
-      // 保存成功 → navibar を再描画（時刻計算反映のため）
-      document.dispatchEvent(new CustomEvent("plan:departure-time-updated"))
+      // 保存成功 → turbo_stream で navibar が自動更新される
     } catch (e) {
       console.error("[start-departure-time] save error", e)
     }

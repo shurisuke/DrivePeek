@@ -19,7 +19,7 @@ import {
   clearEndPointMarker,
   setEndPointMarker,
 } from "map/state"
-import { patch } from "services/api_client"
+import { patchTurboStream } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["address", "toggle", "editArea", "input"]
@@ -201,24 +201,29 @@ export default class extends Controller {
         mapEl.dataset.goalPointVisible = "true"
       }
 
-      // UIの住所表示を更新（ローカル結果で即反映）
+      // ✅ body クラスも同期（navibar:updated ハンドラーが body から読み取るため）
+      document.body.classList.add("goal-point-visible")
+
+      // ✅ トグルスイッチも ON にする（UI の一貫性のため）
+      const toggleSwitch = document.querySelector("[data-goal-point-visibility-target='switch']")
+      if (toggleSwitch) {
+        toggleSwitch.checked = true
+      }
+
+      // UIの住所表示を更新（ローカル結果で即反映、turbo_stream で上書きされる）
       this.addressTarget.textContent = displayAddress
 
-      // ✅ サーバへ保存
-      const json = await patch(`/api/plans/${planId}/goal_point`, {
+      // ✅ サーバへ保存（turbo_stream で navibar が自動更新される）
+      await patchTurboStream(`/api/plans/${planId}/goal_point`, {
         goal_point: {
           address: displayAddress,
           lat,
           lng,
         },
       })
-      console.log("[goal-point-editor] update OK", json)
+      console.log("[goal-point-editor] update OK")
 
-      // サーバ確定値で最終上書き（表示ズレ防止）
-      this.addressTarget.textContent = json.address || displayAddress
-
-      // 他が追従できるようにイベントを発火（plan_map_sync.js が購読）
-      document.dispatchEvent(new CustomEvent("plan:goal-point-updated", { detail: json }))
+      // ✅ turbo_stream で navibar が自動更新される（navibar:updated イベントで地図も同期）
 
       this.close()
     } catch (err) {

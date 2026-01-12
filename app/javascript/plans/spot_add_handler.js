@@ -3,7 +3,7 @@
 // 用途: InfoWindow の「プランに追加」ボタン押下時の処理
 // ================================================================
 
-import { post } from "services/api_client"
+import { postTurboStream } from "services/api_client"
 
 const getPlanId = () => {
   const el = document.getElementById("map")
@@ -24,23 +24,6 @@ const filterTopTypes = (types) => {
   return filtered.length > 0 ? filtered.slice(0, 3) : (types || []).slice(0, 3)
 }
 
-const postSpotToRails = async (planId, detail) => {
-  const url = `/api/plans/${planId}/plan_spots`
-  const body = {
-    spot: {
-      place_id: detail.place_id,
-      name: detail.name,
-      address: detail.address,
-      lat: detail.lat,
-      lng: detail.lng,
-      photo_reference: detail.photo_reference,
-      top_types: filterTopTypes(detail.types),
-    },
-  }
-
-  return post(url, body)
-}
-
 const handleSpotAdd = async (event) => {
   const detail = event.detail
   const planId = getPlanId()
@@ -56,8 +39,24 @@ const handleSpotAdd = async (event) => {
   }
 
   try {
-    const result = await postSpotToRails(planId, detail)
-    document.dispatchEvent(new CustomEvent("plan:spot-added", { detail: result }))
+    const url = `/api/plans/${planId}/plan_spots`
+    const body = {
+      spot: {
+        place_id: detail.place_id,
+        name: detail.name,
+        address: detail.address,
+        lat: detail.lat,
+        lng: detail.lng,
+        photo_reference: detail.photo_reference,
+        top_types: filterTopTypes(detail.types),
+      },
+    }
+
+    await postTurboStream(url, body)
+
+    // スポット追加後はプランタブをアクティブにし、地図ルートを更新
+    document.dispatchEvent(new CustomEvent("navibar:activate-tab", { detail: { tab: "plan" } }))
+    document.dispatchEvent(new CustomEvent("map:route-updated"))
   } catch (err) {
     alert(err.message)
   }

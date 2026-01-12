@@ -11,20 +11,15 @@
   <%= render "plans/plan_tab_guide" %>
 <% end %>
 
-<% spot_ids = @plan.plan_spots.select(:spot_id) %>
-
-<% like_spots_by_spot_id =
-     current_user.like_spots
-       .where(spot_id: spot_ids)
-       .index_by(&:spot_id)
-%>
+<% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
+<% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
 
 <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
 <div id="plan-spots-sortable" data-sortable="plan-spots">
   <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
     <%= render "plans/spot_block_edit",
                plan_spot:  plan_spot,
-               like_spot:  like_spots_by_spot_id[plan_spot.spot_id] %>
+               like_spot:  like_spots_map[plan_spot.spot_id] %>
   <% end %>
 </div>
 

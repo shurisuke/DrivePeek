@@ -16,7 +16,6 @@ import { addCurrentLocationMarker } from "map/current_location"
 import { getPlanDataFromPage } from "plans/plan_data"
 import { waitForGoogleMaps, isEditPage } from "map/utils"
 import { bindSpotAddHandler } from "plans/spot_add_handler"
-import { bindPlanbarRefresh } from "navibar/updater"
 import { bindPlanMapSync } from "plans/plan_map_sync"
 import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 import { bindTollUsedHandler } from "plans/toll_used_handler"
@@ -26,7 +25,6 @@ console.log("[init_map_edit] module loaded")
 
 // 編集画面専用ハンドラーをバインド（各ハンドラーは内部で二重バインド防止済み）
 bindSpotAddHandler()
-bindPlanbarRefresh()
 bindPlanMapSync()
 bindSpotReorderHandler()
 bindTollUsedHandler()

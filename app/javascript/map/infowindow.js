@@ -71,14 +71,14 @@ export const extractLatLng = (place) => {
   return { lat, lng }
 }
 
-export const extractPhotoUrl = (place) => {
+const extractPhotoUrl = (place) => {
   // PlaceResult.photos[0].getUrl() が使えることが多い
   const photo = place?.photos?.[0]
   if (!photo?.getUrl) return null
   return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
 }
 
-export const extractPhotoReference = (place) => {
+const extractPhotoReference = (place) => {
   // JavaScript API では photo_reference は取得できないため null を返す
   // （photo_reference は保存せず、表示時に photo.getUrl() を使用）
   const photo = place?.photos?.[0]

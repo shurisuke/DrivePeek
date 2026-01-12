@@ -16,7 +16,11 @@
      end
 %>
 
-<div class="start-point-block" data-controller="start-point-editor" data-polyline="<%= plan.start_point&.polyline %>">
+<div class="start-point-block"
+     data-controller="start-point-editor"
+     data-polyline="<%= plan.start_point&.polyline %>"
+     data-lat="<%= plan.start_point&.lat %>"
+     data-lng="<%= plan.start_point&.lng %>">
   <%# ✅ 左側: 既存コンテンツ（350px） %>
   <div class="block-main-content">
     <div class="start-point-main">

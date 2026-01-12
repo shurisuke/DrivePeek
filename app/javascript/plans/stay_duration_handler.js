@@ -7,14 +7,7 @@
 // PATCH /plans/:plan_id/plan_spots/:id/update_stay_duration
 // ================================================================
 
-import { patch } from "services/api_client"
-
-const patchStayDuration = async ({ planId, planSpotId, stayDuration }) => {
-  return patch(
-    `/api/plans/${planId}/plan_spots/${planSpotId}/stay_duration`,
-    { stay_duration: stayDuration }
-  )
-}
+import { patchTurboStream } from "services/api_client"
 
 const handleChange = async (e) => {
   const el = e.target
@@ -30,18 +23,9 @@ const handleChange = async (e) => {
   const stayDuration = value === "" ? "" : Number(value)
 
   try {
-    const json = await patchStayDuration({ planId, planSpotId, stayDuration })
-
-    el.dataset.beforeValue = value
-
-    document.dispatchEvent(
-      new CustomEvent("plan:plan-spot-stay-duration-updated", {
-        detail: {
-          plan_id: Number(planId),
-          plan_spot_id: Number(planSpotId),
-          stay_duration: json.stay_duration,
-        },
-      })
+    await patchTurboStream(
+      `/api/plans/${planId}/plan_spots/${planSpotId}/stay_duration`,
+      { stay_duration: stayDuration }
     )
   } catch (err) {
     alert(err.message)
