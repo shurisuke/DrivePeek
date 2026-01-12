@@ -217,10 +217,10 @@
   background: #fff;
   border-radius: 10px;
   cursor: pointer;
-  font-size: 13px;
-  font-weight: 500;
-  color: #666;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 
   input[type="checkbox"] {
@@ -282,15 +282,15 @@
   outline: none;
   margin-bottom: 10px;
   background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.2s ease;
 
   &:focus {
-    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.2);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   }
 
   &::placeholder {
-    color: #aaa;
+    color: #888;
   }
 }
 
@@ -343,7 +343,7 @@
   padding-right: 32px;
 
   &:focus {
-    border-color: #506d53;
+    border-color: #999;
   }
 
   /* 未選択時（デフォルト値）のスタイル */
@@ -373,16 +373,16 @@
   align-items: center;
   gap: 8px;
   text-align: left;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.1), 0 2px 8px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
   transition: box-shadow 0.2s ease;
 
   &:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+    box-shadow: 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 
   &:focus {
     outline: none;
-    box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.2);
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
   }
 
   span {
@@ -392,7 +392,7 @@
     white-space: nowrap;
 
     &.is-placeholder {
-      color: #aaa;
+      color: #888;
     }
   }
 
