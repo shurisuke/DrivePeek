@@ -119,7 +119,7 @@
         <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @community_spots.map(&:id)) %>
         <div class="community-plans__list">
           <% @community_spots.each do |spot| %>
-            <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
+            <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id], preview_mode: true %>
           <% end %>
         </div>
 
@@ -166,7 +166,7 @@
                        spots: spots_data,
                        genres: genre_names,
                        total_duration: format_move_time(plan.spots_only_move_time),
-                       total_distance: "#{plan.spots_only_distance}km",
+                       total_distance: format_distance(plan.spots_only_distance),
                        plan: plan,
                        like_plan: like_plans_map[plan.id],
                        preview_mode: true %>
