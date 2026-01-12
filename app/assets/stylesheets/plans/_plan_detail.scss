@@ -56,21 +56,48 @@ body.no-footer .plan-detail {
 
   /* ✅ 詳細画面用ヘッダー */
   .navibar__header {
-    padding: 20px 24px;
-    border-bottom: 2px solid #e5e5e5;
+    padding: 16px 20px;
+    border-bottom: 1px solid #e5e5e5;
     background: #fff;
     display: flex;
     align-items: center;
-    justify-content: center;
+    justify-content: space-between;
+    gap: 12px;
   }
 
   .navibar__title {
-    font-size: 1.25rem;
-    font-weight: 700;
+    font-size: 1.15rem;
+    font-weight: 600;
     color: #1a1a1a;
-    margin: 5px 0 0 0;
-    line-height: 1.4;
+    margin: 0;
+    flex: 1;
     text-align: center;
+  }
+
+  .plan-detail__back-link {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    color: #506d53;
+    text-decoration: none;
+    border-radius: 6px;
+    transition: background 0.15s ease;
+    flex-shrink: 0;
+
+    &:hover {
+      background: rgba(80, 109, 83, 0.08);
+    }
+
+    i {
+      font-size: 20px;
+    }
+  }
+
+  .plan-detail__header-spacer {
+    width: 32px;
+    flex-shrink: 0;
   }
 
   .navibar__content {
@@ -222,7 +249,7 @@ body.no-footer .plan-detail {
     .spot-order-icon {
       width: 30px;
       height: 30px;
-      background: #EF6C00;
+      background: #3073F0;
       color: #fff;
       border-radius: 50%;
       display: flex;

@@ -27,7 +27,11 @@
     <div class="navibar__content">
       <div class="navibar__content-scroll">
         <div class="navibar__header">
+          <%= link_to :back, class: "plan-detail__back-link" do %>
+            <i class="bi bi-chevron-left" aria-hidden="true"></i>
+          <% end %>
           <h1 class="navibar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
+          <div class="plan-detail__header-spacer"></div>
         </div>
         <div class="navibar__blocks">
           <%= render "plans/plan_content_show", plan: @plan %>
