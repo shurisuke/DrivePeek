@@ -2,6 +2,22 @@
      layouts/_footer.scss
      フッター用（必要なら使用）
 ========================================== */
+
+/* Sticky footer: フッターを常に画面下部に配置 */
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+.main-content {
+  flex: 1;
+}
+
+footer.footer {
+  margin-top: auto;
+}
+
 /* フッターを非表示にするためのbodyクラス */
 body.no-footer footer.footer {
   display: none !important;
