@@ -45,5 +45,4 @@ module PlansHelper
       number_with_precision(value, precision: 1, strip_insignificant_zeros: true)
     end
   end
-
 end
