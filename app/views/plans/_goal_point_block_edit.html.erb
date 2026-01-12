@@ -8,7 +8,10 @@
   data-goal-point-visibility-plan-id-value="<%= plan.id %>"
 >
   <div data-goal-point-visibility-target="blockArea" hidden>
-    <div class="goal-point-block" data-controller="goal-point-editor">
+    <div class="goal-point-block"
+         data-controller="goal-point-editor"
+         data-lat="<%= goal_point&.lat %>"
+         data-lng="<%= goal_point&.lng %>">
       <%# ✅ 左側: 既存コンテンツ（350px） %>
       <div class="block-main-content">
         <div class="goal-point-main">

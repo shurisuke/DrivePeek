@@ -2,34 +2,27 @@
 # Turbo Stream 用（destroy のみ）
 # create は Api::PlanSpotsController へ移動済み
 class PlanSpotsController < ApplicationController
-  include Recalculable
-
   before_action :authenticate_user!
   before_action :set_plan
   before_action :set_plan_spot, only: %i[destroy]
 
   def destroy
-    target_id = helpers.dom_id(@plan_spot)
     @plan_spot.destroy!
-
-    # スポット削除後に route → schedule を再計算
-    recalculate_route_and_schedule!(@plan)
+    @plan.recalculate_for!(@plan_spot, action: :destroy)
+    @plan.reload
 
     respond_to do |format|
-      format.turbo_stream do
-        render turbo_stream: turbo_stream.remove(target_id)
-      end
-
-      format.html do
-        redirect_to edit_plan_path(@plan), notice: "スポットを削除しました"
-      end
+      format.turbo_stream { render "plans/refresh_plan_tab" }
+      format.html { redirect_to edit_plan_path(@plan), notice: "スポットを削除しました" }
     end
   end
 
   private
 
   def set_plan
-    @plan = current_user.plans.find(params[:plan_id])
+    @plan = current_user.plans
+      .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+      .find(params[:plan_id])
   end
 
   def set_plan_spot

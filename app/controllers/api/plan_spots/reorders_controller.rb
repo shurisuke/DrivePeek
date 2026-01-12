@@ -2,8 +2,6 @@
 module Api
   module PlanSpots
     class ReordersController < BaseController
-      include Recalculable
-
       before_action :set_plan
 
       # PATCH /api/plans/:plan_id/plan_spots/reorder
@@ -15,17 +13,21 @@ module Api
         end
 
         PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
+        @plan.recalculate_for!(nil, action: :reorder)
+        @plan.reload
 
-        # 並び替え後に route → schedule を再計算
-        recalculate_route_and_schedule!(@plan)
-
-        head :no_content
+        respond_to do |format|
+          format.turbo_stream { render "plans/refresh_plan_tab" }
+          format.any { head :no_content }
+        end
       end
 
       private
 
       def set_plan
-        @plan = current_user.plans.find(params[:plan_id])
+        @plan = current_user.plans
+          .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+          .find(params[:plan_id])
       end
     end
   end

@@ -69,10 +69,7 @@ const getSpotCountFromDom = () => {
 // ✅ polyline をデコードして地図上に描画する
 const renderRoutePolylines = () => {
   const map = getMapInstance()
-  if (!map) {
-    console.log("[plan_map_sync] renderRoutePolylines: map not ready")
-    return
-  }
+  if (!map) return
 
   // geometry library がロードされているか確認
   if (!google?.maps?.geometry?.encoding?.decodePath) {
@@ -83,7 +80,6 @@ const renderRoutePolylines = () => {
   // ✅ スポットがない場合は経路をクリアして終了
   const spotCount = getSpotCountFromDom()
   if (spotCount === 0) {
-    console.log("[plan_map_sync] no spots, clearing polylines")
     clearRoutePolylines()
     return
   }
@@ -95,13 +91,7 @@ const renderRoutePolylines = () => {
   const goalVisible = isGoalPointVisible()
   if (!goalVisible && encodedPolylines.length > 1) {
     encodedPolylines = encodedPolylines.slice(0, -1)
-    console.log("[plan_map_sync] goalPoint hidden, excluding last segment")
   }
-
-  console.log("[plan_map_sync] renderRoutePolylines", {
-    count: encodedPolylines.length,
-    goalVisible,
-  })
 
   if (encodedPolylines.length === 0) {
     clearRoutePolylines()
@@ -128,7 +118,6 @@ const renderRoutePolylines = () => {
 // ✅ planData の spots を DOM から更新した新しいオブジェクトを返す
 const mergeSpotsFromDom = (planData) => {
   const spots = getSpotsFromDom()
-  console.log("[plan_map_sync] mergeSpotsFromDom", { spotsCount: spots.length })
   return { ...planData, spots }
 }
 
@@ -177,22 +166,16 @@ export const bindPlanMapSync = () => {
   if (bound) return
   bound = true
 
-  console.log("[plan_map_sync] bindPlanMapSync")
-
   cachedPlanData = getPlanDataFromPage()
 
   // ✅ Turbo遷移後もキャッシュを最新化（bound=trueで再バインドされないため）
   document.addEventListener("turbo:load", () => {
     // ✅ show画面ではスキップ（init_map_show.js が独自に処理する）
-    if (!isEditPage()) {
-      console.log("[plan_map_sync] turbo:load - not edit page, skip")
-      return
-    }
+    if (!isEditPage()) return
 
     const fresh = getPlanDataFromPage()
     if (fresh) {
       cachedPlanData = fresh
-      console.log("[plan_map_sync] turbo:load - cachedPlanData updated")
     }
 
     // ✅ 初回描画：polyline を描画する（少し遅延させてマップ初期化を待つ）
@@ -204,8 +187,6 @@ export const bindPlanMapSync = () => {
   // navibar 差し替え後：planDataを取り直して「全部のピン」を差し直す
   // ※ スポット削除・入れ替え時もこのイベントが発火する
   document.addEventListener("navibar:updated", async () => {
-    console.log("[plan_map_sync] caught navibar:updated")
-
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
 
@@ -214,23 +195,13 @@ export const bindPlanMapSync = () => {
     const goalVisibleFromBody = document.body.classList.contains("goal-point-visible")
     setGoalVisible(goalVisibleFromBody)
 
-    // ✅ window.planData は古いので、spots だけ DOM から更新する
-    // ただし、cachedPlanData に最新の start_point / end_point がある場合はそれを優先
+    // ✅ turbo_stream で DOM が更新されているので、常に最新データを取得
     const freshPlanData = getPlanDataFromPage()
+    if (!freshPlanData && !cachedPlanData) return
+
+    // ✅ DOM から取得した最新データを優先（turbo_stream で更新済み）
     const basePlanData = freshPlanData || cachedPlanData
-    if (!basePlanData) return
-
-    // ✅ cachedPlanData の start_point / end_point を保持（plan:start-point-updated 等で更新済みの可能性）
-    const mergedPlanData = {
-      ...basePlanData,
-      start_point: cachedPlanData?.start_point || basePlanData.start_point,
-      end_point: cachedPlanData?.end_point || basePlanData.end_point,
-      goal_point: cachedPlanData?.goal_point || basePlanData.goal_point,
-    }
-
-    console.log("[plan_map_sync] navibar:updated mergedPlanData.start_point", mergedPlanData.start_point)
-
-    const planData = mergeSpotsFromDom(mergedPlanData)
+    const planData = mergeSpotsFromDom(basePlanData)
     cachedPlanData = planData
     await renderAllMarkersSafe(planData)
 
@@ -240,8 +211,6 @@ export const bindPlanMapSync = () => {
 
   // トグルON/OFF：帰宅ピンだけ更新 + polyline 再描画
   document.addEventListener("plan:goal-point-visibility-changed", async (e) => {
-    console.log("[plan_map_sync] caught plan:goal-point-visibility-changed", e?.detail)
-
     // ✅ 先に #map の goalPointVisible を更新（renderRoutePolylines が参照するため）
     const goalVisible = e?.detail?.goalVisible ?? false
     setGoalVisible(goalVisible)
@@ -249,13 +218,8 @@ export const bindPlanMapSync = () => {
     const freshPlanData = getPlanDataFromPage()
     if (!freshPlanData && !cachedPlanData) return
 
-    // ✅ cachedPlanData の start_point / end_point を保持（他イベントで更新済みの可能性）
-    const planData = {
-      ...(freshPlanData || cachedPlanData),
-      start_point: cachedPlanData?.start_point || freshPlanData?.start_point,
-      end_point: cachedPlanData?.end_point || freshPlanData?.end_point,
-      goal_point: cachedPlanData?.goal_point || freshPlanData?.goal_point,
-    }
+    // ✅ DOM から取得した最新データを優先
+    const planData = freshPlanData || cachedPlanData
     cachedPlanData = planData
     await refreshGoalMarkerSafe(planData)
 
@@ -265,8 +229,6 @@ export const bindPlanMapSync = () => {
 
   // 帰宅地点の更新：必ず visible=true にして、帰宅ピンを更新
   document.addEventListener("plan:goal-point-updated", async (e) => {
-    console.log("[plan_map_sync] caught plan:goal-point-updated", e?.detail)
-
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
 
@@ -274,36 +236,20 @@ export const bindPlanMapSync = () => {
     const mapEl = document.getElementById("map")
     if (mapEl) {
       mapEl.dataset.goalPointVisible = "true"
-      console.log("[plan_map_sync] goalPointVisible set to 'true'")
-    } else {
-      console.warn("[plan_map_sync] #map not found, cannot set goalPointVisible")
     }
 
     // ✅ 最新の planData を取得しつつ、null なら cachedPlanData でフォールバック
     const freshPlanData = getPlanDataFromPage()
-    console.log("[plan_map_sync] freshPlanData:", freshPlanData ? "found" : "null")
-    console.log("[plan_map_sync] cachedPlanData:", cachedPlanData ? "found" : "null")
-
     const basePlanData = freshPlanData || cachedPlanData
     cachedPlanData = mergeGoalPoint(basePlanData, e?.detail)
 
-    console.log("[plan_map_sync] after merge, cachedPlanData:", {
-      hasEndPoint: !!cachedPlanData?.end_point,
-      endPoint: cachedPlanData?.end_point,
-    })
-
-    if (!cachedPlanData) {
-      console.warn("[plan_map_sync] planData is null, cannot refresh goal marker")
-      return
-    }
+    if (!cachedPlanData) return
 
     await refreshGoalMarkerSafe(cachedPlanData)
   })
 
   // スポット追加時：検索ヒットマーカーをクリア
-  document.addEventListener("plan:spot-added", (e) => {
-    console.log("[plan_map_sync] caught plan:spot-added", e?.detail)
-
+  document.addEventListener("plan:spot-added", () => {
     // ✅ 検索ヒットマーカーをクリア（スポット追加後は検索結果を消す）
     clearSearchHitMarkers()
   })
@@ -312,8 +258,6 @@ export const bindPlanMapSync = () => {
   // ※ マーカーは start_point_editor_controller で既に正しい位置に作成済みなので、
   //   ここでは cachedPlanData の更新のみ行い、マーカー再描画はスキップする
   document.addEventListener("plan:start-point-updated", async (e) => {
-    console.log("[plan_map_sync] caught plan:start-point-updated", e?.detail)
-
     // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
     clearSearchHitMarkers()
 
@@ -331,7 +275,6 @@ export const bindPlanMapSync = () => {
           address: startPoint.address,
         },
       }
-      console.log("[plan_map_sync] cachedPlanData.start_point updated", cachedPlanData.start_point)
     }
 
     // ✅ マーカーは start_point_editor_controller で既に作成済みなので、ここでは再描画しない
@@ -341,7 +284,6 @@ export const bindPlanMapSync = () => {
 
   // ✅ 経路更新後：polyline を再描画する
   document.addEventListener("map:route-updated", () => {
-    console.log("[plan_map_sync] caught map:route-updated")
     renderRoutePolylines()
   })
 }

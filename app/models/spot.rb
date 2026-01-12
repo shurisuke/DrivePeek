@@ -98,6 +98,27 @@ class Spot < ApplicationRecord
     "https://maps.googleapis.com/maps/api/place/photo?maxwidth=#{max_width}&photo_reference=#{photo_reference}&key=#{api_key}"
   end
 
+  # Google Places の types からジャンルを割り当てる
+  # - 既にジャンルがある場合はスキップ
+  # - GenreMapper でマッピング可能なら即反映
+  # - マッピング不可なら AI ジョブをキュー
+  def assign_genres_from_types(top_types)
+    return if genres.exists?
+
+    genre_ids = GenreMapper.map(Array(top_types))
+
+    if genre_ids.present?
+      genre_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
+      Rails.logger.info "[Spot##{id}] ジャンルをマッピング: #{genre_ids}"
+    else
+      GenreDetectionJob.perform_later(id)
+      Rails.logger.info "[Spot##{id}] ジャンル判定を AI ジョブにキュー"
+    end
+  rescue StandardError => e
+    # ジャンル判定の失敗はスポット追加自体には影響させない
+    Rails.logger.error "[Spot##{id}] ジャンル割り当てエラー: #{e.message}"
+  end
+
   # Google Places のペイロードを適用
   # - 新規: 全属性をセット
   # - 既存: 空欄のみ補完、photo_reference は常に更新（鮮度優先）

@@ -17,8 +17,15 @@ import { showInfoWindowForPin } from "map/infowindow"
 export default class extends Controller {
   // スポットのボタンクリック
   spot(e) {
-    const index = parseInt(e.currentTarget.dataset.spotIndex, 10)
-    const marker = getPlanSpotMarkers()[index]
+    // ✅ 親の .spot-block から座標を取得してマーカーを特定
+    const spotBlock = e.currentTarget.closest(".spot-block")
+    if (!spotBlock) return
+
+    const lat = parseFloat(spotBlock.dataset.lat)
+    const lng = parseFloat(spotBlock.dataset.lng)
+    if (isNaN(lat) || isNaN(lng)) return
+
+    const marker = this.#findMarkerByPosition(getPlanSpotMarkers(), lat, lng)
     if (marker) this.#panAndTriggerClick(marker)
   }
 
@@ -53,6 +60,18 @@ export default class extends Controller {
   #panAndTriggerClick(marker) {
     getMapInstance()?.panTo(marker.getPosition())
     google.maps.event.trigger(marker, "click")
+  }
+
+  // 座標でマーカーを検索（誤差許容）
+  #findMarkerByPosition(markers, lat, lng) {
+    const threshold = 0.00001 // 約1m以内の誤差を許容
+    return markers.find((m) => {
+      const pos = m.getPosition()
+      return (
+        Math.abs(pos.lat() - lat) < threshold &&
+        Math.abs(pos.lng() - lng) < threshold
+      )
+    })
   }
 
   // DOMから帰宅地点の住所を取得

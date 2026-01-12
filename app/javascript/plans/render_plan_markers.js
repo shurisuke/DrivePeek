@@ -105,6 +105,28 @@ const getGoalPointAddressFromDom = () => {
   return el?.textContent?.trim() || null
 }
 
+// ✅ DOMから出発地点の位置を取得
+const getStartPointPositionFromDom = () => {
+  const el = document.querySelector(".start-point-block")
+  if (!el) return null
+
+  const lat = parseFloat(el.dataset.lat)
+  const lng = parseFloat(el.dataset.lng)
+  if (isNaN(lat) || isNaN(lng)) return null
+  return { lat, lng }
+}
+
+// ✅ DOMから帰宅地点の位置を取得
+const getGoalPointPositionFromDom = () => {
+  const el = document.querySelector(".goal-point-block")
+  if (!el) return null
+
+  const lat = parseFloat(el.dataset.lat)
+  const lng = parseFloat(el.dataset.lng)
+  if (isNaN(lat) || isNaN(lng)) return null
+  return { lat, lng }
+}
+
 // ✅ DOMからスポット情報を取得（position順）
 const getSpotInfoFromDom = () => {
   const blocks = document.querySelectorAll(".spot-block[data-plan-spot-id]")
@@ -135,15 +157,9 @@ export const refreshGoalMarker = (planData) => {
   }
 
   const visible = isGoalPointVisible()
-  const start = normalizeLatLng(planData?.start_point)
-  const end = normalizeLatLng(getEndPointFromPlanData(planData))
-
-  console.log("[render_plan_markers] refreshGoalMarker", {
-    visible,
-    spotCount: getSpotCountFromDom(),
-    start,
-    end,
-  })
+  // ✅ DOMから位置を取得（turbo_stream更新後は最新データ）
+  const start = getStartPointPositionFromDom() || normalizeLatLng(planData?.start_point)
+  const end = getGoalPointPositionFromDom() || normalizeLatLng(getEndPointFromPlanData(planData))
 
   // いったん消してから、条件を満たすなら作り直す
   clearEndPointMarker()
@@ -178,16 +194,13 @@ export const renderPlanMarkers = (planData) => {
     return
   }
 
-  console.log("[render_plan_markers] renderPlanMarkers", planData)
-
   // 既存マーカーを用途別にクリア
   clearStartPointMarker()
   clearPlanSpotMarkers()
   clearEndPointMarker()
 
-  // 出発地点
-  const start = normalizeLatLng(planData?.start_point)
-  console.log("[render_plan_markers] creating start marker at", start, "from", planData?.start_point)
+  // 出発地点（DOMから位置を取得、なければplanDataを使用）
+  const start = getStartPointPositionFromDom() || normalizeLatLng(planData?.start_point)
   if (start) {
     const marker = buildHouseMarker({ map, position: start, title: "出発地点" })
 
@@ -204,21 +217,18 @@ export const renderPlanMarkers = (planData) => {
     setStartPointMarker(marker)
   }
 
-  // スポット（DOMから情報を取得してマーカーに紐付け）
+  // スポット（DOMから情報・位置を取得）
   // ✅ position順の番号付きSVGピンで表示
   const spotInfoList = getSpotInfoFromDom()
-  const spots = Array.isArray(planData?.spots) ? planData.spots : []
 
-  const spotMarkers = spots
-    .map(normalizeLatLng)
-    .filter(Boolean)
-    .map((spot, index) => {
-      const spotInfo = spotInfoList[index] || {}
+  const spotMarkers = spotInfoList
+    .filter((info) => info.lat && info.lng)
+    .map((spotInfo, index) => {
       const spotNumber = index + 1
 
       const marker = new google.maps.Marker({
         map,
-        position: spot,
+        position: { lat: spotInfo.lat, lng: spotInfo.lng },
         title: spotInfo.name || `スポット ${spotNumber}`,
         icon: {
           url: createNumberedPinSvg(spotNumber),

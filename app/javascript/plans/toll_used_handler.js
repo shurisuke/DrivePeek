@@ -2,34 +2,12 @@
 //
 // ================================================================
 // Toll Used Handler（単一責務）
-// 用途: 「有料道路スイッチ」を変更したらRailsへ保存し、必要ならイベントを投げる。
+// 用途: 「有料道路スイッチ」を変更したらRailsへ保存
 //   - plan_spots: [data-toll-used-switch="1"]
 //   - start_point: [data-start-point-toll-used-switch="1"]
 // ================================================================
 
-import { patch } from "services/api_client"
-
-// ------------------------------
-// plan_spots
-// PATCH /plans/:plan_id/plan_spots/:id/update_toll_used
-// ------------------------------
-const patchPlanSpotTollUsed = async ({ planId, planSpotId, tollUsed }) => {
-  return patch(
-    `/api/plans/${planId}/plan_spots/${planSpotId}/toll_used`,
-    { toll_used: tollUsed }
-  )
-}
-
-// ------------------------------
-// start_point
-// PATCH /plans/:plan_id/start_point
-// ------------------------------
-const patchStartPointTollUsed = async ({ planId, tollUsed }) => {
-  return patch(
-    `/api/plans/${planId}/start_point`,
-    { start_point: { toll_used: tollUsed } }
-  )
-}
+import { patchTurboStream } from "services/api_client"
 
 // ------------------------------
 // イベント委譲ハンドラ
@@ -46,16 +24,10 @@ const handleChange = async (e) => {
     const tollUsed = el.checked
 
     try {
-      const json = await patchStartPointTollUsed({ planId, tollUsed })
-
-      document.dispatchEvent(
-        new CustomEvent("plan:start-point-toll-used-updated", {
-          detail: {
-            plan_id: Number(planId),
-            toll_used: json.start_point?.toll_used,
-          },
-        })
-      )
+      await patchTurboStream(`/api/plans/${planId}/start_point`, {
+        start_point: { toll_used: tollUsed },
+      })
+      document.dispatchEvent(new CustomEvent("map:route-updated"))
     } catch (err) {
       alert(err.message)
       el.checked = !tollUsed // 元に戻す
@@ -72,17 +44,10 @@ const handleChange = async (e) => {
     const tollUsed = el.checked
 
     try {
-      const json = await patchPlanSpotTollUsed({ planId, planSpotId, tollUsed })
-
-      document.dispatchEvent(
-        new CustomEvent("plan:plan-spot-toll-used-updated", {
-          detail: {
-            plan_id: Number(planId),
-            plan_spot_id: Number(planSpotId),
-            toll_used: json.toll_used,
-          },
-        })
-      )
+      await patchTurboStream(`/api/plans/${planId}/plan_spots/${planSpotId}/toll_used`, {
+        toll_used: tollUsed,
+      })
+      document.dispatchEvent(new CustomEvent("map:route-updated"))
     } catch (err) {
       alert(err.message)
       el.checked = !tollUsed // 元に戻す

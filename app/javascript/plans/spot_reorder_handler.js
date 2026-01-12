@@ -12,20 +12,15 @@
 // ================================================================
 
 import Sortable from "sortablejs"
-import { patch } from "services/api_client"
+import { patchTurboStream } from "services/api_client"
 
 let sortableInstance = null
 let bound = false
 
-let initTimer = null
-const requestInitSortable = (delay = 0) => {
-  if (initTimer) return
-
+// ✅ 1 RAF で DOM 更新完了を待ってから初期化（setTimeout は不要）
+const requestInitSortable = () => {
   requestAnimationFrame(() => {
-    initTimer = window.setTimeout(() => {
-      initTimer = null
-      initSortable()
-    }, delay)
+    initSortable()
   })
 }
 
@@ -44,12 +39,6 @@ const getOrderedPlanSpotIds = (container) => {
   return Array.from(items).map((el) => parseInt(el.dataset.planSpotId, 10))
 }
 
-const saveReorder = async (planId, orderedIds) => {
-  return patch(`/api/plans/${planId}/plan_spots/reorder`, {
-    ordered_plan_spot_ids: orderedIds,
-  })
-}
-
 const getExistingSortable = (container) => {
   if (!container) return null
   try {
@@ -60,8 +49,6 @@ const getExistingSortable = (container) => {
 }
 
 const destroySortable = () => {
-  console.log("[spot_reorder_handler] destroySortable called")
-
   if (sortableInstance) {
     try {
       sortableInstance.destroy()
@@ -83,15 +70,12 @@ const initSortable = () => {
   const container = getContainer()
   const planId = getPlanId()
 
-  console.log("[spot_reorder_handler] initSortable called", { container, planId })
-
   if (!container || !planId) return
 
   // 既に付いていればスキップ
   const existing = getExistingSortable(container)
   if (existing && existing.el === container) {
     sortableInstance = existing
-    console.log("[spot_reorder_handler] already attached -> skip")
     return
   }
 
@@ -115,32 +99,28 @@ const initSortable = () => {
       const orderedIds = getOrderedPlanSpotIds(container)
 
       try {
-        await saveReorder(planId, orderedIds)
-        document.dispatchEvent(new CustomEvent("plan:spots-reordered"))
+        await patchTurboStream(`/api/plans/${planId}/plan_spots/reorder`, {
+          ordered_plan_spot_ids: orderedIds,
+        })
+        document.dispatchEvent(new CustomEvent("map:route-updated"))
       } catch (err) {
         console.error("並び替え保存エラー:", err)
         alert(err.message)
-        document.dispatchEvent(new CustomEvent("plan:spots-reordered"))
       }
-      // ✅ ここでは再initしない（navibar_updater が差し替えて navibar:updated を出す）
     },
   })
-
-  console.log("[spot_reorder_handler] initialized successfully", { planId })
 }
 
 export const bindSpotReorderHandler = () => {
   if (bound) return
   bound = true
 
-  console.log("[spot_reorder_handler] bindSpotReorderHandler")
-
   // 初回
-  document.addEventListener("turbo:load", () => requestInitSortable(0))
+  document.addEventListener("turbo:load", () => requestInitSortable())
 
   // ✅ navibar差し替えとペアで運用（これが最重要）
   document.addEventListener("navibar:will-update", destroySortable)
-  document.addEventListener("navibar:updated", () => requestInitSortable(0))
+  document.addEventListener("navibar:updated", () => requestInitSortable())
 
   // キャッシュ時
   document.addEventListener("turbo:before-cache", destroySortable)

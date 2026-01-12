@@ -20,7 +20,7 @@ import {
   setStartPointMarker,
 } from "map/state"
 import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
-import { patch } from "services/api_client"
+import { patchTurboStream } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["toggle", "editArea", "input", "address"]
@@ -193,28 +193,23 @@ export default class extends Controller {
         map.setZoom(this.focusZoomValue)
       }
 
-      // UIの住所表示も更新（まずはローカル結果で反映）
+      // UIの住所表示も更新（ローカル結果で即時反映、turbo_stream で上書きされる）
       this.addressTarget.textContent = displayAddress || query
 
       // サーバへ保存（StartPointsController#update）
       const lat = typeof location.lat === "function" ? location.lat() : location.lat
       const lng = typeof location.lng === "function" ? location.lng() : location.lng
 
-      const json = await this.persistStartPoint({
+      await this.persistStartPoint({
         planId,
         lat,
         lng,
         address: displayAddress || query,
       })
 
-      console.log("[start-point-editor] persist OK", json)
+      console.log("[start-point-editor] persist OK")
 
-      // ✅ サーバ確定値で最終上書き（表示ズレ防止）
-      const sp = json.start_point
-      this.addressTarget.textContent = sp.address
-
-      // ✅ 他が追従できるようにイベントも飛ばす（必要なら購読側でピン更新）
-      document.dispatchEvent(new CustomEvent("plan:start-point-updated", { detail: sp }))
+      // ✅ turbo_stream で navibar が自動更新される（navibar:updated イベントで地図も同期）
 
       // フォームは閉じる
       this.close()
@@ -229,14 +224,8 @@ export default class extends Controller {
 
     console.log("[start-point-editor] PATCH", { url, lat, lng, address })
 
-    const json = await patch(url, { start_point: { lat, lng, address } })
-
-    if (json.ok !== true) {
-      const msg = (json?.errors || []).join(", ") || json?.message || "unknown error"
-      throw new Error(`start_point update failed: ${msg}`)
-    }
-
-    return json
+    // turbo_stream で navibar が自動更新される（エラー時は例外が投げられる）
+    await patchTurboStream(url, { start_point: { lat, lng, address } })
   }
 
   detectPlanId() {

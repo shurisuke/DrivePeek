@@ -117,7 +117,7 @@
   <% if @search_type == "spot" %>
     <%# スポット検索結果 %>
     <% if @community_spots.present? %>
-      <% like_spots_map = like_spots_by_spot_id(@community_spots) %>
+      <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @community_spots.map(&:id)) %>
       <div class="community-plans__list">
         <% @community_spots.each do |spot| %>
           <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
@@ -142,7 +142,7 @@
   <% else %>
     <%# プラン検索結果 %>
     <% if @plans.present? %>
-      <% like_plans_map = like_plans_by_plan_id(@plans) %>
+      <% like_plans_map = LikePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
       <div class="community-plans__list">
         <% @plans.each do |plan| %>
           <%
@@ -163,8 +163,8 @@
                      plan_title: plan.title.presence || "無題のプラン",
                      spots: spots_data,
                      genres: genre_names,
-                     total_duration: spots_only_formatted_move_time(plan),
-                     total_distance: "#{spots_only_distance(plan)}km",
+                     total_duration: format_move_time(plan.spots_only_move_time),
+                     total_distance: "#{plan.spots_only_distance}km",
                      plan: plan,
                      like_plan: like_plans_map[plan.id] %>
         <% end %>
