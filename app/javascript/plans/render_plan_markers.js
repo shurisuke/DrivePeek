@@ -20,13 +20,12 @@ import { COLORS } from "map/constants"
 // - 丸型ピンに番号を表示
 // - 色は map/constants.js で管理
 // ================================================================
-const SPOT_PIN_COLOR = COLORS.MY_PLAN
 
-const createNumberedPinSvg = (number) => {
+const createNumberedPinSvg = (number, color = COLORS.MY_PLAN) => {
   // 丸型SVG（36x36）+ 中央に白い番号
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
-      <circle cx="18" cy="18" r="17" fill="${SPOT_PIN_COLOR}"/>
+      <circle cx="18" cy="18" r="17" fill="${color}"/>
       <text x="18" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="white">${number}</text>
     </svg>
   `.trim()
@@ -187,7 +186,7 @@ export const refreshGoalMarker = (planData) => {
   setEndPointMarker(marker)
 }
 
-export const renderPlanMarkers = (planData) => {
+export const renderPlanMarkers = (planData, { pinColor = COLORS.MY_PLAN } = {}) => {
   const map = getMapInstance()
   if (!map) {
     console.error("マップインスタンスが存在しません")
@@ -231,7 +230,7 @@ export const renderPlanMarkers = (planData) => {
         position: { lat: spotInfo.lat, lng: spotInfo.lng },
         title: spotInfo.name || `スポット ${spotNumber}`,
         icon: {
-          url: createNumberedPinSvg(spotNumber),
+          url: createNumberedPinSvg(spotNumber, pinColor),
           scaledSize: new google.maps.Size(36, 36),
           anchor: new google.maps.Point(18, 18),
         },
