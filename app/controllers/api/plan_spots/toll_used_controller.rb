@@ -2,8 +2,6 @@
 module Api
   module PlanSpots
     class TollUsedController < BaseController
-      include Recalculable
-
       before_action :set_plan
       before_action :set_plan_spot
 
@@ -12,13 +10,18 @@ module Api
         toll_used = ActiveModel::Type::Boolean.new.cast(params[:toll_used])
 
         if @plan_spot.update(toll_used: toll_used)
-          # 有料道路切替後に route → schedule を再計算
-          recalculate_route_and_schedule!(@plan)
+          @plan.recalculate_for!(@plan_spot)
+          @plan.reload
 
-          render json: {
-            plan_spot_id: @plan_spot.id,
-            toll_used: @plan_spot.toll_used
-          }, status: :ok
+          respond_to do |format|
+            format.turbo_stream { render "plans/refresh_plan_tab" }
+            format.json do
+              render json: {
+                plan_spot_id: @plan_spot.id,
+                toll_used: @plan_spot.toll_used
+              }, status: :ok
+            end
+          end
         else
           render json: {
             message: "有料道路の設定更新に失敗しました",
@@ -30,7 +33,9 @@ module Api
       private
 
       def set_plan
-        @plan = current_user.plans.find(params[:plan_id])
+        @plan = current_user.plans
+          .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+          .find(params[:plan_id])
       end
 
       def set_plan_spot

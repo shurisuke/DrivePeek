@@ -2,6 +2,7 @@
 module Api
   module PlanSpots
     class StayDurationsController < BaseController
+      before_action :set_plan
       before_action :set_plan_spot
 
       # PATCH /api/plans/:plan_id/plan_spots/:id/stay_duration
@@ -9,10 +10,13 @@ module Api
         stay_duration = params[:stay_duration].presence&.to_i
 
         if @plan_spot.update(stay_duration: stay_duration)
-          # 時刻再計算（滞在時間変更 → schedule のみ）
-          Plan::Recalculator.new(@plan_spot.plan).recalculate!(schedule: true)
+          @plan.recalculate_for!(@plan_spot)
+          @plan.reload
 
-          render json: { plan_spot_id: @plan_spot.id, stay_duration: @plan_spot.stay_duration }
+          respond_to do |format|
+            format.turbo_stream { render "plans/refresh_plan_tab" }
+            format.json { render json: { plan_spot_id: @plan_spot.id, stay_duration: @plan_spot.stay_duration } }
+          end
         else
           render json: { message: @plan_spot.errors.full_messages.first || "滞在時間の更新に失敗しました" },
                  status: :unprocessable_entity
@@ -21,13 +25,14 @@ module Api
 
       private
 
+      def set_plan
+        @plan = current_user.plans
+          .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+          .find(params[:plan_id])
+      end
+
       def set_plan_spot
-        @plan_spot =
-          PlanSpot
-            .joins(:plan)
-            .where(plans: { user_id: current_user.id })
-            .where(plan_spots: { plan_id: params[:plan_id] })
-            .find(params[:id])
+        @plan_spot = @plan.plan_spots.find(params[:id])
       end
     end
   end

@@ -1,22 +1,24 @@
 # app/controllers/api/goal_points_controller.rb
 module Api
   class GoalPointsController < BaseController
-    include Recalculable
-
     before_action :set_plan
 
     def update
-      goal_point = @plan.goal_point || @plan.build_goal_point
-      goal_point.update!(goal_point_params)
+      @goal_point = @plan.goal_point || @plan.build_goal_point
+      @goal_point.update!(goal_point_params)
+      @plan.recalculate_for!(@goal_point)
+      @plan.reload
 
-      # 帰宅地点変更後に route → schedule を再計算
-      recalculate_route_and_schedule!(@plan)
-
-      render json: {
-        address: goal_point.address,
-        lat: goal_point.lat,
-        lng: goal_point.lng
-      }, status: :ok
+      respond_to do |format|
+        format.turbo_stream { render "plans/refresh_plan_tab" }
+        format.json do
+          render json: {
+            address: @goal_point.address,
+            lat: @goal_point.lat,
+            lng: @goal_point.lng
+          }, status: :ok
+        end
+      end
     rescue ActiveRecord::RecordInvalid => e
       render json: { message: "帰宅地点の更新に失敗しました", details: e.record.errors.full_messages }, status: :unprocessable_entity
     end
@@ -24,7 +26,9 @@ module Api
     private
 
     def set_plan
-      @plan = current_user.plans.find(params[:plan_id])
+      @plan = current_user.plans
+        .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+        .find(params[:plan_id])
     end
 
     def goal_point_params

@@ -1,8 +1,6 @@
 # app/controllers/api/start_points_controller.rb
 module Api
   class StartPointsController < BaseController
-    include Recalculable
-
     before_action :set_plan
     before_action :set_start_point
 
@@ -13,18 +11,18 @@ module Api
       end
 
       if @start_point.update(start_point_params)
-        # 経路に影響する変更があれば route → schedule を再計算
-        if route_affecting_params?
-          recalculate_route_and_schedule!(@plan)
-        elsif start_point_params.key?(:departure_time)
-          # 出発時間のみ変更 → schedule のみ再計算
-          Plan::Recalculator.new(@plan).recalculate!(schedule: true)
-        end
+        @plan.recalculate_for!(@start_point)
+        @plan.reload
 
-        render json: {
-          ok: true,
-          start_point: @start_point.as_json(only: %i[lat lng address prefecture city toll_used departure_time])
-        }, status: :ok
+        respond_to do |format|
+          format.turbo_stream { render "plans/refresh_plan_tab" }
+          format.json do
+            render json: {
+              ok: true,
+              start_point: @start_point.as_json(only: %i[lat lng address prefecture city toll_used departure_time])
+            }, status: :ok
+          end
+        end
       else
         render json: { ok: false, errors: @start_point.errors.full_messages }, status: :unprocessable_entity
       end
@@ -33,7 +31,9 @@ module Api
     private
 
     def set_plan
-      @plan = current_user.plans.find(params[:plan_id])
+      @plan = current_user.plans
+        .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
+        .find(params[:plan_id])
     end
 
     def set_start_point
@@ -46,11 +46,6 @@ module Api
 
     def only_toll_used_param?
       start_point_params.keys == [ "toll_used" ]
-    end
-
-    def route_affecting_params?
-      route_keys = %w[lat lng address toll_used]
-      (start_point_params.keys & route_keys).any?
     end
   end
 end

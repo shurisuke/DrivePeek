@@ -9,7 +9,6 @@ class Plan < ApplicationRecord
   has_many :liked_by_users, through: :like_plans, source: :user
 
   # Scopes
-  scope :with_spots, -> { joins(:plan_spots).distinct }
   scope :with_multiple_spots, -> {
     where("(SELECT COUNT(*) FROM plan_spots WHERE plan_spots.plan_id = plans.id) >= 2")
   }
@@ -202,7 +201,57 @@ class Plan < ApplicationRecord
     plan_spots.exists?(toll_used: true)
   end
 
+  # ================================================================
+  # ファクトリメソッド
+  # ================================================================
+
+  # 位置情報からプランを作成（出発地点・帰宅地点を同時に設定）
+  def self.create_with_location(user:, lat:, lng:)
+    transaction do
+      plan = create!(user: user, title: "")
+
+      start_point = StartPoint.build_from_location(plan: plan, lat: lat, lng: lng)
+      plan.start_point = start_point
+      plan.save!
+
+      goal_point = GoalPoint.build_from_start_point(plan: plan, start_point: start_point)
+      plan.goal_point = goal_point
+      plan.save!
+
+      plan
+    end
+  end
+
+  # ================================================================
+  # 再計算
+  # ================================================================
+
+  # 関連モデルの変更に応じて再計算を実行する
+  # @param changed_model [StartPoint, GoalPoint, PlanSpot] 変更されたモデル
+  # @param action [Symbol] :update, :create, :destroy, :reorder
+  def recalculate_for!(changed_model, action: :update)
+    case action
+    when :create, :destroy, :reorder
+      # 追加・削除・並び替えは常に経路再計算
+      recalculator.recalculate!(route: true, schedule: true)
+    when :update
+      recalculate_for_update!(changed_model)
+    end
+  end
+
   private
+
+  def recalculator
+    Plan::Recalculator.new(self)
+  end
+
+  def recalculate_for_update!(changed_model)
+    if changed_model.route_affecting_changes?
+      recalculator.recalculate!(route: true, schedule: true)
+    elsif changed_model.schedule_affecting_changes?
+      recalculator.recalculate!(schedule: true)
+    end
+  end
 
   def lat_lng_hash(record)
     return nil unless record&.lat.present? && record&.lng.present?

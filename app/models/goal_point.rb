@@ -8,4 +8,14 @@ class GoalPoint < ApplicationRecord
       start_point.attributes.slice("lat", "lng", "address")
     )
   end
+
+  # GoalPoint の変更は常に経路に影響
+  def route_affecting_changes?
+    saved_changes.keys.any? { |k| %w[lat lng address].include?(k) }
+  end
+
+  # スケジュールのみに影響する変更はない
+  def schedule_affecting_changes?
+    false
+  end
 end
