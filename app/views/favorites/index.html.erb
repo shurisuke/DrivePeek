@@ -1,0 +1,82 @@
+<%# お気に入り一覧（favorites#index） %>
+
+<div class="community-plans community-plans--index">
+  <h1 class="community-plans__page-title">お気に入り</h1>
+
+  <div class="community-plans__content">
+    <%# タブ切り替え %>
+    <div class="community-plans__search">
+      <div class="community-plans__search-tabs">
+        <%= link_to favorites_path(tab: "plan"),
+                    class: "community-plans__search-tab #{'is-active' if @tab != 'spot'}" do %>
+          <span>プラン</span>
+        <% end %>
+        <%= link_to favorites_path(tab: "spot"),
+                    class: "community-plans__search-tab #{'is-active' if @tab == 'spot'}" do %>
+          <span>スポット</span>
+        <% end %>
+      </div>
+    </div>
+
+    <% if @tab == "spot" %>
+      <%# スポット一覧 %>
+      <% if @spots.present? %>
+        <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @spots.map(&:id)) %>
+        <div class="community-plans__list">
+          <% @spots.each do |spot| %>
+            <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
+          <% end %>
+        </div>
+
+        <% if @spots.total_pages > 1 %>
+          <div class="community-plans__pagination">
+            <%= paginate @spots %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="community-plans__empty">
+          <p>お気に入りスポットがありません</p>
+        </div>
+      <% end %>
+    <% else %>
+      <%# プラン一覧 %>
+      <% if @plans.present? %>
+        <% like_plans_map = LikePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
+        <div class="community-plans__list">
+          <% @plans.each do |plan| %>
+            <%
+              spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
+                spot = ps.spot
+                {
+                  name: spot.name,
+                  address: spot.address,
+                  prefecture: spot.prefecture,
+                  city: spot.city
+                }
+              end
+              genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
+            %>
+            <%= render "plans/plan_card",
+                       plan_title: plan.title.presence || "無題のプラン",
+                       spots: spots_data,
+                       genres: genre_names,
+                       total_duration: format_move_time(plan.spots_only_move_time),
+                       total_distance: "#{plan.spots_only_distance}km",
+                       plan: plan,
+                       like_plan: like_plans_map[plan.id] %>
+          <% end %>
+        </div>
+
+        <% if @plans.total_pages > 1 %>
+          <div class="community-plans__pagination">
+            <%= paginate @plans %>
+          </div>
+        <% end %>
+      <% else %>
+        <div class="community-plans__empty">
+          <p>お気に入りプランがありません</p>
+        </div>
+      <% end %>
+    <% end %>
+  </div>
+</div>

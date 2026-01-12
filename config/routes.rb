@@ -60,6 +60,9 @@ Rails.application.routes.draw do
   # スポット
   resources :spots, only: %i[show]
 
+  # お気に入り一覧
+  get "favorites" => "favorites#index"
+
   # お気に入りスポット
   resources :like_spots, only: %i[create destroy]
 
