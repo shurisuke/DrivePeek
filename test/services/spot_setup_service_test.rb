@@ -4,7 +4,6 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
   include ActiveJob::TestHelper
   setup do
     @plan = plans(:one)
-    @user = users(:one)
     @spot_params = {
       place_id: "ChIJNewPlaceId123",
       name: "Test Restaurant",
@@ -19,7 +18,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   # ジャンル判定テスト
   test "assigns genres via GenreMapper when types are mappable" do
-    service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     assert_difference "SpotGenre.count", 1 do
       result = service.setup
@@ -30,7 +29,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   test "enqueues GenreDetectionJob when types are not mappable" do
     @spot_params[:top_types] = [ "natural_feature", "locality" ]
-    service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     assert_enqueued_with(job: GenreDetectionJob) do
       result = service.setup
@@ -51,7 +50,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
       place_id: existing_spot.place_id,
       top_types: [ "restaurant", "food" ]
     )
-    service = SpotSetupService.new(plan: other_plan, user: @user, spot_params: spot_params)
+    service = SpotSetupService.new(plan: other_plan, spot_params: spot_params)
 
     # 既にジャンルがあるのでスキップされる
     result = service.setup
@@ -64,7 +63,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   test "assigns multiple genres when multiple types match" do
     @spot_params[:top_types] = [ "restaurant", "cafe", "establishment" ]
-    service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     result = service.setup
     assert result.success?
@@ -75,7 +74,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
   test "does not fail spot creation when genre assignment fails" do
     # GenreMapper を一時的に壊す
     GenreMapper.stub :map, ->(types) { raise StandardError, "Test error" } do
-      service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+      service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
       result = service.setup
       assert result.success?
@@ -85,7 +84,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   test "handles empty top_types gracefully" do
     @spot_params[:top_types] = []
-    service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     assert_enqueued_with(job: GenreDetectionJob) do
       result = service.setup
@@ -95,7 +94,7 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   test "handles nil top_types gracefully" do
     @spot_params.delete(:top_types)
-    service = SpotSetupService.new(plan: @plan, user: @user, spot_params: @spot_params)
+    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     assert_enqueued_with(job: GenreDetectionJob) do
       result = service.setup

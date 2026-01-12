@@ -6,7 +6,6 @@ module Api
     def create
       result = SpotSetupService.new(
         plan: @plan,
-        user: current_user,
         spot_params: spot_params
       ).setup
 

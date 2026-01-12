@@ -8,8 +8,6 @@ class User < ApplicationRecord
 
   # Associations
   has_many :plans, dependent: :destroy
-  has_many :user_spots, dependent: :destroy
-  has_many :spots, through: :user_spots
   has_many :like_spots, dependent: :destroy
   has_many :liked_spots, through: :like_spots, source: :spot
   has_many :like_plans, dependent: :destroy
