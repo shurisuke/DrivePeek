@@ -117,6 +117,11 @@
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
 }
 
+/* スポット詳細画面（show）ではスポット番号を青色に */
+.spot-block--show .spot-order-icon {
+  background: #3073F0;
+}
+
 .spot-block .spot-body {
   flex: 1 1 auto;
   width: 100%;
