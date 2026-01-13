@@ -17,22 +17,10 @@ import { renderRoutePolylinesForShow, fitMapToSpots } from "plans/route_renderer
 import { waitForGoogleMaps, isShowPage } from "map/utils"
 import { COLORS } from "map/constants"
 
-console.log("[init_map_show] module loaded")
-
 document.addEventListener("turbo:load", async () => {
-  console.log("[init_map_show] turbo:load fired")
-
   const mapElement = document.getElementById("map")
-  if (!mapElement) {
-    console.log("[init_map_show] #map not found. skip.")
-    return
-  }
-
-  // 詳細画面でない場合はスキップ
-  if (!isShowPage()) {
-    console.log("[init_map_show] not show page. skip.")
-    return
-  }
+  if (!mapElement) return
+  if (!isShowPage()) return
 
   // Google Maps APIの準備を待つ
   const isGoogleMapsReady = await waitForGoogleMaps()
@@ -42,7 +30,6 @@ document.addEventListener("turbo:load", async () => {
   }
 
   const fallbackCenter = { lat: 35.681236, lng: 139.767125 } // 東京駅
-  console.log("[init_map_show] initializing map...")
 
   // 地図生成
   renderMap(fallbackCenter)
@@ -52,12 +39,8 @@ document.addEventListener("turbo:load", async () => {
 
   // プランデータがあればマーカーを描画
   const planData = getPlanDataFromPage()
-  if (!planData) {
-    console.log("[init_map_show] planData not found. renderPlanMarkers skipped.")
-    return
-  }
+  if (!planData) return
 
-  console.log("[init_map_show] planData found. renderPlanMarkers()")
   const { renderPlanMarkers } = await import("plans/render_plan_markers")
   renderPlanMarkers(planData, { pinColor: COLORS.COMMUNITY })
 

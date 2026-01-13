@@ -21,8 +21,6 @@ import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 import { bindTollUsedHandler } from "plans/toll_used_handler"
 import { bindStayDurationHandler } from "plans/stay_duration_handler"
 
-console.log("[init_map_edit] module loaded")
-
 // 編集画面専用ハンドラーをバインド（各ハンドラーは内部で二重バインド防止済み）
 bindSpotAddHandler()
 bindPlanMapSync()
@@ -31,19 +29,9 @@ bindTollUsedHandler()
 bindStayDurationHandler()
 
 document.addEventListener("turbo:load", async () => {
-  console.log("[init_map_edit] turbo:load fired")
-
   const mapElement = document.getElementById("map")
-  if (!mapElement) {
-    console.log("[init_map_edit] #map not found. skip.")
-    return
-  }
-
-  // 編集画面でない場合はスキップ
-  if (!isEditPage()) {
-    console.log("[init_map_edit] not edit page. skip.")
-    return
-  }
+  if (!mapElement) return
+  if (!isEditPage()) return
 
   // Google Maps APIの準備を待つ
   const isGoogleMapsReady = await waitForGoogleMaps()
@@ -55,10 +43,8 @@ document.addEventListener("turbo:load", async () => {
   if (!mapElement.dataset.goalPointVisible) {
     mapElement.dataset.goalPointVisible = "false"
   }
-  console.log("[init_map_edit] #map.dataset.goalPointVisible =", mapElement.dataset.goalPointVisible)
 
   const fallbackCenter = { lat: 35.681236, lng: 139.767125 } // 東京駅
-  console.log("[init_map_edit] initializing map...")
 
   // 地図生成
   renderMap(fallbackCenter)
@@ -74,12 +60,8 @@ document.addEventListener("turbo:load", async () => {
 
   // プランデータがあればマーカーを描画
   const planData = getPlanDataFromPage()
-  if (!planData) {
-    console.log("[init_map_edit] planData not found. renderPlanMarkers skipped.")
-    return
-  }
+  if (!planData) return
 
-  console.log("[init_map_edit] planData found. renderPlanMarkers()")
   const { renderPlanMarkers } = await import("plans/render_plan_markers")
   renderPlanMarkers(planData)
 })

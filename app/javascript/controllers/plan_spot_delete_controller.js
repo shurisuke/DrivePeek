@@ -15,11 +15,8 @@ export default class extends Controller {
     const planId = this.planIdValue
     const planSpotId = this.planSpotIdValue
 
-    console.log("[plan-spot-delete] afterSubmit", { planId, planSpotId })
-
     // Turbo Stream (remove) がDOMへ反映された"後"に通知したい
     requestAnimationFrame(() => {
-      console.log("[plan-spot-delete] dispatching plan:spot-deleted", { planId, planSpotId })
       document.dispatchEvent(
         new CustomEvent("plan:spot-deleted", {
           detail: { planId, planSpotId },

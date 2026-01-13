@@ -1,0 +1,26 @@
+/* ==========================================
+   共通: 時刻表示コンポーネント (.time-display)
+   用途: 到着・出発・滞在時間の表示
+========================================== */
+.time-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.time-display__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.55);
+  line-height: 1.2;
+  text-align: center;
+}
+
+.time-display__value {
+  font-size: 14px;
+  font-weight: 400;
+  font-variant-numeric: tabular-nums;
+  letter-spacing: 0.02em;
+  color: #222;
+}

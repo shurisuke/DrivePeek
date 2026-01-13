@@ -63,7 +63,23 @@
 
 .spot-block .block-time-panel__main {
   justify-content: space-between;
-  gap: 10px;
+  gap: 6px;
+  max-height: 240px;
+}
+
+/* ✅ メモ表示時は時刻レールの最大高さを増やす */
+.spot-block:has(.spot-memo.spot-memo--pin:not(.d-none)) .block-time-panel__main {
+  max-height: 270px !important;
+}
+
+/* ✅ メモ表示時は時刻パネル自体にも最小高さを設定 */
+.spot-block:has(.spot-memo.spot-memo--pin:not(.d-none)) .block-time-panel {
+  min-height: 270px !important;
+}
+
+/* ✅ 到着時間の上に余白を追加 */
+.spot-block .block-time-panel__main > .time-display:first-child {
+  margin-top: 9px;
 }
 
 .spot-block .block-time-panel__row {
@@ -87,7 +103,7 @@
   display: flex;
   align-items: flex-start;
   gap: 10px;
-  margin-bottom: 6px;
+  margin-bottom: 0;
   position: relative;
 
   /* プランバー幅に応じて両端に余白を追加 */
@@ -133,17 +149,27 @@
   font-weight: 700;
   text-align: center;
   color: #222;
-  margin-bottom: 4px;
+  margin-bottom: 0;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
 }
 
+/* ------------------------------------------
+   住所・ジャンルラッパー（3層構造の下に配置）
+------------------------------------------ */
+
+.spot-block .spot-meta {
+  padding: 0 10px;
+  margin-top: 0;
+}
+
 .spot-block .spot-address {
   font-size: 13px;
   text-align: center;
   color: rgba(82, 82, 82, 0.78);
+  margin-top: 8px;
 
   white-space: nowrap;
   overflow: hidden;
@@ -155,7 +181,7 @@
 ------------------------------------------ */
 
 .spot-block .spot-genres {
-  margin-top: 8px;
+  margin-top: 0;
   display: flex;
   flex-wrap: wrap;
   justify-content: center;
@@ -180,14 +206,11 @@
    メモ（表示）
 ------------------------------------------ */
 
-/* 表示用メモ（spot-memo--pin）は“カード共通”の影響を受けないように限定 */
+/* 表示用メモ（spot-memo--pin）は"カード共通"の影響を受けないように限定 */
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) {
   position: relative;
-  margin-top: 15px !important;
-
-  padding: 0 !important;
-  margin-left: 0 !important;
-  margin-right: 0 !important;
+  margin-top: 8px !important;
+  padding: 0 10px !important;
 
   background: transparent !important;
   border: 0 !important;
@@ -204,10 +227,20 @@
   letter-spacing: 0.01em;
 
   text-align: center;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 3px;
+}
+
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__icon {
+  color: rgba(33, 33, 33, 0.5);
+  flex-shrink: 0;
+  font-size: 0.9em;
 }
 
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__content p {
-  margin: 0 40px;
+  margin: 0;
 }
 
 /* 削除ボタン：デフォルト非表示 */
@@ -282,11 +315,17 @@
   width: 100%;
 }
 
+/* ✅ collapsingアニメーション（開閉両方） */
+.spot-block .spot-detail.collapsing {
+  overflow: hidden;
+  transition: height 0.35s ease;
+}
+
 .spot-block .spot-detail__inner {
   width: 100%;
   border-radius: 6px;
   background: #fff;
-  padding: 0px 12px 0px 12px;
+  padding: 0 12px;
   font-size: 0.9rem;
 }
 
@@ -432,14 +471,16 @@
 
 /* ✅ 有料道路設定行（出発地点の start-toll-row と同じ構造） */
 .spot-block .spot-toll-row {
-  width: 265px;
+  /* ✅ ナビバー幅に応じて動的に縮小（.spot-next-move と同じ計算式） */
+  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+  max-width: 265px;
   margin: 0 auto;
-  padding: 0 0 10px 0;
+  padding: 0 10px 10px 10px;
+  box-sizing: border-box;
 
-  display: grid;
-  grid-template-columns: auto auto;
+  display: flex;
+  justify-content: space-between;
   align-items: center;
-  gap: 0;
 
   background: transparent;
   border: 0;
@@ -454,8 +495,6 @@
 }
 
 .spot-block .spot-toll-row .toll-switch {
-  margin-left: 180px;
-
   display: inline-flex;
   align-items: center;
   justify-content: flex-start;
@@ -535,15 +574,21 @@
   border: 0;
   border-radius: 0;
 
-  width: 265px;
-  font-size: 0.9rem;
+  /* ✅ ナビバー幅に応じて動的に縮小（300px時: 225px, 340px時: 265px） */
+  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+  max-width: 265px;
+  font-size: 0.8rem;
 
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
-  gap: 10px;
+  /* ✅ ナビバー幅に応じてgapを動的に調整（300px時: 4px, 340px以上: 10px固定） */
+  gap: min(10px, calc(4px + (var(--navibar-width, 340px) - 300px) * 0.15));
 
-  margin: 20px auto 0;
+  margin: 20px auto 8px;
+  padding: 0 10px;
+  box-sizing: border-box;
+  white-space: nowrap;
 }
 
 .spot-block .spot-next-move .label {
@@ -558,7 +603,8 @@
   font-size: calc(1em + 2px);
   color: #2d2d2d;
 
-  padding-left: 12px;
+  /* ✅ ナビバー幅に応じて動的に調整（300px時: 6px, 340px以上: 12px固定） */
+  padding-left: min(12px, calc(6px + (var(--navibar-width, 340px) - 300px) * 0.15));
   border-left: 1px solid rgba(0, 0, 0, 0.10);
 }
 
@@ -768,20 +814,6 @@
   padding-left: 0;
 }
 
-/* 帰宅地点非表示時、最後のスポットの出発時間を非表示 */
-body:not(.goal-point-visible) .spot-block--last [data-plan-time-role="spot-departure"] {
-  display: none;
-}
-
-/* 帰宅地点非表示時、最後のスポットの滞在時間に余白追加 */
-body:not(.goal-point-visible) .spot-block--last .spot-stay-duration {
-  margin-bottom: 31px;
-}
-
-.no-collapse-anim .collapsing {
-  transition: none !important;
-}
-
 /* ✅ スポットブロックの矢印位置調整 */
 .spot-block .block-time-panel__arrow {
   margin-top: -7px;
@@ -791,83 +823,66 @@ body:not(.goal-point-visible) .spot-block--last .spot-stay-duration {
    ✅ 時刻レール内の滞在時間選択（出発時間ピッカーと同じスタイル）
 ========================================== */
 
+/* ✅ 滞在時間ボタン（全体がクリック可能） */
 .spot-stay-duration {
   display: flex;
   flex-direction: column;
-  gap: 4px;
-
-  width: 60px;
-  max-width: 60px;
   align-items: center;
-  text-align: center;
+  gap: 2px;
 
-  /* ✅ 少し右側に移動 */
-  margin-left: 5px;
-  margin-top: 1px;
-}
+  min-width: 50px;
+  max-width: 80px;
+  padding: 4px 0;
 
-.spot-stay-duration__label {
-  width: 100%;
-  max-width: 60px;
-
-  /* ✅ 到着ラベル（.block-time-panel__label）と同じスタイル */
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: rgba(33, 33, 33, 0.55);
-
-  line-height: 1.2;
-  letter-spacing: 0.01em;
-  text-align: center;
-
-  white-space: normal;
-  word-break: keep-all;
-
-  /* ✅ 3px下げる */
-  margin-top: 3px;
-}
-
-.spot-stay-duration__select {
-  width: 60px;
-  height: 16px;
-
-  box-sizing: border-box;
   border: none;
   border-radius: 6px;
-
   background: transparent;
-  color: #222;
-  text-align: center;
-  text-align-last: center;
-
-  /* ✅ 色と太さは時刻レールの値と同じ */
-  font-size: 12px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
 
   cursor: pointer;
-
-  -webkit-appearance: none;
-  appearance: none;
-
-  /* ▼ アイコンを非表示にする */
-  background-image: none;
-  padding: 0 4px;
-
-  &:focus {
-    outline: none;
-    box-shadow: none;
-  }
+  transition: background 0.15s ease;
 
   &:hover {
     background: rgba(0, 0, 0, 0.04);
   }
+
+  &:active {
+    transform: scale(0.97);
+  }
 }
 
-/* ✅ 設定済み時：よりコンパクトに */
-.spot-stay-duration--set {
+.spot-stay-duration__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.55);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
 
-  .spot-stay-duration__select {
-    height: 16px;
-    font-size: 12px;
+/* ✅ 値の表示部分 */
+.spot-stay-duration__value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+
+  color: #8e8e93;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+/* ✅ 単位ラベル（時間・分） */
+.spot-stay-duration__unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: #8e8e93;
+  margin: 0 1px;
+  vertical-align: baseline;
+}
+
+/* ✅ 設定済み時 */
+.spot-stay-duration--set {
+  .spot-stay-duration__value {
+    color: #8e8e93;
   }
 }

@@ -16,8 +16,6 @@ import { showInfoWindow } from "map/infowindow"
 import { waitForGoogleMaps, isSpotShowPage } from "map/utils"
 import { COLORS } from "map/constants"
 
-console.log("[spots/init_map_show] module loaded")
-
 const SPOT_PIN_COLOR = COLORS.COMMUNITY
 
 // PlacesService のキャッシュ
@@ -110,22 +108,9 @@ const renderSpotMarker = (spotData) => {
 }
 
 document.addEventListener("turbo:load", async () => {
-  console.log("[spots/init_map_show] turbo:load fired")
-
   const mapElement = document.getElementById("map")
-  if (!mapElement) {
-    console.log("[spots/init_map_show] #map not found. skip.")
-    return
-  }
-
-  console.log("[spots/init_map_show] mapElement.dataset.mapMode:", mapElement.dataset.mapMode)
-
-  if (!isSpotShowPage()) {
-    console.log("[spots/init_map_show] not spot_show page. skip.")
-    return
-  }
-
-  console.log("[spots/init_map_show] is spot_show page. initializing...")
+  if (!mapElement) return
+  if (!isSpotShowPage()) return
 
   const isGoogleMapsReady = await waitForGoogleMaps()
   if (!isGoogleMapsReady) {
@@ -133,27 +118,16 @@ document.addEventListener("turbo:load", async () => {
     return
   }
 
-  console.log("[spots/init_map_show] Google Maps API ready")
-
   const spotData = getSpotDataFromPage()
-  console.log("[spots/init_map_show] spotData:", spotData)
 
   const center = spotData
     ? { lat: Number(spotData.lat), lng: Number(spotData.lng) }
     : { lat: 35.681236, lng: 139.767125 }
 
-  // 地図生成
-  console.log("[spots/init_map_show] renderMap with center:", center)
   renderMap(center)
-
-  // POIクリック（閲覧モード）
   setupPoiClickForView()
 
-  // スポットマーカーを描画
   if (spotData) {
-    console.log("[spots/init_map_show] rendering spot marker...")
     renderSpotMarker(spotData)
   }
-
-  console.log("[spots/init_map_show] initialization complete")
 })

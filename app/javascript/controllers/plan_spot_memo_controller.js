@@ -7,9 +7,21 @@ export default class extends Controller {
   static values = { url: String }
 
   connect() {
+    // ✅ トグル収納時にメモエディタを閉じる
+    this._onCollapseHide = this._onCollapseHide.bind(this)
+    if (this.hasDetailTarget) {
+      this.detailTarget.addEventListener("hide.bs.collapse", this._onCollapseHide)
+    }
   }
 
   disconnect() {
+    if (this.hasDetailTarget) {
+      this.detailTarget.removeEventListener("hide.bs.collapse", this._onCollapseHide)
+    }
+  }
+
+  _onCollapseHide() {
+    this.closeIfOpen()
   }
 
   stopPropagation(event) {

@@ -8,7 +8,6 @@
 // 追加:
 // - 変更フォームを「ボタンの右側」に position: fixed で表示し、
 //   navibar__content の overflow クリップから脱出させる
-// - デバッグ用の console.log を追加
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -31,87 +30,124 @@ export default class extends Controller {
   }
 
   connect() {
-    console.log("[goal-point-editor] connect", {
-      hasAddress: this.hasAddressTarget,
-      hasToggle: this.hasToggleTarget,
-      hasEditArea: this.hasEditAreaTarget,
-      hasInput: this.hasInputTarget,
+    this.composing = false
+    this._isOpen = false
+
+    // ✅ 孤立したモーダル要素をクリーンアップ
+    this.cleanupOrphanedModals()
+  }
+
+  cleanupOrphanedModals() {
+    // body直下にある孤立したモーダル要素を削除
+    const orphanedModals = document.body.querySelectorAll(":scope > .goal-point-edit.point-edit-modal")
+    orphanedModals.forEach(el => el.remove())
+
+    // 孤立したバックドロップも削除
+    const orphanedBackdrops = document.body.querySelectorAll(":scope > .point-edit-modal-backdrop")
+    orphanedBackdrops.forEach(el => {
+      el.remove()
     })
 
-    this.composing = false
-    this._onReposition = this.reposition.bind(this)
+    // bodyのクラスもクリーンアップ
+    document.body.classList.remove("point-edit-modal-open")
   }
 
   disconnect() {
-    console.log("[goal-point-editor] disconnect")
-    window.removeEventListener("resize", this._onReposition)
-    window.removeEventListener("scroll", this._onReposition, true)
+    if (this._isOpen) {
+      this.close()
+    }
   }
 
   toggle() {
-    const willOpen = this.editAreaTarget.hidden
-    console.log("[goal-point-editor] toggle", { willOpen })
+    if (!this._isOpen) {
+      this.openModal()
+    } else {
+      this.close()
+    }
+  }
 
-    if (willOpen) {
-      this.editAreaTarget.hidden = false
-      this.toggleTarget.setAttribute("aria-expanded", "true")
-
-      // ✅ navibarのoverflowの影響を受けないように fixed で出す
-      this.editAreaTarget.style.position = "fixed"
-      this.editAreaTarget.style.zIndex = "9999"
-
-      // 見た目（必要なら調整）
-      this.editAreaTarget.style.width = "320px"
-      this.editAreaTarget.style.maxWidth = "calc(100vw - 24px)"
-      this.editAreaTarget.style.margin = "0"
-
-      this.reposition()
-
-      window.addEventListener("resize", this._onReposition)
-      // どこがスクロールしても追従できるように capture=true
-      window.addEventListener("scroll", this._onReposition, true)
-
-      this.inputTarget.focus()
+  openModal() {
+    // ✅ 必要なターゲットが存在するか確認
+    if (!this.hasEditAreaTarget) {
+      console.error("[goal-point-editor] editArea target not found")
       return
     }
 
-    this.close()
+    this._isOpen = true
+
+    // ✅ bodyにクラスを追加（背景を適用するため）
+    document.body.classList.add("point-edit-modal-open")
+
+    // ✅ モーダルオーバーレイを作成（bodyに配置、地図部分用）
+    this.backdrop = document.createElement("div")
+    this.backdrop.className = "point-edit-modal-backdrop"
+    this.backdrop.addEventListener("click", () => this.close())
+    document.body.appendChild(this.backdrop)
+
+    // ✅ editAreaを表示
+    this.editAreaTarget.removeAttribute("hidden")
+    this.editAreaTarget.classList.add("point-edit-modal")
+
+    this.toggleTarget.setAttribute("aria-expanded", "true")
+
+    // ✅ ボタンにイベントリスナーを追加
+    this._cancelBtn = this.editAreaTarget.querySelector(".point-edit__cancel-btn")
+    this._searchBtn = this.editAreaTarget.querySelector(".point-edit__search-btn")
+
+    this._onCancelClick = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.close()
+    }
+    this._onSearchClick = (e) => {
+      e.preventDefault()
+      e.stopPropagation()
+      this.doSearch()
+    }
+
+    if (this._cancelBtn) this._cancelBtn.addEventListener("click", this._onCancelClick)
+    if (this._searchBtn) this._searchBtn.addEventListener("click", this._onSearchClick)
+
+    // ✅ フォーカス
+    requestAnimationFrame(() => {
+      this.inputTarget.focus()
+    })
   }
 
   close() {
-    console.log("[goal-point-editor] close")
+    if (!this._isOpen) return
+    this._isOpen = false
 
-    this.editAreaTarget.hidden = true
-    this.toggleTarget.setAttribute("aria-expanded", "false")
+    // ✅ ボタンのイベントリスナーを削除
+    if (this._cancelBtn && this._onCancelClick) {
+      this._cancelBtn.removeEventListener("click", this._onCancelClick)
+    }
+    if (this._searchBtn && this._onSearchClick) {
+      this._searchBtn.removeEventListener("click", this._onSearchClick)
+    }
+    this._cancelBtn = null
+    this._searchBtn = null
+    this._onCancelClick = null
+    this._onSearchClick = null
 
-    window.removeEventListener("resize", this._onReposition)
-    window.removeEventListener("scroll", this._onReposition, true)
+    // ✅ editAreaを非表示に
+    if (this.hasEditAreaTarget) {
+      this.editAreaTarget.classList.remove("point-edit-modal")
+      this.editAreaTarget.setAttribute("hidden", "")
+    }
 
-    // スタイルを戻す（次回開いた時に再計算する）
-    this.editAreaTarget.style.position = ""
-    this.editAreaTarget.style.top = ""
-    this.editAreaTarget.style.left = ""
-    this.editAreaTarget.style.zIndex = ""
-    this.editAreaTarget.style.width = ""
-    this.editAreaTarget.style.maxWidth = ""
-  }
+    if (this.hasToggleTarget) {
+      this.toggleTarget.setAttribute("aria-expanded", "false")
+    }
 
-  reposition() {
-    const rect = this.toggleTarget.getBoundingClientRect()
+    // ✅ バックドロップを削除
+    if (this.backdrop) {
+      this.backdrop.remove()
+      this.backdrop = null
+    }
 
-    const gapX = 10
-    const offsetY = 50 // ← ここだけで調整
-
-    const left = rect.right + gapX
-    const top = rect.top + offsetY
-
-    const safeLeft = Math.min(left, window.innerWidth - 20)
-    const safeTop = Math.max(top, 12)
-
-    this.editAreaTarget.style.left = `${safeLeft}px`
-    this.editAreaTarget.style.top = `${safeTop}px`
-
-    console.log("[goal-point-editor] reposition", { safeLeft, safeTop })
+    // ✅ bodyからクラスを削除
+    document.body.classList.remove("point-edit-modal-open")
   }
 
   compositionStart() {
@@ -125,9 +161,11 @@ export default class extends Controller {
   async search(e) {
     if (this.composing) return
     if (e.key !== "Enter") return
-
     e.preventDefault()
+    this.doSearch()
+  }
 
+  async doSearch() {
     const map = getMapInstance()
     if (!map) {
       console.warn("[goal-point-editor] map is not ready")
@@ -144,14 +182,11 @@ export default class extends Controller {
       return
     }
 
-    console.log("[goal-point-editor] search begin", { planId, input })
-
     try {
       // ✅ 検索ヒットピンを全て消去
       clearSearchHitMarkers()
 
       const geo = await geocodeAddress(input)
-      console.log("[goal-point-editor] geocode result", geo)
 
       // ✅ geocodeAddress の戻り値から location と address を正しく取得
       const formattedAddress = geo?.formattedAddress || input
@@ -169,8 +204,6 @@ export default class extends Controller {
       // ✅ google.maps.LatLng の lat()/lng() メソッドを呼ぶ
       const lat = typeof location.lat === "function" ? location.lat() : location.lat
       const lng = typeof location.lng === "function" ? location.lng() : location.lng
-
-      console.log("[goal-point-editor] extracted coordinates", { lat, lng, displayAddress })
 
       // ✅ 帰宅ピンを消して差し直す
       clearEndPointMarker()
@@ -221,7 +254,6 @@ export default class extends Controller {
           lng,
         },
       })
-      console.log("[goal-point-editor] update OK")
 
       // ✅ turbo_stream で navibar が自動更新される（navibar:updated イベントで地図も同期）
 

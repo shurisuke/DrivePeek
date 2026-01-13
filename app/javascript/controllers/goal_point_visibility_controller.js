@@ -102,7 +102,7 @@ export default class extends Controller {
         }
         // 「--」に置き換え
         if (kmEl) kmEl.innerHTML = '--<span class="km-unit">km</span>';
-        if (timeEl) timeEl.innerHTML = '--<span class="time-unit">時間</span>--<span class="time-unit">分</span>';
+        if (timeEl) timeEl.innerHTML = '--<span class="time-unit">分</span>';
       } else {
         // 元の値を復元
         if (kmEl && kmEl.dataset.originalValue) {

@@ -12,8 +12,8 @@ export default class extends Controller {
   static values = {
     min: { type: Number, default: 300 },
     maxPercent: { type: Number, default: 70 },
-    default: { type: Number, default: 350 },
-    railWidth: { type: Number, default: 70 },
+    default: { type: Number, default: 340 },
+    railWidth: { type: Number, default: 60 },
     storageKey: { type: String, default: "drive_peek:navibar_width" },
     collapsedKey: { type: String, default: "drive_peek:navibar_collapsed" },
   }
@@ -173,6 +173,19 @@ export default class extends Controller {
     const s = Math.round(Math.max(0, Math.min(slide, this.maxSlide)))
     this.element.style.setProperty("--navibar-width", `${w}px`)
     this.element.style.setProperty("--navibar-slide", `${s}px`)
+
+    // ✅ 時刻レール幅：固定（拡大なし）
+    const baseRailWidth = this.railWidthValue
+    const extraWidth = Math.max(0, (w - this.defaultValue) * 0)
+    const railWidth = Math.round(baseRailWidth + extraWidth)
+    this.element.style.setProperty("--rail-width", `${railWidth}px`)
+
+    // ✅ 時刻レール内コンテンツの左オフセット：ナビバー幅に応じて増加
+    const baseOffset = -5
+    const extraOffset = Math.max(0, (w - this.defaultValue) * 0.14)
+    const offsetX = Math.round(baseOffset - extraOffset)
+    this.element.style.setProperty("--time-rail-content-offset-x", `${offsetX}px`)
+
   }
 
   // ================================================================

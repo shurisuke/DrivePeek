@@ -68,15 +68,14 @@
               data-action="keydown->goal-point-editor#search compositionstart->goal-point-editor#compositionStart compositionend->goal-point-editor#compositionEnd"
             >
 
-            <div class="goal-point-edit__help">Enterで検索 → 更新</div>
-
-            <button
-              type="button"
-              class="point-edit__cancel-btn"
-              data-action="click->goal-point-editor#toggle"
-            >
-              キャンセル
-            </button>
+            <div class="point-edit__actions">
+              <button type="button" class="point-edit__cancel-btn">
+                キャンセル
+              </button>
+              <button type="button" class="point-edit__search-btn">
+                検索
+              </button>
+            </div>
           </div>
         </div>
       </div>
@@ -84,9 +83,9 @@
       <%# ✅ 右側: 時刻パネル（ON時のみ表示 / 矢印なし） %>
       <div class="block-time-panel">
         <div class="block-time-panel__main">
-          <div class="block-time-panel__row block-time-panel__row--arrival">
-            <span class="block-time-panel__label block-time-panel__label--arrival">到着</span>
-            <span class="block-time-panel__value block-time-panel__value--arrival"><%= goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
+          <div class="time-display">
+            <span class="time-display__label">到着</span>
+            <span class="time-display__value"><%= goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
           </div>
         </div>
       </div>

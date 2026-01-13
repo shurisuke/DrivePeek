@@ -17,8 +17,6 @@ export const renderMap = (center) => {
     return
   }
 
-  console.log("🗺️ 地図を初期化します（中心座標）:", center)
-
   const map = new google.maps.Map(mapElement, {
     center,
     zoom: 12,

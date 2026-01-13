@@ -1,62 +1,30 @@
 // app/javascript/controllers/start_departure_time_controller.js
 // ================================================================
 // Start Departure Time Controller（単一責務）
-// 用途: 出発ブロックの「出発時間」入力に flatpickr(time only) を適用し、
+// 用途: 出発ブロックの「出発時間」をiOS風ホイールピッカーで入力し、
 //       変更時にAPIで保存する
 // 前提: Turbo Frame で navibar が差し替わっても、connect で確実に再初期化される
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import flatpickr from "flatpickr"
 import { patchTurboStream } from "services/api_client"
 
 export default class extends Controller {
-  static targets = ["input"]
-  static values = { planId: Number }
+  static targets = ["trigger"]
+  static values = { planId: Number, current: String }
 
   connect() {
-    if (!this.hasInputTarget) return
-
-    // 既に適用済みなら何もしない（Turboの再接続で二重適用を防ぐ）
-    if (this.inputTarget.dataset.fpApplied === "1") return
-    this.inputTarget.dataset.fpApplied = "1"
-
-    // 手入力が 900 みたいになっても、blurで整形＆保存
-    this.inputTarget.addEventListener("blur", this._onBlur)
-
-    // flatpickr 適用（time only）- 入力欄クリックでピッカーが開く
-    this._fp = flatpickr(this.inputTarget, {
-      enableTime: true,
-      noCalendar: true,
-      time_24hr: true,
-      dateFormat: "H:i",
-      allowInput: true,
-      minuteIncrement: 5,
-      clickOpens: true,
-      disableMobile: true,
-      appendTo: document.body,
-      onOpen: () => {
-        const normalized = this._normalizeTimeText(this.inputTarget.value)
-        if (normalized) this.inputTarget.value = normalized
-      },
-      onClose: (_selectedDates, dateStr) => {
-        // ピッカーを閉じたときに保存（三角ボタン操作中は保存しない）
-        if (dateStr) this._save(dateStr)
-      },
-    })
+    // 初期化処理があれば追加
   }
 
   disconnect() {
-    // Turbo差し替え時に破棄しておく（メモリリーク/イベント残り防止）
-    try {
-      this.inputTarget?.removeEventListener("blur", this._onBlur)
-    } catch (_) {}
+    // クリーンアップ処理があれば追加
+  }
 
-    try {
-      this._fp?.destroy()
-    } catch (_) {}
-
-    this._fp = null
+  // トリガーボタンクリックでピッカーを開く
+  openPicker(event) {
+    event.preventDefault()
+    this._showWheelPicker()
   }
 
   showHelp(event) {
@@ -112,20 +80,121 @@ export default class extends Controller {
   }
 
   // ============================
-  // private
+  // Wheel Picker
   // ============================
-  _onBlur = () => {
-    if (!this.hasInputTarget) return
-    // ピッカーが開いている間はblur保存をスキップ（onCloseで処理）
-    if (this._fp?.isOpen) return
+  _showWheelPicker() {
+    // 既存のピッカーがあれば削除
+    const existingPicker = document.getElementById("time-wheel-picker")
+    if (existingPicker) existingPicker.remove()
 
-    const normalized = this._normalizeTimeText(this.inputTarget.value)
-    if (normalized) {
-      this.inputTarget.value = normalized
-      this._save(normalized)
+    // 現在の値をパース
+    let currentHour = 9
+    let currentMinute = 0
+    if (this.currentValue) {
+      const parts = this.currentValue.split(":")
+      if (parts.length === 2) {
+        currentHour = parseInt(parts[0], 10) || 0
+        currentMinute = parseInt(parts[1], 10) || 0
+      }
     }
+
+    // ピッカーモーダルを作成
+    const dialog = document.createElement("dialog")
+    dialog.id = "time-wheel-picker"
+    dialog.className = "time-wheel-picker"
+
+    // 時間オプション (0-23)
+    const hourOptions = Array.from({ length: 24 }, (_, i) =>
+      `<div class="time-wheel-picker__item" data-value="${i}">${String(i).padStart(2, "0")}</div>`
+    ).join("")
+
+    // 分オプション (0, 5, 10, ... 55)
+    const minuteOptions = Array.from({ length: 12 }, (_, i) =>
+      `<div class="time-wheel-picker__item" data-value="${i * 5}">${String(i * 5).padStart(2, "0")}</div>`
+    ).join("")
+
+    dialog.innerHTML = `
+      <div class="time-wheel-picker__content">
+        <div class="time-wheel-picker__header">
+          <button type="button" class="time-wheel-picker__cancel">キャンセル</button>
+          <span class="time-wheel-picker__title">出発時間</span>
+          <button type="button" class="time-wheel-picker__confirm">完了</button>
+        </div>
+        <div class="time-wheel-picker__body">
+          <div class="time-wheel-picker__wheels">
+            <div class="time-wheel-picker__wheel" data-type="hour">
+              <div class="time-wheel-picker__scroll">
+                ${hourOptions}
+              </div>
+            </div>
+            <div class="time-wheel-picker__colon">:</div>
+            <div class="time-wheel-picker__wheel" data-type="minute">
+              <div class="time-wheel-picker__scroll">
+                ${minuteOptions}
+              </div>
+            </div>
+          </div>
+          <div class="time-wheel-picker__highlight"></div>
+        </div>
+      </div>
+    `
+
+    document.body.appendChild(dialog)
+
+    // 各ホイールのスクロール位置を初期化
+    const hourWheel = dialog.querySelector('[data-type="hour"] .time-wheel-picker__scroll')
+    const minuteWheel = dialog.querySelector('[data-type="minute"] .time-wheel-picker__scroll')
+    const itemHeight = 40 // CSSで定義する高さと合わせる
+
+    // 初期位置にスクロール
+    setTimeout(() => {
+      hourWheel.scrollTop = currentHour * itemHeight
+      minuteWheel.scrollTop = Math.round(currentMinute / 5) * itemHeight
+    }, 10)
+
+    // 選択値を取得するヘルパー
+    const getSelectedValue = (wheel) => {
+      const scrollTop = wheel.scrollTop
+      const index = Math.round(scrollTop / itemHeight)
+      const items = wheel.querySelectorAll(".time-wheel-picker__item")
+      if (items[index]) {
+        return parseInt(items[index].dataset.value, 10)
+      }
+      return 0
+    }
+
+    // キャンセルボタン
+    dialog.querySelector(".time-wheel-picker__cancel").addEventListener("click", () => {
+      dialog.close()
+      dialog.remove()
+    })
+
+    // 完了ボタン
+    dialog.querySelector(".time-wheel-picker__confirm").addEventListener("click", () => {
+      const hour = getSelectedValue(hourWheel)
+      const minute = getSelectedValue(minuteWheel)
+      const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+
+      dialog.close()
+      dialog.remove()
+
+      this._save(timeStr)
+    })
+
+    // 背景クリックで閉じる
+    dialog.addEventListener("click", (e) => {
+      if (e.target === dialog) {
+        dialog.close()
+        dialog.remove()
+      }
+    })
+
+    dialog.showModal()
   }
 
+  // ============================
+  // private
+  // ============================
   async _save(timeStr) {
     if (!timeStr || !this.planIdValue) return
 
@@ -137,28 +206,5 @@ export default class extends Controller {
     } catch (e) {
       console.error("[start-departure-time] save error", e)
     }
-  }
-
-  _normalizeTimeText(raw) {
-    if (!raw) return ""
-    const s = String(raw).trim()
-
-    // すでに 09:00 形式ならそのまま
-    if (/^\d{1,2}:\d{2}$/.test(s)) {
-      const [h, m] = s.split(":").map((x) => Number(x))
-      if (Number.isFinite(h) && Number.isFinite(m)) {
-        return `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}`
-      }
-      return s
-    }
-
-    // 900 / 0900 / 9 などを 09:00 に寄せる
-    const digits = s.replace(/[^\d]/g, "")
-    if (digits.length === 1) return `0${digits}:00`
-    if (digits.length === 2) return `${digits}:00`
-    if (digits.length === 3) return `0${digits.slice(0, 1)}:${digits.slice(1)}`
-    if (digits.length >= 4) return `${digits.slice(0, 2)}:${digits.slice(2, 4)}`
-
-    return ""
   }
 }
