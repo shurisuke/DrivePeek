@@ -38,19 +38,16 @@ export default class extends Controller {
     const existingDialog = document.getElementById("departure-time-help-dialog")
     if (existingDialog) existingDialog.remove()
 
-    // 出発時間が設定済みかどうかで内容を分岐
-    const isSet = this.element.classList.contains("start-departure-time--set")
+    // スポットが追加されているかどうかで内容を分岐
+    const hasSpots = !this.element.classList.contains("start-departure-time--no-spots")
 
-    const title = isSet
+    const title = hasSpots
       ? "時間の変更"
-      : "時間を設定してみよう"
+      : "時間設定について"
 
-    const text = isSet
-      ? `時刻をクリックして出発時間を設定できます。<br>
-         追加したスポットの下の🔽で滞在時間も入れてみてください。予定がもっとリアルに組めます。`
-      : `このアプリでは、出発時間や滞在時間を設定することで、<br>
-         より現実に近いタイムスケジュールを組むことができます。<br>
-         まずは試しに、出発時間を設定してみましょう。`
+    const text = hasSpots
+      ? "時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
+      : "時刻をタップ<br>↓<br>出発時間・滞在時間を設定<br>↓<br>旅のタイムスケジュールが完成"
 
     const dialog = document.createElement("dialog")
     dialog.id = "departure-time-help-dialog"
@@ -58,8 +55,8 @@ export default class extends Controller {
       <div class="departure-time-help-dialog__content">
         <h3 class="departure-time-help-dialog__title">${title}</h3>
         <p class="departure-time-help-dialog__text">${text}</p>
-        <button type="button" class="departure-time-help-dialog__close-btn">OK</button>
       </div>
+      <button type="button" class="departure-time-help-dialog__close-btn">OK</button>
     `
     document.body.appendChild(dialog)
 
