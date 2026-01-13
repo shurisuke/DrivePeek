@@ -1,0 +1,261 @@
+/* ==========================================
+   Search Filters
+   検索絞り込みUI（汎用コンポーネント）
+========================================== */
+
+/* 検索ボックスコンテナ */
+.search-box {
+  margin-bottom: 20px;
+  max-width: 400px;
+  margin-left: auto;
+  margin-right: auto;
+  background: #fff;
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+}
+
+/* 検索タイプ切り替えタブ（セグメントコントロール） */
+.search-tabs {
+  display: flex;
+  position: relative;
+  margin-bottom: 16px;
+  padding: 3px;
+  background-color: #e8e8e8;
+  border-radius: 9px;
+
+  /* スライドする白背景 */
+  &::before {
+    content: "";
+    position: absolute;
+    top: 3px;
+    left: 3px;
+    width: calc(50% - 3px);
+    height: calc(100% - 6px);
+    background: #fff;
+    border-radius: 7px;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+    transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+    z-index: 0;
+    transform: translateX(0);
+  }
+
+  /* 1番目のタブがアクティブな場合（左） */
+  &:has(.search-tabs__tab:first-child input:checked)::before,
+  &:has(.search-tabs__tab:first-child.is-active)::before {
+    transform: translateX(0);
+  }
+
+  /* 2番目のタブがアクティブな場合（右） */
+  &:has(.search-tabs__tab:last-child input:checked)::before,
+  &:has(.search-tabs__tab:last-child.is-active)::before {
+    transform: translateX(100%);
+  }
+}
+
+.search-tabs__tab {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 8px 16px;
+  font-size: 13px;
+  font-weight: 500;
+  color: #666;
+  background-color: transparent;
+  border: none;
+  border-radius: 7px;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  position: relative;
+  z-index: 1;
+
+  input[type="radio"] {
+    display: none;
+  }
+
+  &:hover:not(.is-active):not(:has(input:checked)) {
+    color: #444;
+  }
+
+  /* アクティブ時のテキスト色 */
+  &:has(input:checked),
+  &.is-active {
+    color: #333;
+  }
+}
+
+/* フィルターコンテナ */
+.search-filters {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  margin-bottom: 10px;
+}
+
+/* お気に入りフィルター（トグルスイッチ） */
+.search-filters__toggle {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 10px 14px;
+  margin-bottom: 10px;
+  background: #fff;
+  border-radius: 10px;
+  cursor: pointer;
+  font-size: 14px;
+  font-weight: 400;
+  color: #888;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: all 0.2s ease;
+
+  input[type="checkbox"] {
+    position: absolute;
+    opacity: 0;
+    pointer-events: none;
+  }
+
+  > span:last-of-type {
+    flex: 1;
+    order: 2;
+  }
+
+  &:hover {
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* トグルスイッチ本体 */
+.search-filters__toggle-switch {
+  position: relative;
+  width: 32px;
+  height: 18px;
+  background: #e0e0e0;
+  border-radius: 9px;
+  transition: background 0.2s ease;
+  flex-shrink: 0;
+  order: 3;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 2px;
+    left: 2px;
+    width: 14px;
+    height: 14px;
+    background: #fff;
+    border-radius: 50%;
+    box-shadow: 0 1px 2px rgba(0, 0, 0, 0.2);
+    transition: transform 0.2s ease;
+  }
+}
+
+/* チェック時: トグルスイッチをオン状態に */
+.search-filters__toggle input[type="checkbox"]:checked + .search-filters__toggle-switch {
+  background: #f5a623;
+
+  &::after {
+    transform: translateX(14px);
+  }
+}
+
+/* 検索入力フィールド */
+.search-input {
+  width: 100%;
+  padding: 10px 14px;
+  border: none;
+  border-radius: 10px;
+  font-size: 14px;
+  outline: none;
+  margin-bottom: 10px;
+  background: #fff;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+  transition: box-shadow 0.2s ease;
+
+  &:focus {
+    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+  }
+
+  &::placeholder {
+    color: #888;
+  }
+}
+
+/* 検索ボタン */
+.search-button {
+  width: 100%;
+  margin-top: 8px;
+  padding: 11px 16px;
+  background: linear-gradient(135deg, #506d53, #45604a);
+  border: none;
+  border-radius: 10px;
+  color: #fff;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  font-size: 14px;
+  font-weight: 500;
+  box-shadow: 0 2px 6px rgba(80, 109, 83, 0.3);
+  transition: all 0.2s ease;
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 4px 12px rgba(80, 109, 83, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  i {
+    font-size: 14px;
+  }
+}
+
+/* フィルターセレクト */
+.filter-select {
+  flex: 1;
+  padding: 8px 12px;
+  border: 1px solid #e5e5e5;
+  border-radius: 8px;
+  font-size: 14px;
+  outline: none;
+  background-color: #fff;
+  color: #333;
+  cursor: pointer;
+  appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 12px center;
+  padding-right: 32px;
+
+  &:focus {
+    border-color: #999;
+  }
+
+  /* 未選択時（デフォルト値）のスタイル */
+  &:invalid,
+  option[value=""] {
+    color: #999;
+  }
+}
+
+/* 検索結果ディバイダー */
+.results-divider {
+  margin-top: 24px;
+  margin-bottom: 16px;
+  text-align: center;
+}
+
+.results-label {
+  display: inline-block;
+  padding: 6px 14px;
+  font-size: 11px;
+  font-weight: 500;
+  color: #888;
+  background: rgba(255, 255, 255, 0.7);
+  border-radius: 20px;
+  letter-spacing: 0.5px;
+}

@@ -1,0 +1,217 @@
+/* ==========================================
+     出発地点ブロック
+     goal_point_block と同じ見た目・密度に揃える
+========================================== */
+
+@use "../../mixins/toggle_switch" as *;
+@use "../../mixins/next_move" as *;
+@use "../../mixins/detail_toggle" as *;
+@use "../../mixins/point_edit_form" as *;
+
+.start-point-block {
+  background: #ffffff;
+  border-radius: 6px;
+  width: 100%;
+  padding: 16px 0px;
+  margin-top: 0;
+
+  overflow: visible;
+
+  /* ------------------------------------------
+     上段：出発（3カラムFlexbox構造）
+     - [アイコン] [ラベル] [地図ボタン]
+  ------------------------------------------ */
+  .start-point-main {
+    display: flex;
+    align-items: flex-start;
+    gap: 10px;
+    margin-top: 12px;
+    margin-bottom: 12px;
+
+    /* プランバー幅に応じて両端に余白を追加 */
+    padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+    padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+  }
+
+  /* 左: 家アイコン */
+  .start-point-icon {
+    flex-shrink: 0;
+    margin-top: -10px;
+
+    width: 40px;
+    height: 43px;
+
+    background: url(house-icon.png) no-repeat center / contain;
+    background-size: 100% 100%;
+  }
+
+  /* 中央: ラベル */
+  .start-label {
+    flex: 1 1 auto;
+    min-width: 0;
+  }
+
+  .start-title-row {
+    position: relative;
+    text-align: center;
+    margin-bottom: 9px;
+  }
+
+  .start-title {
+    display: inline;
+    font-weight: 700;
+    color: #111;
+    font-size: 17px;
+    line-height: 1.1;
+    margin: 0;
+  }
+
+  .address {
+    width: 100%;
+    min-width: 0;
+
+    color: #525252c5;
+    font-size: 13px;
+
+    text-align: center;
+    line-height: 1.2;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+
+    display: block;
+  }
+
+  /* 編集ボタン（タイトルの右隣に絶対配置でタイトルを真ん中に保つ） */
+  .start-point-change-btn {
+    position: absolute;
+    margin-left: 8px;
+    margin-top: -3px;
+
+    width: 30px;
+    height: 30px;
+    padding: 0;
+
+    border-radius: 50%;
+    background: #fff;
+
+    border: 1px solid transparent;
+    box-shadow: none;
+
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+
+    cursor: pointer;
+
+    transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
+
+    i {
+      font-size: 14px;
+      line-height: 1;
+      color: var(--personal);
+      transform: translateY(-0.5px);
+    }
+
+    &:hover {
+      border: 1px solid rgba(80, 109, 83, 0.28);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+    }
+
+    &:active {
+      opacity: 0.95;
+    }
+
+    &:focus-visible {
+      outline: none;
+      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      box-shadow: none;
+      border: 0;
+    }
+  }
+
+
+  /* 次の場所まで（共通mixinを使用） */
+  .start-next-move {
+    @include next-move-grid;
+  }
+
+  .start-point-detail-wrap {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+  }
+
+  .start-point-detail,
+  .start-point-detail.collapse.show {
+    width: 100%;
+  }
+
+  /* ✅ collapsingアニメーション（開閉両方） */
+  .start-point-detail.collapsing {
+    overflow: hidden;
+    transition: height 0.35s ease;
+  }
+
+  .start-point-detail__inner {
+    width: 100%;
+    border-radius: 6px;
+    background: transparent;
+    padding: 0 0 10px 0;
+    font-size: 0.9rem;
+  }
+
+  /* 有料道路設定行（共通mixinを使用） */
+  .start-toll-row {
+    @include toll-row-layout;
+  }
+
+  /* 開閉トグル（共通mixinを使用） */
+  .detail-toggle {
+    @include detail-toggle-button;
+  }
+}
+
+.block-time-panel input[data-start-departure-time-input="1"] {
+  width: 52px;          /* かなり狭くてもOK */
+  padding: 6px 6px;
+  font-size: 12px;
+  text-align: center;
+}
+
+/* ✅ 出発ブロックの時刻レール位置調整 */
+.start-point-block .block-time-panel__main {
+  margin-top: -1px;
+}
+
+/* ✅ 出発ブロックの矢印位置調整 */
+.start-point-block .block-time-panel__arrow {
+  margin-top: -4px;
+  margin-bottom: -1px;
+}
+
+/* ==========================================
+   iOS/Macライクな変更フォーム（共通mixinを使用）
+========================================== */
+.start-point-edit__inner {
+  @include point-edit-inner;
+}
+
+.start-point-edit__label {
+  @include point-edit-label;
+}
+
+.start-point-edit__input.form-control {
+  @include point-edit-input;
+}
+
+.start-point-edit__help {
+  @include point-edit-help;
+}

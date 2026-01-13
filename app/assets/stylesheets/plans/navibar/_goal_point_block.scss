@@ -3,6 +3,9 @@
      start_point_block と同じ見た目・密度に揃える
 ========================================== */
 
+@use "../../mixins/toggle_switch" as *;
+@use "../../mixins/point_edit_form" as *;
+
 /* ------------------------------------------
    ✅ 帰宅地点トグル行（出発地点の有料道路トグルと同じ見た目に統一）
 ------------------------------------------ */
@@ -15,7 +18,7 @@
     margin-top: 25px;
   }
 
-  /* ✅ 帰宅地点トグル行（ラベルとスイッチを中央寄せでまとめて表示） */
+  /* ✅ 帰宅地点トグル行（共通mixinを使用） */
   .goal-point-toggle-row {
     width: 100%;
     margin: 3rem auto;
@@ -29,82 +32,15 @@
     background: transparent;
     border: 0;
     border-radius: 0;
-  }
 
-  .goal-point-toggle-row .label {
-    font-size: calc(0.82rem + 1px);
-    font-weight: 500;
-    color: rgb(35, 35, 35);
-    white-space: nowrap;
-  }
+    .label {
+      font-size: calc(0.82rem + 1px);
+      font-weight: 500;
+      color: rgb(35, 35, 35);
+      white-space: nowrap;
+    }
 
-  .goal-point-toggle-row .toll-switch {
-    display: inline-flex;
-    align-items: center;
-    justify-content: flex-start;
-
-    height: 16px;
-    min-width: 0;
-
-    border-left: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .goal-point-toggle-row .form-check.form-switch {
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: auto !important;
-  }
-
-  .goal-point-toggle-row .form-check-input {
-    -webkit-appearance: none;
-    appearance: none;
-
-    width: 29px;
-    height: 16px;
-
-    margin: 0 !important;
-    border: 0 !important;
-    outline: none !important;
-
-    background-image: none !important;
-    background-color: #d0d5d2;
-
-    border-radius: 9999px;
-    position: relative;
-
-    transition: background-color 0.15s ease;
-    box-shadow: none !important;
-  }
-
-  .goal-point-toggle-row .form-check-input::after {
-    content: "";
-    position: absolute;
-    top: 2px;
-    left: 2px;
-
-    width: 12px;
-    height: 12px;
-    border-radius: 9999px;
-
-    background: #fff;
-    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
-
-    transition: transform 0.15s ease;
-  }
-
-  .goal-point-toggle-row .form-check-input:checked {
-    background-color: var(--personal);
-  }
-
-  .goal-point-toggle-row .form-check-input:checked::after {
-    transform: translateX(13px);
-  }
-
-  .goal-point-toggle-row .form-check-input:focus,
-  .goal-point-toggle-row .form-check-input:focus-visible {
-    outline: none !important;
-    box-shadow: none !important;
+    @include toggle-switch-base;
   }
 }
 
@@ -251,57 +187,20 @@
 }
 
 /* ==========================================
-   iOS/Macライクな変更フォーム（モーダル表示）
-   body直下に移動するため、親セレクタ外で定義
+   iOS/Macライクな変更フォーム（共通mixinを使用）
 ========================================== */
 .goal-point-edit__inner {
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  border: 0.5px solid rgba(0, 0, 0, 0.08);
-  border-radius: 14px;
-  padding: 16px;
-  box-shadow:
-    0 0 0 0.5px rgba(0, 0, 0, 0.04),
-    0 4px 16px rgba(0, 0, 0, 0.12),
-    0 12px 32px rgba(0, 0, 0, 0.08);
+  @include point-edit-inner;
 }
 
 .goal-point-edit__label {
-  display: block;
-  font-size: 13px;
-  font-weight: 600;
-  color: #1d1d1f;
-  margin-bottom: 10px;
-  letter-spacing: -0.01em;
+  @include point-edit-label;
 }
 
 .goal-point-edit__input.form-control {
-  border-radius: 10px;
-  border: 1px solid rgba(0, 0, 0, 0.1);
-  padding: 12px 14px;
-  font-size: 16px;
-  color: #1d1d1f;
-  background: rgba(255, 255, 255, 0.8);
-  transition: background-color 0.2s;
-
-  &:focus {
-    outline: none;
-    border-color: rgba(0, 0, 0, 0.1);
-    box-shadow: none;
-    background: #fff;
-  }
-
-  &::placeholder {
-    color: rgba(60, 60, 67, 0.4);
-  }
+  @include point-edit-input;
 }
 
 .goal-point-edit__help {
-  margin-top: 8px;
-  text-align: center;
-  font-size: 12px;
-  font-weight: 400;
-  color: rgba(60, 60, 67, 0.6);
-  letter-spacing: -0.01em;
+  @include point-edit-help;
 }

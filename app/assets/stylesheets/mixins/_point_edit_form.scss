@@ -1,0 +1,58 @@
+/* ==========================================
+   共通編集フォーム（iOS/Macライク）
+   - start-point-edit__*
+   - goal-point-edit__*
+   で共通利用
+========================================== */
+
+@mixin point-edit-inner {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.08);
+}
+
+@mixin point-edit-label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+@mixin point-edit-input {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 12px 14px;
+  font-size: 16px;
+  color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.8);
+  transition: background-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: none;
+    background: #fff;
+  }
+
+  &::placeholder {
+    color: rgba(60, 60, 67, 0.4);
+  }
+}
+
+@mixin point-edit-help {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(60, 60, 67, 0.6);
+  letter-spacing: -0.01em;
+}

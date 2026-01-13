@@ -3,6 +3,11 @@
      スポットブロック
 ========================================== */
 
+@use "../../mixins/toggle_switch" as *;
+@use "../../mixins/next_move" as *;
+@use "../../mixins/detail_toggle" as *;
+@use "../../ui/genre_chip" as *;
+
 /* ================================================================
    ✅ 重要：ラッパー(.spot-block)に padding を持たせない
    - flex内の block-main-content が「左の余白に圧迫される」原因を潰す
@@ -177,29 +182,17 @@
 }
 
 /* ------------------------------------------
-   ジャンル
+   ジャンル（共通mixinを使用）
 ------------------------------------------ */
 
 .spot-block .spot-genres {
-  margin-top: 0;
-  display: flex;
-  flex-wrap: wrap;
+  @include genre-list;
   justify-content: center;
-  gap: 6px;
+  margin-top: 0;
 }
 
 .spot-block .genre-chip {
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  padding: 2px 8px;
-  border-radius: 12px;
-
-  font-size: 0.7rem;
-  border: none;
-  background: #f0f0f0;
-  color: #555;
+  @include genre-chip-sm;
 }
 
 /* ------------------------------------------
@@ -469,158 +462,18 @@
    有料道路設定行（トグル内に配置、出発地点と同じ見た目）
 ------------------------------------------ */
 
-/* ✅ 有料道路設定行（出発地点の start-toll-row と同じ構造） */
+/* ✅ 有料道路設定行（共通mixinを使用） */
 .spot-block .spot-toll-row {
-  /* ✅ ナビバー幅に応じて動的に縮小（.spot-next-move と同じ計算式） */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
-  max-width: 265px;
-  margin: 0 auto;
-  padding: 0 10px 10px 10px;
-  box-sizing: border-box;
-
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-
-  background: transparent;
-  border: 0;
-  border-radius: 0;
+  @include toll-row-layout;
+  padding-bottom: 10px;
 }
-
-.spot-block .spot-toll-row .label {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: rgb(35, 35, 35);
-  white-space: nowrap;
-}
-
-.spot-block .spot-toll-row .toll-switch {
-  display: inline-flex;
-  align-items: center;
-  justify-content: flex-start;
-
-  height: 16px;
-  min-width: 0;
-
-  border-left: 0 !important;
-  box-shadow: none !important;
-}
-
-.spot-block .spot-toll-row .form-check.form-switch {
-  margin: 0 !important;
-  padding: 0 !important;
-  min-height: auto !important;
-}
-
-.spot-block .spot-toll-row .form-check-input {
-  -webkit-appearance: none;
-  appearance: none;
-
-  width: 29px;
-  height: 16px;
-
-  margin: 0 !important;
-  border: 0 !important;
-  outline: none !important;
-
-  background-image: none !important;
-  background-color: #d0d5d2;
-
-  border-radius: 9999px;
-  position: relative;
-
-  transition: background-color 0.15s ease;
-  box-shadow: none !important;
-}
-
-.spot-block .spot-toll-row .form-check-input::after {
-  content: "";
-  position: absolute;
-  top: 2px;
-  left: 2px;
-
-  width: 12px;
-  height: 12px;
-  border-radius: 9999px;
-
-  background: #fff;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
-
-  transition: transform 0.15s ease;
-}
-
-.spot-block .spot-toll-row .form-check-input:checked {
-  background-color: var(--personal);
-}
-
-.spot-block .spot-toll-row .form-check-input:checked::after {
-  transform: translateX(13px);
-}
-
-.spot-block .spot-toll-row .form-check-input:focus,
-.spot-block .spot-toll-row .form-check-input:focus-visible {
-  outline: none !important;
-  box-shadow: none !important;
-}
-
-/* ✅ .price は料金取得ロジック実装後に復活予定 */
 
 /* ------------------------------------------
-   次の場所まで
+   次の場所まで（共通mixinを使用）
 ------------------------------------------ */
 
 .spot-block .spot-next-move {
-  background: transparent;
-  border: 0;
-  border-radius: 0;
-
-  /* ✅ ナビバー幅に応じて動的に縮小（300px時: 225px, 340px時: 265px） */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
-  max-width: 265px;
-  font-size: 0.8rem;
-
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  /* ✅ ナビバー幅に応じてgapを動的に調整（300px時: 4px, 340px以上: 10px固定） */
-  gap: min(10px, calc(4px + (var(--navibar-width, 340px) - 300px) * 0.15));
-
-  margin: 20px auto 8px;
-  padding: 0 10px;
-  box-sizing: border-box;
-  white-space: nowrap;
-}
-
-.spot-block .spot-next-move .label {
-  font-size: 0.82rem;
-  font-weight: 500;
-  color: rgb(35, 35, 35);
-}
-
-.spot-block .spot-next-move .km,
-.spot-block .spot-next-move .time {
-  font-weight: 400;
-  font-size: calc(1em + 2px);
-  color: #2d2d2d;
-
-  /* ✅ ナビバー幅に応じて動的に調整（300px時: 6px, 340px以上: 12px固定） */
-  padding-left: min(12px, calc(6px + (var(--navibar-width, 340px) - 300px) * 0.15));
-  border-left: 1px solid rgba(0, 0, 0, 0.10);
-}
-
-.spot-block .spot-next-move .time-unit {
-  font-size: 13px;
-  margin-left: 2px;
-  margin-right: 2px;
-
-  &:last-child {
-    margin-right: 0;
-  }
-}
-
-.spot-block .spot-next-move .km-unit {
-  font-size: 13px;
-  margin-left: 2px;
+  @include next-move-grid;
 }
 
 /* ------------------------------------------
@@ -746,47 +599,11 @@
 
 
 /* ------------------------------------------
-   下部：開閉トグル
+   下部：開閉トグル（共通mixinを使用）
 ------------------------------------------ */
 
 .spot-block .detail-toggle {
-  width: 40px;
-  height: 40px;
-  margin-top: 36px;
-
-  border-radius: 6px;
-  border: 1px solid #cccccc;
-  background: #fff;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-
-  transition: transform 0.12s, box-shadow 0.12s, border-color 0.12s, background-color 0.12s;
-}
-
-.spot-block .detail-toggle i {
-  color: var(--personal);
-  transform: none !important;
-}
-
-.spot-block .detail-toggle:hover {
-  transform: translateY(-1px);
-  box-shadow: 0 4px 10px rgba(0, 0, 0, 0.12);
-  border-color: rgba(80, 109, 83, 0.25);
-  background: rgba(80, 109, 83, 0.04);
-}
-
-.spot-block .detail-toggle:active {
-  transform: translateY(0);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.10);
-}
-
-.spot-block .detail-toggle:focus-visible {
-  outline: none;
-  box-shadow: none;
+  @include detail-toggle-button;
 }
 
 /* ------------------------------------------
