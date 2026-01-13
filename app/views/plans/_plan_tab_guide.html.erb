@@ -4,36 +4,56 @@
 ================================================================ %>
 
 <div class="plan-tab-guide">
-  <p class="plan-tab-guide__title">スポットを追加してプランを作成しましょう</p>
-
-  <div class="plan-tab-guide__steps">
-    <div class="plan-tab-guide__step">
-      <span class="plan-tab-guide__number">1</span>
-      <div class="plan-tab-guide__text">
-        <strong>スポットを追加</strong>
-        <span>地図で検索、またはAI提案・みんなの旅から選択</span>
-      </div>
+  <%# ヒーローセクション: 地図からタップ %>
+  <div class="plan-tab-guide__hero">
+    <div class="plan-tab-guide__hero-icon">
+      <i class="bi bi-geo-alt-fill"></i>
     </div>
-
-    <div class="plan-tab-guide__step">
-      <span class="plan-tab-guide__number">2</span>
-      <div class="plan-tab-guide__text">
-        <strong>順番を調整</strong>
-        <span>スポットをドラッグして並び替え</span>
-      </div>
-    </div>
-
-    <div class="plan-tab-guide__step">
-      <span class="plan-tab-guide__number">3</span>
-      <div class="plan-tab-guide__text">
-        <strong>時間を設定</strong>
-        <span>右上の<i class="bi bi-clock"></i>から出発時間を設定</span>
-      </div>
+    <p class="plan-tab-guide__hero-text">
+      <strong>地図</strong>上の行きたい場所を<br>タップしてスポットを追加
+    </p>
+    <div class="plan-tab-guide__hero-arrow">
+      <i class="bi bi-chevron-down"></i>
     </div>
   </div>
 
-  <div class="plan-tab-guide__privacy">
-    <i class="bi bi-shield-check"></i>
-    <p>出発場所・帰宅場所・メモは<br>他のユーザーには公開されません</p>
+  <%# 区切り %>
+  <div class="plan-tab-guide__divider">
+    <span>または</span>
+  </div>
+
+  <%# 代替オプション: みんなの旅・検索・AI提案 %>
+  <div class="plan-tab-guide__options">
+    <div class="plan-tab-guide__option">
+      <i class="bi bi-people-fill"></i>
+      <span>みんなの旅</span>
+    </div>
+    <div class="plan-tab-guide__option">
+      <i class="bi bi-search"></i>
+      <span>検索</span>
+    </div>
+    <div class="plan-tab-guide__option">
+      <i class="bi bi-stars"></i>
+      <span>AI提案</span>
+    </div>
+  </div>
+
+  <%# ヒント: 追加後の操作 %>
+  <div class="plan-tab-guide__tips">
+    <p class="plan-tab-guide__tips-title">スポット追加後は...</p>
+    <div class="plan-tab-guide__tips-list">
+      <div class="plan-tab-guide__tip">
+        <i class="bi bi-clock"></i>
+        <span>時計アイコンで時間設定</span>
+      </div>
+      <div class="plan-tab-guide__tip">
+        <i class="bi bi-arrow-left-right"></i>
+        <span>バー端をドラッグで幅調整</span>
+      </div>
+      <div class="plan-tab-guide__tip">
+        <i class="bi bi-list-ol"></i>
+        <span>ドラッグでスポットを並び替え</span>
+      </div>
+    </div>
   </div>
 </div>
