@@ -18,24 +18,13 @@
   data-place-id="<%= spot.place_id %>"
 >
   <div class="block-main-content">
+    <%# ✅ 3層構造: アイコン | スポット名 | ピンボタン %>
     <div class="spot-main">
       <div class="spot-order-icon" aria-hidden="true"><%= plan_spot.position %></div>
 
       <div class="spot-body">
         <% if spot.name.present? %>
           <div class="spot-name"><%= spot.name %></div>
-        <% end %>
-
-        <% if spot.address.present? %>
-          <div class="spot-address"><%= spot.address %></div>
-        <% end %>
-
-        <% if spot.genres.any? %>
-          <div class="spot-genres">
-            <% spot.genres.each do |genre| %>
-              <span class="genre-chip"><%= genre.name %></span>
-            <% end %>
-          </div>
         <% end %>
       </div>
 
@@ -46,6 +35,21 @@
               aria-label="地図で表示">
         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
       </button>
+    </div>
+
+    <%# ✅ ジャンル・住所（3層構造の下に配置、左右padding 10px） %>
+    <div class="spot-meta">
+      <% if spot.genres.any? %>
+        <div class="spot-genres">
+          <% spot.genres.each do |genre| %>
+            <span class="genre-chip"><%= genre.name %></span>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if spot.address.present? %>
+        <div class="spot-address"><%= spot.address %></div>
+      <% end %>
     </div>
 
     <%# ✅ 次の場所まで（3カラム構造の外に配置） %>

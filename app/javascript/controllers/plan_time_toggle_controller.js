@@ -111,17 +111,11 @@ export default class extends Controller {
     const scroll = this.findPlanbarScroll()
     if (!scroll) return
 
-    // ✅ close の時は「必ず解除」して CSS に戻す
-    if (!isOpen) {
-      scroll.style.width = ""
-      return
-    }
+    // ✅ 時刻レールはナビバー内に内包されるため、幅の上書きは不要
+    // ただし、CSSに任せるためにインラインスタイルをリセット
+    scroll.style.width = ""
 
-    // ✅ open の時だけ rail分の幅を確実に確保
-    scroll.style.width = "calc(var(--navibar-width) + var(--rail-width))"
-
-    // ついでに再描画直後のレイアウト確定を促す（スクロール不能対策の保険）
-    // ※副作用が少ない read
+    // 再描画直後のレイアウト確定を促す（スクロール不能対策の保険）
     void scroll.offsetHeight
   }
 

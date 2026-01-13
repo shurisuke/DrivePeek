@@ -79,23 +79,21 @@
           data-action="keydown->start-point-editor#search compositionstart->start-point-editor#compositionStart compositionend->start-point-editor#compositionEnd"
         >
 
-        <div class="start-point-edit__help">Enterで検索 → 更新</div>
-
-        <button
-          type="button"
-          class="point-edit__cancel-btn"
-          data-action="click->start-point-editor#toggle"
-        >
-          キャンセル
-        </button>
+        <div class="point-edit__actions">
+          <button type="button" class="point-edit__cancel-btn">
+            キャンセル
+          </button>
+          <button type="button" class="point-edit__search-btn">
+            検索
+          </button>
+        </div>
       </div>
     </div>
 
     <%# ✅ スポットが1件以上の場合のみ「次の場所まで」を表示 %>
     <% if plan.plan_spots.exists? %>
-      <div class="distance-info">
+      <div class="start-next-move" data-plan-time-role="start-next-move">
         <span class="label">次の場所まで</span>
-
         <span class="km">
           <% if start_point&.move_distance.present? %>
             <%= format_distance(start_point.move_distance) %><span class="km-unit">km</span>
@@ -103,7 +101,6 @@
             —<span class="km-unit">km</span>
           <% end %>
         </span>
-
         <span class="time">
           <% if start_point&.move_time.present? %>
             <% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span>
@@ -116,8 +113,9 @@
 
     <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「有料道路」トグルを表示 %>
     <% if plan.start_point.present? && plan.plan_spots.exists? %>
+      <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
       <div class="start-point-detail-wrap">
-        <div class="collapse start-point-detail" id="startPointDetail-<%= plan.id %>">
+        <div class="collapse start-point-detail<%= ' show' if start_detail_open %>" id="startPointDetail-<%= plan.id %>">
           <div class="start-point-detail__inner">
             <div class="start-toll-row">
               <span class="label">有料道路</span>
@@ -147,7 +145,7 @@
           class="detail-toggle"
           data-bs-toggle="collapse"
           data-bs-target="#startPointDetail-<%= plan.id %>"
-          aria-expanded="false"
+          aria-expanded="<%= start_detail_open ? 'true' : 'false' %>"
           aria-controls="startPointDetail-<%= plan.id %>"
         >
           <i class="bi bi-caret-down-fill"></i>
@@ -160,9 +158,10 @@
   <div class="block-time-panel">
     <div class="block-time-panel__main">
       <div
-        class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %>"
+        class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %><%= ' start-departure-time--no-spots' unless plan.plan_spots.exists? %>"
         data-controller="start-departure-time"
         data-start-departure-time-plan-id-value="<%= plan.id %>"
+        data-start-departure-time-current-value="<%= departure_time_value %>"
       >
         <button
           type="button"
@@ -171,19 +170,17 @@
           aria-label="ヘルプ"
         >?</button>
 
-        <div class="start-departure-time__label">
-          <%= departure_time_value.present? ? "出発" : "出発時間" %>
-        </div>
-
-        <input
-          type="text"
-          class="start-departure-time__input"
-          placeholder="--:--"
-          inputmode="numeric"
-          autocomplete="off"
-          value="<%= departure_time_value %>"
-          data-start-departure-time-target="input"
+        <button
+          type="button"
+          class="start-departure-time__main"
+          data-action="click->start-departure-time#openPicker"
+          data-start-departure-time-target="trigger"
         >
+          <span class="time-display__label">出発</span>
+          <span class="time-display__value">
+            <%= departure_time_value.presence || "09:00" %>
+          </span>
+        </button>
       </div>
     </div>
 

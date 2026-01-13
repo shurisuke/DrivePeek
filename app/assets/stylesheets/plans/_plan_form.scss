@@ -6,21 +6,46 @@
 ========================================== */
 
 body.no-footer {
-  /* ハンバーガーメニューの位置・サイズ調整 */
+  /* ハンバーガーメニューの位置・サイズ調整（scaleを使わず直接サイズ指定でぼやけ防止） */
   .hamburger {
     top: 10px;
     right: 24px;
-    transform: scale(0.95);
-    transform-origin: top right;
-    border: 1px solid #9a9a9a;
+    width: 45px !important;
+    height: 40px !important;
+    padding: 4px !important;
+    border: 1px solid #9a9a9a !important; /* 検索フォームと同じ色 */
     border-radius: 6px;
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important; /* 検索フォームと同じ影 */
+
+    /* 三本線を小さく */
+    .hamburger__top,
+    .hamburger__middle,
+    .hamburger__bottom {
+      width: 20px !important;
+      height: 2px !important;
+    }
+
+    .hamburger__middle {
+      margin: 5px 0 !important;
+    }
+
+    /* 展開後も検索フォームと同じ枠線・影を維持 */
+    &.js-menu-open {
+      border: 1px solid #9a9a9a !important;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
+
+      /* バツを中央で交差させる */
+      .hamburger__middle {
+        margin: -2px 0 !important;
+      }
+    }
   }
 
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
-    --navibar-width: 350px;
+    --navibar-width: 340px;
     --navibar-slide: 0px;
-    --rail-width: 70px;
+    --rail-width: 60px; /* JSで動的に更新 */
     --map-gap: 0px;
 
     position: relative;
@@ -44,11 +69,10 @@ body.no-footer {
     .navibar {
       position: fixed;
       top: 0;
-      left: 0;
+      left: calc(-1 * var(--navibar-slide)); /* ✅ transformではなくleftでスライド（fixed子要素のため） */
 
       width: var(--navibar-width);
       height: 100%;
-      transform: translateX(calc(-1 * var(--navibar-slide)));
 
       background: rgba(255, 255, 255, 0.95);
       backdrop-filter: blur(10px);
@@ -57,7 +81,8 @@ body.no-footer {
 
       display: flex;
       flex-direction: column;
-      overflow: visible;
+      overflow-x: hidden; /* ✅ 横スクロールを防止 */
+      overflow-y: visible;
 
       .plan-tab-nav {
         display: flex;
@@ -115,6 +140,7 @@ body.no-footer {
         left: 0;
 
         overflow-y: auto;
+        overflow-x: hidden; /* ✅ 横スクロールを防止 */
         width: 100%; /* ✅ 350固定をやめる（親=navibarの幅に追従） */
         height: 100%;
 
@@ -323,64 +349,20 @@ body.no-footer.goal-point-visible {
   }
 }
 
-/* ✅ ON時: スクロールコンテナを navibar + rail に拡張 */
-body.no-footer.plan-time-open .plan-form .navibar .navibar__content-scroll {
-  width: calc(var(--navibar-width) + var(--rail-width));
-}
-
-/* ✅ ON時: 地図を時刻レール右側に配置 */
-body.no-footer.plan-time-open .plan-form .map {
-  left: calc(var(--navibar-width) + var(--rail-width) - var(--navibar-slide));
-  width: calc(100% - (var(--navibar-width) + var(--rail-width) - var(--navibar-slide) + var(--map-gap)));
-}
-
-/* ✅ ON時: フッターも navibar + rail に拡張 */
-body.no-footer.plan-time-open .plan-form .navibar .navibar__footer {
-  width: calc(var(--navibar-width) + var(--rail-width));
-}
-
-/* ✅ 時刻レール表示時: 保存ボタンをレール右側の中央に */
-body.no-footer.plan-time-open .plan-form .plan-save {
-  left: calc((var(--navibar-width) + var(--rail-width) - var(--navibar-slide)) + (100% - (var(--navibar-width) + var(--rail-width) - var(--navibar-slide))) / 2);
-}
+/* ✅ 時刻レールON時も地図・スクロール・フッターの幅はナビバー幅のまま
+   （時刻レールはナビバー内に内包される） */
 
 /* ==========================================
-   時計ボタン＋白背景ヘッダー（固定・スクロール非連動）
+   時計ボタン（プランタブ内にインライン配置）
 ========================================== */
 
-.plan-time-toggle-header {
-  position: fixed;
-  top: 0;
-  left: calc(var(--navibar-width) - var(--navibar-slide));
-  width: var(--rail-width);
-  height: 60px;
-
-  z-index: 15;
-  pointer-events: none;
-
+.plan-time-toggle-inline {
   display: flex;
-  align-items: center;
   justify-content: center;
-
-  &[hidden] {
-    display: none !important;
-  }
-
-  &::before {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: #fff;
-    border-bottom: 1px solid #ccc;
-    opacity: 0;
-    transition: opacity 0.15s ease;
-    z-index: -1;
-  }
+  align-items: center;
+  padding: 15px 15px 5px;
 }
 
-body.plan-time-open .plan-time-toggle-header::before {
-  opacity: 1;
-}
 
 /* ==========================================
    スクロール内：出発・帰宅時間サマリー
@@ -430,14 +412,14 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 
 /* ✅ 時計ボタン */
 .plan-time-fab {
-  width: 38px;
-  height: 38px;
+  width: 32px;
+  height: 32px;
   border-radius: 9999px;
 
   background: #fff;
   border: 1px solid rgba(80, 109, 83, 0.22);
 
-  /* ✅ 要望: 影を削除 */
+  /* ✅ 影を削除 */
   box-shadow: none;
 
   display: inline-flex;
@@ -445,22 +427,28 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
   justify-content: center;
 
   cursor: pointer;
-  pointer-events: auto;
-
-  /* ✅ 要望: 左に10pxずらす（ヘッダーの中央寄せは維持） */
-  transform: translateX(-10px);
+  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
 
   .plan-time-fab__icon {
-    width: 48px;
-    height: 48px;
+    width: 40px;
+    height: 40px;
     display: block;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+    border-color: rgba(80, 109, 83, 0.35);
+  }
+
+  &:active {
+    transform: translateY(0);
+    box-shadow: none;
   }
 
   &:focus,
   &:focus-visible {
     outline: none;
-
-    /* ✅ フォーカス時の影も削除（現状は box-shadow を当ててた） */
     box-shadow: none;
   }
 }
@@ -569,6 +557,13 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 
 body.plan-time-open .block-time-panel {
   display: flex;
+  margin-left: var(--time-rail-content-offset-x, -5px); /* 時刻レール全体を左にずらす（JSで動的に更新） */
+}
+
+/* ✅ 時刻レールON時：メインコンテンツ幅を縮小してレール分の空間を確保 */
+body.plan-time-open .block-main-content {
+  flex: 0 0 calc(100% - var(--rail-width));
+  width: calc(100% - var(--rail-width));
 }
 
 .block-time-panel__main {
@@ -576,31 +571,11 @@ body.plan-time-open .block-time-panel {
   display: flex;
   flex-direction: column;
   justify-content: center;
+  align-items: center;
   gap: 8px;
   padding: 0;
 }
 
-.block-time-panel__row {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-}
-
-.block-time-panel__label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: rgba(33, 33, 33, 0.55);
-  text-align: center;
-}
-
-.block-time-panel__value {
-  font-size: 0.88rem;
-  font-weight: 500;
-  color: #222;
-  text-align: center;
-  font-variant-numeric: tabular-nums;
-}
 
 .block-time-panel__toggle-area {
   flex: 0 0 auto;
@@ -620,10 +595,6 @@ body.plan-time-open .block-time-panel {
     color: rgba(80, 109, 83, 0.75);
     line-height: 1;
   }
-}
-
-body.plan-time-open .plan-form .navibar {
-  box-shadow: none !important;
 }
 
 /* ================================================================
@@ -653,38 +624,6 @@ body.plan-time-open .plan-form .navibar {
   box-sizing: border-box;
 }
 
-/* ==========================================
-   ✅ 時刻レールの「中身だけ」左に寄せる
-   - レール幅(70px)やスクロール領域は触らない
-========================================== */
-
-body.plan-time-open .plan-form {
-  --time-rail-content-offset-x: -12px;
-}
-
-/* 各ブロックの時刻レール（出発/滞在/到着の並びが出るところ） */
-body.plan-time-open .plan-form .block-time-panel__main {
-  position: relative;
-  left: var(--time-rail-content-offset-x);
-}
-
-/* もし上部の固定レール（.plan-time-panel__inner 側）も同じように寄せたいなら */
-body.plan-time-open .plan-form .plan-time-panel__inner {
-  position: relative;
-  left: var(--time-rail-content-offset-x);
-}
-
-/* 矢印ラッパーごと寄せる（まずはこれでOKなことが多い） */
-body.plan-time-open .plan-form .block-time-panel__toggle-area {
-  position: relative;
-  left: var(--time-rail-content-offset-x);
-}
-
-/* 念のため：はみ出しが見えるように（効かない時の保険） */
-body.plan-time-open .plan-form .block-time-panel,
-body.plan-time-open .plan-form .plan-time-panel__inner {
-  overflow: visible;
-}
 
 /* ==========================================
    ✅ 追加要望（出発ブロックだけ）
@@ -697,19 +636,31 @@ body.plan-time-open .plan-form .plan-time-panel__inner {
   padding: 50px 0 10px;
 }
 
-/* 2) 出発時間：右レール内の行を中央寄せ（未設定時）/ 下寄せ（設定済み時）、右寄せ */
+.spot-block .block-time-panel__toggle-area {
+  padding: 59px 0 25px;
+}
+
+/* 2) 出発時間：?ボタンを上、時刻を下（次の場所まで行と揃える） */
 .start-point-block .block-time-panel__main {
-  justify-content: center;
-  align-items: flex-end;
-  margin-right: 5px;
+  justify-content: flex-start;
+  align-items: center;
+  padding-top: 6px;
+}
 
-  &:has(.start-departure-time--set) {
-    justify-content: flex-end;
-  }
+.start-point-block .start-departure-time {
+  flex: 1;
+  justify-content: space-between;
+}
 
-  .start-departure-time__input {
-    font-size: 14px;
-  }
+.start-point-block .start-departure-time__main {
+  margin-top: auto;
+  margin-bottom: -3px;
+}
+
+/* 3) 帰宅ブロック：到着時間を7px下げる */
+.goal-point-block .block-time-panel__main .time-display {
+  position: relative;
+  top: 7px;
 }
 
 /* ==========================================
@@ -733,17 +684,6 @@ body.navibar-updating * {
   text-align: center;
 }
 
-/* ==========================================
-   ✅ 出発時間が未設定の場合、他ブロックの時刻レール内容を非表示
-   - body.plan-time-open かつ body.departure-time-unset の場合
-   - spot-block / goal-point-block の時刻表示を隠す
-========================================== */
-body.plan-time-open.departure-time-unset .spot-block .block-time-panel__main,
-body.plan-time-open.departure-time-unset .spot-block .block-time-panel__toggle-area,
-body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__main,
-body.plan-time-open.departure-time-unset .goal-point-block .block-time-panel__toggle-area {
-  visibility: hidden;
-}
 
 /* ==========================================
    ✅ プランバーリサイズ機能
@@ -808,14 +748,8 @@ body.navibar-resizing {
   }
 }
 
-/* 時刻レール表示時：リサイズハンドルをレールの右に配置 */
-body.plan-time-open .navibar-resize-handle {
-  left: calc(var(--navibar-width) + var(--rail-width) - var(--navibar-slide));
-}
-
-/* ✅ 収納時の位置はスライド量（--navibar-slide）で自動計算される
-   時刻レールON時は maxSlide = 370px, OFF時は maxSlide = 300px
-   これにより left: calc(navibar-width + rail-width - slide) = 0 となる */
+/* ✅ 時刻レールON時もリサイズハンドル位置は変わらない
+   （時刻レールはナビバー内に内包されるため） */
 
 /* ==========================================
    ✅ プランバー収納時のスタイル
@@ -829,11 +763,6 @@ body.no-footer .plan-form.navibar--collapsed {
   .navibar {
     opacity: 0;
     pointer-events: none;
-  }
-
-  /* 時計ボタンも非表示 */
-  .plan-time-toggle-header {
-    display: none !important;
   }
 
   /* リサイズハンドルは収納時のスタイル */
@@ -875,7 +804,6 @@ body.no-footer .plan-form .navibar-resize-handle {
   transition: left 0.2s ease, width 0.2s ease, background 0.2s ease;
 }
 
-body.no-footer .plan-form .plan-time-toggle-header,
 body.no-footer .plan-form .plan-time-slot {
   transition: left 0.2s ease;
 }
@@ -884,7 +812,6 @@ body.no-footer .plan-form .plan-time-slot {
 body.navibar-resizing .plan-form .navibar,
 body.navibar-resizing .plan-form .map,
 body.navibar-resizing .plan-form .navibar-resize-handle,
-body.navibar-resizing .plan-form .plan-time-toggle-header,
 body.navibar-resizing .plan-form .plan-time-slot,
 body.navibar-resizing .plan-form .plan-save {
   transition: none !important;

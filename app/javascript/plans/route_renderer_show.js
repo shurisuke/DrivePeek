@@ -36,8 +36,6 @@ export const renderRoutePolylinesForShow = () => {
     .map((block) => block.dataset.polyline)
     .filter(Boolean)
 
-  console.log("[route_renderer] renderRoutePolylinesForShow", { count: polylinesToRender.length })
-
   if (polylinesToRender.length === 0) return
 
   polylinesToRender.forEach((encoded) => {

@@ -12,7 +12,7 @@
   gap: 0.45rem;
 
   .goal-point-block {
-    margin-top: 30px;
+    margin-top: 25px;
   }
 
   /* ✅ 帰宅地点トグル行（ラベルとスイッチを中央寄せでまとめて表示） */
@@ -156,7 +156,7 @@
   .goal-title-row {
     position: relative;
     text-align: center;
-    margin-bottom: 6px;
+    margin-bottom: 9px;
   }
 
   .goal-title {
@@ -248,65 +248,60 @@
     align-self: flex-start;
   }
 
-  .goal-point-edit {
-    position: fixed;
-    z-index: 2000;
-    width: min(360px, calc(100vw - 24px));
-    transform: translateY(-100px);
-  }
+}
 
-  .goal-point-edit.is-floating {
-    position: fixed;
-    z-index: 300;
-    margin-top: 0;
-    width: min(360px, calc(100vw - 16px));
-  }
+/* ==========================================
+   iOS/Macライクな変更フォーム（モーダル表示）
+   body直下に移動するため、親セレクタ外で定義
+========================================== */
+.goal-point-edit__inner {
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  border: 0.5px solid rgba(0, 0, 0, 0.08);
+  border-radius: 14px;
+  padding: 16px;
+  box-shadow:
+    0 0 0 0.5px rgba(0, 0, 0, 0.04),
+    0 4px 16px rgba(0, 0, 0, 0.12),
+    0 12px 32px rgba(0, 0, 0, 0.08);
+}
 
-  .goal-point-edit__inner {
+.goal-point-edit__label {
+  display: block;
+  font-size: 13px;
+  font-weight: 600;
+  color: #1d1d1f;
+  margin-bottom: 10px;
+  letter-spacing: -0.01em;
+}
+
+.goal-point-edit__input.form-control {
+  border-radius: 10px;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 12px 14px;
+  font-size: 16px;
+  color: #1d1d1f;
+  background: rgba(255, 255, 255, 0.8);
+  transition: background-color 0.2s;
+
+  &:focus {
+    outline: none;
+    border-color: rgba(0, 0, 0, 0.1);
+    box-shadow: none;
     background: #fff;
-    border: 1px solid rgba(80, 109, 83, 0.18);
-    border-radius: 10px;
-
-    padding: 0.75rem 0.75rem 0.6rem;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.14);
   }
 
-  .goal-point-edit.is-floating .goal-point-edit__inner {
-    background: #ffffff9c;
-    box-shadow: 0 10px 24px rgba(0, 0, 0, 0.18);
+  &::placeholder {
+    color: rgba(60, 60, 67, 0.4);
   }
+}
 
-  .goal-point-edit__label {
-    display: block;
-    font-size: 0.85rem;
-    font-weight: 600;
-    color: rgba(80, 109, 83, 0.9);
-    margin-bottom: 0.5rem;
-  }
-
-  .goal-point-edit__input.form-control {
-    border-radius: 10px;
-    border: 1px solid rgba(80, 109, 83, 0.25);
-
-    padding: 0.6rem 0.7rem;
-    font-size: 0.95rem;
-    color: #333;
-    background: #fff;
-
-    &:focus {
-      border-color: rgba(80, 109, 83, 0.45);
-      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.18);
-    }
-
-    &::placeholder {
-      color: rgba(86, 125, 90, 0.55);
-    }
-  }
-
-  .goal-point-edit__help {
-    margin-top: 0.45rem;
-    text-align: center;
-    font-size: 0.75rem;
-    color: rgba(80, 109, 83, 0.65);
-  }
+.goal-point-edit__help {
+  margin-top: 8px;
+  text-align: center;
+  font-size: 12px;
+  font-weight: 400;
+  color: rgba(60, 60, 67, 0.6);
+  letter-spacing: -0.01em;
 }

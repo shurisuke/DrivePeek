@@ -66,8 +66,6 @@ export const setupPoiClickForEdit = () => {
       }
     )
   })
-
-  console.log("[poi_click] setupPoiClickForEdit completed")
 }
 
 /**
@@ -114,6 +112,4 @@ export const setupPoiClickForView = () => {
       }
     )
   })
-
-  console.log("[poi_click] setupPoiClickForView completed")
 }

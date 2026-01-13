@@ -4,6 +4,22 @@
     メモ: spot-block の並び替え（SortableJS）の親コンテナを提供する
 ================================================================ %>
 
+<%# ✅ 時刻レール切り替えボタン（プランタブ内に配置） %>
+<div class="plan-time-toggle-inline"
+     data-controller="plan-time-toggle"
+     data-plan-time-toggle-navibar-selector-value=".navibar">
+  <button type="button"
+          class="plan-time-fab"
+          aria-label="時間表示のオン/オフ"
+          aria-pressed="false"
+          data-action="click->plan-time-toggle#toggle">
+    <%= image_tag "clock.png",
+                  class: "plan-time-fab__icon",
+                  alt: "",
+                  aria: { hidden: true } %>
+  </button>
+</div>
+
 <%= render "plans/start_point_block_edit" %>
 
 <%# スポット未追加時のみ案内を表示 %>

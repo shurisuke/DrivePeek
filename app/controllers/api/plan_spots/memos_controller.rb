@@ -11,10 +11,13 @@ module Api
 
         memo = @plan_spot.memo.to_s
 
+        memo_icon = '<i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>'
+        memo_text = view_context.simple_format(ERB::Util.h(memo))
+
         render json: {
           plan_spot_id: @plan_spot.id,
           memo: memo,
-          memo_html: view_context.simple_format(ERB::Util.h(memo)),
+          memo_html: memo.present? ? "#{memo_icon}#{memo_text}" : "",
           memo_present: memo.present?
         }, status: :ok
       rescue ActiveRecord::RecordInvalid => e

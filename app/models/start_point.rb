@@ -7,8 +7,12 @@ class StartPoint < ApplicationRecord
   # 経路計算に影響する属性
   ROUTE_AFFECTING_ATTRIBUTES = %w[lat lng address toll_used].freeze
 
+  # デフォルト出発時間（09:00）
+  DEFAULT_DEPARTURE_TIME = Time.zone.local(2000, 1, 1, 9, 0)
+
   def self.build_from_location(plan:, lat:, lng:)
     attrs = ReverseGeocoder.lookup_address(lat: lat, lng: lng)
+    attrs[:departure_time] = DEFAULT_DEPARTURE_TIME
     plan.build_start_point(attrs)
   end
 

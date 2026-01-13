@@ -41,22 +41,6 @@
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
-  <!-- ✅ 時計ボタン＋白背景（固定・スクロールに巻き込まれない） -->
-  <div class="plan-time-toggle-header"
-       data-controller="plan-time-toggle"
-       data-plan-time-toggle-navibar-selector-value=".navibar">
-    <button type="button"
-            class="plan-time-fab"
-            aria-label="時間表示のオン/オフ"
-            aria-pressed="false"
-            data-action="click->plan-time-toggle#toggle">
-      <%= image_tag "clock.png",
-                    class: "plan-time-fab__icon",
-                    alt: "",
-                    aria: { hidden: true } %>
-    </button>
-  </div>
-
   <!-- プラン保存ボタン＋モーダル（コントローラは外側のラッパーに） -->
   <div data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
     <div class="plan-save">

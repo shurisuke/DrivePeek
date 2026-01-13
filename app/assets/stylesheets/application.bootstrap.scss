@@ -31,6 +31,7 @@
 @use "plans/plan_detail";
 @use "plans/plan_entry";
 @use "spots/spot_detail";
+@use "plans/components/time_display";
 @use "plans/components/start_point_block";
 @use "plans/components/spot_block";
 @use "plans/components/goal_point_block";
