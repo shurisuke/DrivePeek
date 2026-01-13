@@ -14,8 +14,8 @@
 @use "base/utilities";
 
 @use "ui/buttons";
-
-@use "components/favorite_button";
+@use "ui/multi_select";
+@use "ui/search_filters";
 
 @use "shared/alerts";
 @use "shared/logo";
@@ -26,22 +26,30 @@
 @use "pages/top_user";
 @use "pages/mypage";
 @use "pages/legal";
+@use "pages/list_page";
 
-@use "plans/plan_form.scss";
+@use "map/map_search_box";
+@use "map/map_button";
+@use "map/infowindow";
+
+@use "ai/ai_suggestion_chat";
+
+@use "plans/plan_form";
 @use "plans/plan_detail";
 @use "plans/plan_entry";
+
+@use "plans/navibar/navibar";
+@use "plans/navibar/start_point_block";
+@use "plans/navibar/spot_block";
+@use "plans/navibar/goal_point_block";
+@use "plans/navibar/point_edit_modal";
+@use "plans/navibar/time_display";
+@use "plans/navibar/start_departure_time";
+@use "plans/navibar/plan_tab_guide";
+
+@use "plans/cards/plan_card";
+@use "plans/cards/plan_summary";
+@use "plans/cards/community_preview";
+
 @use "spots/spot_detail";
-@use "plans/components/time_display";
-@use "plans/components/start_point_block";
-@use "plans/components/spot_block";
-@use "plans/components/goal_point_block";
-@use "plans/components/navibar";
-@use "plans/components/map_search_box";
-@use "plans/components/infowindow";
-@use "plans/components/_start_departure_time";
-@use "plans/components/ai_suggestion_chat";
-@use "plans/components/plan_card";
-@use "plans/components/plan_tab_guide";
-@use "plans/components/plan_summary";
-@use "plans/components/map_button";
-@use "plans/components/community_preview";
+@use "spots/spot_card";

@@ -1,0 +1,141 @@
+/* ==========================================
+   Spot Card - iOS/macOS Style
+   スポット検索結果用カード
+========================================== */
+
+@use "../ui/genre_chip" as *;
+
+.spot-card {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  background-color: #fff;
+  border: none;
+  border-radius: 16px;
+  padding: 18px;
+  box-shadow:
+    0 1px 3px rgba(0, 0, 0, 0.04),
+    0 4px 12px rgba(0, 0, 0, 0.06);
+}
+
+.spot-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 12px;
+  min-width: 0;
+}
+
+.spot-card__name {
+  flex: 1;
+  min-width: 0;
+  margin: 0 0 8px 0;
+  font-size: 18px;
+  font-weight: 500;
+  line-height: 1.45;
+  color: #1a1a1a;
+  letter-spacing: -0.2px;
+
+  /* 長い名前は1行省略 */
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.spot-card__actions {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  flex-shrink: 0;
+  margin-right: -6px;
+}
+
+
+.spot-card__location {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 13px;
+  color: #666;
+  margin-top: 6px;
+  margin-bottom: 10px;
+
+  i {
+    color: #999;
+    font-size: 14px;
+  }
+}
+
+.spot-card__genres {
+  @include genre-list;
+  margin-top: 4px;
+  margin-bottom: 4px;
+  flex-grow: 1;
+  align-content: flex-start;
+}
+
+.spot-card__genre {
+  @include genre-chip-md;
+}
+
+.spot-card__footer {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  margin-top: auto;
+  padding-top: 14px;
+  border-top: 1px solid #f0f0f0;
+}
+
+.spot-card__plans-count {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  font-size: 13px;
+  color: #888;
+
+  i {
+    font-size: 14px;
+    color: #999;
+  }
+
+  span {
+    font-weight: 600;
+    color: #555;
+  }
+}
+
+.spot-card__map-link {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 8px;
+  font-size: 13px;
+  font-weight: 500;
+  color: var(--personal, #506d53);
+  text-decoration: none;
+  border: none;
+  background: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    color: #3d5340;
+    background: rgba(80, 109, 83, 0.08);
+  }
+
+  &--preview {
+    color: #3073F0;
+
+    &:hover {
+      color: #2561d9;
+      background: rgba(48, 115, 240, 0.08);
+    }
+  }
+
+  i {
+    font-size: 12px;
+  }
+}

@@ -5,6 +5,8 @@
    - 編集機能を除去したシンプルなレイアウト
 ========================================== */
 
+@use "../ui/genre_chip" as *;
+
 body.no-footer .plan-detail {
   --navibar-width: 350px;
   --navibar-slide: 0px;
@@ -291,18 +293,12 @@ body.no-footer .plan-detail {
     }
 
     .spot-genres {
-      display: flex;
-      flex-wrap: wrap;
-      gap: 6px;
+      @include genre-list;
       margin-bottom: 8px;
     }
 
     .genre-chip {
-      font-size: 0.7rem;
-      background: #f0f0f0;
-      color: #555;
-      padding: 2px 8px;
-      border-radius: 12px;
+      @include genre-chip-sm;
     }
 
     .spot-memo {

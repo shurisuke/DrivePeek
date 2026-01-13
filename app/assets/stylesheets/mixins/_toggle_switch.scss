@@ -1,0 +1,106 @@
+/* ==========================================
+   共通トグルスイッチ（iOS風）
+   - spot-toll-row
+   - start-toll-row
+   - goal-point-toggle-row
+   で共通利用
+========================================== */
+
+/* ✅ トグルスイッチ共通スタイル */
+@mixin toggle-switch-base {
+  .toll-switch {
+    display: inline-flex;
+    align-items: center;
+    justify-content: flex-start;
+
+    height: 16px;
+    min-width: 0;
+
+    border-left: 0 !important;
+    box-shadow: none !important;
+  }
+
+  .form-check.form-switch {
+    margin: 0 !important;
+    padding: 0 !important;
+    min-height: auto !important;
+  }
+
+  .form-check-input {
+    -webkit-appearance: none;
+    appearance: none;
+
+    width: 29px;
+    height: 16px;
+
+    margin: 0 !important;
+    border: 0 !important;
+    outline: none !important;
+
+    background-image: none !important;
+    background-color: #d0d5d2;
+
+    border-radius: 9999px;
+    position: relative;
+
+    transition: background-color 0.15s ease;
+    box-shadow: none !important;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 2px;
+      left: 2px;
+
+      width: 12px;
+      height: 12px;
+      border-radius: 9999px;
+
+      background: #fff;
+      box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
+
+      transition: transform 0.15s ease;
+    }
+
+    &:checked {
+      background-color: var(--personal);
+
+      &::after {
+        transform: translateX(13px);
+      }
+    }
+
+    &:focus,
+    &:focus-visible {
+      outline: none !important;
+      box-shadow: none !important;
+    }
+  }
+}
+
+/* ✅ 有料道路トグル行の共通レイアウト */
+@mixin toll-row-layout {
+  /* ナビバー幅に応じて動的に縮小 */
+  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+  max-width: 265px;
+  margin: 0 auto;
+  padding: 0 10px;
+  box-sizing: border-box;
+
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+
+  background: transparent;
+  border: 0;
+  border-radius: 0;
+
+  .label {
+    font-size: 0.82rem;
+    font-weight: 500;
+    color: rgb(35, 35, 35);
+    white-space: nowrap;
+  }
+
+  @include toggle-switch-base;
+}

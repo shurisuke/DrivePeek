@@ -1,28 +1,28 @@
 <%# みんなのプラン一覧（plans#index） %>
 
-<div class="community-plans community-plans--index">
-  <h1 class="community-plans__page-title">みんなの旅</h1>
+<div class="list-page list-page--two-column">
+  <h1 class="list-page__title">みんなの旅</h1>
 
-  <div class="community-plans__content">
+  <div class="list-page__content">
   <%# 左サイドバー: 検索フォーム %>
-  <div class="community-plans__sidebar">
-  <div class="community-plans__search">
+  <div class="list-page__sidebar">
+  <div class="search-box">
     <%= form_with url: plans_path, method: :get, local: true do %>
       <%# 検索タイプ切り替えタブ %>
-      <div class="community-plans__search-tabs">
-        <label class="community-plans__search-tab <%= 'is-active' if @search_type != 'spot' %>">
+      <div class="search-tabs">
+        <label class="search-tabs__tab <%= 'is-active' if @search_type != 'spot' %>">
           <input type="radio" name="search_type" value="plan" <%= 'checked' if @search_type != 'spot' %>
                  onchange="this.form.requestSubmit()">
           <span>プラン</span>
         </label>
-        <label class="community-plans__search-tab <%= 'is-active' if @search_type == 'spot' %>">
+        <label class="search-tabs__tab <%= 'is-active' if @search_type == 'spot' %>">
           <input type="radio" name="search_type" value="spot" <%= 'checked' if @search_type == 'spot' %>
                  onchange="this.form.requestSubmit()">
           <span>スポット</span>
         </label>
       </div>
 
-      <div class="community-plans__filters">
+      <div class="search-filters">
         <div class="multi-select" data-controller="multi-select" data-multi-select-name="cities[]" data-multi-select-placeholder-value="エリア">
           <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
             <span data-multi-select-target="label" class="is-placeholder">エリア</span>
@@ -95,9 +95,9 @@
 
       <%= text_field_tag :q, @search_query,
                          placeholder: "フリーワード検索",
-                         class: "community-plans__search-input" %>
+                         class: "search-input" %>
 
-      <button type="submit" class="community-plans__search-button">
+      <button type="submit" class="search-button">
         <i class="bi bi-search" aria-hidden="true"></i>
         <span>検索</span>
       </button>
@@ -106,12 +106,12 @@
   </div>
 
   <%# 右メイン: カード一覧 + ページネーション %>
-  <div class="community-plans__main">
+  <div class="list-page__main">
   <% if @search_type == "spot" %>
     <%# スポット検索結果 %>
     <% if @community_spots.present? %>
       <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @community_spots.map(&:id)) %>
-      <div class="community-plans__list">
+      <div class="list-page__cards">
         <% @community_spots.each do |spot| %>
           <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
         <% end %>
@@ -119,12 +119,12 @@
 
       <%# ページネーション %>
       <% if @community_spots.total_pages > 1 %>
-        <div class="community-plans__pagination">
+        <div class="list-page__pagination">
           <%= paginate @community_spots %>
         </div>
       <% end %>
     <% else %>
-      <div class="community-plans__empty">
+      <div class="list-page__empty">
         <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
           <p>条件に一致するスポットが見つかりませんでした</p>
         <% else %>
@@ -136,7 +136,7 @@
     <%# プラン検索結果 %>
     <% if @plans.present? %>
       <% like_plans_map = LikePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
-      <div class="community-plans__list">
+      <div class="list-page__cards">
         <% @plans.each do |plan| %>
           <%
             # plan_spots を position 順で取得し、_plan_card 用のハッシュ形式に変換
@@ -165,12 +165,12 @@
 
       <%# ページネーション %>
       <% if @plans.total_pages > 1 %>
-        <div class="community-plans__pagination">
+        <div class="list-page__pagination">
           <%= paginate @plans %>
         </div>
       <% end %>
     <% else %>
-      <div class="community-plans__empty">
+      <div class="list-page__empty">
         <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
           <p>条件に一致するプランが見つかりませんでした</p>
         <% else %>

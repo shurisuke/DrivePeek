@@ -1,0 +1,46 @@
+/* ==========================================
+   共通ジャンルチップ
+   - spot_block .genre-chip
+   - plan_detail .genre-chip
+   - plan_card .plan-card__genre
+   - plan_card .spot-card__genre
+   で共通利用
+========================================== */
+
+/* ベーススタイル */
+@mixin genre-chip-base {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+
+  background: #f0f0f0;
+  border: none;
+  border-radius: 999px;
+}
+
+/* 小サイズ（spot_block, plan_detail用） */
+@mixin genre-chip-sm {
+  @include genre-chip-base;
+
+  padding: 2px 8px;
+  font-size: 0.7rem;
+  color: #555;
+}
+
+/* 中サイズ（plan_card, spot_card用） */
+@mixin genre-chip-md {
+  @include genre-chip-base;
+
+  padding: 5px 10px;
+  font-size: 11px;
+  font-weight: 400;
+  color: #666;
+  letter-spacing: 0.2px;
+}
+
+/* ジャンル一覧ラッパー共通 */
+@mixin genre-list {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}

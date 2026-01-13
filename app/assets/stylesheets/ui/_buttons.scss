@@ -4,146 +4,70 @@
 // ================================================================
 
 // ================================================================
-// ✅ ポイント編集モーダル（出発地点・帰宅地点共通）iOS/Macライク
+// ✅ お気に入りボタン（スポット・プラン共通）
 // ================================================================
 
-// ✅ モーダルが開いている時のnavibarスタイル
-body.point-edit-modal-open .navibar {
-  // backdrop-filterを無効化（モーダルのposition: fixedが正しく動作するため）
-  backdrop-filter: none !important;
-  -webkit-backdrop-filter: none !important;
-  // body背景より上に表示
-  z-index: 101 !important;
-
-  // 暗い背景オーバーレイを追加
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    z-index: 499;
-    pointer-events: none;
-  }
-}
-
-// モーダル背景オーバーレイ（bodyに配置、地図や他の要素を覆う）
-.point-edit-modal-backdrop {
-  position: fixed;
-  inset: 0;
-  background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
-  z-index: 100;
-  animation: point-edit-backdrop-fade-in 0.2s ease-out;
-}
-
-@keyframes point-edit-backdrop-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
-}
-
-// モーダル本体（固定配置で中央表示）
-.point-edit-modal,
-.point-edit-modal[hidden],
-.start-point-edit.point-edit-modal,
-.goal-point-edit.point-edit-modal {
-  display: block !important;
-  visibility: visible !important;
-  opacity: 1 !important;
-  position: fixed !important;
-  top: 50% !important;
-  left: 50% !important;
-  transform: translate(-50%, -50%) !important;
-  z-index: 500 !important;
-  width: calc(100% - 40px) !important;
-  max-width: 340px !important;
-  margin: 0 !important;
-  padding: 0 !important;
-  clip: auto !important;
-  clip-path: none !important;
-  overflow: visible !important;
-  animation: point-edit-modal-slide-up 0.25s ease-out;
-}
-
-@keyframes point-edit-modal-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
-}
-
-// ✅ ポイント編集アクションボタンコンテナ（出発地点・帰宅地点共通）
-.point-edit__actions {
-  display: flex;
-  gap: 10px;
-  margin-top: 14px;
-}
-
-// ✅ ポイント編集検索ボタン（出発地点・帰宅地点共通）iOS/Macライク
-.point-edit__search-btn {
-  flex: 1;
-  padding: 12px 16px;
-
+.fav-button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
   border: none;
-  border-radius: 10px;
-  background: var(--personal);
-
-  font-size: 15px;
-  font-weight: 500;
-  color: #fff;
-  letter-spacing: -0.01em;
-
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  border-radius: 50%;
   cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease, filter 0.15s ease;
+  transition: all 0.15s ease;
+  line-height: 1;
+
+  // デフォルトサイズ
+  width: 40px;
+  height: 40px;
+  font-size: 18px;
+  color: #b5b5b5;
 
   &:hover {
-    filter: brightness(0.92);
+    background: rgba(0, 0, 0, 0.04);
   }
 
   &:active {
-    filter: brightness(0.85);
-    transform: scale(0.98);
+    transform: scale(0.95);
   }
 
-  &:disabled {
-    opacity: 0.5;
-    cursor: not-allowed;
+  // サイズバリエーション
+  &--sm {
+    width: 32px;
+    height: 32px;
+    font-size: 16px;
+  }
+
+  &--lg {
+    width: 48px;
+    height: 48px;
+    font-size: 22px;
   }
 }
 
-// ✅ ポイント編集キャンセルボタン（出発地点・帰宅地点共通）iOS/Macライク
-.point-edit__cancel-btn {
-  flex: 1;
-  padding: 12px 16px;
-
-  border: none;
-  border-radius: 10px;
-  background: rgba(0, 0, 0, 0.06);
-
-  font-size: 15px;
-  font-weight: 500;
-  color: var(--personal);
-  letter-spacing: -0.01em;
-
-  cursor: pointer;
-  transition: background-color 0.15s ease, transform 0.1s ease;
-
+// ハートアイコン（スポット用）
+.fav-button--heart {
   &:hover {
-    background: rgba(0, 0, 0, 0.1);
+    color: #e8a0a8;
+    background: rgba(232, 160, 168, 0.08);
   }
 
-  &:active {
-    background: rgba(0, 0, 0, 0.14);
-    transform: scale(0.98);
+  &.fav-button--active {
+    color: #e8a0a8;
+  }
+}
+
+// スターアイコン（プラン用）
+.fav-button--star {
+  &:hover {
+    color: #f5c518;
+    background: rgba(245, 197, 24, 0.08);
+  }
+
+  &.fav-button--active {
+    color: #f5c518;
   }
 }
