@@ -68,7 +68,7 @@
 
 .spot-block .block-time-panel__main {
   justify-content: space-between;
-  gap: 6px;
+  gap: 7.5px;
   max-height: 240px;
 }
 
@@ -136,6 +136,31 @@
   font-weight: 700;
 
   box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+
+  /* ✅ クリック可能なスタイル */
+  cursor: pointer;
+  transition: transform 0.15s ease, box-shadow 0.15s ease;
+
+  &:hover {
+    transform: scale(1.1);
+    box-shadow: 0 3px 10px rgba(0, 0, 0, 0.18);
+  }
+
+  &:active {
+    transform: scale(1.02);
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--personal);
+    outline-offset: 2px;
+  }
+}
+
+/* ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） */
+.spot-block .spot-spacer {
+  flex-shrink: 0;
+  width: 30px;
+  margin-right: 3px;
 }
 
 /* スポット詳細画面（show）ではスポット番号を青色に */
@@ -154,11 +179,28 @@
   font-weight: 700;
   text-align: center;
   color: #222;
-  margin-bottom: 0;
+  margin-bottom: 6px;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+}
+
+/* ✅ クリック可能なスポット名（地図パン機能） */
+.spot-block .spot-name--clickable {
+  cursor: pointer;
+  transition: color 0.15s, text-decoration 0.15s;
+
+  &:hover {
+    color: var(--personal);
+    text-decoration: underline;
+  }
+
+  &:focus-visible {
+    outline: 2px solid var(--personal);
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
 }
 
 /* ------------------------------------------
@@ -375,9 +417,9 @@
 /* 丸アイコンボタン化（メモ/お気に入り/削除） */
 .spot-block .spot-detail-actions__buttons .btn,
 .spot-block .spot-detail-actions__buttons .fav-button {
-  width: 44px !important;
-  min-width: 44px !important;
-  height: 44px !important;
+  width: 42px !important;
+  min-width: 42px !important;
+  height: 42px !important;
   padding: 0 !important;
   border-radius: 9999px !important;
 
