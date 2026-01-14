@@ -140,3 +140,46 @@
     background-color: #d17a0a;
   }
 }
+
+/* ✅ 編集ボタン（出発/帰宅地点変更用） */
+.dp-infowindow__edit-btn {
+  width: 100%;
+  border: 0;
+  border-radius: 999px;
+  padding: 10px 12px;
+  cursor: pointer;
+  margin: 5px 0;
+  outline: none;
+
+  /* ✅ パーソナルカラー（緑系）/ 白文字 */
+  background-color: rgb(80, 109, 83);
+  color: #fff;
+  font-weight: 600;
+  font-size: 14px;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: rgb(65, 90, 68);
+  }
+
+  /* ✅ オレンジボタン（スポット削除用） */
+  &--orange {
+    background-color: #f7931e;
+
+    &:hover {
+      background-color: #e5850f;
+    }
+
+    &:active {
+      background-color: #d17a0a;
+    }
+  }
+
+  &:focus {
+    outline: none;
+  }
+
+  &:active {
+    background-color: rgb(55, 78, 58);
+  }
+}

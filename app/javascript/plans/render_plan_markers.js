@@ -14,6 +14,7 @@ import {
 } from "map/state"
 import { showInfoWindowForPin } from "map/infowindow"
 import { COLORS } from "map/constants"
+import { getPhotoUrl } from "map/photo_cache"
 
 // ================================================================
 // SVG番号ピン生成
@@ -67,6 +68,42 @@ const distanceMeters = (a, b) => {
 const isNear = (a, b, thresholdMeters = 30) => {
   if (!a || !b) return false
   return distanceMeters(a, b) <= thresholdMeters
+}
+
+// ✅ スポットをプランから削除
+const deleteSpotFromPlan = async (planId, planSpotId) => {
+  if (!planId || !planSpotId) return
+
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
+  if (!csrfToken) return
+
+  try {
+    const response = await fetch(`/plans/${planId}/plan_spots/${planSpotId}`, {
+      method: "DELETE",
+      headers: {
+        "X-CSRF-Token": csrfToken,
+        "Accept": "text/vnd.turbo-stream.html",
+      },
+    })
+
+    if (response.ok) {
+      // Turbo Streamレスポンスを処理
+      const html = await response.text()
+      Turbo.renderStreamMessage(html)
+
+      // イベントを発火してマーカーを再描画
+      requestAnimationFrame(() => {
+        document.dispatchEvent(
+          new CustomEvent("plan:spot-deleted", {
+            detail: { planId, planSpotId },
+          })
+        )
+        document.dispatchEvent(new CustomEvent("navibar:updated"))
+      })
+    }
+  } catch (error) {
+    console.error("スポット削除エラー:", error)
+  }
 }
 
 const buildHouseMarker = ({ map, position, title }) => {
@@ -141,6 +178,8 @@ const getSpotInfoFromDom = () => {
       lat: Number(block.dataset.lat),
       lng: Number(block.dataset.lng),
       placeId: block.dataset.placeId || null,
+      planId: block.dataset.planSpotDeletePlanIdValue || null,
+      planSpotId: block.dataset.planSpotId || null,
     })
   })
 
@@ -173,13 +212,29 @@ export const refreshGoalMarker = (planData) => {
 
   const marker = buildHouseMarker({ map, position: end, title: "帰宅地点" })
 
-  // ✅ クリックでInfoWindow表示（ボタンなし）
+  // ✅ クリックでInfoWindow表示（編集ボタン付き）
   marker.addListener("click", () => {
     const address = getGoalPointAddressFromDom()
     showInfoWindowForPin({
       marker,
       name: "帰宅",
       address,
+      editButtons: [
+        {
+          id: "goal-point-infowindow-edit-btn",
+          label: "帰宅地点を変更",
+          onClick: () => {
+            const editArea = document.querySelector(".goal-point-block [data-goal-point-editor-target='editArea']")
+            if (editArea) {
+              editArea.hidden = !editArea.hidden
+              if (!editArea.hidden) {
+                const input = editArea.querySelector("input")
+                if (input) input.focus()
+              }
+            }
+          },
+        },
+      ],
     })
   })
 
@@ -200,16 +255,34 @@ export const renderPlanMarkers = (planData, { pinColor = COLORS.MY_PLAN } = {}) 
 
   // 出発地点（DOMから位置を取得、なければplanDataを使用）
   const start = getStartPointPositionFromDom() || normalizeLatLng(planData?.start_point)
+  const end = getGoalPointPositionFromDom() || normalizeLatLng(getEndPointFromPlanData(planData))
+
   if (start) {
     const marker = buildHouseMarker({ map, position: start, title: "出発地点" })
 
-    // ✅ クリックでInfoWindow表示（ボタンなし）
+    // ✅ クリックでInfoWindow表示（出発地点の編集ボタンのみ）
     marker.addListener("click", () => {
       const address = getStartPointAddressFromDom()
       showInfoWindowForPin({
         marker,
         name: "出発",
         address,
+        editButtons: [
+          {
+            id: "start-point-infowindow-edit-btn",
+            label: "出発地点を変更",
+            onClick: () => {
+              const editArea = document.querySelector(".start-point-block [data-start-point-editor-target='editArea']")
+              if (editArea) {
+                editArea.hidden = !editArea.hidden
+                if (!editArea.hidden) {
+                  const input = editArea.querySelector("input")
+                  if (input) input.focus()
+                }
+              }
+            },
+          },
+        ],
       })
     })
 
@@ -236,32 +309,37 @@ export const renderPlanMarkers = (planData, { pinColor = COLORS.MY_PLAN } = {}) 
         },
       })
 
-      // ✅ クリックでInfoWindow表示（ボタンなし）
-      // placeIdがあればPlaces APIから写真を取得
+      // ✅ クリックでInfoWindow表示（削除ボタン付き）
       marker.addListener("click", () => {
-        if (spotInfo.placeId && google.maps.places) {
-          const service = new google.maps.places.PlacesService(map)
-          service.getDetails(
-            { placeId: spotInfo.placeId, fields: ["photos"] },
-            (place, status) => {
-              let photoUrl = null
-              if (status === google.maps.places.PlacesServiceStatus.OK && place?.photos?.[0]) {
-                photoUrl = place.photos[0].getUrl({ maxWidth: 520 })
-              }
-              showInfoWindowForPin({
-                marker,
-                name: spotInfo.name || `スポット ${spotNumber}`,
-                address: spotInfo.address,
-                photoUrl,
-              })
-            }
-          )
+        const editButtons = spotInfo.planId && spotInfo.planSpotId
+          ? [
+              {
+                id: `spot-infowindow-delete-btn-${spotInfo.planSpotId}`,
+                label: "プランから削除",
+                variant: "orange",
+                onClick: () => deleteSpotFromPlan(spotInfo.planId, spotInfo.planSpotId),
+              },
+            ]
+          : []
+
+        // placeIdがあれば写真を取得（キャッシュ優先）
+        if (spotInfo.placeId) {
+          getPhotoUrl({ placeId: spotInfo.placeId, map }).then((photoUrl) => {
+            showInfoWindowForPin({
+              marker,
+              name: spotInfo.name || `スポット ${spotNumber}`,
+              address: spotInfo.address,
+              photoUrl,
+              editButtons,
+            })
+          })
         } else {
           showInfoWindowForPin({
             marker,
             name: spotInfo.name || `スポット ${spotNumber}`,
             address: spotInfo.address,
             photoUrl: null,
+            editButtons,
           })
         }
       })

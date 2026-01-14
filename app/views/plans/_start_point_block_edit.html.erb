@@ -24,38 +24,34 @@
   <%# ✅ 左側: 既存コンテンツ（350px） %>
   <div class="block-main-content">
     <div class="start-point-main">
-      <span class="start-point-icon" aria-hidden="true"></span>
+      <span class="start-point-icon"
+            data-controller="navibar-marker-button"
+            data-point-type="start"
+            data-action="click->navibar-marker-button#point"
+            role="button"
+            tabindex="0"
+            aria-label="出発地点を地図で表示"></span>
 
       <div class="start-label">
         <div class="start-title-row">
-          <span class="start-title">出発</span>
-
-          <button
-            type="button"
-            class="start-point-change-btn"
-            data-start-point-editor-target="toggle"
-            data-action="click->start-point-editor#toggle"
-            aria-expanded="false"
-            aria-controls="start-point-edit-<%= plan.id %>"
-          >
-            <i class="bi bi-pencil-fill" aria-hidden="true"></i>
-            <span class="visually-hidden">出発地点を変更</span>
-          </button>
+          <span class="start-title start-title--clickable"
+                data-controller="navibar-marker-button"
+                data-point-type="start"
+                data-action="click->navibar-marker-button#point"
+                role="button"
+                tabindex="0">出発</span>
         </div>
-
-        <span class="address" data-start-point-editor-target="address">
-          <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
-        </span>
       </div>
 
-      <button type="button"
-              class="point-map-btn"
-              data-point-type="start"
-              data-controller="navibar-marker-button"
-              data-action="click->navibar-marker-button#point"
-              aria-label="地図で表示">
-        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-      </button>
+      <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
+      <div class="start-point-spacer" aria-hidden="true"></div>
+    </div>
+
+    <%# ✅ 住所（spot-metaと同じ構造で、start-point-mainの外に配置） %>
+    <div class="start-point-meta">
+      <span class="address" data-start-point-editor-target="address">
+        <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
+      </span>
     </div>
 
     <div
@@ -137,6 +133,7 @@
               <%# ✅ 料金表示は一旦非表示（料金取得ロジック未実装のため） %>
               <%#= start_point&.toll_used? && start_point&.move_cost.present? ? number_to_currency(start_point.move_cost, unit: "¥ ", precision: 0) : "¥ —" %>
             </div>
+
           </div>
         </div>
 

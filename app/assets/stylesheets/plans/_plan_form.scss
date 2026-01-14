@@ -45,7 +45,8 @@ body.no-footer {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --navibar-width: 340px;
     --navibar-slide: 0px;
-    --rail-width: 60px; /* JSで動的に更新 */
+    --rail-width: 60px; /* JSで動的に更新（ナビバー拡大時に縮小） */
+    --navibar-zoom: 1; /* JSで動的に更新 */
     --map-gap: 0px;
 
     position: relative;
@@ -455,6 +456,7 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 .start-point-block,
 .spot-block,
 .goal-point-block {
+  position: relative;
   display: flex;
   flex-direction: row;
   align-items: stretch;
@@ -494,13 +496,31 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 
 body.plan-time-open .block-time-panel {
   display: flex;
-  margin-left: var(--time-rail-content-offset-x, -5px); /* 時刻レール全体を左にずらす（JSで動的に更新） */
+  transform: translateX(calc(-1 * var(--rail-right-offset, 0px)));
 }
 
-/* ✅ 時刻レールON時：メインコンテンツ幅を縮小してレール分の空間を確保 */
-body.plan-time-open .block-main-content {
-  flex: 0 0 calc(100% - var(--rail-width));
-  width: calc(100% - var(--rail-width));
+/* ✅ 内部要素の左余白（常に適用） */
+.spot-main,
+.spot-meta,
+.spot-genres,
+.spot-address,
+.spot-memo,
+.spot-body-section,
+.spot-detail-wrap,
+.start-point-main,
+.start-point-detail-wrap,
+.goal-point-main,
+.goal-point-detail-wrap,
+.goal-point-toggle-row {
+  margin-left: var(--block-content-base-margin, 7px) !important;
+}
+
+/* ✅ 中央寄せ要素：transformでシフト（常に適用） */
+.spot-block .spot-next-move,
+.start-point-block .start-next-move,
+.start-point-block .start-point-meta,
+.goal-point-block .goal-point-meta {
+  transform: translateX(var(--block-content-base-margin, 7px)) !important;
 }
 
 .block-time-panel__main {
@@ -570,7 +590,7 @@ body.plan-time-open .block-main-content {
 
 /* 1) 矢印エリア */
 .start-point-block .block-time-panel__toggle-area {
-  padding: 50px 0 10px;
+  padding: 50px 0 0;
 }
 
 .spot-block .block-time-panel__toggle-area {
@@ -579,7 +599,7 @@ body.plan-time-open .block-main-content {
 
 /* 2) 出発時間：?ボタンを上、時刻を下（次の場所まで行と揃える） */
 .start-point-block .block-time-panel__main {
-  justify-content: flex-start;
+  justify-content: center;
   align-items: center;
   padding-top: 6px;
 }
@@ -587,11 +607,13 @@ body.plan-time-open .block-main-content {
 .start-point-block .start-departure-time {
   flex: 1;
   justify-content: space-between;
+  transform: translateY(0);
 }
 
 .start-point-block .start-departure-time__main {
-  margin-top: auto;
-  margin-bottom: -3px;
+  margin-top: 0;
+  margin-bottom: 0;
+  transform: translateY(6px);
 }
 
 /* 3) 帰宅ブロック：到着時間を7px下げる */
@@ -752,5 +774,14 @@ body.navibar-resizing .plan-form .navibar-resize-handle,
 body.navibar-resizing .plan-form .plan-time-slot,
 body.navibar-resizing .plan-form .plan-actions {
   transition: none !important;
+}
+
+/* ==========================================
+   ✅ プランタブのzoom（ナビバー幅に応じて拡大）
+   --navibar-zoom はJSで動的に設定
+========================================== */
+body.no-footer .plan-form .tab-content.tab-plan {
+  zoom: var(--navibar-zoom, 1);
+  transform-origin: top left;
 }
 

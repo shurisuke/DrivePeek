@@ -20,21 +20,25 @@
   <div class="block-main-content">
     <%# ✅ 3層構造: アイコン | スポット名 | ピンボタン %>
     <div class="spot-main">
-      <div class="spot-order-icon" aria-hidden="true"><%= plan_spot.position %></div>
+      <div class="spot-order-icon"
+           data-controller="navibar-marker-button"
+           data-action="click->navibar-marker-button#spot"
+           role="button"
+           tabindex="0"
+           aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
 
       <div class="spot-body">
         <% if spot.name.present? %>
-          <div class="spot-name"><%= spot.name %></div>
+          <div class="spot-name spot-name--clickable"
+               data-controller="navibar-marker-button"
+               data-action="click->navibar-marker-button#spot"
+               role="button"
+               tabindex="0"><%= spot.name %></div>
         <% end %>
       </div>
 
-      <button type="button"
-              class="spot-map-btn"
-              data-controller="navibar-marker-button"
-              data-action="click->navibar-marker-button#spot"
-              aria-label="地図で表示">
-        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
-      </button>
+      <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
+      <div class="spot-spacer" aria-hidden="true"></div>
     </div>
 
     <%# ✅ ジャンル・住所（3層構造の下に配置、左右padding 10px） %>

@@ -71,7 +71,7 @@
     padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
   }
 
-  /* 左: 家アイコン */
+  /* 左: 家アイコン（クリック可能） */
   .goal-point-icon {
     flex-shrink: 0;
     margin-top: -10px;
@@ -81,6 +81,30 @@
 
     background: url(house-icon.png) no-repeat center / contain;
     background-size: 100% 100%;
+
+    cursor: pointer;
+    transition: transform 0.15s ease, filter 0.15s ease;
+
+    &:hover {
+      transform: scale(1.08);
+      filter: brightness(1.1);
+    }
+
+    &:active {
+      transform: scale(1.02);
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--personal);
+      outline-offset: 2px;
+      border-radius: 4px;
+    }
+  }
+
+  /* ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） */
+  .goal-point-spacer {
+    flex-shrink: 0;
+    width: 40px;
   }
 
   /* 中央: ラベル */
@@ -104,6 +128,32 @@
     margin: 0;
   }
 
+  /* ✅ クリック可能な帰宅タイトル（地図パン機能） */
+  .goal-title--clickable {
+    cursor: pointer;
+    transition: color 0.15s, text-decoration 0.15s;
+
+    &:hover {
+      color: var(--personal);
+      text-decoration: underline;
+    }
+
+    &:focus-visible {
+      outline: 2px solid var(--personal);
+      outline-offset: 2px;
+      border-radius: 2px;
+    }
+  }
+
+  /* ✅ 住所ラッパー（次の場所まで行と同じ幅で中央寄せ） */
+  .goal-point-meta {
+    width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+    max-width: 265px;
+    margin: 0 auto;
+    padding: 0 10px;
+    box-sizing: border-box;
+  }
+
   .address {
     width: 100%;
     min-width: 0;
@@ -121,62 +171,9 @@
     display: block;
   }
 
-  /* 編集ボタン（タイトルの右隣に絶対配置でタイトルを真ん中に保つ） */
-  .goal-point-change-btn {
-    position: absolute;
-    margin-left: 8px;
-    margin-top: -3px;
-
-    width: 30px;
-    height: 30px;
-    padding: 0;
-
-    border-radius: 50%;
-    background: #fff;
-
-    border: 1px solid transparent;
-    box-shadow: none;
-
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-
-    cursor: pointer;
-
-    transition: border-color 0.12s, box-shadow 0.12s, opacity 0.12s;
-
-    i {
-      font-size: 14px;
-      line-height: 1;
-      color: var(--personal);
-      transform: translateY(-0.5px);
-    }
-
-    &:hover {
-      border: 1px solid rgba(80, 109, 83, 0.28);
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
-    }
-
-    &:active {
-      opacity: 0.95;
-    }
-
-    &:focus-visible {
-      outline: none;
-      box-shadow: 0 0 0 3px rgba(80, 109, 83, 0.25);
-    }
-
-    &:disabled {
-      opacity: 0.5;
-      cursor: not-allowed;
-      box-shadow: none;
-      border: 0;
-    }
-  }
-
   /*
     ✅ 到着時刻を上寄せ（ここが修正点）
-    - block-time-panel 自体の display/flex など “配置ロジック” は上書きしない
+    - block-time-panel 自体の display/flex など "配置ロジック" は上書きしない
     - 「フレックスアイテムとして上に寄せる」だけを指定する
     → 右カラムに残ったまま上寄せできる
   */
