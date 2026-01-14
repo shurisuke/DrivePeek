@@ -176,8 +176,13 @@ body.no-footer {
     .plan-save {
       position: fixed;
       bottom: calc(2rem - 15px); /* 下の余白を5px減 */
-      /* 地図の中央に配置（スライド量を考慮） */
-      left: calc((var(--navibar-width) - var(--navibar-slide)) + (100% - (var(--navibar-width) - var(--navibar-slide))) / 2);
+      /* 地図の中央に配置（スライド量・共有ボタン幅を考慮） */
+      /* 共有ボタン幅: 36px × 2 + gap 8px + 右余白 24px ≒ 104px */
+      --share-buttons-area: 104px;
+      left: calc(
+        (var(--navibar-width) - var(--navibar-slide)) +
+        (100% - (var(--navibar-width) - var(--navibar-slide)) - var(--share-buttons-area)) / 2
+      );
       transform: translateX(-50%);
       z-index: 3;
 

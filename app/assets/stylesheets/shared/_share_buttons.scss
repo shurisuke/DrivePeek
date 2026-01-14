@@ -1,0 +1,71 @@
+/* ==========================================
+   共有ボタン（X / LINE）
+========================================== */
+
+.share-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.share-buttons__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  height: 36px;
+  border-radius: 50%;
+  text-decoration: none;
+  transition: opacity 0.2s ease, transform 0.2s ease;
+
+  i {
+    font-size: 18px;
+  }
+
+  &:hover {
+    opacity: 0.8;
+    transform: scale(1.05);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+}
+
+.share-buttons__btn--x {
+  background-color: #000;
+  color: #fff;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+.share-buttons__btn--line {
+  background-color: #06c755;
+  color: #fff;
+
+  &:hover {
+    color: #fff;
+  }
+}
+
+/* プラン作成画面用 - 右下固定 */
+.plan-form .plan-share {
+  position: fixed;
+  bottom: calc(2rem - 15px); /* 保存ボタンと同じ高さ */
+  right: 24px;
+  z-index: 3;
+
+  .share-buttons__btn {
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* 詳細画面フッター用 */
+.navibar__footer {
+  .share-buttons {
+    justify-content: center;
+    margin-top: 12px;
+  }
+}

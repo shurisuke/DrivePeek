@@ -1,0 +1,32 @@
+<%# SNS共有ボタン（X / LINE） %>
+<% share_url = plan_url(plan) %>
+<%
+  # 丸数字（①〜⑳）
+  circle_numbers = %w[⓪ ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳]
+
+  # スポット名を番号付きでリスト化（①から開始）
+  spot_lines = plan.plan_spots.includes(:spot).order(:position).map.with_index(1) do |ps, i|
+    "#{circle_numbers[i] || i.to_s} #{ps.spot.name}"
+  end
+
+  # 共有テキスト: スポット一覧 → 1行空白 → URL → 2行改行
+  share_text = "#{spot_lines.join("\n")}\n\n#{share_url}\n\n"
+%>
+
+<div class="share-buttons">
+  <%= link_to "https://twitter.com/intent/tweet?text=#{ERB::Util.url_encode(share_text)}",
+      target: "_blank",
+      rel: "noopener noreferrer",
+      class: "share-buttons__btn share-buttons__btn--x",
+      title: "Xでシェア" do %>
+    <i class="bi bi-twitter-x" aria-hidden="true"></i>
+  <% end %>
+
+  <%= link_to "https://social-plugins.line.me/lineit/share?url=#{ERB::Util.url_encode(share_url)}",
+      target: "_blank",
+      rel: "noopener noreferrer",
+      class: "share-buttons__btn share-buttons__btn--line",
+      title: "LINEでシェア" do %>
+    <i class="bi bi-line" aria-hidden="true"></i>
+  <% end %>
+</div>

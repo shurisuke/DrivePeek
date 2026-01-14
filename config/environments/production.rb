@@ -4,6 +4,9 @@ Rails.application.configure do
   # ホスト制限対策
   config.hosts << "drivepeek.onrender.com"
 
+  # デフォルトURL設定（OGP等の絶対URL生成用）
+  config.action_controller.default_url_options = { host: "drivepeek.onrender.com", protocol: "https" }
+
   # Settings specified here will take precedence over those in config/application.rb.
 
   # Code is not reloaded between requests.
@@ -61,7 +64,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "example.com" }
+  config.action_mailer.default_url_options = { host: "drivepeek.onrender.com", protocol: "https" }
 
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
