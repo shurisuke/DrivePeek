@@ -52,4 +52,15 @@ module PlansHelper
     # 絶対URLを生成（OGPには絶対URLが必要）
     URI.join(request.base_url, image_path("sample.png")).to_s
   end
+
+  # SNS共有用のテキストを生成（丸数字 + スポット名）
+  def share_text_for_plan(plan)
+    return "" unless plan&.plan_spots&.any?
+
+    circle_numbers = %w[⓪ ① ② ③ ④ ⑤ ⑥ ⑦ ⑧ ⑨ ⑩ ⑪ ⑫ ⑬ ⑭ ⑮ ⑯ ⑰ ⑱ ⑲ ⑳]
+    spot_lines = plan.plan_spots.includes(:spot).order(:position).map.with_index(1) do |ps, i|
+      "#{circle_numbers[i] || i.to_s} #{ps.spot.name}"
+    end
+    "#{spot_lines.join("\n")}\n\n"
+  end
 end

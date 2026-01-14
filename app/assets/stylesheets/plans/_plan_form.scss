@@ -173,139 +173,71 @@ body.no-footer {
       display: block;
     }
 
-    .plan-save {
+    /* アクションボタン（保存・共有）- 案3: フローティングカード */
+    .plan-actions {
       position: fixed;
-      bottom: calc(2rem - 15px); /* 下の余白を5px減 */
-      /* 地図の中央に配置（スライド量・共有ボタン幅を考慮） */
-      /* 共有ボタン幅: 36px × 2 + gap 8px + 右余白 24px ≒ 104px */
-      --share-buttons-area: 104px;
+      bottom: 16px;
       left: calc(
         (var(--navibar-width) - var(--navibar-slide)) +
-        (100% - (var(--navibar-width) - var(--navibar-slide)) - var(--share-buttons-area)) / 2
+        (100% - (var(--navibar-width) - var(--navibar-slide))) / 2
       );
       transform: translateX(-50%);
       z-index: 3;
-
-      .btn-save {
-        background-color: var(--personal);
-        color: #fff;
-        font-size: calc(1.2rem - 2px);
-        padding: calc(0.8rem - 5px) calc(2rem - 15px);
-        margin: 0;
-        border-radius: 8px;
-        font-weight: 580;
-        letter-spacing: 3px;
-        border: none;
-        box-shadow: 0 4px 12px rgba(0, 0, 0, 0.2);
-        transition: all 0.2s;
-
-        &:hover {
-          background-color: color-mix(in srgb, var(--personal) 70%, black);
-        }
-
-        &:disabled {
-          opacity: 0.7;
-          cursor: not-allowed;
-        }
-      }
     }
 
-    /* ✅ プラン保存モーダル */
-    .plan-save-modal {
-      position: fixed;
-      inset: 0;
-      z-index: 1000;
+    .plan-actions__buttons {
+      display: flex;
+      background: #fff;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
+      overflow: hidden;
+    }
+
+    .btn-action {
       display: flex;
       align-items: center;
       justify-content: center;
+      font-size: 14px;
+      padding: 14px 24px;
+      margin: 0;
+      border-radius: 0;
+      font-weight: 600;
+      letter-spacing: 0.2px;
+      border: none;
+      cursor: pointer;
+      transition: all 0.15s ease;
 
-      &[hidden] {
-        display: none;
-      }
-
-      &__overlay {
-        position: absolute;
-        inset: 0;
-        background: rgba(0, 0, 0, 0.5);
-      }
-
-      &__dialog {
-        position: relative;
+      &--share {
         background: #fff;
-        padding: 1.5rem 2rem;
-        border-radius: 12px;
-        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
-        min-width: 320px;
-        max-width: 90vw;
-      }
+        color: #666;
 
-      &__message {
-        margin: 0 0 1rem;
-        font-size: 1rem;
-        font-weight: 600;
-        color: #333;
-        text-align: center;
-      }
+        &:hover {
+          background: #f8f8f8;
+          color: #333;
+        }
 
-      &__input {
-        width: 100%;
-        padding: 0.75rem 1rem;
-        font-size: 1rem;
-        border: 1px solid #ccc;
-        border-radius: 6px;
-        margin-bottom: 0.5rem;
-
-        &:focus {
-          outline: none;
-          border-color: var(--personal);
-          box-shadow: 0 0 0 2px rgba(80, 109, 83, 0.2);
+        &:active {
+          background: #f0f0f0;
         }
       }
 
-      &__error {
-        margin: 0 0 0.5rem;
-        font-size: 0.85rem;
-        color: #dc3545;
-        text-align: center;
+      &--save {
+        background: var(--personal);
+        color: #fff;
+        border-left: 1px solid rgba(0, 0, 0, 0.1);
 
-        &[hidden] {
-          display: none;
+        &:hover {
+          background: color-mix(in srgb, var(--personal) 85%, black);
+        }
+
+        &:active {
+          background: color-mix(in srgb, var(--personal) 75%, black);
         }
       }
 
-      &__actions {
-        display: flex;
-        gap: 0.75rem;
-        justify-content: center;
-        margin-top: 1rem;
-
-        .btn {
-          padding: 0.6rem 1.5rem;
-          font-size: 0.95rem;
-          font-weight: 600;
-          border-radius: 6px;
-          border: none;
-          cursor: pointer;
-          transition: all 0.2s;
-        }
-
-        .btn-cancel {
-          background: #e9ecef;
-          color: #495057;
-
-          &:hover {
-            background: #dee2e6;
-          }
-        }
-
-        .btn-primary {
-          background: var(--personal);
-          color: #fff;
-
-          &:hover {
-            background: color-mix(in srgb, var(--personal) 70%, black);
-          }
-        }
+      &:disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
       }
     }
 
@@ -818,7 +750,7 @@ body.navibar-resizing .plan-form .navibar,
 body.navibar-resizing .plan-form .map,
 body.navibar-resizing .plan-form .navibar-resize-handle,
 body.navibar-resizing .plan-form .plan-time-slot,
-body.navibar-resizing .plan-form .plan-save {
+body.navibar-resizing .plan-form .plan-actions {
   transition: none !important;
 }
 

@@ -1,0 +1,97 @@
+/* ==========================================
+   プラン保存モーダル（bodyに追加される）
+========================================== */
+
+.plan-save-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.plan-save-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.plan-save-modal__dialog {
+  position: relative;
+  background: #fff;
+  padding: 1.5rem 2rem;
+  border-radius: 12px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+  min-width: 320px;
+  max-width: 90vw;
+}
+
+.plan-save-modal__message {
+  margin: 0 0 1rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #333;
+  text-align: center;
+}
+
+.plan-save-modal__input {
+  width: 100%;
+  padding: 0.75rem 1rem;
+  font-size: 1rem;
+  border: 1px solid #ccc;
+  border-radius: 6px;
+  margin-bottom: 0.5rem;
+
+  &:focus {
+    outline: none;
+    border-color: var(--personal);
+    box-shadow: 0 0 0 2px rgba(80, 109, 83, 0.2);
+  }
+}
+
+.plan-save-modal__error {
+  margin: 0 0 0.5rem;
+  font-size: 0.85rem;
+  color: #dc3545;
+  text-align: center;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.plan-save-modal__actions {
+  display: flex;
+  gap: 0.75rem;
+  justify-content: center;
+  margin-top: 1rem;
+
+  .btn {
+    padding: 0.6rem 1.5rem;
+    font-size: 0.95rem;
+    font-weight: 600;
+    border-radius: 6px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s;
+  }
+
+  .btn-cancel {
+    background: #e9ecef;
+    color: #495057;
+
+    &:hover {
+      background: #dee2e6;
+    }
+  }
+
+  .btn-primary {
+    background: var(--personal);
+    color: #fff;
+
+    &:hover {
+      background: color-mix(in srgb, var(--personal) 70%, black);
+    }
+  }
+}

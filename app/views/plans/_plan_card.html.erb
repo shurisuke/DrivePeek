@@ -33,6 +33,18 @@
           <% end %>
         </div>
       <% end %>
+      <%# 共有ボタン（スポットがある場合のみ） %>
+      <% if _plan&.plan_spots&.any? %>
+        <button type="button"
+                class="plan-card__action plan-card__action--share"
+                aria-label="シェア"
+                data-controller="share-modal"
+                data-share-modal-url-value="<%= plan_url(_plan) %>"
+                data-share-modal-text-value="<%= share_text_for_plan(_plan) %>"
+                data-action="click->share-modal#open">
+          <i class="bi bi-share" aria-hidden="true"></i>
+        </button>
+      <% end %>
       <% if _plan %>
         <%= render "like_plans/button", plan: _plan, like_plan: _like_plan %>
       <% end %>
