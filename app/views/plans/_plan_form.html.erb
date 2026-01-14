@@ -41,37 +41,25 @@
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
-  <!-- プラン保存ボタン＋モーダル -->
-  <div data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
-    <div class="plan-save">
-      <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
+  <!-- アクションボタン（保存・共有） -->
+  <div class="plan-actions"
+       data-controller="plan-save-modal"
+       data-plan-save-modal-plan-id-value="<%= plan.id %>"
+       data-plan-save-modal-title-value="<%= plan.title %>">
+    <div class="plan-actions__buttons">
+      <button type="button"
+              class="btn btn-action btn-action--share"
+              data-controller="share-modal"
+              data-share-modal-url-value="<%= plan_url(plan) %>"
+              data-share-modal-plan-id-value="<%= plan.id %>"
+              data-action="click->share-modal#open">
+        共有
+      </button>
+      <button type="button"
+              class="btn btn-action btn-action--save"
+              data-action="click->plan-save-modal#open">
         保存
       </button>
-    </div>
-
-    <!-- SNS共有ボタン -->
-    <div class="plan-share">
-      <%= render "shared/share_buttons", plan: plan %>
-    </div>
-
-    <!-- 保存モーダル（オーバーレイ）- transform影響を避けるためplan-saveの外に配置 -->
-    <div class="plan-save-modal" data-plan-save-modal-target="modal" hidden>
-      <div class="plan-save-modal__overlay" data-action="click->plan-save-modal#close"></div>
-      <div class="plan-save-modal__dialog">
-        <p class="plan-save-modal__message">名前をつけてプランを保存してください</p>
-        <input
-          type="text"
-          class="form-control plan-save-modal__input"
-          placeholder="プラン名を入力"
-          data-plan-save-modal-target="input"
-          data-action="keydown.enter->plan-save-modal#save"
-        >
-        <p class="plan-save-modal__error" data-plan-save-modal-target="error" hidden>プラン名を入力してください</p>
-        <div class="plan-save-modal__actions">
-          <button type="button" class="btn btn-cancel" data-action="click->plan-save-modal#close">キャンセル</button>
-          <button type="button" class="btn btn-primary" data-action="click->plan-save-modal#save">保存</button>
-        </div>
-      </div>
     </div>
   </div>
 

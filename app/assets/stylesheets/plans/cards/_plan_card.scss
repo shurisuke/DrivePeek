@@ -10,6 +10,7 @@
   flex-direction: column;
   height: 100%;
   min-width: 0;
+  max-width: 400px;
   background-color: #fff;
   border: none;
   border-radius: 16px;
@@ -37,7 +38,7 @@
 .plan-card__header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   flex-shrink: 0;
   margin-right: -6px;
 }
@@ -103,6 +104,15 @@
   &--delete:hover {
     color: #dc3545;
     background: rgba(220, 53, 69, 0.08);
+  }
+
+  &--share {
+    color: #8e8e8e;
+
+    &:hover {
+      color: var(--personal, #506d53);
+      background: rgba(80, 109, 83, 0.08);
+    }
   }
 }
 

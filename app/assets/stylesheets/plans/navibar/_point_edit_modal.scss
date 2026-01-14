@@ -17,8 +17,6 @@ body.point-edit-modal-open .navibar {
     position: absolute;
     inset: 0;
     background: rgba(0, 0, 0, 0.4);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
     z-index: 499;
     pointer-events: none;
   }
@@ -29,19 +27,7 @@ body.point-edit-modal-open .navibar {
   position: fixed;
   inset: 0;
   background: rgba(0, 0, 0, 0.4);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   z-index: 100;
-  animation: point-edit-backdrop-fade-in 0.2s ease-out;
-}
-
-@keyframes point-edit-backdrop-fade-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
 }
 
 // モーダル本体（固定配置で中央表示）
@@ -64,18 +50,6 @@ body.point-edit-modal-open .navibar {
   clip: auto !important;
   clip-path: none !important;
   overflow: visible !important;
-  animation: point-edit-modal-slide-up 0.25s ease-out;
-}
-
-@keyframes point-edit-modal-slide-up {
-  from {
-    opacity: 0;
-    transform: translateY(20px) scale(0.96);
-  }
-  to {
-    opacity: 1;
-    transform: translateY(0) scale(1);
-  }
 }
 
 // ✅ ポイント編集アクションボタンコンテナ
