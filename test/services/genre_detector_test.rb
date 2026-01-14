@@ -31,6 +31,32 @@ class GenreDetectorTest < ActiveSupport::TestCase
     end
   end
 
+  test "detect respects count parameter" do
+    ENV["ANTHROPIC_API_KEY"] = "test_key"
+    mock_response = mock_claude_response("gourmet, cafe, park")
+
+    mock_client = build_mock_client(mock_response)
+    Anthropic::Client.stub :new, mock_client do
+      result = GenreDetector.detect(@spot, count: 1)
+
+      assert_equal 1, result.size
+    end
+  end
+
+  test "detect excludes specified genre IDs from prompt" do
+    ENV["ANTHROPIC_API_KEY"] = "test_key"
+    mock_response = mock_claude_response("cafe")
+    exclude_ids = [ genres(:gourmet).id ]
+
+    mock_client = build_mock_client(mock_response)
+    Anthropic::Client.stub :new, mock_client do
+      result = GenreDetector.detect(@spot, count: 1, exclude_ids: exclude_ids)
+
+      assert_equal [ genres(:cafe).id ], result
+      assert_not_includes result, genres(:gourmet).id
+    end
+  end
+
   test "detect handles single genre response" do
     ENV["ANTHROPIC_API_KEY"] = "test_key"
     mock_response = mock_claude_response("gourmet")

@@ -52,7 +52,19 @@ class GenreMapperTest < ActiveSupport::TestCase
   test "map returns genre IDs for zoo type" do
     result = GenreMapper.map([ "zoo", "establishment" ])
 
-    assert_includes result, genres(:zoo_aquarium).id
+    assert_includes result, genres(:zoo).id
+  end
+
+  test "map returns genre IDs for aquarium type" do
+    result = GenreMapper.map([ "aquarium", "establishment" ])
+
+    assert_includes result, genres(:aquarium).id
+  end
+
+  test "map returns genre IDs for art_gallery type" do
+    result = GenreMapper.map([ "art_gallery", "point_of_interest" ])
+
+    assert_includes result, genres(:art_gallery).id
   end
 
   test "map returns genre IDs for amusement_park type" do

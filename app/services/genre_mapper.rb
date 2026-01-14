@@ -18,24 +18,30 @@ class GenreMapper
     # カフェ・スイーツ
     "cafe" => "cafe",
 
-    # 酒蔵・ワイナリー
-    "bar" => "winery",
-    "night_club" => "winery",
-    "liquor_store" => "winery",
+    # 酒屋
+    "liquor_store" => "liquor_store",
+
+    # バー
+    "bar" => "bar",
+    "night_club" => "bar",
 
     # 公園
     "park" => "park",
 
-    # 博物館・美術館
+    # 博物館
     "museum" => "museum",
-    "art_gallery" => "museum",
+
+    # 美術館
+    "art_gallery" => "art_gallery",
 
     # テーマパーク
     "amusement_park" => "theme_park",
 
-    # 動物園・水族館
-    "zoo" => "zoo_aquarium",
-    "aquarium" => "zoo_aquarium",
+    # 動物園
+    "zoo" => "zoo",
+
+    # 水族館
+    "aquarium" => "aquarium",
 
     # 温泉・スパ
     "spa" => "onsen",
@@ -85,11 +91,11 @@ class GenreMapper
   FALLBACK_GENRES = %w[sightseeing].freeze
 
   class << self
-    # Google types 配列から Genre IDs を返す
+    # Google types 配列から Genre IDs を返す（最大2個）
     # マッピングできない場合は空配列を返す
     #
     # @param types [Array<String>] Google Places API の types
-    # @return [Array<Integer>] マッチした Genre の ID 配列
+    # @return [Array<Integer>] マッチした Genre の ID 配列（最大2個）
     def map(types)
       return [] if types.blank?
 
@@ -99,7 +105,8 @@ class GenreMapper
       # 具体的なジャンルがある場合は汎用ジャンル（観光名所など）を除外
       slugs = exclude_fallback_genres(slugs)
 
-      Genre.where(slug: slugs).pluck(:id)
+      # 最大2個に制限
+      Genre.where(slug: slugs).pluck(:id).take(2)
     end
 
     # マッピングが成功したかどうか

@@ -96,21 +96,24 @@ class Spot < ApplicationRecord
     "https://maps.googleapis.com/maps/api/place/photo?maxwidth=#{max_width}&photo_reference=#{photo_reference}&key=#{api_key}"
   end
 
-  # Google Places の types からジャンルを割り当てる
+  # Google Places の types からジャンルを割り当てる（常に2個）
   # - 既にジャンルがある場合はスキップ
-  # - GenreMapper でマッピング可能なら即反映
-  # - マッピング不可なら AI ジョブをキュー
+  # - GenreMapper でマッピング（最大2個）
+  # - 2個未満の場合は AI で補完
   def assign_genres_from_types(top_types)
     return if genres.exists?
 
     genre_ids = GenreMapper.map(Array(top_types))
 
-    if genre_ids.present?
-      genre_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
+    # マッピングされたジャンルを紐付け
+    genre_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
+
+    if genre_ids.size >= 2
       Rails.logger.info "[Spot##{id}] ジャンルをマッピング: #{genre_ids}"
     else
-      GenreDetectionJob.perform_later(id)
-      Rails.logger.info "[Spot##{id}] ジャンル判定を AI ジョブにキュー"
+      # 2個未満の場合は AI で補完（非同期）
+      GenreDetectionJob.perform_later(id, genre_ids.size)
+      Rails.logger.info "[Spot##{id}] ジャンル#{genre_ids.size}個マッピング、不足分をAIで補完キュー"
     end
   rescue StandardError => e
     # ジャンル判定の失敗はスポット追加自体には影響させない

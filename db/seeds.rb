@@ -14,17 +14,21 @@ GENRES = [
   { name: "観光名所", slug: "sightseeing" },
   { name: "神社仏閣", slug: "shrine_temple" },
   { name: "城・史跡", slug: "castle_historic" },
-  { name: "博物館・美術館", slug: "museum" },
+  { name: "博物館", slug: "museum" },
+  { name: "美術館", slug: "art_gallery" },
   # レジャー・体験
   { name: "テーマパーク", slug: "theme_park" },
-  { name: "動物園・水族館", slug: "zoo_aquarium" },
+  { name: "動物園", slug: "zoo" },
+  { name: "水族館", slug: "aquarium" },
   { name: "アクティビティ", slug: "activity" },
   # 休憩・宿泊
   { name: "温泉・スパ", slug: "onsen" },
   { name: "宿泊施設", slug: "accommodation" },
   # 買い物
   { name: "道の駅・SA/PA", slug: "roadside_station" },
-  { name: "酒屋・ワイナリー", slug: "winery" },
+  { name: "ワイナリー", slug: "winery" },
+  { name: "酒屋", slug: "liquor_store" },
+  { name: "バー", slug: "bar" },
   { name: "ショッピング", slug: "shopping" }
 ].freeze
 
