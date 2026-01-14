@@ -3,7 +3,7 @@
 <div class="main-content plan-form"
      data-controller="navibar-resize"
      data-navibar-resize-min-value="300"
-     data-navibar-resize-max-percent-value="88"
+     data-navibar-resize-max-percent-value="80"
      data-navibar-resize-default-value="350">
   <!-- 地図 -->
   <div id="map" class="map" data-map-mode="edit" data-plan-id="<%= plan.id %>" data-navibar-resize-target="map"></div>
@@ -41,12 +41,17 @@
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
-  <!-- プラン保存ボタン＋モーダル（コントローラは外側のラッパーに） -->
+  <!-- プラン保存ボタン＋モーダル -->
   <div data-controller="plan-save-modal" data-plan-save-modal-plan-id-value="<%= plan.id %>">
     <div class="plan-save">
       <button type="button" class="btn btn-save" data-action="click->plan-save-modal#open">
         保存
       </button>
+    </div>
+
+    <!-- SNS共有ボタン -->
+    <div class="plan-share">
+      <%= render "shared/share_buttons", plan: plan %>
     </div>
 
     <!-- 保存モーダル（オーバーレイ）- transform影響を避けるためplan-saveの外に配置 -->

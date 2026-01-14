@@ -45,4 +45,11 @@ module PlansHelper
       number_with_precision(value, precision: 1, strip_insignificant_zeros: true)
     end
   end
+
+  # OGP用の画像URLを返す
+  # 将来的にはプラン詳細のスクリーンショット的な画像を動的生成予定
+  def ogp_image_url
+    # 絶対URLを生成（OGPには絶対URLが必要）
+    URI.join(request.base_url, image_path("sample.png")).to_s
+  end
 end

@@ -22,6 +22,8 @@ export default class extends Controller {
           detail: { planId, planSpotId },
         })
       )
+      // ✅ マーカー再描画のため navibar:updated を発火
+      document.dispatchEvent(new CustomEvent("navibar:updated"))
     })
   }
 }
