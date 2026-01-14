@@ -6,7 +6,7 @@
 import { getMapInstance } from "map/state"
 import { normalizeDisplayAddress } from "map/geocoder"
 
-// 1個だけ使い回す（毎回newすると閉じ忘れやイベントが増えがち）
+// 1個だけ使い回す（シングルトン）
 let infoWindow = null
 
 const getInfoWindow = () => {
@@ -15,6 +15,7 @@ const getInfoWindow = () => {
   }
   return infoWindow
 }
+
 
 /**
  * InfoWindow を閉じる
@@ -33,8 +34,9 @@ export const closeInfoWindow = () => {
  * @param {string} options.address - 住所
  * @param {string} options.buttonId - ボタンのDOM ID
  * @param {boolean} options.showButton - 「プランに追加」ボタンを表示するか
+ * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label}]
  */
-const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton }) => {
+const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, editButtons }) => {
   const safeName = name || "名称不明"
   const safeAddress = address || "住所不明"
 
@@ -49,6 +51,14 @@ const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton }) 
     ? `<button type="button" class="dp-infowindow__btn" id="${buttonId}">プランに追加</button>`
     : ""
 
+  // 複数の編集ボタンに対応（variant: "orange" でオレンジボタン）
+  const editButtonsArea = (editButtons || [])
+    .map(btn => {
+      const variantClass = btn.variant ? ` dp-infowindow__edit-btn--${btn.variant}` : ""
+      return `<button type="button" class="dp-infowindow__edit-btn${variantClass}" id="${btn.id}">${btn.label}</button>`
+    })
+    .join("")
+
   return `
     <div class="dp-infowindow">
       ${photoArea}
@@ -56,6 +66,7 @@ const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton }) 
         <div class="dp-infowindow__name">${safeName}</div>
         <div class="dp-infowindow__address">${safeAddress}</div>
         ${buttonArea}
+        ${editButtonsArea}
       </div>
     </div>
   `
@@ -160,21 +171,39 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
  * @param {string} options.name - 名称
  * @param {string} [options.address] - 住所
  * @param {string} [options.photoUrl] - 写真URL
+ * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label, onClick}]
  */
-export const showInfoWindowForPin = ({ marker, name, address, photoUrl }) => {
+export const showInfoWindowForPin = ({ marker, name, address, photoUrl, editButtons }) => {
   const map = getMapInstance()
   if (!map) return
 
   const iw = getInfoWindow()
+
   iw.setContent(
     buildInfoWindowHtml({
       photoUrl: photoUrl || null,
       name,
       address: address || null,
-      buttonId: "", // 使わない
+      buttonId: "",
       showButton: false,
+      editButtons: editButtons || [],
     })
   )
 
   iw.open({ map, anchor: marker })
+
+  // 編集ボタンがある場合はクリックイベントを設定
+  if (editButtons && editButtons.length > 0) {
+    google.maps.event.addListenerOnce(iw, "domready", () => {
+      editButtons.forEach(btn => {
+        const editBtn = document.getElementById(btn.id)
+        if (!editBtn || !btn.onClick) return
+
+        editBtn.addEventListener("click", () => {
+          iw.close()
+          btn.onClick()
+        })
+      })
+    })
+  }
 }
