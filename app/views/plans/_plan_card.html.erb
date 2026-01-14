@@ -42,7 +42,7 @@
                 data-share-modal-url-value="<%= plan_url(_plan) %>"
                 data-share-modal-text-value="<%= share_text_for_plan(_plan) %>"
                 data-action="click->share-modal#open">
-          <i class="bi bi-share" aria-hidden="true"></i>
+          <i class="bi bi-three-dots" aria-hidden="true"></i>
         </button>
       <% end %>
       <% if _plan %>
@@ -132,7 +132,7 @@
                 data-controller="community-plan-preview"
                 data-community-plan-preview-plan-id-value="<%= _plan.id %>"
                 data-action="click->community-plan-preview#show">
-          <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
+          <i class="bi bi-share" aria-hidden="true"></i>
           ルート
         </button>
       <% else %>

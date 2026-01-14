@@ -40,3 +40,13 @@
 body.no-footer .plan-form.navibar--collapsed .community-preview-close {
   left: calc(var(--navibar-collapsed-handle-width) + (100% - var(--navibar-collapsed-handle-width)) / 2);
 }
+
+/* プレビューモード時のカードリスト中央寄せ */
+.list-page__cards:has(.plan-card--preview) {
+  grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 500px));
+  justify-content: center;
+}
+
+.plan-card--preview {
+  max-width: 500px;
+}

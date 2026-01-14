@@ -10,6 +10,7 @@
   flex-direction: column;
   height: 100%;
   min-width: 0;
+  max-width: 400px;
   background-color: #fff;
   border: none;
   border-radius: 16px;
@@ -37,7 +38,7 @@
 .plan-card__header-actions {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 0;
   flex-shrink: 0;
   margin-right: -6px;
 }
@@ -106,7 +107,7 @@
   }
 
   &--share {
-    color: #666;
+    color: #8e8e8e;
 
     &:hover {
       color: var(--personal, #506d53);
