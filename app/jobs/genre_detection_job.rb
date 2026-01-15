@@ -1,21 +1,34 @@
-# AI を使用してスポットのジャンルを非同期で判定するジョブ
+# AI を使用してスポットのジャンルを非同期で判定・補完するジョブ
 #
-# GenreMapper でマッピングできなかった場合に呼び出される
+# GenreMapper でマッピングした結果が2個未満の場合に呼び出される
+# 不足分を AI で補完し、常に2個のジャンルを持つようにする
 #
 class GenreDetectionJob < ApplicationJob
   queue_as :default
 
   # リトライ設定（API エラー時）
-  retry_on Anthropic::Errors::APIError, wait: :polynomially_longer, attempts: 3
+  retry_on Faraday::Error, wait: :polynomially_longer, attempts: 3
 
-  def perform(spot_id)
+  # @param spot_id [Integer] スポットID
+  # @param current_count [Integer] 既にマッピングされたジャンル数（互換性のため残す）
+  def perform(spot_id, current_count = 0)
     spot = Spot.find_by(id: spot_id)
     return if spot.nil?
 
-    # 既にジャンルが紐付いている場合はスキップ
-    return if spot.genres.exists?
+    existing_ids = spot.genre_ids
+    return if existing_ids.size >= 2
 
-    genre_ids = GenreDetector.detect(spot)
+    # 不足分を AI で判定
+    needed_count = 2 - existing_ids.size
+    genre_ids = GenreDetector.detect(spot, count: needed_count, exclude_ids: existing_ids)
+
+    # AI判定も失敗し、ジャンルが0個の場合は facility をフォールバック
+    if genre_ids.empty? && existing_ids.empty?
+      facility = Genre.find_by(slug: "facility")
+      genre_ids = [ facility.id ] if facility
+      Rails.logger.info "[GenreDetectionJob] Spot##{spot_id} にfacilityをフォールバック"
+    end
+
     return if genre_ids.empty?
 
     # SpotGenre を作成
@@ -23,7 +36,7 @@ class GenreDetectionJob < ApplicationJob
       SpotGenre.find_or_create_by!(spot_id: spot.id, genre_id: genre_id)
     end
 
-    Rails.logger.info "[GenreDetectionJob] Spot##{spot_id} にジャンルを紐付けました: #{genre_ids}"
+    Rails.logger.info "[GenreDetectionJob] Spot##{spot_id} にジャンルを補完: #{genre_ids}"
   rescue ActiveRecord::RecordNotFound
     Rails.logger.warn "[GenreDetectionJob] Spot##{spot_id} が見つかりません"
   rescue ActiveRecord::RecordInvalid => e

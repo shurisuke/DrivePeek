@@ -1,0 +1,92 @@
+<%# 検索フォーム（共通パーシャル） %>
+<%# 必要な変数: form_url, selected_cities, cities_by_prefecture, genres_by_category, selected_genre_ids, search_query %>
+<%# オプション: turbo_frame, show_tabs (default: true), search_type, show_favorites_toggle, favorites_only %>
+
+<div class="search-box">
+  <%= form_with url: form_url, method: :get, local: true, data: local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame } : {} do %>
+    <% if local_assigns.fetch(:show_tabs, true) %>
+      <%# 検索タイプ切り替えタブ %>
+      <div class="search-tabs">
+        <label class="search-tabs__tab <%= 'is-active' if local_assigns[:search_type] != 'spot' %>">
+          <input type="radio" name="search_type" value="plan" <%= 'checked' if local_assigns[:search_type] != 'spot' %>
+                 onchange="this.form.requestSubmit()">
+          <span>プラン</span>
+        </label>
+        <label class="search-tabs__tab <%= 'is-active' if local_assigns[:search_type] == 'spot' %>">
+          <input type="radio" name="search_type" value="spot" <%= 'checked' if local_assigns[:search_type] == 'spot' %>
+                 onchange="this.form.requestSubmit()">
+          <span>スポット</span>
+        </label>
+      </div>
+    <% end %>
+
+    <div class="search-filters">
+      <%# エリアフィルタ %>
+      <div class="multi-select" data-controller="multi-select" data-multi-select-placeholder-value="エリア">
+        <div class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
+          <input type="text" class="multi-select__input" placeholder="エリア"
+                 data-action="input->multi-select#filter focus->multi-select#open"
+                 data-multi-select-target="searchInput label">
+          <i class="bi bi-chevron-down"></i>
+        </div>
+        <div class="multi-select__dropdown" data-multi-select-target="dropdown">
+          <% PlansHelper::PREFECTURES_BY_REGION.each do |region, prefs| %>
+            <div class="multi-select__region" data-multi-select-target="region">
+              <div class="multi-select__region-label"><%= region %></div>
+              <% prefs.each do |pref| %>
+                <% cities = cities_by_prefecture[pref] || [] %>
+                <% if cities.any? %>
+                  <div class="multi-select__parent-group" data-multi-select-target="parentGroup">
+                    <div class="multi-select__parent-header" data-action="click->multi-select#toggleParent">
+                      <div class="multi-select__parent-label">
+                        <input type="checkbox"
+                               data-multi-select-target="parentCheckbox"
+                               data-action="click->multi-select#stopPropagation change->multi-select#selectParent">
+                        <span><%= pref %></span>
+                      </div>
+                      <i class="bi bi-chevron-right multi-select__expand-icon"></i>
+                    </div>
+                    <div class="multi-select__children">
+                      <% cities.each do |city| %>
+                        <% city_value = "#{pref}/#{city}" %>
+                        <label class="multi-select__option">
+                          <input type="checkbox" name="cities[]" value="<%= city_value %>" data-label="<%= city %>"
+                                 data-multi-select-target="checkbox" data-action="change->multi-select#select"
+                                 <%= 'checked' if selected_cities&.include?(city_value) %>>
+                          <span><%= city %></span>
+                        </label>
+                      <% end %>
+                    </div>
+                  </div>
+                <% end %>
+              <% end %>
+            </div>
+          <% end %>
+          <div class="multi-select__footer">
+            <button type="button" class="multi-select__close-btn" data-action="click->multi-select#close">閉じる</button>
+          </div>
+        </div>
+      </div>
+
+      <%# ジャンルフィルタ %>
+      <%= render "shared/genre_filter", genres_by_category: genres_by_category, selected_genre_ids: selected_genre_ids %>
+    </div>
+
+    <%= text_field_tag :q, search_query, placeholder: "フリーワード検索", class: "search-input" %>
+
+    <% if local_assigns[:show_favorites_toggle] %>
+      <label class="search-filters__toggle">
+        <input type="checkbox" name="favorites_only" value="1"
+               <%= 'checked' if local_assigns[:favorites_only] %>
+               onchange="this.form.requestSubmit()">
+        <span class="search-filters__toggle-switch"></span>
+        <span>お気に入りのみ</span>
+      </label>
+    <% end %>
+
+    <button type="submit" class="search-button">
+      <i class="bi bi-search" aria-hidden="true"></i>
+      <span>検索</span>
+    </button>
+  <% end %>
+</div>

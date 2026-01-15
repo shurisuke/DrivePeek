@@ -26,14 +26,7 @@
     <%= render 'shared/header' %>
 
     <main class="main-content">
-      <% if notice %>
-        <p class="alert alert-info"><%= notice %></p>
-      <% end %>
-
-      <% if alert %>
-        <p class="alert alert-danger"><%= alert %></p>
-      <% end %>
-
+      <%= render "shared/flash" %>
       <%= yield %>
     </main>
 

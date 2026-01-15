@@ -10,9 +10,19 @@ cafe:
   position: 2
 
 winery:
-  name: "酒屋・ワイナリー"
+  name: "ワイナリー"
   slug: "winery"
   position: 3
+
+liquor_store:
+  name: "酒屋"
+  slug: "liquor_store"
+  position: 4
+
+bar:
+  name: "バー"
+  slug: "bar"
+  position: 5
 
 park:
   name: "公園"
@@ -45,19 +55,29 @@ shrine_temple:
   position: 11
 
 museum:
-  name: "博物館・美術館"
+  name: "博物館"
   slug: "museum"
   position: 13
+
+art_gallery:
+  name: "美術館"
+  slug: "art_gallery"
+  position: 14
 
 theme_park:
   name: "テーマパーク"
   slug: "theme_park"
   position: 14
 
-zoo_aquarium:
-  name: "動物園・水族館"
-  slug: "zoo_aquarium"
+zoo:
+  name: "動物園"
+  slug: "zoo"
   position: 15
+
+aquarium:
+  name: "水族館"
+  slug: "aquarium"
+  position: 16
 
 onsen:
   name: "温泉・スパ"

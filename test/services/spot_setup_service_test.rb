@@ -62,13 +62,14 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
   end
 
   test "assigns multiple genres when multiple types match" do
-    @spot_params[:top_types] = [ "restaurant", "cafe", "establishment" ]
+    # park + zoo の組み合わせ（両方ともFALLBACKではない）
+    @spot_params[:top_types] = [ "park", "zoo", "establishment" ]
     service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
     result = service.setup
     assert result.success?
-    assert result.spot.genres.exists?(id: genres(:gourmet).id)
-    assert result.spot.genres.exists?(id: genres(:cafe).id)
+    assert result.spot.genres.exists?(id: genres(:park).id)
+    assert result.spot.genres.exists?(id: genres(:zoo).id)
   end
 
   test "does not fail spot creation when genre assignment fails" do

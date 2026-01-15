@@ -18,13 +18,26 @@ class GenreDetectionJobTest < ActiveJob::TestCase
     end
   end
 
-  test "skips when spot already has genres" do
+  test "skips when spot already has 2 or more genres" do
     SpotGenre.create!(spot: @spot, genre: genres(:gourmet))
+    SpotGenre.create!(spot: @spot, genre: genres(:cafe))
 
-    GenreDetector.stub :detect, [ genres(:cafe).id ] do
+    GenreDetector.stub :detect, [ genres(:park).id ] do
       assert_no_difference "SpotGenre.count" do
         GenreDetectionJob.perform_now(@spot.id)
       end
+    end
+  end
+
+  test "complements when spot has only 1 genre" do
+    SpotGenre.create!(spot: @spot, genre: genres(:gourmet))
+
+    GenreDetector.stub :detect, [ genres(:cafe).id ] do
+      assert_difference "SpotGenre.count", 1 do
+        GenreDetectionJob.perform_now(@spot.id)
+      end
+
+      assert @spot.genres.exists?(id: genres(:cafe).id)
     end
   end
 

@@ -60,8 +60,8 @@ gem "acts_as_list"
 # ページネーション
 gem "kaminari"
 
-# AI API (Claude)
-gem "anthropic"
+# AI API (OpenAI)
+gem "ruby-openai"
 
 # Ruby の SSL 接続を安定化させる
 gem "openssl"

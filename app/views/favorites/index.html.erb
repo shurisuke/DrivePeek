@@ -6,103 +6,14 @@
   <div class="list-page__content">
   <%# 左サイドバー: 検索フォーム %>
   <div class="list-page__sidebar">
-  <div class="search-box">
-    <%= form_with url: favorites_path, method: :get, local: true do %>
-      <%# 検索タイプ切り替えタブ %>
-      <div class="search-tabs">
-        <label class="search-tabs__tab <%= 'is-active' if @search_type != 'spot' %>">
-          <input type="radio" name="search_type" value="plan" <%= 'checked' if @search_type != 'spot' %>
-                 onchange="this.form.requestSubmit()">
-          <span>プラン</span>
-        </label>
-        <label class="search-tabs__tab <%= 'is-active' if @search_type == 'spot' %>">
-          <input type="radio" name="search_type" value="spot" <%= 'checked' if @search_type == 'spot' %>
-                 onchange="this.form.requestSubmit()">
-          <span>スポット</span>
-        </label>
-      </div>
-
-      <div class="search-filters">
-        <div class="multi-select" data-controller="multi-select" data-multi-select-name="cities[]" data-multi-select-placeholder-value="エリア">
-          <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
-            <span data-multi-select-target="label" class="is-placeholder">エリア</span>
-            <i class="bi bi-chevron-down"></i>
-          </button>
-          <div class="multi-select__dropdown" data-multi-select-target="dropdown">
-            <% PlansHelper::PREFECTURES_BY_REGION.each do |region, prefs| %>
-              <div class="multi-select__region">
-                <div class="multi-select__region-label"><%= region %></div>
-                <% prefs.each do |pref| %>
-                  <% cities = @cities_by_prefecture[pref] || [] %>
-                  <% if cities.any? %>
-                    <div class="multi-select__prefecture-group" data-multi-select-target="prefectureGroup">
-                      <div class="multi-select__prefecture-header" data-action="click->multi-select#togglePrefecture">
-                        <div class="multi-select__prefecture-label">
-                          <input type="checkbox"
-                                 data-multi-select-target="prefectureCheckbox"
-                                 data-action="click->multi-select#stopPropagation change->multi-select#selectPrefecture">
-                          <span><%= pref %></span>
-                        </div>
-                        <i class="bi bi-chevron-right multi-select__expand-icon"></i>
-                      </div>
-                      <div class="multi-select__cities">
-                        <% cities.each do |city| %>
-                          <% city_value = "#{pref}/#{city}" %>
-                          <label class="multi-select__option">
-                            <input type="checkbox" value="<%= city_value %>" data-label="<%= city %>"
-                                   data-multi-select-target="checkbox" data-action="change->multi-select#select"
-                                   <%= 'checked' if @selected_cities&.include?(city_value) %>>
-                            <span><%= city %></span>
-                          </label>
-                        <% end %>
-                      </div>
-                    </div>
-                  <% end %>
-                <% end %>
-              </div>
-            <% end %>
-            <div class="multi-select__footer">
-              <button type="button" class="multi-select__close-btn" data-action="click->multi-select#close">閉じる</button>
-            </div>
-          </div>
-          <% @selected_cities&.each do |city| %>
-            <input type="hidden" name="cities[]" value="<%= city %>" data-multi-select-target="hiddenField">
-          <% end %>
-        </div>
-        <div class="multi-select" data-controller="multi-select" data-multi-select-name="genre_ids[]" data-multi-select-placeholder-value="ジャンル">
-          <button type="button" class="multi-select__trigger" data-action="click->multi-select#toggle" data-multi-select-target="trigger">
-            <span data-multi-select-target="label" class="is-placeholder">ジャンル</span>
-            <i class="bi bi-chevron-down"></i>
-          </button>
-          <div class="multi-select__dropdown" data-multi-select-target="dropdown">
-            <% @genres.each do |genre| %>
-              <label class="multi-select__option">
-                <input type="checkbox" value="<%= genre.id %>" data-label="<%= genre.name %>"
-                       data-multi-select-target="checkbox" data-action="change->multi-select#select"
-                       <%= 'checked' if @selected_genre_ids&.include?(genre.id) %>>
-                <span><%= genre.name %></span>
-              </label>
-            <% end %>
-            <div class="multi-select__footer">
-              <button type="button" class="multi-select__close-btn" data-action="click->multi-select#close">閉じる</button>
-            </div>
-          </div>
-          <% @selected_genre_ids&.each do |gid| %>
-            <input type="hidden" name="genre_ids[]" value="<%= gid %>" data-multi-select-target="hiddenField">
-          <% end %>
-        </div>
-      </div>
-
-      <%= text_field_tag :q, @search_query,
-                         placeholder: "フリーワード検索",
-                         class: "search-input" %>
-
-      <button type="submit" class="search-button">
-        <i class="bi bi-search" aria-hidden="true"></i>
-        <span>検索</span>
-      </button>
-    <% end %>
-  </div>
+    <%= render "shared/search_form",
+               form_url: favorites_path,
+               search_type: @search_type,
+               selected_cities: @selected_cities,
+               cities_by_prefecture: @cities_by_prefecture,
+               genres_by_category: @genres_by_category,
+               selected_genre_ids: @selected_genre_ids,
+               search_query: @search_query %>
   </div>
 
   <%# 右メイン: カード一覧 + ページネーション %>
