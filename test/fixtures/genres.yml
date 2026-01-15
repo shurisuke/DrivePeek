@@ -93,3 +93,9 @@ shopping:
   name: "ショッピング"
   slug: "shopping"
   position: 20
+
+facility:
+  name: "施設"
+  slug: "facility"
+  visible: false
+  position: 100

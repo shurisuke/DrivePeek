@@ -47,7 +47,20 @@ class GenreDetectionJobTest < ActiveJob::TestCase
     end
   end
 
-  test "skips when GenreDetector returns empty array" do
+  test "falls back to facility when GenreDetector returns empty and spot has no genres" do
+    GenreDetector.stub :detect, [] do
+      assert_difference "SpotGenre.count", 1 do
+        GenreDetectionJob.perform_now(@spot.id)
+      end
+
+      # facility がフォールバックで設定される
+      assert @spot.genres.exists?(slug: "facility")
+    end
+  end
+
+  test "skips when GenreDetector returns empty and spot already has genres" do
+    SpotGenre.create!(spot: @spot, genre: genres(:gourmet))
+
     GenreDetector.stub :detect, [] do
       assert_no_difference "SpotGenre.count" do
         GenreDetectionJob.perform_now(@spot.id)

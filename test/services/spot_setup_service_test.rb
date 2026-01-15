@@ -1,7 +1,6 @@
 require "test_helper"
 
 class SpotSetupServiceTest < ActiveSupport::TestCase
-  include ActiveJob::TestHelper
   setup do
     @plan = plans(:one)
     @spot_params = {
@@ -18,23 +17,30 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   # ジャンル判定テスト
   test "assigns genres via GenreMapper when types are mappable" do
-    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
+    # GenreDetector をスタブして AI 補完をスキップ
+    GenreDetector.stub :detect, [] do
+      service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
-    assert_difference "SpotGenre.count", 1 do
-      result = service.setup
-      assert result.success?
-      assert result.spot.genres.exists?(id: genres(:gourmet).id)
+      assert_difference "SpotGenre.count", 1 do
+        result = service.setup
+        assert result.success?
+        assert result.spot.genres.exists?(id: genres(:gourmet).id)
+      end
     end
   end
 
-  test "enqueues GenreDetectionJob when types are not mappable" do
+  test "uses GenreDetector synchronously when types are not mappable" do
     @spot_params[:top_types] = [ "natural_feature", "locality" ]
-    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
-    assert_enqueued_with(job: GenreDetectionJob) do
+    # GenreDetector が呼ばれることを確認
+    detector_called = false
+    GenreDetector.stub :detect, ->(*args) { detector_called = true; [] } do
+      service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
       result = service.setup
       assert result.success?
     end
+
+    assert detector_called, "GenreDetector.detect should be called"
   end
 
   test "does not assign genres when spot already has genres" do
@@ -85,21 +91,26 @@ class SpotSetupServiceTest < ActiveSupport::TestCase
 
   test "handles empty top_types gracefully" do
     @spot_params[:top_types] = []
-    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
-    assert_enqueued_with(job: GenreDetectionJob) do
+    # GenreDetector が呼ばれ、facility がフォールバックされることを確認
+    GenreDetector.stub :detect, [] do
+      service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
       result = service.setup
       assert result.success?
+      # facility がフォールバックで設定される
+      assert result.spot.genres.exists?(slug: "facility")
     end
   end
 
   test "handles nil top_types gracefully" do
     @spot_params.delete(:top_types)
-    service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
 
-    assert_enqueued_with(job: GenreDetectionJob) do
+    GenreDetector.stub :detect, [] do
+      service = SpotSetupService.new(plan: @plan, spot_params: @spot_params)
       result = service.setup
       assert result.success?
+      # facility がフォールバックで設定される
+      assert result.spot.genres.exists?(slug: "facility")
     end
   end
 end

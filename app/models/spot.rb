@@ -105,7 +105,7 @@ class Spot < ApplicationRecord
   # Google Places の types からジャンルを割り当てる（常に2個）
   # - 既にジャンルがある場合はスキップ
   # - GenreMapper でマッピング（最大2個）
-  # - 2個未満の場合は AI で補完
+  # - 2個未満の場合は AI で補完（同期）
   def assign_genres_from_types(top_types)
     return if genres.exists?
 
@@ -117,9 +117,8 @@ class Spot < ApplicationRecord
     if genre_ids.size >= 2
       Rails.logger.info "[Spot##{id}] ジャンルをマッピング: #{genre_ids}"
     else
-      # 2個未満の場合は AI で補完（非同期）
-      GenreDetectionJob.perform_later(id, genre_ids.size)
-      Rails.logger.info "[Spot##{id}] ジャンル#{genre_ids.size}個マッピング、不足分をAIで補完キュー"
+      # 2個未満の場合は AI で補完（同期）
+      detect_and_assign_remaining_genres(genre_ids)
     end
   rescue StandardError => e
     # ジャンル判定の失敗はスポット追加自体には影響させない
@@ -145,6 +144,24 @@ class Spot < ApplicationRecord
   end
 
   private
+
+  # AI でジャンルを補完（2個になるまで）
+  def detect_and_assign_remaining_genres(existing_ids)
+    needed = 2 - existing_ids.size
+    return if needed <= 0
+
+    detected_ids = GenreDetector.detect(self, count: needed, exclude_ids: existing_ids)
+
+    if detected_ids.empty? && existing_ids.empty?
+      # AI判定も失敗し、ジャンルが0個の場合は facility をフォールバック
+      facility = Genre.find_by(slug: "facility")
+      detected_ids = [ facility.id ] if facility
+    end
+
+    detected_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
+
+    Rails.logger.info "[Spot##{id}] ジャンル#{existing_ids.size}個マッピング + AI補完#{detected_ids.size}個"
+  end
 
   def geocode_if_needed
     return if prefecture.present? && city.present?
