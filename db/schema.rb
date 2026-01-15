@@ -23,9 +23,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.string "slug", null: false
     t.datetime "updated_at", null: false
     t.boolean "visible", default: true, null: false
-    t.index ["parent_id"], name: "index_genres_on_parent_id"
-    t.index ["position"], name: "index_genres_on_position"
-    t.index ["slug"], name: "index_genres_on_slug", unique: true
+    t.index [ "parent_id" ], name: "index_genres_on_parent_id"
+    t.index [ "position" ], name: "index_genres_on_position"
+    t.index [ "slug" ], name: "index_genres_on_slug", unique: true
   end
 
   create_table "goal_points", force: :cascade do |t|
@@ -36,7 +36,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.float "lng"
     t.bigint "plan_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["plan_id"], name: "index_goal_points_on_plan_id"
+    t.index [ "plan_id" ], name: "index_goal_points_on_plan_id"
   end
 
   create_table "like_plans", force: :cascade do |t|
@@ -44,9 +44,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "plan_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["plan_id"], name: "index_like_plans_on_plan_id"
-    t.index ["user_id", "plan_id"], name: "index_like_plans_on_user_id_and_plan_id", unique: true
-    t.index ["user_id"], name: "index_like_plans_on_user_id"
+    t.index [ "plan_id" ], name: "index_like_plans_on_plan_id"
+    t.index [ "user_id", "plan_id" ], name: "index_like_plans_on_user_id_and_plan_id", unique: true
+    t.index [ "user_id" ], name: "index_like_plans_on_user_id"
   end
 
   create_table "like_spots", force: :cascade do |t|
@@ -54,9 +54,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "spot_id", null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["spot_id"], name: "index_like_spots_on_spot_id"
-    t.index ["user_id", "spot_id"], name: "index_like_spots_on_user_id_and_spot_id", unique: true
-    t.index ["user_id"], name: "index_like_spots_on_user_id"
+    t.index [ "spot_id" ], name: "index_like_spots_on_spot_id"
+    t.index [ "user_id", "spot_id" ], name: "index_like_spots_on_user_id_and_spot_id", unique: true
+    t.index [ "user_id" ], name: "index_like_spots_on_user_id"
   end
 
   create_table "plan_spots", force: :cascade do |t|
@@ -74,10 +74,10 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.integer "stay_duration"
     t.boolean "toll_used", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["plan_id", "position"], name: "index_plan_spots_on_plan_id_and_position"
-    t.index ["plan_id", "spot_id"], name: "index_plan_spots_on_plan_id_and_spot_id", unique: true
-    t.index ["plan_id"], name: "index_plan_spots_on_plan_id"
-    t.index ["spot_id"], name: "index_plan_spots_on_spot_id"
+    t.index [ "plan_id", "position" ], name: "index_plan_spots_on_plan_id_and_position"
+    t.index [ "plan_id", "spot_id" ], name: "index_plan_spots_on_plan_id_and_spot_id", unique: true
+    t.index [ "plan_id" ], name: "index_plan_spots_on_plan_id"
+    t.index [ "spot_id" ], name: "index_plan_spots_on_spot_id"
   end
 
   create_table "plans", force: :cascade do |t|
@@ -88,9 +88,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.integer "total_time", default: 0, null: false
     t.datetime "updated_at", null: false
     t.bigint "user_id", null: false
-    t.index ["title"], name: "index_plans_on_title"
-    t.index ["updated_at"], name: "index_plans_on_updated_at"
-    t.index ["user_id"], name: "index_plans_on_user_id"
+    t.index [ "title" ], name: "index_plans_on_title"
+    t.index [ "updated_at" ], name: "index_plans_on_updated_at"
+    t.index [ "user_id" ], name: "index_plans_on_user_id"
   end
 
   create_table "solid_cache_entries", force: :cascade do |t|
@@ -99,9 +99,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.binary "key", null: false
     t.bigint "key_hash", null: false
     t.binary "value", null: false
-    t.index ["byte_size"], name: "index_solid_cache_entries_on_byte_size"
-    t.index ["key_hash", "byte_size"], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
-    t.index ["key_hash"], name: "index_solid_cache_entries_on_key_hash", unique: true
+    t.index [ "byte_size" ], name: "index_solid_cache_entries_on_byte_size"
+    t.index [ "key_hash", "byte_size" ], name: "index_solid_cache_entries_on_key_hash_and_byte_size"
+    t.index [ "key_hash" ], name: "index_solid_cache_entries_on_key_hash", unique: true
   end
 
   create_table "solid_queue_blocked_executions", force: :cascade do |t|
@@ -111,24 +111,24 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "job_id", null: false
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
-    t.index ["concurrency_key", "priority", "job_id"], name: "index_solid_queue_blocked_executions_for_release"
-    t.index ["expires_at", "concurrency_key"], name: "index_solid_queue_blocked_executions_for_maintenance"
-    t.index ["job_id"], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
+    t.index [ "concurrency_key", "priority", "job_id" ], name: "index_solid_queue_blocked_executions_for_release"
+    t.index [ "expires_at", "concurrency_key" ], name: "index_solid_queue_blocked_executions_for_maintenance"
+    t.index [ "job_id" ], name: "index_solid_queue_blocked_executions_on_job_id", unique: true
   end
 
   create_table "solid_queue_claimed_executions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.bigint "job_id", null: false
     t.bigint "process_id"
-    t.index ["job_id"], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
-    t.index ["process_id", "job_id"], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
+    t.index [ "job_id" ], name: "index_solid_queue_claimed_executions_on_job_id", unique: true
+    t.index [ "process_id", "job_id" ], name: "index_solid_queue_claimed_executions_on_process_id_and_job_id"
   end
 
   create_table "solid_queue_failed_executions", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.text "error"
     t.bigint "job_id", null: false
-    t.index ["job_id"], name: "index_solid_queue_failed_executions_on_job_id", unique: true
+    t.index [ "job_id" ], name: "index_solid_queue_failed_executions_on_job_id", unique: true
   end
 
   create_table "solid_queue_jobs", force: :cascade do |t|
@@ -142,17 +142,17 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.string "queue_name", null: false
     t.datetime "scheduled_at"
     t.datetime "updated_at", null: false
-    t.index ["active_job_id"], name: "index_solid_queue_jobs_on_active_job_id"
-    t.index ["class_name"], name: "index_solid_queue_jobs_on_class_name"
-    t.index ["finished_at"], name: "index_solid_queue_jobs_on_finished_at"
-    t.index ["queue_name", "finished_at"], name: "index_solid_queue_jobs_for_filtering"
-    t.index ["scheduled_at", "finished_at"], name: "index_solid_queue_jobs_for_alerting"
+    t.index [ "active_job_id" ], name: "index_solid_queue_jobs_on_active_job_id"
+    t.index [ "class_name" ], name: "index_solid_queue_jobs_on_class_name"
+    t.index [ "finished_at" ], name: "index_solid_queue_jobs_on_finished_at"
+    t.index [ "queue_name", "finished_at" ], name: "index_solid_queue_jobs_for_filtering"
+    t.index [ "scheduled_at", "finished_at" ], name: "index_solid_queue_jobs_for_alerting"
   end
 
   create_table "solid_queue_pauses", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "queue_name", null: false
-    t.index ["queue_name"], name: "index_solid_queue_pauses_on_queue_name", unique: true
+    t.index [ "queue_name" ], name: "index_solid_queue_pauses_on_queue_name", unique: true
   end
 
   create_table "solid_queue_processes", force: :cascade do |t|
@@ -163,8 +163,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.text "metadata"
     t.integer "pid", null: false
     t.bigint "supervisor_id"
-    t.index ["last_heartbeat_at"], name: "index_solid_queue_processes_on_last_heartbeat_at"
-    t.index ["supervisor_id"], name: "index_solid_queue_processes_on_supervisor_id"
+    t.index [ "last_heartbeat_at" ], name: "index_solid_queue_processes_on_last_heartbeat_at"
+    t.index [ "supervisor_id" ], name: "index_solid_queue_processes_on_supervisor_id"
   end
 
   create_table "solid_queue_ready_executions", force: :cascade do |t|
@@ -172,9 +172,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "job_id", null: false
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
-    t.index ["job_id"], name: "index_solid_queue_ready_executions_on_job_id", unique: true
-    t.index ["priority", "job_id"], name: "index_solid_queue_poll_all"
-    t.index ["queue_name", "priority", "job_id"], name: "index_solid_queue_poll_by_queue"
+    t.index [ "job_id" ], name: "index_solid_queue_ready_executions_on_job_id", unique: true
+    t.index [ "priority", "job_id" ], name: "index_solid_queue_poll_all"
+    t.index [ "queue_name", "priority", "job_id" ], name: "index_solid_queue_poll_by_queue"
   end
 
   create_table "solid_queue_recurring_executions", force: :cascade do |t|
@@ -182,8 +182,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "job_id", null: false
     t.datetime "run_at", null: false
     t.string "task_key", null: false
-    t.index ["job_id"], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
-    t.index ["task_key", "run_at"], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
+    t.index [ "job_id" ], name: "index_solid_queue_recurring_executions_on_job_id", unique: true
+    t.index [ "task_key", "run_at" ], name: "index_solid_queue_recurring_executions_on_task_key_and_run_at", unique: true
   end
 
   create_table "solid_queue_scheduled_executions", force: :cascade do |t|
@@ -192,8 +192,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.integer "priority", default: 0, null: false
     t.string "queue_name", null: false
     t.datetime "scheduled_at", null: false
-    t.index ["job_id"], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
-    t.index ["scheduled_at", "priority", "job_id"], name: "index_solid_queue_dispatch_all"
+    t.index [ "job_id" ], name: "index_solid_queue_scheduled_executions_on_job_id", unique: true
+    t.index [ "scheduled_at", "priority", "job_id" ], name: "index_solid_queue_dispatch_all"
   end
 
   create_table "solid_queue_semaphores", force: :cascade do |t|
@@ -202,9 +202,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.string "key", null: false
     t.datetime "updated_at", null: false
     t.integer "value", default: 1, null: false
-    t.index ["expires_at"], name: "index_solid_queue_semaphores_on_expires_at"
-    t.index ["key", "value"], name: "index_solid_queue_semaphores_on_key_and_value"
-    t.index ["key"], name: "index_solid_queue_semaphores_on_key", unique: true
+    t.index [ "expires_at" ], name: "index_solid_queue_semaphores_on_expires_at"
+    t.index [ "key", "value" ], name: "index_solid_queue_semaphores_on_key_and_value"
+    t.index [ "key" ], name: "index_solid_queue_semaphores_on_key", unique: true
   end
 
   create_table "spot_genres", force: :cascade do |t|
@@ -212,9 +212,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.bigint "genre_id", null: false
     t.bigint "spot_id", null: false
     t.datetime "updated_at", null: false
-    t.index ["genre_id"], name: "index_spot_genres_on_genre_id"
-    t.index ["spot_id", "genre_id"], name: "index_spot_genres_on_spot_id_and_genre_id", unique: true
-    t.index ["spot_id"], name: "index_spot_genres_on_spot_id"
+    t.index [ "genre_id" ], name: "index_spot_genres_on_genre_id"
+    t.index [ "spot_id", "genre_id" ], name: "index_spot_genres_on_spot_id_and_genre_id", unique: true
+    t.index [ "spot_id" ], name: "index_spot_genres_on_spot_id"
   end
 
   create_table "spots", force: :cascade do |t|
@@ -228,9 +228,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.string "place_id", null: false
     t.string "prefecture"
     t.datetime "updated_at", null: false
-    t.index ["city"], name: "index_spots_on_city"
-    t.index ["place_id"], name: "index_spots_on_place_id", unique: true
-    t.index ["prefecture"], name: "index_spots_on_prefecture"
+    t.index [ "city" ], name: "index_spots_on_city"
+    t.index [ "place_id" ], name: "index_spots_on_place_id", unique: true
+    t.index [ "prefecture" ], name: "index_spots_on_prefecture"
   end
 
   create_table "start_points", force: :cascade do |t|
@@ -248,9 +248,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.string "prefecture"
     t.boolean "toll_used", default: false, null: false
     t.datetime "updated_at", null: false
-    t.index ["city"], name: "index_start_points_on_city"
-    t.index ["plan_id"], name: "index_start_points_on_plan_id"
-    t.index ["prefecture"], name: "index_start_points_on_prefecture"
+    t.index [ "city" ], name: "index_start_points_on_city"
+    t.index [ "plan_id" ], name: "index_start_points_on_plan_id"
+    t.index [ "prefecture" ], name: "index_start_points_on_prefecture"
   end
 
   create_table "users", force: :cascade do |t|
@@ -264,9 +264,9 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_15_165958) do
     t.integer "status", default: 0, null: false
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
-    t.index ["email"], name: "index_users_on_email", unique: true
-    t.index ["reset_password_token"], name: "index_users_on_reset_password_token", unique: true
-    t.index ["status"], name: "index_users_on_status"
+    t.index [ "email" ], name: "index_users_on_email", unique: true
+    t.index [ "reset_password_token" ], name: "index_users_on_reset_password_token", unique: true
+    t.index [ "status" ], name: "index_users_on_status"
   end
 
   add_foreign_key "genres", "genres", column: "parent_id"

@@ -3,11 +3,11 @@
 class AddLeisureGenres < ActiveRecord::Migration[7.1]
   def up
     max_position = Genre.maximum(:position) || 0
-    
+
     # アクティビティ系の後に追加
     activity = Genre.find_by(slug: "activity")
     base_position = activity ? activity.position : max_position
-    
+
     create_genre("golf_course", "ゴルフ場", base_position + 1)
     create_genre("ski_resort", "スキー場", base_position + 2)
     create_genre("water_park", "プール", base_position + 3)
