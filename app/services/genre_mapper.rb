@@ -100,6 +100,29 @@ class GenreMapper
     # 映画館
     "movie_theater" => "movie_theater",
 
+    # 交通系
+    "transit_station" => "station",
+    "train_station" => "station",
+    "subway_station" => "station",
+    "airport" => "airport",
+    "seaport" => "port",
+    "parking" => "parking",
+    "gas_station" => "gas_station",
+
+    # 公共施設
+    "hospital" => "hospital",
+    "school" => "school",
+    "university" => "school",
+    "local_government_office" => "government_office",
+    "city_hall" => "government_office",
+    "police" => "police",
+    "fire_station" => "fire_station",
+    "post_office" => "post_office",
+    "library" => "library",
+
+    # 金融
+    "bank" => "bank",
+
     # 観光名所（汎用的なので最後に判定）
     "tourist_attraction" => "sightseeing"
   }.freeze
@@ -114,7 +137,8 @@ class GenreMapper
   ].freeze
 
   # 他のジャンルがマッチした場合に除外する汎用ジャンル
-  FALLBACK_GENRES = %w[sightseeing].freeze
+  # グルメも汎用的なので、AIでより具体的なジャンルを判定させる
+  FALLBACK_GENRES = %w[sightseeing gourmet].freeze
 
   class << self
     # Google types 配列から Genre IDs を返す（最大2個）

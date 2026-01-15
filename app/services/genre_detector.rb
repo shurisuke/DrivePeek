@@ -1,4 +1,4 @@
-# Claude API を使用してスポットのジャンルを判定する
+# OpenAI API を使用してスポットのジャンルを判定する
 #
 # 使い方:
 #   genre_ids = GenreDetector.detect(spot)
@@ -8,7 +8,7 @@
 #   genre_ids = GenreDetector.detect(spot, count: 1, exclude_ids: [1])
 #
 class GenreDetector
-  MODEL = "claude-3-5-haiku-latest".freeze
+  MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 256
 
   class << self
@@ -23,8 +23,8 @@ class GenreDetector
 
       response = call_api(spot, count: count, exclude_ids: exclude_ids)
       parse_response(response, count: count)
-    rescue Anthropic::Errors::APIError => e
-      Rails.logger.error "[GenreDetector] Anthropic API error: #{e.message}"
+    rescue Faraday::Error => e
+      Rails.logger.error "[GenreDetector] OpenAI API error: #{e.message}"
       []
     rescue StandardError => e
       Rails.logger.error "[GenreDetector] Unexpected error: #{e.class} - #{e.message}"
@@ -34,23 +34,33 @@ class GenreDetector
     private
 
     def api_key_configured?
-      ENV["ANTHROPIC_API_KEY"].present?
+      ENV["OPENAI_API_KEY"].present?
     end
 
     def call_api(spot, count:, exclude_ids:)
-      client = Anthropic::Client.new
+      client = OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
 
-      client.messages.create(
-        model: MODEL,
-        max_tokens: MAX_TOKENS,
-        messages: [
-          { role: "user", content: build_prompt(spot, count: count, exclude_ids: exclude_ids) }
-        ]
+      client.chat(
+        parameters: {
+          model: MODEL,
+          max_tokens: MAX_TOKENS,
+          messages: [
+            { role: "user", content: build_prompt(spot, count: count, exclude_ids: exclude_ids) }
+          ]
+        }
       )
     end
 
+    # AIに選ばせない汎用ジャンル（より具体的なジャンルを選ばせる）
+    # facility は GenreDetectionJob でフォールバックとして使用
+    EXCLUDED_SLUGS = %w[gourmet facility].freeze
+
     def build_prompt(spot, count:, exclude_ids:)
-      available_genres = Genre.ordered.where.not(id: exclude_ids)
+      # 子を持つ親ジャンルは除外（より具体的な子ジャンルを選ばせる）
+      parent_ids = Genre.joins(:children).distinct.pluck(:id)
+      # 汎用ジャンルも除外
+      fallback_ids = Genre.where(slug: EXCLUDED_SLUGS).pluck(:id)
+      available_genres = Genre.ordered.where.not(id: exclude_ids + parent_ids + fallback_ids)
       genres_list = available_genres.pluck(:slug, :name).map { |slug, name| "#{slug}: #{name}" }.join("\n")
 
       <<~PROMPT
@@ -65,23 +75,14 @@ class GenreDetector
         【選択可能なジャンル】
         #{genres_list}
 
-        【重要な判定ルール】
-        飲食店の場合は、できるだけ具体的なジャンル（ramen, sushi, izakaya等）を選んでください。
-        該当する具体的なジャンルがない場合のみ、gourmet/cafe/bar を選んでください。
-
-        観光名所の場合は、sightseeingと一緒に具体的なジャンルも選んでください：
-        - 城や史跡 → sightseeing, castle_historic
-        - 神社仏閣 → sightseeing, shrine_temple
-        - タワーや展望台 → sightseeing, observatory_tower
-        - 美術館 → sightseeing, art_gallery
-        - 博物館 → sightseeing, museum
-        - その他（夜景、世界遺産、パワースポット、古い町並み等）も同様に具体的なジャンルを併記
-
-        どのジャンルにも当てはまらない場合（病院、学校、役所など）は facility を選んでください。
+        【注意事項】
+        - 確実に該当するジャンルのみ選んでください
+        - world_heritage（世界遺産）はUNESCO登録済みの場所のみ選択してください
+        - 不確かな場合は、より一般的なジャンル（mountain, park等）を選んでください
 
         【回答形式】
         ジャンルのslug（英語）をカンマ区切りで回答してください。必ず#{count}個選んでください。
-        例: cafe,sightseeing
+        例: ramen,night_view
 
         回答:
       PROMPT
@@ -90,11 +91,11 @@ class GenreDetector
     def parse_response(response, count:)
       return [] if response.nil?
 
-      # Claude のレスポンスからテキストを取得
-      content = response.content.first
-      return [] unless content.is_a?(Hash) && content[:type] == "text"
+      # OpenAI のレスポンスからテキストを取得
+      content = response.dig("choices", 0, "message", "content")
+      return [] if content.blank?
 
-      text = content[:text].to_s.strip.downcase
+      text = content.to_s.strip.downcase
 
       # slug をパースして Genre ID に変換（指定数に制限）
       slugs = text.split(/[,\s]+/).map(&:strip).reject(&:blank?)

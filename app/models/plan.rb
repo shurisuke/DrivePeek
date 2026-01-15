@@ -55,11 +55,17 @@ class Plan < ApplicationRecord
   }
 
   # ジャンルで絞り込み（複数対応）
+  # 親ジャンル選択時は子ジャンルも含めて検索
   scope :filter_by_genres, ->(genre_ids) {
     valid_ids = Array(genre_ids).map(&:to_i).reject(&:zero?)
     return all if valid_ids.empty?
 
-    joins(spots: :spot_genres).where(spot_genres: { genre_id: valid_ids }).distinct
+    # 選択されたジャンルに子がある場合、子ジャンルのIDも追加
+    expanded_ids = Genre.where(id: valid_ids).includes(:children).flat_map do |genre|
+      [ genre.id ] + genre.children.pluck(:id)
+    end.uniq
+
+    joins(spots: :spot_genres).where(spot_genres: { genre_id: expanded_ids }).distinct
   }
 
   # キーワード検索（プラン名/スポット名/住所で部分一致）
