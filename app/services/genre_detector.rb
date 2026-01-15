@@ -65,9 +65,23 @@ class GenreDetector
         【選択可能なジャンル】
         #{genres_list}
 
+        【重要な判定ルール】
+        飲食店の場合は、できるだけ具体的なジャンル（ramen, sushi, izakaya等）を選んでください。
+        該当する具体的なジャンルがない場合のみ、gourmet/cafe/bar を選んでください。
+
+        観光名所の場合は、sightseeingと一緒に具体的なジャンルも選んでください：
+        - 城や史跡 → sightseeing, castle_historic
+        - 神社仏閣 → sightseeing, shrine_temple
+        - タワーや展望台 → sightseeing, observatory_tower
+        - 美術館 → sightseeing, art_gallery
+        - 博物館 → sightseeing, museum
+        - その他（夜景、世界遺産、パワースポット、古い町並み等）も同様に具体的なジャンルを併記
+
+        どのジャンルにも当てはまらない場合（病院、学校、役所など）は facility を選んでください。
+
         【回答形式】
         ジャンルのslug（英語）をカンマ区切りで回答してください。必ず#{count}個選んでください。
-        例: gourmet,cafe
+        例: cafe,sightseeing
 
         回答:
       PROMPT
