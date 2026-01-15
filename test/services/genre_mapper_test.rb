@@ -1,9 +1,11 @@
 require "test_helper"
 
 class GenreMapperTest < ActiveSupport::TestCase
-  test "map returns genre IDs for restaurant type" do
+  test "map returns empty for restaurant type (gourmet is fallback)" do
+    # gourmetはFALLBACK_GENRESなので、他のジャンルがなければ除外されない
     result = GenreMapper.map([ "restaurant", "food", "point_of_interest" ])
 
+    # gourmetのみの場合はgourmetが返る（フォールバック動作）
     assert_includes result, genres(:gourmet).id
   end
 
@@ -114,12 +116,12 @@ class GenreMapperTest < ActiveSupport::TestCase
     assert_includes result, genres(:sightseeing).id
   end
 
-  test "map excludes sightseeing with multiple specific genres" do
-    # レストラン + 公園 + 観光名所 の場合は観光名所を除外
+  test "map excludes fallback genres with specific genres" do
+    # レストラン + 公園 + 観光名所 の場合、gourmetとsightseeingはFALLBACKなので除外
     result = GenreMapper.map([ "restaurant", "park", "tourist_attraction" ])
 
-    assert_includes result, genres(:gourmet).id
     assert_includes result, genres(:park).id
-    assert_not_includes result, genres(:sightseeing).id
+    assert_not_includes result, genres(:gourmet).id  # FALLBACK_GENRE
+    assert_not_includes result, genres(:sightseeing).id  # FALLBACK_GENRE
   end
 end
