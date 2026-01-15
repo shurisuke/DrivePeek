@@ -8,12 +8,25 @@ import { normalizeDisplayAddress } from "map/geocoder"
 
 // 1個だけ使い回す（シングルトン）
 let infoWindow = null
+let mapClickListener = null
 
 const getInfoWindow = () => {
   if (!infoWindow) {
     infoWindow = new google.maps.InfoWindow()
   }
   return infoWindow
+}
+
+/**
+ * 地図クリック時にInfoWindowを閉じるリスナーを設定
+ */
+const setupMapClickToClose = () => {
+  const map = getMapInstance()
+  if (!map || mapClickListener) return
+
+  mapClickListener = map.addListener("click", () => {
+    closeInfoWindow()
+  })
 }
 
 
@@ -116,6 +129,9 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
   const photoUrl = extractPhotoUrl(place)
   const name = place.name
 
+  // 地図クリック時にInfoWindowを閉じるリスナーを設定
+  setupMapClickToClose()
+
   const iw = getInfoWindow()
   iw.setContent(
     buildInfoWindowHtml({
@@ -176,6 +192,9 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
 export const showInfoWindowForPin = ({ marker, name, address, photoUrl, editButtons }) => {
   const map = getMapInstance()
   if (!map) return
+
+  // 地図クリック時にInfoWindowを閉じるリスナーを設定
+  setupMapClickToClose()
 
   const iw = getInfoWindow()
 
