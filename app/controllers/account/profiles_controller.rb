@@ -9,12 +9,12 @@ class Account::ProfilesController < ApplicationController
     if current_user.update(profile_params)
       respond_to do |format|
         format.html { redirect_to account_profile_path, notice: "設定を更新しました" }
-        format.json { render json: { success: true, message: "設定を更新しました" } }
+        format.turbo_stream { flash.now[:notice] = "設定を更新しました" }
       end
     else
       respond_to do |format|
         format.html { redirect_to account_profile_path, alert: "更新に失敗しました" }
-        format.json { render json: { success: false, errors: current_user.errors.full_messages }, status: :unprocessable_entity }
+        format.turbo_stream { flash.now[:alert] = "更新に失敗しました" }
       end
     end
   end

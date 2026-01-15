@@ -14,17 +14,14 @@
         <span class="col-sm-8 mypage-data"><%= current_user.email %></span>
       </div>
 
-      <div class="mb-1 row"
-           data-controller="profile-status"
-           data-profile-status-url-value="<%= account_profile_path %>">
+      <%= form_with model: current_user, url: account_profile_path, method: :patch, class: "mb-1 row" do |f| %>
         <label class="col-sm-4 col-form-label form-label">公開・非公開設定</label>
         <div class="col-sm-8">
-          <select class="form-select" style="max-width: 120px;" data-action="change->profile-status#update">
-            <option value="active" <%= 'selected' if current_user.active? %>>公開</option>
-            <option value="hidden" <%= 'selected' if current_user.hidden? %>>非公開</option>
-          </select>
+          <%= f.select :status, [["公開", "active"], ["非公開", "hidden"]],
+                       {}, class: "form-select", style: "max-width: 120px;",
+                       onchange: "this.form.requestSubmit()" %>
         </div>
-      </div>
+      <% end %>
       <p class="mypage-note">※ 出発場所・帰宅場所・ユーザー名・メモは公開されません。</p>
     </form>
   </div>
