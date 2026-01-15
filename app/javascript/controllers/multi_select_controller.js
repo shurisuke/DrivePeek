@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
-  static targets = ["trigger", "dropdown", "checkbox", "hiddenField", "label", "prefectureGroup", "prefectureCheckbox"]
+  static targets = ["trigger", "dropdown", "checkbox", "label", "parentGroup", "parentCheckbox", "searchInput", "region"]
   static values = {
     placeholder: { type: String, default: "選択してください" }
   }
@@ -10,7 +10,7 @@ export default class extends Controller {
     // DOMが完全に準備できてからラベルを更新
     requestAnimationFrame(() => {
       this.updateLabel()
-      this.updateAllPrefectureCheckboxes()
+      this.updateAllParentCheckboxes()
     })
     this.boundCloseOnClickOutside = this.closeOnClickOutside.bind(this)
     this.boundCloseOtherDropdowns = this.closeOtherDropdowns.bind(this)
@@ -24,25 +24,128 @@ export default class extends Controller {
   }
 
   toggle(event) {
+    // input内のクリックは無視（フィルタ入力のため）
+    if (event.target.classList.contains("multi-select__input")) return
+
     event.stopPropagation()
     const isOpening = !this.dropdownTarget.classList.contains("is-open")
 
     if (isOpening) {
-      // 他のドロップダウンを閉じるイベントを発火
       document.dispatchEvent(new CustomEvent("multi-select:open", { detail: { source: this.element } }))
     }
 
     this.dropdownTarget.classList.toggle("is-open")
   }
 
+  open(event) {
+    event.stopPropagation()
+    if (!this.dropdownTarget.classList.contains("is-open")) {
+      document.dispatchEvent(new CustomEvent("multi-select:open", { detail: { source: this.element } }))
+      this.dropdownTarget.classList.add("is-open")
+    }
+  }
+
   close(event) {
     event.stopPropagation()
     this.dropdownTarget.classList.remove("is-open")
+    this.clearSearch()
+  }
+
+  // 検索フィルタ
+  filter(event) {
+    const query = event.target.value.toLowerCase().trim()
+
+    if (query === "") {
+      this.resetFilter()
+      return
+    }
+
+    // 親グループごとに処理
+    this.parentGroupTargets.forEach(group => {
+      const parentLabel = group.querySelector(".multi-select__parent-label span")
+      const parentName = parentLabel ? parentLabel.textContent.toLowerCase() : ""
+      const parentMatches = parentName.includes(query)
+
+      // 子要素をフィルタ
+      const children = group.querySelectorAll(".multi-select__option")
+      let hasVisibleChild = false
+
+      children.forEach(option => {
+        const cb = option.querySelector("[data-multi-select-target='checkbox']")
+        const childLabel = (cb?.dataset.label || "").toLowerCase()
+        const childMatches = childLabel.includes(query)
+
+        // 親または子がマッチすれば表示
+        if (parentMatches || childMatches) {
+          option.style.display = ""
+          hasVisibleChild = true
+        } else {
+          option.style.display = "none"
+        }
+      })
+
+      // グループの表示/非表示
+      if (hasVisibleChild || parentMatches) {
+        group.style.display = ""
+        group.classList.add("is-expanded")
+      } else {
+        group.style.display = "none"
+      }
+    })
+
+    // 親グループに属さない独立オプションもフィルタ
+    this.checkboxTargets.forEach(cb => {
+      const option = cb.closest(".multi-select__option")
+      if (!option) return
+
+      // 親グループ内の場合は既に処理済み
+      if (option.closest(".multi-select__parent-group")) return
+
+      const label = (cb.dataset.label || "").toLowerCase()
+      option.style.display = label.includes(query) ? "" : "none"
+    })
+
+    // 地方/カテゴリ: 表示中の要素がなければ非表示
+    if (this.hasRegionTarget) {
+      this.regionTargets.forEach(region => {
+        const visibleItems = region.querySelectorAll(".multi-select__option:not([style*='display: none']), .multi-select__parent-group:not([style*='display: none'])")
+        region.style.display = visibleItems.length > 0 ? "" : "none"
+      })
+    }
+  }
+
+  // フィルタをリセット
+  resetFilter() {
+    this.checkboxTargets.forEach(cb => {
+      const option = cb.closest(".multi-select__option")
+      if (option) option.style.display = ""
+    })
+
+    this.parentGroupTargets.forEach(group => {
+      group.style.display = ""
+      group.classList.remove("is-expanded")
+    })
+
+    if (this.hasRegionTarget) {
+      this.regionTargets.forEach(region => {
+        region.style.display = ""
+      })
+    }
+  }
+
+  // 検索入力をクリア
+  clearSearch() {
+    if (this.hasSearchInputTarget) {
+      this.resetFilter()
+      // ラベルを復元（選択状態を反映）
+      this.updateLabel()
+    }
   }
 
   closeOnClickOutside(event) {
     if (!this.element.contains(event.target)) {
       this.dropdownTarget.classList.remove("is-open")
+      this.clearSearch()
     }
   }
 
@@ -53,28 +156,27 @@ export default class extends Controller {
     }
   }
 
-  // 都道府県グループを展開/折りたたみ
-  togglePrefecture(event) {
+  // 親グループを展開/折りたたみ
+  toggleParent(event) {
     event.stopPropagation()
-    const group = event.currentTarget.closest("[data-multi-select-target='prefectureGroup']")
+    const group = event.currentTarget.closest("[data-multi-select-target='parentGroup']")
     if (group) {
       group.classList.toggle("is-expanded")
     }
   }
 
-  // 都道府県チェックボックス選択時（配下の市区町村を全選択/全解除）
-  selectPrefecture(event) {
+  // 親チェックボックス選択時（配下の子を全選択/全解除）
+  selectParent(event) {
     event.stopPropagation()
-    const prefCheckbox = event.currentTarget
-    const group = prefCheckbox.closest("[data-multi-select-target='prefectureGroup']")
+    const parentCheckbox = event.currentTarget
+    const group = parentCheckbox.closest("[data-multi-select-target='parentGroup']")
     if (!group) return
 
-    const cityCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
-    cityCheckboxes.forEach(cb => {
-      cb.checked = prefCheckbox.checked
+    const childCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
+    childCheckboxes.forEach(cb => {
+      cb.checked = parentCheckbox.checked
     })
 
-    this.updateHiddenFields()
     this.updateLabel()
   }
 
@@ -83,78 +185,73 @@ export default class extends Controller {
     event.stopPropagation()
   }
 
-  // 市区町村チェックボックス選択時
+  // 子チェックボックス選択時
   select(event) {
     event.stopPropagation()
 
-    // 親の都道府県チェックボックスの状態を更新
-    const group = event.currentTarget.closest("[data-multi-select-target='prefectureGroup']")
+    // 親チェックボックスの状態を更新
+    const group = event.currentTarget.closest("[data-multi-select-target='parentGroup']")
     if (group) {
-      this.updatePrefectureCheckbox(group)
+      this.updateParentCheckbox(group)
     }
 
-    this.updateHiddenFields()
     this.updateLabel()
   }
 
-  // 都道府県チェックボックスの状態を更新（全選択/一部選択/未選択）
-  updatePrefectureCheckbox(group) {
-    const prefCheckbox = group.querySelector("[data-multi-select-target='prefectureCheckbox']")
-    if (!prefCheckbox) return
+  // 親チェックボックスの状態を更新（全選択/一部選択/未選択）
+  updateParentCheckbox(group) {
+    const parentCheckbox = group.querySelector("[data-multi-select-target='parentCheckbox']")
+    if (!parentCheckbox) return
 
-    const cityCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
-    const checkedCount = Array.from(cityCheckboxes).filter(cb => cb.checked).length
-    const totalCount = cityCheckboxes.length
+    const childCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
+    const checkedCount = Array.from(childCheckboxes).filter(cb => cb.checked).length
+    const totalCount = childCheckboxes.length
 
     if (checkedCount === 0) {
-      prefCheckbox.checked = false
-      prefCheckbox.indeterminate = false
+      parentCheckbox.checked = false
+      parentCheckbox.indeterminate = false
     } else if (checkedCount === totalCount) {
-      prefCheckbox.checked = true
-      prefCheckbox.indeterminate = false
+      parentCheckbox.checked = true
+      parentCheckbox.indeterminate = false
     } else {
-      prefCheckbox.checked = false
-      prefCheckbox.indeterminate = true
+      parentCheckbox.checked = false
+      parentCheckbox.indeterminate = true
     }
   }
 
-  // すべての都道府県チェックボックスの状態を更新
-  updateAllPrefectureCheckboxes() {
-    this.prefectureGroupTargets.forEach(group => {
-      this.updatePrefectureCheckbox(group)
-    })
-  }
-
-  updateHiddenFields() {
-    this.hiddenFieldTargets.forEach(field => field.remove())
-
-    const selected = this.checkboxTargets.filter(cb => cb.checked)
-    selected.forEach(cb => {
-      const hidden = document.createElement("input")
-      hidden.type = "hidden"
-      hidden.name = this.element.dataset.multiSelectName
-      hidden.value = cb.value
-      hidden.dataset.multiSelectTarget = "hiddenField"
-      this.element.appendChild(hidden)
+  // すべての親チェックボックスの状態を更新
+  updateAllParentCheckboxes() {
+    this.parentGroupTargets.forEach(group => {
+      this.updateParentCheckbox(group)
     })
   }
 
   updateLabel() {
     const selected = this.checkboxTargets.filter(cb => cb.checked)
+    const isInput = this.labelTarget.tagName === "INPUT"
+
     if (selected.length === 0) {
-      this.labelTarget.textContent = this.placeholderValue
-      this.labelTarget.classList.add("is-placeholder")
+      if (isInput) {
+        this.labelTarget.value = ""
+        this.labelTarget.placeholder = this.placeholderValue
+      } else {
+        this.labelTarget.textContent = this.placeholderValue
+        this.labelTarget.classList.add("is-placeholder")
+      }
     } else {
-      // 「都道府県/city, city」形式でグループ化して表示
       const labelText = this.formatSelectedLabel(selected)
-      this.labelTarget.textContent = labelText
-      this.labelTarget.classList.remove("is-placeholder")
+      if (isInput) {
+        this.labelTarget.value = labelText
+      } else {
+        this.labelTarget.textContent = labelText
+        this.labelTarget.classList.remove("is-placeholder")
+      }
     }
   }
 
-  // 選択されたアイテムを「都道府県(city, city)」形式でフォーマット
+  // 選択されたアイテムを「親(子, 子)」形式でフォーマット
   formatSelectedLabel(selected) {
-    // valueが "都道府県/市区町村" 形式かチェック
+    // valueが "親/子" 形式かチェック（エリアの場合）
     const hasSlash = selected.some(cb => cb.value.includes("/"))
 
     if (!hasSlash) {
@@ -162,45 +259,45 @@ export default class extends Controller {
       return selected.map(cb => cb.dataset.label).join(", ")
     }
 
-    // 都道府県ごとの全市区町村数を取得
-    const totalCitiesByPref = this.getTotalCitiesByPrefecture()
+    // 親グループごとの子要素数を取得
+    const childCountByParent = this.getChildCountByParent()
 
-    // 都道府県ごとにグループ化
+    // 親ごとにグループ化
     const grouped = {}
     selected.forEach(cb => {
-      const [prefecture, city] = cb.value.split("/", 2)
-      if (!grouped[prefecture]) {
-        grouped[prefecture] = []
+      const [parent, child] = cb.value.split("/", 2)
+      if (!grouped[parent]) {
+        grouped[parent] = []
       }
-      grouped[prefecture].push(city)
+      grouped[parent].push(child)
     })
 
-    // 「都道府県(city, city)」形式に変換（全選択時は都道府県名のみ）
-    return Object.entries(grouped).map(([pref, cities]) => {
-      const totalCities = totalCitiesByPref[pref] || 0
-      if (cities.length === totalCities) {
-        // 全市区町村が選択されている場合は都道府県名のみ
-        return pref
+    // 「親(子, 子)」形式に変換（全選択時は親名のみ）
+    return Object.entries(grouped).map(([parent, children]) => {
+      const totalChildren = childCountByParent[parent] || 0
+      if (children.length === totalChildren) {
+        // 全子要素が選択されている場合は親名のみ
+        return parent
       }
-      return `${pref}(${cities.join(", ")})`
+      return `${parent}(${children.join(", ")})`
     }).join(", ")
   }
 
-  // 都道府県ごとの全市区町村数を取得
-  getTotalCitiesByPrefecture() {
+  // 親グループごとの子要素数を取得
+  getChildCountByParent() {
     const result = {}
-    this.prefectureGroupTargets.forEach(group => {
-      const prefCheckbox = group.querySelector("[data-multi-select-target='prefectureCheckbox']")
-      if (!prefCheckbox) return
+    this.parentGroupTargets.forEach(group => {
+      const parentCheckbox = group.querySelector("[data-multi-select-target='parentCheckbox']")
+      if (!parentCheckbox) return
 
-      // 都道府県名を取得（ラベルのspanから）
-      const label = group.querySelector(".multi-select__prefecture-label span:first-of-type")
+      // 親名を取得（ラベルのspanから）
+      const label = group.querySelector(".multi-select__parent-label span:first-of-type")
       if (!label) return
-      const prefName = label.textContent.trim()
+      const parentName = label.textContent.trim()
 
-      // 市区町村数を取得
-      const cityCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
-      result[prefName] = cityCheckboxes.length
+      // 子要素数を取得
+      const childCheckboxes = group.querySelectorAll("[data-multi-select-target='checkbox']")
+      result[parentName] = childCheckboxes.length
     })
     return result
   }
