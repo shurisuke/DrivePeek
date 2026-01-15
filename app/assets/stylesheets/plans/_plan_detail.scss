@@ -8,7 +8,7 @@
 @use "../ui/genre_chip" as *;
 
 body.no-footer .plan-detail {
-  --navibar-width: 350px;
+  --navibar-width: 360px;
   --navibar-slide: 0px;
   --map-gap: 0px;
 
@@ -244,8 +244,8 @@ body.no-footer .plan-detail {
       width: 100%;
 
       /* プランバー幅に応じて両端に余白を追加 */
-      padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
-      padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+      padding-left: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
+      padding-right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
     }
 
     .spot-order-icon {

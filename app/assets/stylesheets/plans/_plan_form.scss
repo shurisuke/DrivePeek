@@ -43,7 +43,7 @@ body.no-footer {
 
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
-    --navibar-width: 340px;
+    --navibar-width: 360px;
     --navibar-slide: 0px;
     --rail-width: 60px; /* JSで動的に更新（ナビバー拡大時に縮小） */
     --navibar-zoom: 1; /* JSで動的に更新 */

@@ -12,7 +12,7 @@ export default class extends Controller {
   static values = {
     min: { type: Number, default: 300 },
     maxPercent: { type: Number, default: 70 },
-    default: { type: Number, default: 340 },
+    default: { type: Number, default: 360 },
     railWidth: { type: Number, default: 60 },
     storageKey: { type: String, default: "drive_peek:navibar_width" },
     collapsedKey: { type: String, default: "drive_peek:navibar_collapsed" },
