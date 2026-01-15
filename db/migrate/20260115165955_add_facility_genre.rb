@@ -1,5 +1,6 @@
 class AddFacilityGenre < ActiveRecord::Migration[8.1]
   def up
+    Genre.reset_column_information
     max_position = Genre.maximum(:position) || 0
     Genre.create!(
       slug: "facility",

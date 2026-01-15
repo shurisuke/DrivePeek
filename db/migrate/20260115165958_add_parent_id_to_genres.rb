@@ -19,6 +19,7 @@ class AddParentIdToGenres < ActiveRecord::Migration[8.1]
   }.freeze
 
   def up
+    Genre.reset_column_information
     add_column :genres, :parent_id, :bigint
     add_index :genres, :parent_id
     add_foreign_key :genres, :genres, column: :parent_id

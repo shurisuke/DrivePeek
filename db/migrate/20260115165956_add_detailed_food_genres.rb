@@ -46,6 +46,7 @@ class AddDetailedFoodGenres < ActiveRecord::Migration[8.1]
   ].freeze
 
   def up
+    Genre.reset_column_information
     max_position = Genre.maximum(:position) || 0
 
     DETAILED_GENRES.each.with_index(1) do |attrs, index|
