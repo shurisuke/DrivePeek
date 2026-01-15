@@ -38,6 +38,11 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
+    # スポットのジャンル取得（Turbo Frame lazy loading）
+    resources :spots, only: [] do
+      resource :genres, only: [:show], controller: "spots/genres"
+    end
+
     resources :plans, only: [] do
       resource :preview, only: %i[show], controller: "plans/previews"
       resource :start_point, only: %i[update]

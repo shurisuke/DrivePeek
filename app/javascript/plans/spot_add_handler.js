@@ -57,6 +57,13 @@ const handleSpotAdd = async (event) => {
     // スポット追加後はプランタブをアクティブにし、地図ルートを更新
     document.dispatchEvent(new CustomEvent("navibar:activate-tab", { detail: { tab: "plan" } }))
     document.dispatchEvent(new CustomEvent("map:route-updated"))
+
+    // 新しいスポットまでスクロール
+    requestAnimationFrame(() => {
+      const spots = document.querySelectorAll(".spot-block")
+      const lastSpot = spots[spots.length - 1]
+      if (lastSpot) lastSpot.scrollIntoView({ behavior: "smooth", block: "center" })
+    })
   } catch (err) {
     alert(err.message)
   }

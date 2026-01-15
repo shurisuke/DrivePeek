@@ -102,27 +102,24 @@ class Spot < ApplicationRecord
     "https://maps.googleapis.com/maps/api/place/photo?maxwidth=#{max_width}&photo_reference=#{photo_reference}&key=#{api_key}"
   end
 
-  # Google Places の types からジャンルを割り当てる（常に2個）
-  # - 既にジャンルがある場合はスキップ
-  # - GenreMapper でマッピング（最大2個）
-  # - 2個未満の場合は AI で補完（同期）
-  def assign_genres_from_types(top_types)
-    return if genres.exists?
+  # AIでジャンルを判定して割り当てる（遅延ロード用）
+  # @return [Boolean] 判定が行われたか
+  def detect_genres!
+    return false if genres.count >= 2
 
-    genre_ids = GenreMapper.map(Array(top_types))
+    detected_ids = GenreDetector.detect(self, count: 2)
 
-    # マッピングされたジャンルを紐付け
-    genre_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
-
-    if genre_ids.size >= 2
-      Rails.logger.info "[Spot##{id}] ジャンルをマッピング: #{genre_ids}"
-    else
-      # 2個未満の場合は AI で補完（同期）
-      detect_and_assign_remaining_genres(genre_ids)
+    # AI失敗時は facility をフォールバック（無限ループ防止）
+    if detected_ids.empty?
+      facility = Genre.find_by(slug: "facility")
+      detected_ids = [facility.id] if facility
     end
+
+    detected_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
+    detected_ids.any?
   rescue StandardError => e
-    # ジャンル判定の失敗はスポット追加自体には影響させない
-    Rails.logger.error "[Spot##{id}] ジャンル割り当てエラー: #{e.message}"
+    Rails.logger.error "[Spot##{id}] ジャンル判定エラー: #{e.message}"
+    false
   end
 
   # Google Places のペイロードを適用
@@ -144,24 +141,6 @@ class Spot < ApplicationRecord
   end
 
   private
-
-  # AI でジャンルを補完（2個になるまで）
-  def detect_and_assign_remaining_genres(existing_ids)
-    needed = 2 - existing_ids.size
-    return if needed <= 0
-
-    detected_ids = GenreDetector.detect(self, count: needed, exclude_ids: existing_ids)
-
-    if detected_ids.empty? && existing_ids.empty?
-      # AI判定も失敗し、ジャンルが0個の場合は facility をフォールバック
-      facility = Genre.find_by(slug: "facility")
-      detected_ids = [ facility.id ] if facility
-    end
-
-    detected_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
-
-    Rails.logger.info "[Spot##{id}] ジャンル#{existing_ids.size}個マッピング + AI補完#{detected_ids.size}個"
-  end
 
   def geocode_if_needed
     return if prefecture.present? && city.present?

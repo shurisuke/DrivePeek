@@ -38,7 +38,7 @@
                tabindex="0"><%= spot.name %></div>
         <% end %>
 
-        <%= render "spots/genres", spot: spot, loading: spot.genres.empty? %>
+        <%= render "spots/genres", spot: spot %>
 
         <% if spot.address.present? %>
           <div class="spot-address"><%= spot.address %></div>
