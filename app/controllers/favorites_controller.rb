@@ -30,7 +30,7 @@ class FavoritesController < ApplicationController
     @search_query = params[:q]
     @selected_cities = Array(params[:cities]).reject(&:blank?)
     @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
-    @genres = Genre.ordered
+    @genres_by_category = Genre.grouped_by_category
     @cities_by_prefecture = Spot.cities_by_prefecture
   end
 end
