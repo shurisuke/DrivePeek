@@ -27,6 +27,20 @@ class GenreMapper
 
     # 公園
     "park" => "park",
+    "national_park" => "park",
+
+    # 海・海岸
+    "beach" => "sea_coast",
+
+    # 山・高原
+    "hiking_area" => "mountain",
+
+    # 花・庭園
+    "garden" => "garden_flower",
+
+    # 城・史跡
+    "historical_place" => "castle_historic",
+    "monument" => "castle_historic",
 
     # 博物館
     "museum" => "museum",
@@ -67,10 +81,24 @@ class GenreMapper
     "mosque" => "shrine_temple",
     "synagogue" => "shrine_temple",
 
-    # アクティビティ
-    "gym" => "activity",
-    "stadium" => "activity",
-    "bowling_alley" => "activity",
+    # ジム
+    "gym" => "gym",
+
+    # ボウリング場
+    "bowling_alley" => "bowling",
+
+    # ゴルフ場
+    "golf_course" => "golf_course",
+
+    # スキー場
+    "ski_resort" => "ski_resort",
+
+    # プール
+    "water_park" => "water_park",
+    "swimming_pool" => "water_park",
+
+    # 映画館
+    "movie_theater" => "movie_theater",
 
     # 観光名所（汎用的なので最後に判定）
     "tourist_attraction" => "sightseeing"
@@ -78,13 +106,11 @@ class GenreMapper
 
   # マッピング不可能な場合に AI フォールバックが必要な Genre slugs
   AI_REQUIRED_GENRES = %w[
-    sea_coast
-    mountain
     lake_waterfall
-    garden_flower
     scenic_view
-    castle_historic
     roadside_station
+    activity
+    sauna
   ].freeze
 
   # 他のジャンルがマッチした場合に除外する汎用ジャンル
