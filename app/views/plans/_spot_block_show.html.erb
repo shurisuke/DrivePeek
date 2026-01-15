@@ -18,7 +18,7 @@
   data-place-id="<%= spot.place_id %>"
 >
   <div class="block-main-content">
-    <%# ✅ 3層構造: アイコン | スポット名 | ピンボタン %>
+    <%# ✅ 3層構造: アイコン | コンテンツ | スペーサー %>
     <div class="spot-main">
       <div class="spot-order-icon"
            data-controller="navibar-marker-button"
@@ -35,39 +35,30 @@
                role="button"
                tabindex="0"><%= spot.name %></div>
         <% end %>
+
+        <%= render "spots/genres", spot: spot, loading: false %>
+
+        <% if spot.address.present? %>
+          <div class="spot-address"><%= spot.address %></div>
+        <% end %>
+
+        <%# ✅ 次の場所まで（spot-body内に配置） %>
+        <% unless is_last_spot %>
+          <div class="spot-next-move">
+            <span class="label">次の場所まで</span>
+            <span class="km">
+              <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
+            </span>
+            <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
+          </div>
+          <% if plan_spot.toll_used %>
+            <div class="toll-indicator">有料道路使用あり</div>
+          <% end %>
+        <% end %>
       </div>
 
       <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
       <div class="spot-spacer" aria-hidden="true"></div>
     </div>
-
-    <%# ✅ ジャンル・住所（3層構造の下に配置、左右padding 10px） %>
-    <div class="spot-meta">
-      <% if spot.genres.any? %>
-        <div class="spot-genres">
-          <% spot.genres.each do |genre| %>
-            <span class="genre-chip"><%= genre.name %></span>
-          <% end %>
-        </div>
-      <% end %>
-
-      <% if spot.address.present? %>
-        <div class="spot-address"><%= spot.address %></div>
-      <% end %>
-    </div>
-
-    <%# ✅ 次の場所まで（3カラム構造の外に配置） %>
-    <% unless is_last_spot %>
-      <div class="spot-next-move">
-        <span class="label">次の場所まで</span>
-        <span class="km">
-          <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
-        </span>
-        <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
-      </div>
-      <% if plan_spot.toll_used %>
-        <div class="toll-indicator">有料道路使用あり</div>
-      <% end %>
-    <% end %>
   </div>
 </div>

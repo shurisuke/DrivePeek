@@ -51,6 +51,10 @@
 
 /* ✅ カード見た目はメイン側へ */
 .spot-block .block-main-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+
   background: #ffffff;
   border-radius: 6px;
 
@@ -110,10 +114,12 @@
   gap: 10px;
   margin-bottom: 0;
   position: relative;
+  width: 100%;
 
   /* プランバー幅に応じて両端に余白を追加 */
-  padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
-  padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+  padding-left: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
+  padding-right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
+  box-sizing: border-box;
 }
 
 .spot-block .spot-order-icon {
@@ -204,12 +210,21 @@
 }
 
 /* ------------------------------------------
-   住所・ジャンルラッパー（3層構造の下に配置）
+   ジャンル・住所（.spot-body 内に配置）
 ------------------------------------------ */
 
-.spot-block .spot-meta {
-  padding: 0 10px;
-  margin-top: 0;
+.spot-block .spot-genres {
+  @include genre-list;
+  justify-content: center;
+  margin-top: 2px;
+}
+
+.spot-block .genre-chip {
+  @include genre-chip-sm;
+}
+
+.spot-block .genre-chip--skeleton {
+  @include genre-chip-skeleton;
 }
 
 .spot-block .spot-address {
@@ -218,23 +233,17 @@
   color: rgba(82, 82, 82, 0.78);
   margin-top: 8px;
 
+  /* 長い住所を省略表示（.spot-body の min-width: 0 により機能） */
+  display: block;
+  width: 100%;
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
+  box-sizing: border-box;
 
-/* ------------------------------------------
-   ジャンル（共通mixinを使用）
------------------------------------------- */
-
-.spot-block .spot-genres {
-  @include genre-list;
-  justify-content: center;
-  margin-top: 0;
-}
-
-.spot-block .genre-chip {
-  @include genre-chip-sm;
+  /* ナビバー拡大時に両端に最大20pxの余白を追加（初期幅360pxから計算） */
+  padding-left: min(20px, max(0px, (var(--navibar-width, 360px) - 360px) * 0.1));
+  padding-right: min(20px, max(0px, (var(--navibar-width, 360px) - 360px) * 0.1));
 }
 
 /* ------------------------------------------
@@ -290,7 +299,7 @@
   position: absolute;
   top: 50%;
   /* プランバー幅に応じて位置を変化（アイコンと同じ伸縮感・右側バージョン） */
-  right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.40));
+  right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.40));
   transform: translateY(-50%);
 
   z-index: 30;

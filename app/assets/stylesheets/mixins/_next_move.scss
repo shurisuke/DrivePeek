@@ -10,16 +10,16 @@
   border: 0;
   border-radius: 0;
 
-  /* ナビバー幅に応じて動的に縮小（300px時: 225px, 340px時: 265px） */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+  /* ナビバー幅に応じて動的に縮小（300px時: 225px, 360px時: 285px） */
+  width: calc(225px + (var(--navibar-width, 360px) - 300px) * 1);
   max-width: 265px;
   font-size: 0.8rem;
 
   display: grid;
   grid-template-columns: 1fr auto auto;
   align-items: center;
-  /* ナビバー幅に応じてgapを動的に調整（300px時: 4px, 340px以上: 10px固定） */
-  gap: min(10px, calc(4px + (var(--navibar-width, 340px) - 300px) * 0.15));
+  /* ナビバー幅に応じてgapを動的に調整（300px時: 4px, 360px以上: 10px固定） */
+  gap: min(10px, calc(4px + (var(--navibar-width, 360px) - 300px) * 0.15));
 
   margin: 20px auto 8px;
   padding: 0 10px;
@@ -38,8 +38,8 @@
     font-size: calc(1em + 2px);
     color: #2d2d2d;
 
-    /* ナビバー幅に応じて動的に調整（300px時: 6px, 340px以上: 12px固定） */
-    padding-left: min(12px, calc(6px + (var(--navibar-width, 340px) - 300px) * 0.15));
+    /* ナビバー幅に応じて動的に調整（300px時: 6px, 360px以上: 12px固定） */
+    padding-left: min(12px, calc(6px + (var(--navibar-width, 360px) - 300px) * 0.15));
     border-left: 1px solid rgba(0, 0, 0, 0.10);
   }
 

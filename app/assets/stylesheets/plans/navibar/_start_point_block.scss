@@ -29,8 +29,8 @@
     margin-bottom: 6px;
 
     /* プランバー幅に応じて両端に余白を追加 */
-    padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
-    padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+    padding-left: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
+    padding-right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
   }
 
   /* 左: 家アイコン（クリック可能） */
@@ -109,7 +109,7 @@
 
   /* ✅ 住所ラッパー（次の場所まで行と同じ幅で中央寄せ） */
   .start-point-meta {
-    width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+    width: calc(225px + (var(--navibar-width, 360px) - 300px) * 1);
     max-width: 265px;
     margin: 0 auto;
     padding: 0 10px;

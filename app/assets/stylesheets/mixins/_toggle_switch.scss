@@ -81,7 +81,7 @@
 /* ✅ 有料道路トグル行の共通レイアウト */
 @mixin toll-row-layout {
   /* ナビバー幅に応じて動的に縮小 */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
+  width: calc(225px + (var(--navibar-width, 360px) - 300px) * 1);
   max-width: 265px;
   margin: 0 auto;
   padding: 0 10px;
