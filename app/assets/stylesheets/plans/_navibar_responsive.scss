@@ -1,0 +1,68 @@
+/* ==========================================
+   ナビバー幅に応じたレスポンシブスタイル
+   --navibar-width 係数による動的調整を一元管理
+
+   【余白の方向まとめ】
+   ┌─────────────────────────────────────────┐
+   │  .plan-tab-content                      │
+   │  ├─ padding-left  : 時刻レール側        │
+   │  └─ padding-right : ナビバー端側        │
+   │                                         │
+   │  .navibar-padding（共通クラス）         │
+   │  └─ 係数0.125で左右padding              │
+   │     住所行 / 有料道路行 / 次の場所まで  │
+   │     ジャンル行 / 表示メモ               │
+   └─────────────────────────────────────────┘
+========================================== */
+
+/* ------------------------------------------
+   プランタブコンテンツ
+   - padding-left  : 時刻レール側（初期5px→0px縮小 + 360px以降拡大）
+   - padding-right : ナビバー右端側（360px以降拡大）
+------------------------------------------ */
+.plan-tab-content {
+  padding-left: calc(
+    max(0px, 5px - (var(--navibar-width, 360px) - 360px) * 0.025)
+    + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25)
+  );
+  padding-right: max(0px, (var(--navibar-width, 360px) - 360px) * 0.25);
+  min-width: 0;
+}
+
+/* ------------------------------------------
+   共通左右余白（係数0.125）
+   .navibar-padding クラスで一括管理
+   - 住所行 / 有料道路行
+   - ジャンル行 / 表示メモ
+   360px以降で左右に余白を追加
+------------------------------------------ */
+.navibar-padding {
+  width: 100%;
+  min-width: 0;
+  padding-left: calc(15px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.125));
+  padding-right: calc(15px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.125));
+  box-sizing: border-box;
+}
+
+/* ------------------------------------------
+   次の場所まで行 / 有料道路行（幅の係数制御）
+   - 基本幅: 235px
+   - 最大幅: 300px
+   - 係数0.125でナビバー拡大に応じて拡大
+------------------------------------------ */
+.start-next-move,
+.spot-next-move,
+.start-toll-row,
+.spot-block .spot-toll-row {
+  width: min(260px, calc(235px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
+  margin-left: auto;
+  margin-right: auto;
+}
+
+/* ------------------------------------------
+   メモ削除ボタン位置
+   - right : ブロック右端からの距離（360px以降で離れる）
+------------------------------------------ */
+.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete {
+  right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.40));
+}

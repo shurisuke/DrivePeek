@@ -1,4 +1,4 @@
-<%# app/views/plans/_goal_point_block.html.erb %>
+<%# app/views/plans/_goal_point_block_edit.html.erb %>
 <% plan ||= @plan %>
 <% goal_point = plan.goal_point %>
 
@@ -12,52 +12,49 @@
          data-controller="goal-point-editor"
          data-lat="<%= goal_point&.lat %>"
          data-lng="<%= goal_point&.lng %>">
-      <%# ✅ 左側: 既存コンテンツ（350px） %>
-      <div class="block-main-content">
-        <div class="goal-point-main">
-          <span class="goal-point-icon"
-                data-controller="navibar-marker-button"
-                data-point-type="goal"
-                data-action="click->navibar-marker-button#point"
-                role="button"
-                tabindex="0"
-                aria-label="帰宅地点を地図で表示"></span>
+      <%# ✅ 上部：帰宅コンテンツ %>
+      <div class="goal-content">
+          <%# 3層構造: アイコン | タイトル | スペーサー %>
+          <div class="goal-header">
+            <span class="goal-icon"
+                  data-controller="navibar-marker-button"
+                  data-point-type="goal"
+                  data-action="click->navibar-marker-button#point"
+                  role="button"
+                  tabindex="0"
+                  aria-label="帰宅地点を地図で表示"></span>
 
-          <div class="goal-label">
-            <div class="goal-title-row">
-              <span class="goal-title goal-title--clickable"
-                    data-controller="navibar-marker-button"
-                    data-point-type="goal"
-                    data-action="click->navibar-marker-button#point"
-                    role="button"
-                    tabindex="0">帰宅</span>
-            </div>
+            <span class="goal-title goal-title--clickable"
+                  data-controller="navibar-marker-button"
+                  data-point-type="goal"
+                  data-action="click->navibar-marker-button#point"
+                  role="button"
+                  tabindex="0">帰宅</span>
+
+            <div class="goal-spacer" aria-hidden="true"></div>
           </div>
 
-          <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
-          <div class="goal-point-spacer" aria-hidden="true"></div>
-        </div>
-
-        <%# ✅ 住所（spot-metaと同じ構造で、goal-point-mainの外に配置） %>
-        <div class="goal-point-meta">
-          <span class="address" data-goal-point-editor-target="address">
+          <%# 住所 %>
+          <div class="goal-address navibar-padding" data-goal-point-editor-target="address">
             <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
-          </span>
+          </div>
         </div>
+        <%# /.goal-content %>
 
+        <%# 帰宅地点変更フォーム（トグル詳細内に配置） %>
         <div
           id="goal-point-edit-<%= plan.id %>"
-          class="goal-point-edit"
+          class="goal-edit"
           hidden
           data-goal-point-editor-target="editArea"
         >
-          <div class="goal-point-edit__inner">
-            <label for="goal-point-address-<%= plan.id %>" class="goal-point-edit__label">帰宅地点を変更</label>
+          <div class="goal-edit__inner">
+            <label for="goal-point-address-<%= plan.id %>" class="goal-edit__label">帰宅地点を変更</label>
 
             <input
               id="goal-point-address-<%= plan.id %>"
               type="text"
-              class="form-control goal-point-edit__input"
+              class="form-control goal-edit__input"
               placeholder="（例: 〇〇市〇〇町〇〇-〇）"
               autocomplete="off"
               data-goal-point-editor-target="input"
@@ -74,39 +71,22 @@
             </div>
           </div>
         </div>
-
-      </div>
-
-      <%# ✅ 右側: 時刻パネル（ON時のみ表示 / 矢印なし） %>
-      <div class="block-time-panel">
-        <div class="block-time-panel__main">
-          <div class="time-display">
-            <span class="time-display__label">到着</span>
-            <span class="time-display__value"><%= goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
-          </div>
-        </div>
       </div>
     </div>
-  </div>
 
   <% if plan.plan_spots.exists? %>
     <%# ✅ 帰宅地点トグル（出発地点の有料道路トグルと同じ見た目に統一） %>
     <div class="goal-point-toggle-row">
       <span class="label">帰宅地点</span>
-
-      <div class="toll-switch">
-        <div class="form-check form-switch m-0">
-          <input
-            class="form-check-input"
-            type="checkbox"
-            role="switch"
-            id="goal-point-visibility-switch-<%= plan.id %>"
-            aria-label="帰宅地点の表示を切り替える"
-            data-goal-point-visibility-target="switch"
-            data-action="change->goal-point-visibility#toggle"
-          >
-        </div>
-      </div>
+      <input
+        class="option-switch"
+        type="checkbox"
+        role="switch"
+        id="goal-point-visibility-switch-<%= plan.id %>"
+        aria-label="帰宅地点の表示を切り替える"
+        data-goal-point-visibility-target="switch"
+        data-action="change->goal-point-visibility#toggle"
+      >
     </div>
   <% end %>
 </div>

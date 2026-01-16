@@ -1,6 +1,6 @@
 /* ==========================================
      出発地点ブロック
-     goal_point_block と同じ見た目・密度に揃える
+     spot_block と同じ構造に統一
 ========================================== */
 
 @use "../../mixins/toggle_switch" as *;
@@ -12,31 +12,41 @@
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
-  padding: 16px 0px;
   margin-top: 0;
-
   overflow: visible;
 
+  /* block-main-contentから統合 */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  /* ✅ 上部：出発コンテンツ（時刻レールと高さ同期する部分） */
+  .start-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 15px 0;
+  }
+
   /* ------------------------------------------
-     上段：出発（3カラムFlexbox構造）
-     - [アイコン] [ラベル] [地図ボタン]
+     ヘッダー（3カラム構造）
+     - [アイコン] [タイトル] [スペーサー]
   ------------------------------------------ */
-  .start-point-main {
+  .start-header {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    margin-top: 12px;
-    margin-bottom: 6px;
-
-    /* プランバー幅に応じて両端に余白を追加 */
-    padding-left: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
-    padding-right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
+    gap: 2px;
+    margin-bottom: 0;
+    position: relative;
+    width: 100%;
   }
 
   /* 左: 家アイコン（クリック可能） */
-  .start-point-icon {
+  .start-icon {
     flex-shrink: 0;
     margin-top: -10px;
+    margin-left: 3px;
 
     width: 40px;
     height: 43px;
@@ -64,30 +74,27 @@
   }
 
   /* ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） */
-  .start-point-spacer {
+  .start-spacer {
     flex-shrink: 0;
     width: 40px;
+    margin-right: 3px;
   }
 
-  /* 中央: ラベル */
-  .start-label {
+  /* 中央: タイトル */
+  .start-title {
     flex: 1 1 auto;
     min-width: 0;
-  }
 
-  .start-title-row {
-    position: relative;
-    text-align: center;
-    margin-bottom: 9px;
-  }
-
-  .start-title {
-    display: inline;
-    font-weight: 700;
-    color: #111;
+    padding-top: 2px;
     font-size: 17px;
-    line-height: 1.1;
-    margin: 0;
+    font-weight: 700;
+    text-align: center;
+    color: #111;
+    margin-bottom: 0;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* ✅ クリック可能な出発タイトル（地図パン機能） */
@@ -107,107 +114,71 @@
     }
   }
 
-  /* ✅ 住所ラッパー（次の場所まで行と同じ幅で中央寄せ） */
-  .start-point-meta {
-    width: calc(225px + (var(--navibar-width, 360px) - 300px) * 1);
-    max-width: 265px;
-    margin: 0 auto;
-    padding: 0 10px;
-    box-sizing: border-box;
-  }
-
-  .address {
+  /* ------------------------------------------
+     住所
+  ------------------------------------------ */
+  .start-address {
     width: 100%;
-    min-width: 0;
+    margin: 0 auto;
+    padding-top: 5px;
+    padding-bottom: 5px;
+    box-sizing: border-box;
 
-    color: #525252c5;
-    font-size: 13px;
-
+    color: rgba(82, 82, 82, 0.78);
+    font-size: 12px;
     text-align: center;
     line-height: 1.2;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    display: block;
   }
 
   /* 次の場所まで（共通mixinを使用） */
   .start-next-move {
     @include next-move-grid;
+    margin-top: 10px;
+    margin-bottom: 0;
   }
 
-  .start-point-detail-wrap {
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    width: 100%;
-  }
-
-  .start-point-detail,
-  .start-point-detail.collapse.show {
+  /* ------------------------------------------
+     トグル詳細
+  ------------------------------------------ */
+  .start-detail,
+  .start-detail.collapse.show {
     width: 100%;
   }
 
   /* ✅ collapsingアニメーション（開閉両方） */
-  .start-point-detail.collapsing {
+  .start-detail.collapsing {
     overflow: hidden;
     transition: height 0.35s ease;
-  }
-
-  .start-point-detail__inner {
-    width: 100%;
-    border-radius: 6px;
-    background: transparent;
-    padding: 0 0 10px 0;
-    font-size: 0.9rem;
   }
 
   /* 有料道路設定行（共通mixinを使用） */
   .start-toll-row {
     @include toll-row-layout;
+    padding-bottom: 10px;
   }
 
   /* 開閉トグル（共通mixinを使用） */
   .detail-toggle {
     @include detail-toggle-button;
+    align-self: center;
   }
-}
-
-.block-time-panel input[data-start-departure-time-input="1"] {
-  width: 52px;          /* かなり狭くてもOK */
-  padding: 6px 6px;
-  font-size: 12px;
-  text-align: center;
-}
-
-/* ✅ 出発ブロックの時刻レール位置調整 */
-.start-point-block .block-time-panel__main {
-  margin-top: -1px;
-}
-
-/* ✅ 出発ブロックの矢印位置調整 */
-.start-point-block .block-time-panel__arrow {
-  margin-top: 6px;
-  margin-bottom: 7px;
 }
 
 /* ==========================================
    iOS/Macライクな変更フォーム（共通mixinを使用）
 ========================================== */
-.start-point-edit__inner {
+.start-edit__inner {
   @include point-edit-inner;
 }
 
-.start-point-edit__label {
+.start-edit__label {
   @include point-edit-label;
 }
 
-.start-point-edit__input.form-control {
+.start-edit__input.form-control {
   @include point-edit-input;
-}
-
-.start-point-edit__help {
-  @include point-edit-help;
 }

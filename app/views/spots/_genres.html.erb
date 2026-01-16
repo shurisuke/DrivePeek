@@ -3,12 +3,12 @@
 
 <%= turbo_frame_tag dom_id(spot, :genres), src: (api_spot_genres_path(spot) if spot.genres.empty?) do %>
   <% if spot.genres.empty? %>
-    <div class="spot-genres spot-genres--loading">
+    <div class="spot-genres spot-genres--loading navibar-padding">
       <span class="genre-chip genre-chip--skeleton"></span>
       <span class="genre-chip genre-chip--skeleton"></span>
     </div>
   <% else %>
-    <div class="spot-genres">
+    <div class="spot-genres navibar-padding">
       <% spot.genres.each do |genre| %>
         <span class="genre-chip"><%= genre.name %></span>
       <% end %>
