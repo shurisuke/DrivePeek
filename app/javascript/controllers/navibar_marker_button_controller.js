@@ -12,7 +12,7 @@ import {
   getStartPointMarker,
   getEndPointMarker,
 } from "map/state"
-import { showInfoWindowForPin } from "map/infowindow"
+import { showPlanPinInfoWindow } from "map/infowindow"
 import { getPhotoUrl } from "map/photo_cache"
 
 export default class extends Controller {
@@ -53,10 +53,10 @@ export default class extends Controller {
     // placeIdがあれば写真を取得してから表示（キャッシュ優先）
     if (placeId) {
       getPhotoUrl({ placeId, map }).then((photoUrl) => {
-        showInfoWindowForPin({ marker, name, address, photoUrl, editButtons })
+        showPlanPinInfoWindow({ marker, name, address, photoUrl, editButtons })
       })
     } else {
-      showInfoWindowForPin({ marker, name, address, editButtons })
+      showPlanPinInfoWindow({ marker, name, address, editButtons })
     }
   }
 
@@ -72,7 +72,7 @@ export default class extends Controller {
     if (type === "start" && startMarker) {
       map.panTo(startMarker.getPosition())
       const address = this.#getStartAddressFromDom()
-      showInfoWindowForPin({
+      showPlanPinInfoWindow({
         marker: startMarker,
         name: "出発",
         address,
@@ -100,7 +100,7 @@ export default class extends Controller {
     if (type === "goal" && goalMarker) {
       map.panTo(goalMarker.getPosition())
       const address = this.#getGoalAddressFromDom()
-      showInfoWindowForPin({
+      showPlanPinInfoWindow({
         marker: goalMarker,
         name: "帰宅",
         address,
@@ -129,7 +129,7 @@ export default class extends Controller {
     if (type === "goal" && !goalMarker && startMarker) {
       map.panTo(startMarker.getPosition())
       const address = this.#getGoalAddressFromDom()
-      showInfoWindowForPin({
+      showPlanPinInfoWindow({
         marker: startMarker,
         name: "帰宅",
         address,

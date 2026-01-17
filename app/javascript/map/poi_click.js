@@ -4,7 +4,7 @@
 // ================================================================
 
 import { getMapInstance } from "map/state"
-import { showInfoWindow } from "map/infowindow"
+import { showSearchResultInfoWindow } from "map/infowindow"
 
 // PlacesService のキャッシュ
 let placesService = null
@@ -57,7 +57,7 @@ export const setupPoiClickForEdit = () => {
 
         const buttonId = `dp-add-spot-poi-${place.place_id}`
 
-        showInfoWindow({
+        showSearchResultInfoWindow({
           anchor: event.latLng,
           place,
           buttonId,
@@ -104,7 +104,7 @@ export const setupPoiClickForView = () => {
           return
         }
 
-        showInfoWindow({
+        showSearchResultInfoWindow({
           anchor: event.latLng,
           place,
           showButton: false,
