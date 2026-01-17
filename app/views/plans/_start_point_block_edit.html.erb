@@ -11,7 +11,9 @@
      data-controller="start-point-editor"
      data-polyline="<%= plan.start_point&.polyline %>"
      data-lat="<%= plan.start_point&.lat %>"
-     data-lng="<%= plan.start_point&.lng %>">
+     data-lng="<%= plan.start_point&.lng %>"
+     data-time-rail-sync-target="content"
+     data-time-rail-sync="start-point">
   <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
 
   <%# ✅ 情報グループ（出発コンテンツ + 詳細）%>

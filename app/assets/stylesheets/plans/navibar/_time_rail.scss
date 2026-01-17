@@ -131,10 +131,15 @@ body.goal-point-visible .time-rail-block--goal {
   margin-top: 10px;
 }
 
+/* 帰宅ブロックの到着ラベルの上に余白 */
+.time-rail-block--goal .time-rail-block__main > .time-display:first-child {
+  margin-top: 34px;
+}
+
 .time-display__label {
   font-size: 0.7rem;
   font-weight: 500;
-  color: rgba(33, 33, 33, 0.55);
+  color: rgba(33, 33, 33, 0.75);
   line-height: 1.2;
   letter-spacing: 0.01em;
 }
@@ -142,7 +147,7 @@ body.goal-point-visible .time-rail-block--goal {
 .time-display__value {
   font-size: 14px;
   font-weight: 500;
-  color: #8e8e93;
+  color: #555;
   font-variant-numeric: tabular-nums;
 }
 

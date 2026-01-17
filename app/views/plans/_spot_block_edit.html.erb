@@ -17,6 +17,8 @@
   data-lng="<%= spot.lng %>"
   data-polyline="<%= plan_spot.polyline %>"
   data-place-id="<%= spot.place_id %>"
+  data-time-rail-sync-target="content"
+  data-time-rail-sync="<%= dom_id(plan_spot) %>"
 >
   <% is_open = defined?(@open_spot_ids) && @open_spot_ids&.include?(plan_spot.id) %>
 

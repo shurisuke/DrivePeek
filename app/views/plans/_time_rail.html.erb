@@ -6,7 +6,9 @@
 <div class="time-rail-inner">
 
 <%# ✅ 出発地点の時刻パネル %>
-<div class="time-rail-block time-rail-block--start" data-time-rail-for="start-point">
+<div class="time-rail-block time-rail-block--start"
+       data-time-rail-for="start-point"
+       data-time-rail-sync-target="rail">
   <div class="time-rail-block__main">
     <%
       departure_time_value =
@@ -57,7 +59,8 @@
 <% plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
   <div class="time-rail-block time-rail-block--spot"
        data-time-rail-for="<%= dom_id(plan_spot) %>"
-       data-plan-spot-id="<%= plan_spot.id %>">
+       data-plan-spot-id="<%= plan_spot.id %>"
+       data-time-rail-sync-target="rail">
     <div class="time-rail-block__main">
       <div class="time-display">
         <span class="time-display__label">到着</span>
@@ -106,7 +109,9 @@
 
 <%# ✅ 帰宅地点の時刻パネル %>
 <% goal_point = plan.goal_point %>
-<div class="time-rail-block time-rail-block--goal" data-time-rail-for="goal-point">
+<div class="time-rail-block time-rail-block--goal"
+       data-time-rail-for="goal-point"
+       data-time-rail-sync-target="rail">
   <div class="time-rail-block__main">
     <div class="time-display">
       <span class="time-display__label">到着</span>

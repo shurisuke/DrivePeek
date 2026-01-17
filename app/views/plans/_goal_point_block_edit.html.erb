@@ -11,7 +11,9 @@
     <div class="goal-point-block"
          data-controller="goal-point-editor"
          data-lat="<%= goal_point&.lat %>"
-         data-lng="<%= goal_point&.lng %>">
+         data-lng="<%= goal_point&.lng %>"
+         data-time-rail-sync-target="content"
+         data-time-rail-sync="goal-point">
       <%# ✅ 上部：帰宅コンテンツ %>
       <div class="goal-content">
           <%# 3層構造: アイコン | タイトル | スペーサー %>
