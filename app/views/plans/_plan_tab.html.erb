@@ -25,11 +25,6 @@
   <div class="plan-tab-content">
     <%= render "plans/start_point_block_edit" %>
 
-    <%# スポット未追加時のみ案内を表示 %>
-    <% if @plan.plan_spots.empty? %>
-      <%= render "plans/plan_tab_guide" %>
-    <% end %>
-
     <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
     <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
 
@@ -51,6 +46,11 @@
     <%= render "plans/time_rail", plan: @plan %>
   </div>
 </div>
+
+<%# スポット未追加時のみ案内を表示（時刻レールに影響しないようlayoutの外に配置） %>
+<% if @plan.plan_spots.empty? %>
+  <%= render "plans/plan_tab_guide" %>
+<% end %>
 
 <%# ✅ 出発・帰宅時間サマリー（時刻レールON + 帰宅地点ON時のみ表示） %>
 <div class="plan-time-summary-section">

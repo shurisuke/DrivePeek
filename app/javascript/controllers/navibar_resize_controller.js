@@ -182,10 +182,11 @@ export default class extends Controller {
     const railWidth = Math.max(minRailWidth, Math.round(baseRailWidth - (w - railStartWidth) * railShrinkCoefficient))
     this.element.style.setProperty("--rail-width", `${railWidth}px`)
 
-    // ✅ 時刻レール位置：ナビバー拡大に応じて左にシフト（300pxから開始）
+    // ✅ 時刻レール位置：ナビバー拡大に応じて左にシフト（360pxから開始）
+    const railShiftStartWidth = 360
     const railShiftBase = 3 // 初期オフセット
     const railShiftCoefficient = 0.23
-    const railShift = railShiftBase + Math.max(0, Math.round((w - railStartWidth) * railShiftCoefficient))
+    const railShift = railShiftBase + Math.max(0, Math.round((w - railShiftStartWidth) * railShiftCoefficient))
     this.element.style.setProperty("--rail-right-offset", `${railShift}px`)
 
     // ✅ プランタブのzoom：ナビバー幅に応じて拡大

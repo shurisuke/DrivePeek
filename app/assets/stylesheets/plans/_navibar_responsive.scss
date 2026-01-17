@@ -46,15 +46,15 @@
 
 /* ------------------------------------------
    次の場所まで行 / 有料道路行（幅の係数制御）
-   - 基本幅: 235px
-   - 最大幅: 300px
-   - 係数0.125でナビバー拡大に応じて拡大
+   - 基本幅: 200px
+   - 最大幅: 260px
+   - 係数0.05でナビバー拡大に応じて拡大
 ------------------------------------------ */
 .start-next-move,
 .spot-next-move,
 .start-toll-row,
 .spot-block .spot-toll-row {
-  width: min(260px, calc(235px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
+  width: min(260px, calc(220px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
   margin-left: auto;
   margin-right: auto;
 }

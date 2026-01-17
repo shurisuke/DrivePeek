@@ -72,6 +72,7 @@
 .spot-block .spot-header {
   display: flex;
   align-items: flex-start;
+  align-self: stretch;
   gap: 2px;
   margin-bottom: 0;
   position: relative;
