@@ -40,7 +40,7 @@ Rails.application.routes.draw do
   namespace :api do
     # スポットのジャンル取得（Turbo Frame lazy loading）
     resources :spots, only: [] do
-      resource :genres, only: [:show], controller: "spots/genres"
+      resource :genres, only: [ :show ], controller: "spots/genres"
     end
 
     resources :plans, only: [] do

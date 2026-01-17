@@ -102,7 +102,7 @@ class Spot < ApplicationRecord
     # AI失敗時は facility をフォールバック（無限ループ防止）
     if detected_ids.empty?
       facility = Genre.find_by(slug: "facility")
-      detected_ids = [facility.id] if facility
+      detected_ids = [ facility.id ] if facility
     end
 
     detected_ids.each { |genre_id| spot_genres.find_or_create_by!(genre_id: genre_id) }
