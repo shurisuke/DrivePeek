@@ -12,7 +12,7 @@ export default class extends Controller {
   static values = {
     min: { type: Number, default: 300 },
     maxPercent: { type: Number, default: 70 },
-    default: { type: Number, default: 340 },
+    default: { type: Number, default: 360 },
     railWidth: { type: Number, default: 60 },
     storageKey: { type: String, default: "drive_peek:navibar_width" },
     collapsedKey: { type: String, default: "drive_peek:navibar_collapsed" },
@@ -174,22 +174,24 @@ export default class extends Controller {
     this.element.style.setProperty("--navibar-width", `${w}px`)
     this.element.style.setProperty("--navibar-slide", `${s}px`)
 
-    // ✅ 時刻レール幅：ナビバー拡大に応じて縮小
+    // ✅ 時刻レール幅：ナビバー拡大に応じて縮小（300pxから開始）
+    const railStartWidth = 300
     const baseRailWidth = this.railWidthValue // 60px
     const minRailWidth = 0 // 最小幅
-    const railShrinkCoefficient = 0.20
-    const railWidth = Math.max(minRailWidth, Math.round(baseRailWidth - (w - this.defaultValue) * railShrinkCoefficient))
+    const railShrinkCoefficient = 0.2
+    const railWidth = Math.max(minRailWidth, Math.round(baseRailWidth - (w - railStartWidth) * railShrinkCoefficient))
     this.element.style.setProperty("--rail-width", `${railWidth}px`)
 
-    // ✅ 時刻レール位置：ナビバー拡大に応じて左にシフト
-    const railShiftCoefficient = 0.30
+    // ✅ 時刻レール位置：ナビバー拡大に応じて左にシフト（360pxから開始）
+    const railShiftStartWidth = 360
     const railShiftBase = 3 // 初期オフセット
-    const railShift = railShiftBase + Math.max(0, Math.round((w - this.defaultValue) * railShiftCoefficient))
+    const railShiftCoefficient = 0.23
+    const railShift = railShiftBase + Math.max(0, Math.round((w - railShiftStartWidth) * railShiftCoefficient))
     this.element.style.setProperty("--rail-right-offset", `${railShift}px`)
 
     // ✅ プランタブのzoom：ナビバー幅に応じて拡大
     const baseWidth = this.defaultValue
-    const zoomFactor = 0.075
+    const zoomFactor = 0.09
     const zoom = 1 + Math.max(0, (w - baseWidth) / baseWidth) * zoomFactor
     this.element.style.setProperty("--navibar-zoom", zoom.toFixed(3))
 

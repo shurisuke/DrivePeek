@@ -8,7 +8,7 @@ import {
   getStartPointMarker,
   getEndPointMarker,
 } from "map/state"
-import { showInfoWindowForPin, closeInfoWindow } from "map/infowindow"
+import { showSearchResultInfoWindow, showPlanPinInfoWindow, closeInfoWindow } from "map/infowindow"
 import { get } from "services/api_client"
 import { COLORS, COMMUNITY_ROUTE_STYLE } from "map/constants"
 
@@ -104,11 +104,24 @@ export default class extends Controller {
       })
 
       marker.addListener("click", () => {
-        showInfoWindowForPin({
-          marker,
-          name: spot.name || `スポット ${spotNumber}`,
-          address: spot.address,
-        })
+        if (spot.place_id) {
+          // Places APIで詳細を取得して写真付きInfoWindowを表示
+          const service = new google.maps.places.PlacesService(map)
+          service.getDetails(
+            { placeId: spot.place_id, fields: ["name", "formatted_address", "geometry", "photos", "place_id", "types"] },
+            (place, status) => {
+              if (status === google.maps.places.PlacesServiceStatus.OK && place) {
+                const buttonId = `dp-add-spot-community-${spot.place_id}`
+                showSearchResultInfoWindow({ anchor: marker, place, buttonId, showButton: true })
+              } else {
+                // 失敗時はシンプル表示
+                showPlanPinInfoWindow({ marker, name: spot.name || `スポット ${spotNumber}`, address: spot.address })
+              }
+            }
+          )
+        } else {
+          showPlanPinInfoWindow({ marker, name: spot.name || `スポット ${spotNumber}`, address: spot.address })
+        }
       })
 
       return marker

@@ -1,7 +1,7 @@
 <%# ================================================================
-    Planタブ（単一責務）
+    Planタブ（2カラム構造）
     用途: 出発地点 + プラン内スポット一覧（position順）を描画する
-    メモ: spot-block の並び替え（SortableJS）の親コンテナを提供する
+    構造: 左カラム（ブロックコンテンツ）+ 右カラム（時刻レール）
 ================================================================ %>
 
 <%# ✅ 時刻レール切り替えボタン（プランタブ内に配置） %>
@@ -20,27 +20,37 @@
   </button>
 </div>
 
-<%= render "plans/start_point_block_edit" %>
+<div class="plan-tab-layout" data-controller="time-rail-sync">
+  <%# ✅ 左カラム: ブロックコンテンツ %>
+  <div class="plan-tab-content">
+    <%= render "plans/start_point_block_edit" %>
 
-<%# スポット未追加時のみ案内を表示 %>
+    <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
+    <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
+
+    <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
+    <div id="plan-spots-sortable" data-sortable="plan-spots">
+      <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
+        <%= render "plans/spot_block_edit",
+                   plan_spot:  plan_spot,
+                   like_spot:  like_spots_map[plan_spot.spot_id] %>
+      <% end %>
+    </div>
+
+    <%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
+    <%= render "plans/goal_point_block_edit", plan: @plan %>
+  </div>
+
+  <%# ✅ 右カラム: 時刻レール（Turbo Frameで遅延読み込み可能） %>
+  <div class="plan-tab-time-rail">
+    <%= render "plans/time_rail", plan: @plan %>
+  </div>
+</div>
+
+<%# スポット未追加時のみ案内を表示（時刻レールに影響しないようlayoutの外に配置） %>
 <% if @plan.plan_spots.empty? %>
   <%= render "plans/plan_tab_guide" %>
 <% end %>
-
-<% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
-<% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
-
-<%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
-<div id="plan-spots-sortable" data-sortable="plan-spots">
-  <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
-    <%= render "plans/spot_block_edit",
-               plan_spot:  plan_spot,
-               like_spot:  like_spots_map[plan_spot.spot_id] %>
-  <% end %>
-</div>
-
-<%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
-<%= render "plans/goal_point_block_edit", plan: @plan %>
 
 <%# ✅ 出発・帰宅時間サマリー（時刻レールON + 帰宅地点ON時のみ表示） %>
 <div class="plan-time-summary-section">

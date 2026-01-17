@@ -18,16 +18,32 @@
     >
   </div>
 
-  <!-- コミュニティプランプレビュー閉じるボタン -->
-  <button type="button"
-          id="community-preview-close"
-          class="community-preview-close"
-          hidden
-          data-controller="community-plan-preview"
-          data-action="click->community-plan-preview#hide">
-    <i class="bi bi-x-lg" aria-hidden="true"></i>
-    プレビューを閉じる
-  </button>
+  <!-- 地図上のフローティングボタン群 -->
+  <div class="map-floating-buttons">
+    <!-- コミュニティプランプレビュー閉じるボタン -->
+    <button type="button"
+            id="community-preview-close"
+            class="map-floating-btn map-floating-btn--blue"
+            hidden
+            title="プレビューを閉じる"
+            data-controller="community-plan-preview"
+            data-action="click->community-plan-preview#hide">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+      <i class="bi bi-share" aria-hidden="true"></i>
+    </button>
+
+    <!-- 検索結果クリアボタン -->
+    <button type="button"
+            id="search-hit-clear"
+            class="map-floating-btn map-floating-btn--red"
+            hidden
+            title="検索結果をクリア"
+            data-controller="search-hit-clear"
+            data-action="click->search-hit-clear#clear">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+      <i class="bi bi-search" aria-hidden="true"></i>
+    </button>
+  </div>
 
   <!-- 左ナビバー（Turbo Frame化） -->
   <%= turbo_frame_tag "navibar" do %>

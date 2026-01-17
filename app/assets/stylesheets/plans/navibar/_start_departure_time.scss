@@ -11,21 +11,21 @@
   width: 60px;
   max-width: 60px;
 
-  margin-bottom: 2px;
+  margin-bottom: 0;
+  padding: 0;
 
   /* スポット未追加時 */
   &--no-spots {
-    gap: 5px;
+    gap: 0;
 
     .start-departure-time__help-btn {
-      position: relative;
-      top: -10px;
+      margin-top: 0; /* スポットなし時は上余白なし */
     }
 
     .start-departure-time__main {
-      margin-top: 0;
-      position: relative;
-      top: -9px;
+      margin-top: auto; /* 下寄せ */
+      transform: translateY(0);
+      padding: 0;
     }
   }
 }
@@ -38,7 +38,9 @@
   gap: 2px;
 
   min-width: 60px;
-  padding: 18px 8px 0;
+  padding: 0;
+  margin-top: auto; /* 下寄せ */
+  margin-bottom: 21px; /* スポットがある時用 */
 
   border: none;
   border-radius: 6px;
@@ -244,7 +246,8 @@
 
   width: 16px;
   height: 16px;
-  margin-bottom: 0;
+  margin-top: 31px; /* スポットがある時用 */
+  margin-bottom: 0; /* スポットがある時用 */
   padding: 0;
   border: none;
   border-radius: 50%;
@@ -256,10 +259,6 @@
   line-height: 1;
 
   cursor: pointer;
-
-  /* スポット追加後は10px下げる */
-  position: relative;
-  top: 10px;
 
   &:hover {
     background: #666;

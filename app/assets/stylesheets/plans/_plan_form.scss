@@ -43,7 +43,7 @@ body.no-footer {
 
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
-    --navibar-width: 340px;
+    --navibar-width: 360px;
     --navibar-slide: 0px;
     --rail-width: 60px; /* JSで動的に更新（ナビバー拡大時に縮小） */
     --navibar-zoom: 1; /* JSで動的に更新 */
@@ -298,7 +298,7 @@ body.no-footer.goal-point-visible {
   display: flex;
   justify-content: center;
   align-items: center;
-  padding: 15px 15px 5px;
+  padding: 15px;
 }
 
 
@@ -392,7 +392,27 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 }
 
 /* ==========================================
-   時刻表示レール（navibar 右側）
+   ✅ 2カラムレイアウト（コンテンツ + 時刻レール）
+========================================== */
+
+.plan-tab-layout {
+  display: flex;
+  flex-direction: row;
+  align-items: stretch;
+  width: 100%;
+}
+
+/* 左カラム: ブロックコンテンツ */
+/* レスポンシブpadding は _navibar_responsive.scss に集約 */
+.plan-tab-content {
+  flex: 1 1 auto;
+  min-width: 0;
+}
+
+/* 時刻レールスタイルは _time_rail.scss に分離 */
+
+/* ==========================================
+   時刻表示レール（navibar 右側）- 旧構造（互換性維持）
 ========================================== */
 
 .plan-time-slot {
@@ -449,160 +469,22 @@ body.plan-time-open.goal-point-visible .plan-time-summary-section {
 }
 
 /* ==========================================
-   ✅ ブロック + 右の時刻パネル
-   重要: ラッパー側の padding を 0 にして「左余白圧迫」を根絶
+   ✅ ブロックレイアウト（2カラム構造対応）
+   時刻パネルは分離されたため、単純な縦積みに
 ========================================== */
 
 .start-point-block,
 .spot-block,
 .goal-point-block {
   position: relative;
-  display: flex;
-  flex-direction: row;
-  align-items: stretch;
-  gap: 0;
-
-  box-sizing: border-box;
-  /* プランバー幅に応じて左右余白を変化させる（最小20px、最大30%） */
-  padding: 0 max(20px, 30%);
-}
-
-/* ✅ 左側メイン（将来拡張のため100%基準） */
-.block-main-content {
-  flex: 1 1 auto;
+  display: block;
   width: 100%;
-  min-width: 0;
-  box-sizing: border-box;
-
-  /* 念のため：謎の左余白が入るのを抑止 */
-  margin-left: 0 !important;
-}
-
-/* ✅ 右側時刻パネル（レール幅固定） */
-.block-time-panel {
-  display: none;
-  flex: 0 0 var(--rail-width);
-  width: var(--rail-width);
-  min-width: var(--rail-width);
-
-  background: #fff;
-  border-left: none;
-  border-radius: 0;
-
-  flex-direction: column;
-  justify-content: space-between;
   box-sizing: border-box;
 }
-
-body.plan-time-open .block-time-panel {
-  display: flex;
-  transform: translateX(calc(-1 * var(--rail-right-offset, 0px)));
-}
-
-/* ✅ 内部要素の左余白（常に適用） */
-.spot-main,
-.spot-meta,
-.spot-genres,
-.spot-address,
-.spot-memo,
-.spot-body-section,
-.spot-detail-wrap,
-.start-point-main,
-.start-point-detail-wrap,
-.goal-point-main,
-.goal-point-detail-wrap,
-.goal-point-toggle-row {
-  margin-left: var(--block-content-base-margin, 7px) !important;
-}
-
-/* ✅ 中央寄せ要素：transformでシフト（常に適用） */
-.spot-block .spot-next-move,
-.start-point-block .start-next-move,
-.start-point-block .start-point-meta,
-.goal-point-block .goal-point-meta {
-  transform: translateX(var(--block-content-base-margin, 7px)) !important;
-}
-
-.block-time-panel__main {
-  flex: 1 1 auto;
-  display: flex;
-  flex-direction: column;
-  justify-content: center;
-  align-items: center;
-  gap: 8px;
-  padding: 0;
-}
-
-
-.block-time-panel__toggle-area {
-  flex: 0 0 auto;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 25px 0;
-}
-
-.block-time-panel__arrow {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  i {
-    font-size: 24px;
-    color: rgba(80, 109, 83, 0.75);
-    line-height: 1;
-  }
-}
-
-/* ================================================================
-   ✅ 正攻法：子要素は「固定幅」を捨てて width:100%
-================================================================ */
-
-.block-main-content .spot-body,
-.block-main-content .spot-main,
-.block-main-content .spot-block-body,
-.block-main-content .spot-block__body,
-.block-main-content .spot-block-inner,
-.block-main-content .spot-block__inner,
-.block-main-content .start-point-main,
-.block-main-content .goal-point-main,
-.block-main-content .start-point-detail-wrap,
-.block-main-content .goal-point-toggle,
-.block-main-content .goal-point-section,
-.block-main-content .start-label,
-.block-main-content .goal-label {
-  width: 100% !important;
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
-.block-main-content > div {
-  max-width: 100%;
-  box-sizing: border-box;
-}
-
 
 /* ==========================================
-   ✅ 追加要望（出発ブロックだけ）
-   1) トグル横矢印の「下padding」を10減らす
-   2) 出発時間を「下寄せ」
+   ✅ 出発ブロックの時刻表示調整
 ========================================== */
-
-/* 1) 矢印エリア */
-.start-point-block .block-time-panel__toggle-area {
-  padding: 50px 0 0;
-}
-
-.spot-block .block-time-panel__toggle-area {
-  padding: 59px 0 25px;
-}
-
-/* 2) 出発時間：?ボタンを上、時刻を下（次の場所まで行と揃える） */
-.start-point-block .block-time-panel__main {
-  justify-content: center;
-  align-items: center;
-  padding-top: 6px;
-}
 
 .start-point-block .start-departure-time {
   flex: 1;
@@ -614,12 +496,6 @@ body.plan-time-open .block-time-panel {
   margin-top: 0;
   margin-bottom: 0;
   transform: translateY(6px);
-}
-
-/* 3) 帰宅ブロック：到着時間を7px下げる */
-.goal-point-block .block-time-panel__main .time-display {
-  position: relative;
-  top: 7px;
 }
 
 /* ==========================================
@@ -634,13 +510,6 @@ body.navibar-updating * {
   /* ✅ 横振れの主因：スクロールバー有無で幅が変わるのを止める */
   overflow-y: scroll;           /* 常にスクロールバー領域を確保 */
   scrollbar-gutter: stable;     /* 対応ブラウザではさらに安定 */
-}
-
-.block-time-panel input[data-start-departure-time-input="1"] {
-  width: 40px;          /* かなり狭くてもOK */
-  padding: 6px 6px;
-  font-size: 12px;
-  text-align: center;
 }
 
 

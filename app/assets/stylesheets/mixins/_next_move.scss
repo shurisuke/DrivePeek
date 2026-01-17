@@ -1,8 +1,10 @@
 /* ==========================================
-   共通「次の場所まで」グリッド
+   共通「次の場所まで」レイアウト（flexbox）
    - spot-next-move
    - start-next-move
    で共通利用
+   ※ 5要素構成: label, separator, km, separator, time
+   ※ margin: auto で空間を均等分配（狭くなると縮小）
 ========================================== */
 
 @mixin next-move-grid {
@@ -10,42 +12,66 @@
   border: 0;
   border-radius: 0;
 
-  /* ナビバー幅に応じて動的に縮小（300px時: 225px, 340px時: 265px） */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
-  max-width: 265px;
+  /* レスポンシブwidth は _navibar_responsive.scss に集約 */
   font-size: 0.8rem;
 
-  display: grid;
-  grid-template-columns: 1fr auto auto;
-  align-items: center;
-  /* ナビバー幅に応じてgapを動的に調整（300px時: 4px, 340px以上: 10px固定） */
-  gap: min(10px, calc(4px + (var(--navibar-width, 340px) - 300px) * 0.15));
+  display: flex;
+  flex-wrap: nowrap;
+  align-items: baseline;
 
   margin: 20px auto 8px;
-  padding: 0 10px;
+  padding-top: 0;
+  padding-bottom: 0;
   box-sizing: border-box;
-  white-space: nowrap;
 
-  .label {
-    font-size: 0.82rem;
-    font-weight: 500;
-    color: rgb(35, 35, 35);
-  }
-
+  /* 全要素に margin: auto で空間を均等分配 */
+  .label,
+  .separator,
   .km,
   .time {
-    font-weight: 400;
-    font-size: calc(1em + 2px);
-    color: #2d2d2d;
+    margin: 0 auto;
+  }
 
-    /* ナビバー幅に応じて動的に調整（300px時: 6px, 340px以上: 12px固定） */
-    padding-left: min(12px, calc(6px + (var(--navibar-width, 340px) - 300px) * 0.15));
-    border-left: 1px solid rgba(0, 0, 0, 0.10);
+  /* ラベル（左端に配置） */
+  .label {
+    flex: 0 0 auto;
+    margin-left: 0;
+    font-size: 13px;
+    font-weight: 500;
+    color: rgb(35, 35, 35);
+    white-space: nowrap;
+
+    .label-unit {
+      font-size: 11px;
+      margin-left: 2px;
+    }
+  }
+
+  /* 縦線セパレータ */
+  .separator {
+    flex: 0 0 auto;
+    width: 1px;
+    height: 1.2em;
+    background: rgba(0, 0, 0, 0.18);
+  }
+
+  /* km / time */
+  .km,
+  .time {
+    flex: 0 0 auto;
+    font-weight: 400;
+    font-size: 16px;
+    color: #2d2d2d;
+  }
+
+  /* 分（右端に配置） */
+  .time {
+    margin-right: 0;
   }
 
   .time-unit {
-    font-size: 13px;
-    margin-left: 2px;
+    font-size: 11px;
+    margin-left: 3px;
     margin-right: 2px;
 
     &:last-child {
@@ -54,7 +80,7 @@
   }
 
   .km-unit {
-    font-size: 13px;
-    margin-left: 2px;
+    font-size: 12px;
+    margin-left: 3px;
   }
 }

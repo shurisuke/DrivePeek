@@ -5,7 +5,7 @@ import {
   clearSpotPinMarker,
   getCommunityPreviewMarkers,
 } from "map/state"
-import { showInfoWindow, closeInfoWindow } from "map/infowindow"
+import { showSearchResultInfoWindow, closeInfoWindow } from "map/infowindow"
 import { COLORS } from "map/constants"
 
 // ================================================================
@@ -131,7 +131,7 @@ export default class extends Controller {
 
         const buttonId = `dp-add-spot-preview-${place.place_id}`
 
-        showInfoWindow({
+        showSearchResultInfoWindow({
           anchor: marker,
           place,
           buttonId,

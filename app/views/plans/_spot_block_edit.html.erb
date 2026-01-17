@@ -17,104 +17,97 @@
   data-lng="<%= spot.lng %>"
   data-polyline="<%= plan_spot.polyline %>"
   data-place-id="<%= spot.place_id %>"
+  data-time-rail-sync-target="content"
+  data-time-rail-sync="<%= dom_id(plan_spot) %>"
 >
-  <%# ✅ 左側: 既存コンテンツ（350px） %>
-  <div class="block-main-content">
-    <%# ✅ 3層構造: アイコン | スポット名 | ピンボタン %>
-    <div class="spot-main">
-      <div class="spot-order-icon"
-           data-controller="navibar-marker-button"
-           data-action="click->navibar-marker-button#spot"
-           role="button"
-           tabindex="0"
-           aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
+  <% is_open = defined?(@open_spot_ids) && @open_spot_ids&.include?(plan_spot.id) %>
 
-      <div class="spot-body">
-        <% if spot.name.present? %>
-          <div class="spot-name spot-name--clickable"
+  <%# ✅ ブロック情報グループ（スポット情報 + 詳細） %>
+  <div class="spot-info-group">
+    <%# ✅ 上部：スポットコンテンツ %>
+    <div class="spot-content">
+        <%# 3層構造: アイコン | 名前 | スペーサー %>
+        <div class="spot-header">
+          <div class="spot-order-icon"
                data-controller="navibar-marker-button"
                data-action="click->navibar-marker-button#spot"
                role="button"
-               tabindex="0"><%= spot.name %></div>
-        <% end %>
-      </div>
+               tabindex="0"
+               aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
 
-      <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
-      <div class="spot-spacer" aria-hidden="true"></div>
-    </div>
-
-    <%# ✅ ジャンル・住所（3層構造の下に配置、左右padding 10px） %>
-    <div class="spot-meta">
-      <% if spot.genres.any? %>
-        <div class="spot-genres">
-          <% spot.genres.each do |genre| %>
-            <span class="genre-chip"><%= genre.name %></span>
+          <% if spot.name.present? %>
+            <div class="spot-name spot-name--clickable"
+                 data-controller="navibar-marker-button"
+                 data-action="click->navibar-marker-button#spot"
+                 role="button"
+                 tabindex="0"><%= spot.name %></div>
           <% end %>
+
+          <div class="spot-spacer" aria-hidden="true"></div>
         </div>
-      <% end %>
 
-      <% if spot.address.present? %>
-        <div class="spot-address"><%= spot.address %></div>
-      <% end %>
-    </div>
+        <%# ジャンル %>
+        <%= render "spots/genres", spot: spot %>
 
-    <%# ✅ メモ表示（住所の下） %>
-    <div class="spot-memo spot-memo--pin <%= "d-none" if plan_spot.memo.blank? %>"
-         data-plan-spot-memo-target="memoDisplay">
-      <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
-        <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
-        <%= simple_format(h(plan_spot.memo.to_s)) %>
+        <%# 住所 %>
+        <% if spot.address.present? %>
+          <div class="spot-address navibar-padding"><%= spot.address %></div>
+        <% end %>
+
+        <%# メモ表示 %>
+        <div class="spot-memo spot-memo--pin navibar-padding <%= "d-none" if plan_spot.memo.blank? %>"
+             data-plan-spot-memo-target="memoDisplay">
+          <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
+            <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
+            <%= simple_format(h(plan_spot.memo.to_s)) %>
+          </div>
+
+          <button type="button"
+                  class="spot-memo__delete"
+                  aria-label="メモを削除"
+                  data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#clear">
+            ×
+          </button>
+        </div>
+
+        <%# 次の場所まで %>
+        <% move_minutes = plan_spot.move_time.to_i %>
+        <% hours = move_minutes / 60 %>
+        <% minutes = move_minutes % 60 %>
+
+        <div class="spot-next-move" data-plan-time-role="spot-next-move">
+          <span class="label">次の場所<span class="label-unit">まで</span></span>
+          <span class="separator"></span>
+          <span class="km">
+            <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
+          </span>
+          <span class="separator"></span>
+          <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
+        </div>
       </div>
+      <%# /.spot-content %>
 
-      <button type="button"
-              class="spot-memo__delete"
-              aria-label="メモを削除"
-              data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#clear">
-        ×
-      </button>
-    </div>
-
-    <%# ✅ 次の場所まで（3カラム構造の外に配置） %>
-    <% move_minutes = plan_spot.move_time.to_i %>
-    <% hours = move_minutes / 60 %>
-    <% minutes = move_minutes % 60 %>
-
-    <div class="spot-next-move" data-plan-time-role="spot-next-move">
-      <span class="label">次の場所まで</span>
-      <span class="km">
-        <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
-      </span>
-      <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
-    </div>
-
-    <div class="spot-detail-wrap">
-      <%# open_spot_idsが渡された場合、showクラスを付与 %>
-      <% is_open = defined?(@open_spot_ids) && @open_spot_ids&.include?(plan_spot.id) %>
+      <%# ✅ 下部：トグル詳細コンテンツ %>
       <div class="collapse spot-detail<%= ' show' if is_open %>"
            id="spotDetail-<%= plan_spot.id %>"
            data-plan-spot-memo-target="detail">
-        <div class="spot-detail__inner">
 
-          <%# ✅ 有料道路設定行（出発地点の start-toll-row と同じ構造、常時表示） %>
+          <%# 有料道路設定行 %>
           <div class="spot-toll-row">
             <span class="label">有料道路</span>
-
-            <div class="toll-switch">
-              <div class="form-check form-switch m-0">
-                <input
-                  class="form-check-input"
-                  type="checkbox"
-                  role="switch"
-                  aria-label="有料道路の使用を切り替える"
-                  data-toll-used-switch="1"
-                  data-plan-id="<%= plan_spot.plan_id %>"
-                  data-plan-spot-id="<%= plan_spot.id %>"
-                  <%= 'checked="checked"' if plan_spot.toll_used? %>
-                >
-              </div>
-            </div>
+            <input
+              class="option-switch"
+              type="checkbox"
+              role="switch"
+              aria-label="有料道路の使用を切り替える"
+              data-toll-used-switch="1"
+              data-plan-id="<%= plan_spot.plan_id %>"
+              data-plan-spot-id="<%= plan_spot.id %>"
+              <%= 'checked="checked"' if plan_spot.toll_used? %>
+            >
           </div>
 
+          <%# メモ編集エリア %>
           <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                data-plan-spot-memo-target="editor"
                data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#stopPropagation">
@@ -141,98 +134,47 @@
             </form>
           </div>
 
-          <div class="spot-detail-actions">
-            <div class="spot-detail-actions__buttons-wrap">
-              <div class="spot-detail-actions__buttons">
-                <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+          <%# アクションボタン %>
+          <div class="spot-detail-actions__buttons">
+              <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
 
-                <button type="button"
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      data-action="click->plan-spot-memo#open"
+                      aria-label="メモを編集">
+                <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
+              </button>
+
+              <%= form_with(
+                    url: plan_plan_spot_path(plan_spot.plan, plan_spot),
+                    method: :delete,
+                    class: "d-inline w-100",
+                    data: {
+                      action: "turbo:submit-end->plan-spot-delete#afterSubmit pointerdown->plan-spot-memo#stopPropagation"
+                    }
+                  ) do %>
+                <button type="submit"
                         class="btn btn-outline-secondary btn-sm w-100"
-                        data-action="click->plan-spot-memo#open"
-                        aria-label="メモを編集">
-                  <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
+                        aria-label="スポットを削除">
+                  <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
                 </button>
-
-                <%= form_with(
-                      url: plan_plan_spot_path(plan_spot.plan, plan_spot),
-                      method: :delete,
-                      class: "d-inline w-100",
-                      data: {
-                        action: "turbo:submit-end->plan-spot-delete#afterSubmit pointerdown->plan-spot-memo#stopPropagation"
-                      }
-                    ) do %>
-                  <button type="submit"
-                          class="btn btn-outline-secondary btn-sm w-100"
-                          aria-label="スポットを削除">
-                    <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
-                  </button>
-                <% end %>
-              </div>
-
-            </div>
+              <% end %>
           </div>
 
-        </div>
-      </div>
-
-      <button
-        type="button"
-        class="detail-toggle"
-        data-bs-toggle="collapse"
-        data-bs-target="#spotDetail-<%= plan_spot.id %>"
-        aria-expanded="<%= is_open ? 'true' : 'false' %>"
-        aria-controls="spotDetail-<%= plan_spot.id %>"
-      >
-        <i class="bi bi-caret-down-fill"></i>
-      </button>
     </div>
+    <%# /.spot-detail %>
   </div>
+  <%# /.spot-info-group %>
 
-  <%# ✅ 右側: 時刻パネル（ON時のみ表示） %>
-  <div class="block-time-panel">
-    <div class="block-time-panel__main">
-      <div class="time-display">
-        <span class="time-display__label">到着</span>
-        <span class="time-display__value"><%= plan_spot.arrival_time&.strftime("%H:%M") || "--:--" %></span>
-      </div>
-
-      <%# ✅ 滞在時間選択（iOS風ホイールピッカー） %>
-      <%
-        stay_minutes = plan_spot.stay_duration.to_i
-        stay_hours = stay_minutes / 60
-        stay_mins = stay_minutes % 60
-      %>
-      <button
-        type="button"
-        class="spot-stay-duration<%= ' spot-stay-duration--set' if stay_minutes > 0 %>"
-        data-controller="spot-stay-duration"
-        data-spot-stay-duration-plan-id-value="<%= plan_spot.plan_id %>"
-        data-spot-stay-duration-plan-spot-id-value="<%= plan_spot.id %>"
-        data-spot-stay-duration-current-value="<%= stay_minutes %>"
-        data-action="click->spot-stay-duration#openPicker"
-        data-spot-stay-duration-target="trigger"
-      >
-        <span class="spot-stay-duration__label">滞在</span>
-        <span class="spot-stay-duration__value">
-          <% if stay_minutes > 0 %>
-            <% if stay_hours > 0 %><%= stay_hours %><span class="spot-stay-duration__unit">時間</span><% end %><% if stay_mins > 0 %><%= stay_mins %><span class="spot-stay-duration__unit">分</span><% end %>
-          <% else %>
-            --
-          <% end %>
-        </span>
-      </button>
-
-      <div class="time-display" data-plan-time-role="spot-departure">
-        <span class="time-display__label">出発</span>
-        <span class="time-display__value"><%= plan_spot.departure_time&.strftime("%H:%M") || "--:--" %></span>
-      </div>
-    </div>
-
-    <%# ✅ トグル部分の横に矢印 %>
-    <div class="block-time-panel__toggle-area" data-plan-time-role="spot-arrow">
-      <div class="block-time-panel__arrow">
-        <i class="bi bi-arrow-down-short" aria-hidden="true"></i>
-      </div>
-    </div>
-  </div>
+    <%# ✅ トグルボタン %>
+    <button
+      type="button"
+      class="detail-toggle"
+      data-bs-toggle="collapse"
+      data-bs-target="#spotDetail-<%= plan_spot.id %>"
+      aria-expanded="<%= is_open ? 'true' : 'false' %>"
+      aria-controls="spotDetail-<%= plan_spot.id %>"
+    >
+      <i class="bi bi-caret-down-fill"></i>
+  </button>
 </div>

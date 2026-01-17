@@ -18,8 +18,7 @@ class SpotSetupService
       plan_spot = create_plan_spot(spot)
     end
 
-    # ジャンル判定（トランザクション外で実行）
-    spot.assign_genres_from_types(spot_params[:top_types])
+    # ジャンル判定は遅延ロード（フロントエンドから別リクエスト）
 
     Result.new(success?: true, spot: spot, plan_spot: plan_spot)
   rescue ActiveRecord::RecordInvalid => e

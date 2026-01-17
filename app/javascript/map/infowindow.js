@@ -8,12 +8,37 @@ import { normalizeDisplayAddress } from "map/geocoder"
 
 // 1個だけ使い回す（シングルトン）
 let infoWindow = null
+let mapClickListener = null
+
+/**
+ * place_idからプラン内のスポットを検索
+ * @param {string} placeId - Google Place ID
+ * @returns {{ planSpotId: string } | null} - 見つかった場合はplanSpotIdを返す
+ */
+const findPlanSpotByPlaceId = (placeId) => {
+  if (!placeId) return null
+  const spotBlock = document.querySelector(`.spot-block[data-place-id="${placeId}"]`)
+  if (!spotBlock) return null
+  return { planSpotId: spotBlock.dataset.planSpotId }
+}
 
 const getInfoWindow = () => {
   if (!infoWindow) {
     infoWindow = new google.maps.InfoWindow()
   }
   return infoWindow
+}
+
+/**
+ * 地図クリック時にInfoWindowを閉じるリスナーを設定
+ */
+const setupMapClickToClose = () => {
+  const map = getMapInstance()
+  if (!map || mapClickListener) return
+
+  mapClickListener = map.addListener("click", () => {
+    closeInfoWindow()
+  })
 }
 
 
@@ -34,9 +59,11 @@ export const closeInfoWindow = () => {
  * @param {string} options.address - 住所
  * @param {string} options.buttonId - ボタンのDOM ID
  * @param {boolean} options.showButton - 「プランに追加」ボタンを表示するか
+ * @param {string} [options.buttonLabel] - ボタンのラベル（デフォルト: "プランに追加"）
+ * @param {string} [options.planSpotId] - 削除モード時のplanSpotId
  * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label}]
  */
-const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, editButtons }) => {
+const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, buttonLabel, planSpotId, editButtons }) => {
   const safeName = name || "名称不明"
   const safeAddress = address || "住所不明"
 
@@ -47,8 +74,13 @@ const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, ed
       </div>`
     : ""
 
+  const label = buttonLabel || "プランに追加"
+  const isDeleteMode = !!planSpotId
+  const deleteClass = isDeleteMode ? " dp-infowindow__btn--delete" : ""
+  const dataAttr = isDeleteMode ? ` data-plan-spot-id="${planSpotId}"` : ""
+
   const buttonArea = showButton
-    ? `<button type="button" class="dp-infowindow__btn" id="${buttonId}">プランに追加</button>`
+    ? `<button type="button" class="dp-infowindow__btn${deleteClass}" id="${buttonId}"${dataAttr}>${label}</button>`
     : ""
 
   // 複数の編集ボタンに対応（variant: "orange" でオレンジボタン）
@@ -89,13 +121,6 @@ const extractPhotoUrl = (place) => {
   return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
 }
 
-const extractPhotoReference = (place) => {
-  // JavaScript API では photo_reference は取得できないため null を返す
-  // （photo_reference は保存せず、表示時に photo.getUrl() を使用）
-  const photo = place?.photos?.[0]
-  return photo?.photo_reference || null
-}
-
 /**
  * InfoWindow を表示する（PlaceResult 用）
  * @param {Object} options
@@ -104,7 +129,7 @@ const extractPhotoReference = (place) => {
  * @param {string} options.buttonId - ボタンのDOM ID
  * @param {boolean} [options.showButton=true] - 「プランに追加」ボタンを表示するか
  */
-export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
+export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
   const map = getMapInstance()
   if (!map) return
 
@@ -116,6 +141,15 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
   const photoUrl = extractPhotoUrl(place)
   const name = place.name
 
+  // ✅ place_idがプランに存在するかチェック
+  const existingSpot = findPlanSpotByPlaceId(place.place_id)
+  const isInPlan = !!existingSpot
+  const buttonLabel = isInPlan ? "プランから削除" : "プランに追加"
+  const planSpotId = existingSpot?.planSpotId || null
+
+  // 地図クリック時にInfoWindowを閉じるリスナーを設定
+  setupMapClickToClose()
+
   const iw = getInfoWindow()
   iw.setContent(
     buildInfoWindowHtml({
@@ -124,6 +158,8 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
       address,
       buttonId,
       showButton,
+      buttonLabel,
+      planSpotId,
     })
   )
 
@@ -144,21 +180,27 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
     if (!btn) return
 
     btn.addEventListener("click", () => {
-      // "プランに追加"の実体処理は別モジュールへ（役割分離）
-      document.dispatchEvent(
-        new CustomEvent("spot:add", {
+      const planSpotId = btn.dataset.planSpotId
+
+      if (planSpotId) {
+        // 削除モード
+        document.dispatchEvent(new CustomEvent("spot:delete", {
+          detail: { buttonId, planSpotId }
+        }))
+      } else {
+        // 追加モード
+        document.dispatchEvent(new CustomEvent("spot:add", {
           detail: {
+            buttonId,
             place_id: place.place_id,
             name: name || null,
             address: address || null,
             lat: latLng.lat,
             lng: latLng.lng,
-            photo_reference: extractPhotoReference(place),
-            // Googleのジャンル（types）をタグとして使う想定
             types: Array.isArray(place.types) ? place.types : [],
           },
-        })
-      )
+        }))
+      }
     })
   })
 }
@@ -173,9 +215,12 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
  * @param {string} [options.photoUrl] - 写真URL
  * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label, onClick}]
  */
-export const showInfoWindowForPin = ({ marker, name, address, photoUrl, editButtons }) => {
+export const showPlanPinInfoWindow = ({ marker, name, address, photoUrl, editButtons }) => {
   const map = getMapInstance()
   if (!map) return
+
+  // 地図クリック時にInfoWindowを閉じるリスナーを設定
+  setupMapClickToClose()
 
   const iw = getInfoWindow()
 

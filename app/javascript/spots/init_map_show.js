@@ -12,7 +12,7 @@
 import { renderMap } from "map/render_map"
 import { setupPoiClickForView } from "map/poi_click"
 import { getMapInstance, setSpotPinMarker } from "map/state"
-import { showInfoWindow } from "map/infowindow"
+import { showSearchResultInfoWindow } from "map/infowindow"
 import { waitForGoogleMaps, isSpotShowPage } from "map/utils"
 import { COLORS } from "map/constants"
 
@@ -91,7 +91,7 @@ const renderSpotMarker = (spotData) => {
           return
         }
 
-        showInfoWindow({
+        showSearchResultInfoWindow({
           anchor: marker,
           place,
           showButton: false,

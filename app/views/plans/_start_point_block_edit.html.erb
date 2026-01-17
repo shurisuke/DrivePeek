@@ -1,4 +1,4 @@
-<%# app/views/plans/_start_point_block.html.erb %>
+<%# app/views/plans/_start_point_block_edit.html.erb %>
 <% plan ||= @plan %>
 
 <%# ✅ 出発地点から最初のスポットまでの区間情報は start_point に保存される %>
@@ -7,24 +7,22 @@
 <% hours = move_minutes / 60 %>
 <% minutes = move_minutes % 60 %>
 
-<%# ✅ 出発時間（time型 → HH:MM形式） %>
-<% departure_time_value =
-     if plan.start_point&.respond_to?(:departure_time) && plan.start_point.departure_time.present?
-       plan.start_point.departure_time.strftime("%H:%M")
-     else
-       nil
-     end
-%>
-
 <div class="start-point-block"
      data-controller="start-point-editor"
      data-polyline="<%= plan.start_point&.polyline %>"
      data-lat="<%= plan.start_point&.lat %>"
-     data-lng="<%= plan.start_point&.lng %>">
-  <%# ✅ 左側: 既存コンテンツ（350px） %>
-  <div class="block-main-content">
-    <div class="start-point-main">
-      <span class="start-point-icon"
+     data-lng="<%= plan.start_point&.lng %>"
+     data-time-rail-sync-target="content"
+     data-time-rail-sync="start-point">
+  <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
+
+  <%# ✅ 情報グループ（出発コンテンツ + 詳細）%>
+  <div class="start-info-group">
+    <%# ✅ 上部：出発コンテンツ %>
+    <div class="start-content">
+    <%# 3層構造: アイコン | タイトル | スペーサー %>
+    <div class="start-header">
+      <span class="start-icon"
             data-controller="navibar-marker-button"
             data-point-type="start"
             data-action="click->navibar-marker-button#point"
@@ -32,64 +30,26 @@
             tabindex="0"
             aria-label="出発地点を地図で表示"></span>
 
-      <div class="start-label">
-        <div class="start-title-row">
-          <span class="start-title start-title--clickable"
-                data-controller="navibar-marker-button"
-                data-point-type="start"
-                data-action="click->navibar-marker-button#point"
-                role="button"
-                tabindex="0">出発</span>
-        </div>
-      </div>
+      <span class="start-title start-title--clickable"
+            data-controller="navibar-marker-button"
+            data-point-type="start"
+            data-action="click->navibar-marker-button#point"
+            role="button"
+            tabindex="0">出発</span>
 
-      <%# ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） %>
-      <div class="start-point-spacer" aria-hidden="true"></div>
+      <div class="start-spacer" aria-hidden="true"></div>
     </div>
 
-    <%# ✅ 住所（spot-metaと同じ構造で、start-point-mainの外に配置） %>
-    <div class="start-point-meta">
-      <span class="address" data-start-point-editor-target="address">
-        <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
-      </span>
-    </div>
-
-    <div
-      id="start-point-edit-<%= plan.id %>"
-      class="start-point-edit"
-      hidden
-      data-start-point-editor-target="editArea"
-    >
-      <div class="start-point-edit__inner">
-        <label for="start-point-address-<%= plan.id %>" class="start-point-edit__label">
-          出発地点を変更
-        </label>
-
-        <input
-          id="start-point-address-<%= plan.id %>"
-          type="text"
-          class="form-control start-point-edit__input"
-          placeholder="（例: 〇〇市〇〇町〇〇-〇）"
-          autocomplete="off"
-          data-start-point-editor-target="input"
-          data-action="keydown->start-point-editor#search compositionstart->start-point-editor#compositionStart compositionend->start-point-editor#compositionEnd"
-        >
-
-        <div class="point-edit__actions">
-          <button type="button" class="point-edit__cancel-btn">
-            キャンセル
-          </button>
-          <button type="button" class="point-edit__search-btn">
-            検索
-          </button>
-        </div>
-      </div>
+    <%# 住所 %>
+    <div class="start-address navibar-padding" data-start-point-editor-target="address">
+      <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
     </div>
 
     <%# ✅ スポットが1件以上の場合のみ「次の場所まで」を表示 %>
     <% if plan.plan_spots.exists? %>
       <div class="start-next-move" data-plan-time-role="start-next-move">
-        <span class="label">次の場所まで</span>
+        <span class="label">次の場所<span class="label-unit">まで</span></span>
+        <span class="separator"></span>
         <span class="km">
           <% if start_point&.move_distance.present? %>
             <%= format_distance(start_point.move_distance) %><span class="km-unit">km</span>
@@ -97,6 +57,7 @@
             —<span class="km-unit">km</span>
           <% end %>
         </span>
+        <span class="separator"></span>
         <span class="time">
           <% if start_point&.move_time.present? %>
             <% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span>
@@ -106,88 +67,74 @@
         </span>
       </div>
     <% end %>
+    </div>
+    <%# /.start-content %>
 
-    <%# ✅ 出発地点が設定済み＆スポットが1件以上のときだけ「有料道路」トグルを表示 %>
+    <%# ✅ 下部：トグル詳細コンテンツ %>
     <% if plan.start_point.present? && plan.plan_spots.exists? %>
-      <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
-      <div class="start-point-detail-wrap">
-        <div class="collapse start-point-detail<%= ' show' if start_detail_open %>" id="startPointDetail-<%= plan.id %>">
-          <div class="start-point-detail__inner">
-            <div class="start-toll-row">
-              <span class="label">有料道路</span>
+      <div class="collapse start-detail<%= ' show' if start_detail_open %>" id="startPointDetail-<%= plan.id %>">
+        <%# 有料道路設定行 %>
+        <div class="start-toll-row">
+          <span class="label">有料道路</span>
+          <input
+            class="option-switch"
+            type="checkbox"
+            role="switch"
+            aria-label="有料道路の使用を切り替える（出発）"
+            data-start-point-toll-used-switch="1"
+            data-plan-id="<%= plan.id %>"
+            <%= 'checked="checked"' if plan.start_point&.toll_used? %>
+          >
+        </div>
 
-              <div class="toll-switch">
-                <div class="form-check form-switch m-0">
-                  <input
-                    class="form-check-input"
-                    type="checkbox"
-                    role="switch"
-                    aria-label="有料道路の使用を切り替える（出発）"
-                    data-start-point-toll-used-switch="1"
-                    data-plan-id="<%= plan.id %>"
-                    <%= 'checked="checked"' if plan.start_point&.toll_used? %>
-                  >
-                </div>
-              </div>
+        <%# 出発地点変更フォーム %>
+        <div
+          id="start-point-edit-<%= plan.id %>"
+          class="start-edit"
+          hidden
+          data-start-point-editor-target="editArea"
+        >
+          <div class="start-edit__inner">
+            <label for="start-point-address-<%= plan.id %>" class="start-edit__label">
+              出発地点を変更
+            </label>
 
-              <%# ✅ 料金表示は一旦非表示（料金取得ロジック未実装のため） %>
-              <%#= start_point&.toll_used? && start_point&.move_cost.present? ? number_to_currency(start_point.move_cost, unit: "¥ ", precision: 0) : "¥ —" %>
+            <input
+              id="start-point-address-<%= plan.id %>"
+              type="text"
+              class="form-control start-edit__input"
+              placeholder="（例: 〇〇市〇〇町〇〇-〇）"
+              autocomplete="off"
+              data-start-point-editor-target="input"
+              data-action="keydown->start-point-editor#search compositionstart->start-point-editor#compositionStart compositionend->start-point-editor#compositionEnd"
+            >
+
+            <div class="point-edit__actions">
+              <button type="button" class="point-edit__cancel-btn">
+                キャンセル
+              </button>
+              <button type="button" class="point-edit__search-btn">
+                検索
+              </button>
             </div>
-
           </div>
         </div>
-
-        <button
-          type="button"
-          class="detail-toggle"
-          data-bs-toggle="collapse"
-          data-bs-target="#startPointDetail-<%= plan.id %>"
-          aria-expanded="<%= start_detail_open ? 'true' : 'false' %>"
-          aria-controls="startPointDetail-<%= plan.id %>"
-        >
-          <i class="bi bi-caret-down-fill"></i>
-        </button>
       </div>
     <% end %>
   </div>
+  <%# /.start-info-group %>
 
-  <%# ✅ 右側: 時刻パネル (ON時のみ表示） %>
-  <div class="block-time-panel">
-    <div class="block-time-panel__main">
-      <div
-        class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %><%= ' start-departure-time--no-spots' unless plan.plan_spots.exists? %>"
-        data-controller="start-departure-time"
-        data-start-departure-time-plan-id-value="<%= plan.id %>"
-        data-start-departure-time-current-value="<%= departure_time_value %>"
-      >
-        <button
-          type="button"
-          class="start-departure-time__help-btn"
-          data-action="click->start-departure-time#showHelp"
-          aria-label="ヘルプ"
-        >?</button>
-
-        <button
-          type="button"
-          class="start-departure-time__main"
-          data-action="click->start-departure-time#openPicker"
-          data-start-departure-time-target="trigger"
-        >
-          <span class="time-display__label">出発</span>
-          <span class="time-display__value">
-            <%= departure_time_value.presence || "09:00" %>
-          </span>
-        </button>
-      </div>
-    </div>
-
-    <%# ✅ スポットが追加されている時のみ矢印を表示 %>
-    <% if plan.plan_spots.exists? %>
-      <div class="block-time-panel__toggle-area">
-        <div class="block-time-panel__arrow">
-          <i class="bi bi-arrow-down-short" aria-hidden="true"></i>
-        </div>
-      </div>
-    <% end %>
-  </div>
+  <%# ✅ トグルボタン %>
+  <% if plan.start_point.present? && plan.plan_spots.exists? %>
+    <button
+      type="button"
+      class="detail-toggle"
+      data-bs-toggle="collapse"
+      data-bs-target="#startPointDetail-<%= plan.id %>"
+      aria-expanded="<%= start_detail_open ? 'true' : 'false' %>"
+      aria-controls="startPointDetail-<%= plan.id %>"
+    >
+      <i class="bi bi-caret-down-fill"></i>
+    </button>
+  <% end %>
 </div>

@@ -187,9 +187,6 @@ export const bindPlanMapSync = () => {
   // navibar 差し替え後：planDataを取り直して「全部のピン」を差し直す
   // ※ スポット削除・入れ替え時もこのイベントが発火する
   document.addEventListener("navibar:updated", async () => {
-    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
-    clearSearchHitMarkers()
-
     // ✅ 帰宅地点の表示状態を body クラス（復元済み）から #map.dataset に同期
     // Stimulus controller の再接続で上書きされた可能性があるため、ここで正しい状態に戻す
     const goalVisibleFromBody = document.body.classList.contains("goal-point-visible")

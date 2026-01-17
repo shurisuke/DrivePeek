@@ -1,0 +1,211 @@
+/* app/assets/stylesheets/plans/navibar/_time_rail.scss */
+/* ==========================================
+   時刻レール（2カラム右側）
+========================================== */
+
+/* 右カラム: 時刻レール（縮小のみ担当） */
+.plan-tab-time-rail {
+  display: none; /* デフォルト非表示 */
+  flex: 0 0 var(--rail-width);
+  width: var(--rail-width);
+  min-width: 0;
+  overflow: visible; /* 内部コンテンツがはみ出しても表示 */
+
+  background: #fff;
+}
+
+/* 時刻レールON時のみ表示 */
+body.plan-time-open .plan-tab-time-rail {
+  display: block;
+  position: relative; /* innerの基準点 */
+}
+
+/* ✅ 内部ラッパー（左オフセット担当、幅は60px固定） */
+.time-rail-inner {
+  position: absolute;
+  top: 0;
+  right: 0; /* 右端を基準に配置 */
+  z-index: 10; /* コンテンツブロックより上に表示 */
+  display: flex;
+  flex-direction: column;
+  width: 60px;
+  box-sizing: border-box;
+  transform: translateX(calc(-1 * var(--rail-right-offset, 0px)));
+}
+
+/* ==========================================
+   時刻レールブロック（各ブロックに対応）
+========================================== */
+
+.time-rail-block {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: space-between;
+  box-sizing: border-box;
+}
+
+/* 出発ブロック用（start-point-block と高さ同期） */
+.time-rail-block--start {
+  height: 206.39px;
+}
+
+/* スポット未追加時は高さを縮小 */
+.time-rail-block--start:has(.start-departure-time--no-spots) {
+  height: 87.39px;
+}
+
+/* スポットブロック用（spot-block と高さ同期） */
+.time-rail-block--spot {
+  height: 234.19px;
+}
+
+/* 帰宅ブロック用（goal-point-block と高さ同期） */
+.time-rail-block--goal {
+  display: none; /* デフォルト非表示 */
+  height: 100px;
+}
+
+/* 帰宅地点が表示されている時のみ時刻レールも表示 */
+body.goal-point-visible .time-rail-block--goal {
+  display: flex;
+}
+
+.time-rail-block__main {
+  flex: 1 1 auto;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  align-items: center;
+  padding: 0;
+
+  /* 子要素はmargin autoで均等配置 */
+  > * {
+    margin: auto 0;
+  }
+}
+
+.time-rail-block__toggle-area {
+  flex: 0 0 auto;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 70px;
+}
+
+.time-rail-block__arrow {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  i {
+    font-size: 24px;
+    color: rgba(80, 109, 83, 0.75);
+    line-height: 1;
+  }
+}
+
+/* ==========================================
+   時刻表示（共通）
+========================================== */
+
+.time-display {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+/* 出発時間の余白 */
+.time-rail-block--start .start-departure-time {
+  flex: 1; /* 親の高さいっぱいに広がる */
+  margin: 0; /* 親のmargin: auto を無効化 */
+}
+
+.time-display[data-plan-time-role="spot-departure"] {
+  margin-bottom: 24px;
+}
+
+/* スポットの到着ラベルの上に余白 */
+.time-rail-block--spot .time-rail-block__main > .time-display:first-child {
+  margin-top: 10px;
+}
+
+/* 帰宅ブロックの到着ラベルの上に余白 */
+.time-rail-block--goal .time-rail-block__main > .time-display:first-child {
+  margin-top: 34px;
+}
+
+.time-display__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.75);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.time-display__value {
+  font-size: 14px;
+  font-weight: 500;
+  color: #555;
+  font-variant-numeric: tabular-nums;
+}
+
+/* ==========================================
+   滞在時間選択（spot_blockから移動）
+========================================== */
+
+/* 滞在時間ボタン（全体がクリック可能） */
+.spot-stay-duration {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+
+  min-width: 50px;
+  max-width: 80px;
+  padding: 4px 0;
+
+  border: none;
+  border-radius: 6px;
+  background: transparent;
+
+  cursor: pointer;
+  transition: background 0.15s ease;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+}
+
+.spot-stay-duration__label {
+  font-size: 0.7rem;
+  font-weight: 500;
+  color: rgba(33, 33, 33, 0.55);
+  line-height: 1.2;
+  letter-spacing: 0.01em;
+}
+
+.spot-stay-duration__value {
+  display: flex;
+  align-items: baseline;
+  justify-content: center;
+
+  color: #8e8e93;
+  font-size: 14px;
+  font-weight: 500;
+  letter-spacing: 0.02em;
+  white-space: nowrap;
+}
+
+.spot-stay-duration__unit {
+  font-size: 10px;
+  font-weight: 400;
+  color: #8e8e93;
+  margin: 0 1px;
+  vertical-align: baseline;
+}

@@ -1,6 +1,6 @@
 /* ==========================================
      帰宅地点ブロック
-     start_point_block と同じ見た目・密度に揃える
+     spot_block と同じ構造に統一
 ========================================== */
 
 @use "../../mixins/toggle_switch" as *;
@@ -21,13 +21,13 @@
   /* ✅ 帰宅地点トグル行（共通mixinを使用） */
   .goal-point-toggle-row {
     width: 100%;
-    margin: 3rem auto;
+    margin: 0 auto;
 
     display: flex;
     justify-content: center;
     align-items: center;
     gap: 30px;
-    padding: 0;
+    padding: 15px 0;
 
     background: transparent;
     border: 0;
@@ -51,30 +51,42 @@
   background: #ffffff;
   border-radius: 6px;
   width: 100%;
-  padding: 16px 0px;
-  margin-top: 0.5rem;
-
+  padding: 0;
+  margin: 25px 0;
   overflow: visible;
 
+  /* block-main-contentから統合 */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  /* ✅ 上部：帰宅コンテンツ（時刻レールと高さ同期する部分） */
+  .goal-content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    width: 100%;
+    margin: 0;
+  }
+
   /* ------------------------------------------
-     上段：帰宅（3カラムFlexbox構造）
-     - [アイコン] [ラベル] [地図ボタン]
+     ヘッダー（3カラム構造）
+     - [アイコン] [タイトル] [スペーサー]
   ------------------------------------------ */
-  .goal-point-main {
+  .goal-header {
     display: flex;
     align-items: flex-start;
-    gap: 10px;
-    margin-bottom: 12px;
-
-    /* プランバー幅に応じて両端に余白を追加 */
-    padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
-    padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+    gap: 2px;
+    margin-bottom: 0;
+    position: relative;
+    width: 100%;
   }
 
   /* 左: 家アイコン（クリック可能） */
-  .goal-point-icon {
+  .goal-icon {
     flex-shrink: 0;
     margin-top: -10px;
+    margin-left: 3px;
 
     width: 40px;
     height: 43px;
@@ -102,30 +114,26 @@
   }
 
   /* ✅ 左アイコンと同じ幅のスペーサー（視覚的バランス用） */
-  .goal-point-spacer {
+  .goal-spacer {
     flex-shrink: 0;
     width: 40px;
+    margin-right: 3px;
   }
 
-  /* 中央: ラベル */
-  .goal-label {
+  /* 中央: タイトル */
+  .goal-title {
     flex: 1 1 auto;
     min-width: 0;
-  }
 
-  .goal-title-row {
-    position: relative;
-    text-align: center;
-    margin-bottom: 9px;
-  }
-
-  .goal-title {
-    display: inline;
+    font-size: 17px;
     font-weight: 700;
+    text-align: center;
     color: #111;
-    font-size: 1.05rem;
-    line-height: 1.1;
-    margin: 0;
+    margin-bottom: 0;
+
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
   }
 
   /* ✅ クリック可能な帰宅タイトル（地図パン機能） */
@@ -145,59 +153,38 @@
     }
   }
 
-  /* ✅ 住所ラッパー（次の場所まで行と同じ幅で中央寄せ） */
-  .goal-point-meta {
-    width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
-    max-width: 265px;
-    margin: 0 auto;
-    padding: 0 10px;
-    box-sizing: border-box;
-  }
-
-  .address {
+  /* ------------------------------------------
+     住所
+  ------------------------------------------ */
+  .goal-address {
     width: 100%;
-    min-width: 0;
+    margin: 0 auto;
+    padding-top: 0;
+    padding-bottom: 0;
+    box-sizing: border-box;
 
-    color: #525252c5;
-    font-size: 13px;
-
+    color: rgba(82, 82, 82, 0.78);
+    font-size: 12px;
     text-align: center;
     line-height: 1.2;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
-
-    display: block;
   }
-
-  /*
-    ✅ 到着時刻を上寄せ（ここが修正点）
-    - block-time-panel 自体の display/flex など "配置ロジック" は上書きしない
-    - 「フレックスアイテムとして上に寄せる」だけを指定する
-    → 右カラムに残ったまま上寄せできる
-  */
-  .block-time-panel {
-    align-self: flex-start;
-  }
-
 }
 
 /* ==========================================
    iOS/Macライクな変更フォーム（共通mixinを使用）
 ========================================== */
-.goal-point-edit__inner {
+.goal-edit__inner {
   @include point-edit-inner;
 }
 
-.goal-point-edit__label {
+.goal-edit__label {
   @include point-edit-label;
 }
 
-.goal-point-edit__input.form-control {
+.goal-edit__input.form-control {
   @include point-edit-input;
-}
-
-.goal-point-edit__help {
-  @include point-edit-help;
 }

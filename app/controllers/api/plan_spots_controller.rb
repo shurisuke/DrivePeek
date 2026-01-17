@@ -39,7 +39,7 @@ module Api
     def spot_params
       params.require(:spot).permit(
         :place_id, :name, :address, :lat, :lng,
-        :photo_reference, top_types: []
+        top_types: []
       )
     end
   end

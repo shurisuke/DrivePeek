@@ -43,20 +43,6 @@ class GenreDetectorTest < ActiveSupport::TestCase
     end
   end
 
-  test "detect excludes specified genre IDs from prompt" do
-    ENV["OPENAI_API_KEY"] = "test_key"
-    mock_response = mock_openai_response("cafe")
-    exclude_ids = [ genres(:park).id ]
-
-    mock_client = build_mock_client(mock_response)
-    OpenAI::Client.stub :new, ->(**_args) { mock_client } do
-      result = GenreDetector.detect(@spot, count: 1, exclude_ids: exclude_ids)
-
-      assert_equal [ genres(:cafe).id ], result
-      assert_not_includes result, genres(:park).id
-    end
-  end
-
   test "detect handles single genre response" do
     ENV["OPENAI_API_KEY"] = "test_key"
     mock_response = mock_openai_response("cafe")

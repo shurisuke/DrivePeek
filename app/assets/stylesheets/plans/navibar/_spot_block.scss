@@ -9,20 +9,13 @@
 @use "../../ui/genre_chip" as *;
 
 /* ================================================================
-   ✅ 重要：ラッパー(.spot-block)に padding を持たせない
-   - flex内の block-main-content が「左の余白に圧迫される」原因を潰す
-   - カード見た目は .block-main-content 側へ寄せる
+   スポットブロック本体
 ================================================================ */
 
 .spot-block {
   position: relative;
   width: 100%;
-  margin-top: 15px;
-
-  /* ✅ ラッパーには持たせない */
-  background: transparent;
-  border-radius: 0;
-  padding: 0;
+  margin-top: 0;
 
   --spot-action-bg: rgba(80, 109, 83, 0.06);
   --spot-action-bg-hover: rgba(80, 109, 83, 0.10);
@@ -30,10 +23,18 @@
   --spot-action-border-hover: rgba(80, 109, 83, 0.32);
   --spot-action-text: rgba(80, 109, 83, 0.90);
 
-  --spot-fav-safe: 45px;
-
   cursor: grab;
   transition: box-shadow 0.12s, background-color 0.12s;
+
+  /* block-main-contentから統合 */
+  display: flex;
+  flex-direction: column;
+  align-items: stretch;
+
+  background: #ffffff;
+  border-radius: 6px;
+
+  box-sizing: border-box;
 }
 
 .spot-block:active {
@@ -49,71 +50,33 @@
   cursor: pointer;
 }
 
-/* ✅ カード見た目はメイン側へ */
-.spot-block .block-main-content {
-  background: #ffffff;
-  border-radius: 6px;
-
-  padding: 20px 0 1rem 0; /* 左右は .spot-main の動的パディングで制御 */
-
-  box-sizing: border-box;
+/* ✅ ブロック情報グループ（スポット情報 + 詳細をラップ） */
+.spot-block .spot-info-group {
+  margin-bottom: 25px;
 }
 
-/* ==========================================
-   ✅ スポットブロック：時刻パネル（到着/滞在/出発）の縦配置
-   - 到着: padding-top: 20px で上寄せ
-   - 出発: padding-bottom: 20px で下寄せ
-   - 滞在: 到着と出発の間（中央）
-========================================== */
-
-.spot-block .block-time-panel__main {
-  justify-content: space-between;
-  gap: 7.5px;
-  max-height: 240px;
-}
-
-/* ✅ メモ表示時は時刻レールの最大高さを増やす */
-.spot-block:has(.spot-memo.spot-memo--pin:not(.d-none)) .block-time-panel__main {
-  max-height: 270px !important;
-}
-
-/* ✅ メモ表示時は時刻パネル自体にも最小高さを設定 */
-.spot-block:has(.spot-memo.spot-memo--pin:not(.d-none)) .block-time-panel {
-  min-height: 270px !important;
-}
-
-/* ✅ 到着時間の上に余白を追加 */
-.spot-block .block-time-panel__main > .time-display:first-child {
-  margin-top: 9px;
-}
-
-.spot-block .block-time-panel__row {
-  gap: 0;
-}
-
-.spot-block .block-time-panel__row:first-child {
-  padding-top: 4px;
-}
-
-.spot-block .block-time-panel__row:last-child {
-  padding-top: 3px;
-  padding-bottom: 32px;
+/* ✅ 上部：スポット情報（時刻レールと高さ同期する部分） */
+.spot-block .spot-content {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  width: 100%;
+  margin-top: 25px;
+  margin-bottom: 0;
 }
 
 /* ------------------------------------------
    上部（スポット情報）
 ------------------------------------------ */
 
-.spot-block .spot-main {
+.spot-block .spot-header {
   display: flex;
   align-items: flex-start;
-  gap: 10px;
+  align-self: stretch;
+  gap: 2px;
   margin-bottom: 0;
   position: relative;
-
-  /* プランバー幅に応じて両端に余白を追加 */
-  padding-left: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
-  padding-right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.25));
+  width: 100%;
 }
 
 .spot-block .spot-order-icon {
@@ -163,23 +126,15 @@
   margin-right: 3px;
 }
 
-/* スポット詳細画面（show）ではスポット番号を青色に */
-.spot-block--show .spot-order-icon {
-  background: #3073F0;
-}
-
-.spot-block .spot-body {
-  flex: 1 1 auto;
-  width: 100%;
-  min-width: 0;
-}
-
 .spot-block .spot-name {
-  font-size: 1.05rem;
+  flex: 1 1 auto;
+  min-width: 0;
+
+  font-size: 16px;
   font-weight: 700;
   text-align: center;
   color: #222;
-  margin-bottom: 6px;
+  margin-bottom: 0;
 
   white-space: nowrap;
   overflow: hidden;
@@ -204,37 +159,40 @@
 }
 
 /* ------------------------------------------
-   住所・ジャンルラッパー（3層構造の下に配置）
------------------------------------------- */
-
-.spot-block .spot-meta {
-  padding: 0 10px;
-  margin-top: 0;
-}
-
-.spot-block .spot-address {
-  font-size: 13px;
-  text-align: center;
-  color: rgba(82, 82, 82, 0.78);
-  margin-top: 8px;
-
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
-}
-
-/* ------------------------------------------
-   ジャンル（共通mixinを使用）
+   ジャンル・住所
 ------------------------------------------ */
 
 .spot-block .spot-genres {
   @include genre-list;
   justify-content: center;
-  margin-top: 0;
+  padding-top: 5px;
+  padding-bottom: 5px;
 }
 
 .spot-block .genre-chip {
   @include genre-chip-sm;
+}
+
+.spot-block .genre-chip--skeleton {
+  @include genre-chip-skeleton;
+}
+
+/* ✅ 住所（出発ブロックと同じ構造） */
+.spot-block .spot-address {
+  width: 100%;
+  margin: 0 auto;
+  padding-top: 5px;
+  padding-bottom: 5px;
+  box-sizing: border-box;
+
+  color: rgba(82, 82, 82, 0.78);
+  font-size: 12px;
+  text-align: center;
+  line-height: 1.2;
+
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 /* ------------------------------------------
@@ -289,8 +247,8 @@
 
   position: absolute;
   top: 50%;
-  /* プランバー幅に応じて位置を変化（アイコンと同じ伸縮感・右側バージョン） */
-  right: calc(5px + max(0px, (var(--navibar-width, 350px) - 350px) * 0.40));
+  /* レスポンシブright は _navibar_responsive.scss に集約 */
+  right: 5px;
   transform: translateY(-50%);
 
   z-index: 30;
@@ -334,17 +292,6 @@
   box-shadow: none;
 }
 
-/* ------------------------------------------
-   collapse + トグル
------------------------------------------- */
-
-.spot-block .spot-detail-wrap {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  width: 100%;
-}
-
 .spot-block .spot-detail,
 .spot-block .spot-detail.collapse.show {
   width: 100%;
@@ -356,40 +303,18 @@
   transition: height 0.35s ease;
 }
 
-.spot-block .spot-detail__inner {
-  width: 100%;
-  border-radius: 6px;
-  background: #fff;
-  padding: 0 12px;
-  font-size: 0.9rem;
-}
-
 /* ------------------------------------------
    ボタン列
 ------------------------------------------ */
-
-.spot-block .spot-detail-actions {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-
-  margin-top: 16px;
-  margin-bottom: 12px;
-}
-
-/* フォームをボタンの上に縦積み */
-.spot-block .spot-detail-actions__buttons-wrap {
-  width: 100%;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-}
 
 .spot-block .spot-detail-actions__buttons {
   display: flex;
   gap: 12px;
   justify-content: center;
+  align-items: center;
   width: 100%;
+  margin-top: 16px;
+  margin-bottom: 0;
 }
 
 /* 中央揃え崩れ対策 */
@@ -507,6 +432,7 @@
 /* ✅ 有料道路設定行（共通mixinを使用） */
 .spot-block .spot-toll-row {
   @include toll-row-layout;
+  padding-top: 5px;
   padding-bottom: 10px;
 }
 
@@ -516,6 +442,8 @@
 
 .spot-block .spot-next-move {
   @include next-move-grid;
+  margin-top: 10px;
+  margin-bottom: 0;
 }
 
 /* ------------------------------------------
@@ -565,13 +493,8 @@
 }
 
 
-.spot-block .spot-memo.spot-memo--editor input.form-control,
 .spot-block .spot-memo.spot-memo--editor textarea.form-control {
   cursor: text;
-}
-
-.spot-block .spot-memo.spot-memo--editor textarea.form-control,
-.spot-block .spot-memo.spot-memo--editor input.form-control {
   width: 100%;
   box-sizing: border-box;
 
@@ -590,14 +513,8 @@
   text-align: center;
 }
 
-.spot-block .spot-memo.spot-memo--editor input.form-control::placeholder {
-  color: rgba(33, 33, 33, 0.45);
-}
-
 .spot-block .spot-memo.spot-memo--editor textarea.form-control:focus,
-.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible,
-.spot-block .spot-memo.spot-memo--editor input.form-control:focus,
-.spot-block .spot-memo.spot-memo--editor input.form-control:focus-visible {
+.spot-block .spot-memo.spot-memo--editor textarea.form-control:focus-visible {
   border: 0 !important;
   outline: 0 !important;
   box-shadow: none !important;
@@ -624,19 +541,10 @@
   border-width: 2px !important;
 }
 
-.spot-block .spot-memo__editor-actions .btn.btn-personal,
-.spot-block .spot-memo__editor-actions .btn.btn-primary {
+.spot-block .spot-memo__editor-actions .btn.btn-personal {
   background: #435e50 !important;
   border: 1px solid #435e50 !important;
   color: #fff !important;
-}
-
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill,
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:hover,
-.spot-block .spot-memo.spot-memo--editor input.form-control:-webkit-autofill:focus {
-  -webkit-box-shadow: 0 0 0 1000px #ffffff inset !important;
-  -webkit-text-fill-color: rgba(33, 33, 33, 0.75) !important;
-  transition: background-color 9999s ease-out 0s;
 }
 
 
@@ -646,15 +554,12 @@
 
 .spot-block .detail-toggle {
   @include detail-toggle-button;
+  align-self: center;
 }
 
 /* ------------------------------------------
    Sortable / 末尾表示制御など
 ------------------------------------------ */
-
-.spot-block .spot-drag-handle {
-  display: none;
-}
 
 .spot-block--ghost {
   opacity: 0;
@@ -673,75 +578,3 @@
   padding-left: 0;
 }
 
-/* ✅ スポットブロックの矢印位置調整 */
-.spot-block .block-time-panel__arrow {
-  margin-top: -7px;
-}
-
-/* ==========================================
-   ✅ 時刻レール内の滞在時間選択（出発時間ピッカーと同じスタイル）
-========================================== */
-
-/* ✅ 滞在時間ボタン（全体がクリック可能） */
-.spot-stay-duration {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 2px;
-
-  min-width: 50px;
-  max-width: 80px;
-  padding: 4px 0;
-
-  border: none;
-  border-radius: 6px;
-  background: transparent;
-
-  cursor: pointer;
-  transition: background 0.15s ease;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  &:active {
-    transform: scale(0.97);
-  }
-}
-
-.spot-stay-duration__label {
-  font-size: 0.7rem;
-  font-weight: 500;
-  color: rgba(33, 33, 33, 0.55);
-  line-height: 1.2;
-  letter-spacing: 0.01em;
-}
-
-/* ✅ 値の表示部分 */
-.spot-stay-duration__value {
-  display: flex;
-  align-items: baseline;
-  justify-content: center;
-
-  color: #8e8e93;
-  font-size: 14px;
-  font-weight: 500;
-  letter-spacing: 0.02em;
-  white-space: nowrap;
-}
-
-/* ✅ 単位ラベル（時間・分） */
-.spot-stay-duration__unit {
-  font-size: 10px;
-  font-weight: 400;
-  color: #8e8e93;
-  margin: 0 1px;
-  vertical-align: baseline;
-}
-
-/* ✅ 設定済み時 */
-.spot-stay-duration--set {
-  .spot-stay-duration__value {
-    color: #8e8e93;
-  }
-}

@@ -6,34 +6,21 @@
    で共通利用
 ========================================== */
 
-/* ✅ トグルスイッチ共通スタイル */
+/* ✅ オプションスイッチ共通スタイル（iOS風トグル） */
 @mixin toggle-switch-base {
-  .toll-switch {
+  .option-switch {
+    -webkit-appearance: none;
+    appearance: none;
+
     display: inline-flex;
     align-items: center;
     justify-content: flex-start;
-
-    height: 16px;
-    min-width: 0;
-
-    border-left: 0 !important;
-    box-shadow: none !important;
-  }
-
-  .form-check.form-switch {
-    margin: 0 !important;
-    padding: 0 !important;
-    min-height: auto !important;
-  }
-
-  .form-check-input {
-    -webkit-appearance: none;
-    appearance: none;
 
     width: 29px;
     height: 16px;
 
     margin: 0 !important;
+    padding: 0 !important;
     border: 0 !important;
     outline: none !important;
 
@@ -42,6 +29,7 @@
 
     border-radius: 9999px;
     position: relative;
+    cursor: pointer;
 
     transition: background-color 0.15s ease;
     box-shadow: none !important;
@@ -80,11 +68,9 @@
 
 /* ✅ 有料道路トグル行の共通レイアウト */
 @mixin toll-row-layout {
-  /* ナビバー幅に応じて動的に縮小 */
-  width: calc(225px + (var(--navibar-width, 340px) - 300px) * 1);
-  max-width: 265px;
-  margin: 0 auto;
-  padding: 0 10px;
+  /* レスポンシブwidth は _navibar_responsive.scss に集約 */
+  padding-top: 0;
+  padding-bottom: 0;
   box-sizing: border-box;
 
   display: flex;
