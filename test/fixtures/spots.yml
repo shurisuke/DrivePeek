@@ -8,7 +8,6 @@ one:
   place_id: "ChIJCewJkL2LGGAR3Qmk0vCTGkg"
   prefecture: "Tokyo"
   city: "Minato"
-  photo_reference: "photo_ref_one"
 
 two:
   name: "Senso-ji Temple"
@@ -18,4 +17,3 @@ two:
   place_id: "ChIJ8T1GpMGOGGARDYGSgpooDWw"
   prefecture: "Tokyo"
   city: "Taito"
-  photo_reference: "photo_ref_two"
