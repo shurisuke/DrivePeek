@@ -102,13 +102,6 @@ const extractPhotoUrl = (place) => {
   return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
 }
 
-const extractPhotoReference = (place) => {
-  // JavaScript API では photo_reference は取得できないため null を返す
-  // （photo_reference は保存せず、表示時に photo.getUrl() を使用）
-  const photo = place?.photos?.[0]
-  return photo?.photo_reference || null
-}
-
 /**
  * InfoWindow を表示する（PlaceResult 用）
  * @param {Object} options
@@ -117,7 +110,7 @@ const extractPhotoReference = (place) => {
  * @param {string} options.buttonId - ボタンのDOM ID
  * @param {boolean} [options.showButton=true] - 「プランに追加」ボタンを表示するか
  */
-export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
+export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
   const map = getMapInstance()
   if (!map) return
 
@@ -160,21 +153,27 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
     if (!btn) return
 
     btn.addEventListener("click", () => {
-      // "プランに追加"の実体処理は別モジュールへ（役割分離）
-      document.dispatchEvent(
-        new CustomEvent("spot:add", {
+      const planSpotId = btn.dataset.planSpotId
+
+      if (planSpotId) {
+        // 削除モード
+        document.dispatchEvent(new CustomEvent("spot:delete", {
+          detail: { buttonId, planSpotId }
+        }))
+      } else {
+        // 追加モード
+        document.dispatchEvent(new CustomEvent("spot:add", {
           detail: {
+            buttonId,
             place_id: place.place_id,
             name: name || null,
             address: address || null,
             lat: latLng.lat,
             lng: latLng.lng,
-            photo_reference: extractPhotoReference(place),
-            // Googleのジャンル（types）をタグとして使う想定
             types: Array.isArray(place.types) ? place.types : [],
           },
-        })
-      )
+        }))
+      }
     })
   })
 }
@@ -189,7 +188,7 @@ export const showInfoWindow = ({ anchor, place, buttonId, showButton = true }) =
  * @param {string} [options.photoUrl] - 写真URL
  * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label, onClick}]
  */
-export const showInfoWindowForPin = ({ marker, name, address, photoUrl, editButtons }) => {
+export const showPlanPinInfoWindow = ({ marker, name, address, photoUrl, editButtons }) => {
   const map = getMapInstance()
   if (!map) return
 

@@ -139,6 +139,47 @@
   &:active {
     background-color: #d17a0a;
   }
+
+  /* ✅ ローディング状態 */
+  &--loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+    background-color: #ccc;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: dp-btn-spin 0.7s linear infinite;
+    }
+  }
+
+  /* ✅ 削除モード */
+  &--delete {
+    background-color: #666;
+
+    &:hover {
+      background-color: #555;
+    }
+
+    &:active {
+      background-color: #444;
+    }
+  }
+}
+
+@keyframes dp-btn-spin {
+  to {
+    transform: rotate(360deg);
+  }
 }
 
 /* ✅ 編集ボタン（出発/帰宅地点変更用） */
@@ -181,5 +222,27 @@
 
   &:active {
     background-color: rgb(55, 78, 58);
+  }
+
+  /* ✅ ローディング状態 */
+  &--loading {
+    position: relative;
+    color: transparent;
+    pointer-events: none;
+    background-color: #ccc;
+
+    &::after {
+      content: "";
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      width: 18px;
+      height: 18px;
+      margin: -9px 0 0 -9px;
+      border: 2px solid #fff;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: dp-btn-spin 0.7s linear infinite;
+    }
   }
 }
