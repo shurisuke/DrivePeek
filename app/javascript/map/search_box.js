@@ -65,5 +65,11 @@ export const setupSearchBox = () => {
 
     setSearchHitMarkers(newMarkers)
     map.fitBounds(bounds)
+
+    // ✅ 検索結果クリアボタンを表示
+    const clearBtn = document.getElementById("search-hit-clear")
+    if (clearBtn && newMarkers.length > 0) {
+      clearBtn.hidden = false
+    }
   })
 }
