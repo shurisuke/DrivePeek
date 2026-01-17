@@ -106,7 +106,8 @@ class Plan < ApplicationRecord
           lat: ps.spot.lat,
           lng: ps.spot.lng,
           name: ps.spot.name,
-          address: ps.spot.address
+          address: ps.spot.address,
+          place_id: ps.spot.place_id
         }
       end,
       # スポット間のポリラインのみ（最後のスポット→帰宅は除外）
