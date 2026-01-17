@@ -92,16 +92,6 @@ class Spot < ApplicationRecord
     Rails.cache.delete(CITIES_CACHE_KEY)
   end
 
-  # photo_reference から写真URLを生成
-  def photo_url(max_width: 520)
-    return nil if photo_reference.blank?
-
-    api_key = ENV["GOOGLE_MAPS_API_KEY"]
-    return nil if api_key.blank?
-
-    "https://maps.googleapis.com/maps/api/place/photo?maxwidth=#{max_width}&photo_reference=#{photo_reference}&key=#{api_key}"
-  end
-
   # AIでジャンルを判定して割り当てる（遅延ロード用）
   # @return [Boolean] 判定が行われたか
   def detect_genres!
@@ -132,9 +122,6 @@ class Spot < ApplicationRecord
     self.address ||= payload[:address]
     self.lat     ||= payload[:lat]
     self.lng     ||= payload[:lng]
-
-    # photo_reference は鮮度優先で上書き
-    self.photo_reference = payload[:photo_reference] if payload[:photo_reference].present?
 
     # prefecture / city は ReverseGeocoder で補完
     geocode_if_needed
