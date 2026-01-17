@@ -10,6 +10,18 @@ import { normalizeDisplayAddress } from "map/geocoder"
 let infoWindow = null
 let mapClickListener = null
 
+/**
+ * place_idからプラン内のスポットを検索
+ * @param {string} placeId - Google Place ID
+ * @returns {{ planSpotId: string } | null} - 見つかった場合はplanSpotIdを返す
+ */
+const findPlanSpotByPlaceId = (placeId) => {
+  if (!placeId) return null
+  const spotBlock = document.querySelector(`.spot-block[data-place-id="${placeId}"]`)
+  if (!spotBlock) return null
+  return { planSpotId: spotBlock.dataset.planSpotId }
+}
+
 const getInfoWindow = () => {
   if (!infoWindow) {
     infoWindow = new google.maps.InfoWindow()
@@ -47,9 +59,11 @@ export const closeInfoWindow = () => {
  * @param {string} options.address - 住所
  * @param {string} options.buttonId - ボタンのDOM ID
  * @param {boolean} options.showButton - 「プランに追加」ボタンを表示するか
+ * @param {string} [options.buttonLabel] - ボタンのラベル（デフォルト: "プランに追加"）
+ * @param {string} [options.planSpotId] - 削除モード時のplanSpotId
  * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label}]
  */
-const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, editButtons }) => {
+const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, buttonLabel, planSpotId, editButtons }) => {
   const safeName = name || "名称不明"
   const safeAddress = address || "住所不明"
 
@@ -60,8 +74,13 @@ const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, ed
       </div>`
     : ""
 
+  const label = buttonLabel || "プランに追加"
+  const isDeleteMode = !!planSpotId
+  const deleteClass = isDeleteMode ? " dp-infowindow__btn--delete" : ""
+  const dataAttr = isDeleteMode ? ` data-plan-spot-id="${planSpotId}"` : ""
+
   const buttonArea = showButton
-    ? `<button type="button" class="dp-infowindow__btn" id="${buttonId}">プランに追加</button>`
+    ? `<button type="button" class="dp-infowindow__btn${deleteClass}" id="${buttonId}"${dataAttr}>${label}</button>`
     : ""
 
   // 複数の編集ボタンに対応（variant: "orange" でオレンジボタン）
@@ -122,6 +141,12 @@ export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton
   const photoUrl = extractPhotoUrl(place)
   const name = place.name
 
+  // ✅ place_idがプランに存在するかチェック
+  const existingSpot = findPlanSpotByPlaceId(place.place_id)
+  const isInPlan = !!existingSpot
+  const buttonLabel = isInPlan ? "プランから削除" : "プランに追加"
+  const planSpotId = existingSpot?.planSpotId || null
+
   // 地図クリック時にInfoWindowを閉じるリスナーを設定
   setupMapClickToClose()
 
@@ -133,6 +158,8 @@ export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton
       address,
       buttonId,
       showButton,
+      buttonLabel,
+      planSpotId,
     })
   )
 
