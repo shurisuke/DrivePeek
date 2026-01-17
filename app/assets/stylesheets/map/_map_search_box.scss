@@ -4,11 +4,14 @@
 .map-search-box {
     position: absolute;
     top: 10px;
-    /* 地図の中央に配置: navibar幅 + 地図幅の半分 - 30px */
-    left: calc(var(--navibar-width) + (100% - var(--navibar-width)) / 2 - 30px);
+    /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
+    left: calc(
+      (var(--navibar-width) - var(--navibar-slide)) +
+      (100% - (var(--navibar-width) - var(--navibar-slide))) / 2 - 30px
+    );
     transform: translateX(-50%);
     z-index: 10;
-    width: min(600px, calc((100% - var(--navibar-width)) * 0.6));
+    width: min(600px, calc((100% - (var(--navibar-width) - var(--navibar-slide))) * 0.6));
 
   input.form-control {
     width: 100%;
@@ -31,14 +34,65 @@
   }
 }
 
-/* 収納時：ハンドル幅のみ考慮 */
-body.no-footer .plan-form.navibar--collapsed .map-search-box {
-  left: calc(var(--navibar-collapsed-handle-width) + (100% - var(--navibar-collapsed-handle-width)) / 2 - 30px);
-  width: min(600px, calc((100% - var(--navibar-collapsed-handle-width)) * 0.6));
-}
-
 /* プランバーが80%を超えたら検索バー・保存ボタンを非表示 */
 body.no-footer .plan-form.navibar--wide .map-search-box,
 body.no-footer .plan-form.navibar--wide .plan-save {
   display: none;
+}
+
+/* 地図上のフローティングボタン群 */
+.map-floating-buttons {
+  position: absolute;
+  top: 60px;
+  /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
+  left: calc(
+    (var(--navibar-width) - var(--navibar-slide)) +
+    (100% - (var(--navibar-width) - var(--navibar-slide))) / 2
+  );
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  gap: 12px;
+}
+
+/* 共通のフローティングボタンスタイル */
+.map-floating-btn {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: #fff;
+  border: none;
+  border-radius: 16px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  i {
+    font-size: 12px;
+  }
+
+  /* 青（プレビューを閉じる） */
+  &--blue {
+    background: #3B82F6;
+    box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
+
+    &:hover {
+      background: #2563EB;
+      box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
+    }
+  }
+
+  /* 赤（検索結果をクリア） */
+  &--red {
+    background: #ef4444;
+    box-shadow: 0 2px 8px rgba(239, 68, 68, 0.4);
+
+    &:hover {
+      background: #dc2626;
+      box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
+    }
+  }
 }

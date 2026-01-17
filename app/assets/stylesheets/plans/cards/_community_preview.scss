@@ -4,42 +4,7 @@
          プレビュー関連のスタイル
 ========================================== */
 
-/* 閉じるボタン（地図上にフローティング表示） */
-.community-preview-close {
-  position: absolute;
-  top: 60px;
-  left: calc(var(--navibar-width) + (100% - var(--navibar-width)) / 2);
-  transform: translateX(-50%);
-  z-index: 10;
-
-  display: flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 16px;
-  font-size: 14px;
-  font-weight: 500;
-  color: #fff;
-  background: #3B82F6;
-  border: none;
-  border-radius: 20px;
-  box-shadow: 0 2px 8px rgba(59, 130, 246, 0.4);
-  cursor: pointer;
-  transition: all 0.15s ease;
-
-  &:hover {
-    background: #2563EB;
-    box-shadow: 0 4px 12px rgba(59, 130, 246, 0.5);
-  }
-
-  i {
-    font-size: 14px;
-  }
-}
-
-/* 収納時の位置調整 */
-body.no-footer .plan-form.navibar--collapsed .community-preview-close {
-  left: calc(var(--navibar-collapsed-handle-width) + (100% - var(--navibar-collapsed-handle-width)) / 2);
-}
+/* 閉じるボタンのスタイルは _map_search_box.scss の .map-floating-btn に統合 */
 
 /* プレビューモード時のカードリスト */
 .list-page__cards:has(.plan-card--preview) {
