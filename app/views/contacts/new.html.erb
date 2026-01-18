@@ -1,0 +1,50 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <%= link_to :back, class: "auth-back-link" do %>
+        <i class="bi bi-chevron-left"></i>
+      <% end %>
+      <h2 class="auth-title">お問い合わせ</h2>
+    </div>
+
+    <%= form_with model: @contact, url: contacts_path, class: "auth-form" do |f| %>
+      <% if @contact.errors.any? %>
+        <ul class="auth-errors">
+          <% @contact.errors.full_messages.uniq.each do |message| %>
+            <li><%= message %></li>
+          <% end %>
+        </ul>
+      <% end %>
+
+      <div class="form-group">
+        <%= f.label :category, "お問い合わせ種別", class: "form-label" %>
+        <%= f.select :category,
+                     options_for_select(
+                       Contact::CATEGORIES.map { |c| [t("contacts.categories.#{c}"), c] },
+                       @contact.category
+                     ),
+                     { include_blank: "選択してください" },
+                     { class: "form-select" } %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :body, "お問い合わせ内容", class: "form-label" %>
+        <%= f.text_area :body,
+                        class: "form-control",
+                        rows: 5,
+                        placeholder: "お問い合わせ内容をご記入ください" %>
+      </div>
+
+      <div class="form-group">
+        <%= f.label :email, "メールアドレス", class: "form-label" %>
+        <%= f.email_field :email,
+                          class: "form-control",
+                          placeholder: "example@email.com",
+                          autocomplete: "email" %>
+        <p class="settings-hint text-center mt-2">返信が必要な場合にご連絡いたします</p>
+      </div>
+
+      <%= f.submit "送信する", class: "auth-submit" %>
+    <% end %>
+  </div>
+</div>
