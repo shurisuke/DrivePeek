@@ -1,60 +1,82 @@
-<div class="container d-flex justify-content-center align-items-center min-vh-100 bg-light">
-  <div class="card shadow p-4 rounded-4" style="max-width: 500px; width: 100%;">
-    <h2 class="mb-4 text-center text-primary">新規登録</h2>
+<div class="auth-page">
+  <div class="auth-card">
+    <% if params[:method] == "email" || resource.errors.any? %>
+      <div class="auth-header">
+        <%= link_to new_user_registration_path, class: "auth-back-link" do %>
+          <i class="bi bi-arrow-left"></i>
+        <% end %>
+        <h2 class="auth-title">新規登録</h2>
+      </div>
 
-    <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name)) do |f| %>
-      <% if resource.errors.any? %>
-        <div class="mb-3 text-danger small">
-          <ul class="mb-0 ps-3">
+      <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { class: "auth-form auth-form--register" }) do |f| %>
+        <div class="auth-progress">
+          <div class="auth-progress-bar">
+            <div class="auth-progress-fill"></div>
+          </div>
+          <div class="auth-progress-text"></div>
+        </div>
+
+        <% if resource.errors.any? %>
+          <ul class="auth-errors">
             <% resource.errors.full_messages.uniq.each do |message| %>
               <li><%= message %></li>
             <% end %>
           </ul>
-        </div>
-      <% end %>
+        <% end %>
 
-      <div class="form-group mb-3">
-        <%= f.input :name,
-                    label: 'ユーザーネーム',
-                    required: true,
-                    error: false,
-                    input_html: { class: "form-control placeholder-light", autocomplete: "name" } %>
-      </div>
-
-      <div class="form-group mb-3">
         <%= f.input :email,
                     label: 'メールアドレス',
                     required: true,
                     error: false,
-                    input_html: { class: "form-control placeholder-light", autocomplete: "email" } %>
-      </div>
+                    wrapper_html: { class: "form-group" },
+                    input_html: { class: "form-control", autocomplete: "email", "data-field": "email" } %>
 
-      <div class="form-group mb-3">
         <%= f.input :password,
                     label: 'パスワード',
                     required: true,
                     error: false,
-                    input_html: { class: "form-control", autocomplete: "new-password", placeholder: "半角英数字 6文字以上" } %>
-      </div>
+                    wrapper_html: { class: "form-group" },
+                    input_html: { class: "form-control", autocomplete: "new-password", placeholder: "6文字以上（半角英数字・記号）", minlength: 6, "data-field": "password" } %>
 
-      <div class="form-group mb-4">
         <%= f.input :password_confirmation,
-                    label: 'パスワード(確認用)',
+                    label: 'パスワード（確認）',
                     required: true,
                     error: false,
-                    input_html: { class: "form-control", autocomplete: "new-password" } %>
+                    wrapper_html: { class: "form-group" },
+                    input_html: { class: "form-control", autocomplete: "new-password", placeholder: "もう一度入力", "data-field": "password_confirmation" } %>
+
+        <hr class="auth-separator">
+
+        <%= f.button :submit, "登録する", class: "auth-submit" %>
+      <% end %>
+
+    <% else %>
+      <h2 class="auth-title">新規登録</h2>
+      <p class="auth-description">登録方法を選択してください</p>
+
+      <div class="auth-buttons">
+        <%= link_to new_user_registration_path(method: :email), class: "auth-btn auth-btn--email" do %>
+          <i class="bi bi-envelope"></i>メールアドレスで登録
+        <% end %>
+
+        <%= button_to user_line_omniauth_authorize_path, method: :post,
+                      class: "auth-btn auth-btn--line",
+                      data: { turbo: false } do %>
+          <i class="bi bi-line"></i>LINEで登録
+        <% end %>
+
+        <%= button_to user_twitter2_omniauth_authorize_path, method: :post,
+                      class: "auth-btn auth-btn--x",
+                      data: { turbo: false } do %>
+          <i class="bi bi-twitter-x"></i>Xで登録
+        <% end %>
       </div>
 
-      <div class="d-grid ">
-        <%= f.button :submit, "登録する", class: "btn btn-primary btn-lg rounded-3", style: "width: 150px; margin: 0 auto;" %>
+      <div class="auth-divider">または</div>
+
+      <div class="auth-links">
+        <%= link_to "すでにアカウントをお持ちですか？", new_user_session_path %>
       </div>
     <% end %>
-
-    <hr class="my-4">
-
-    <div class="text-center">
-      <%= link_to "すでにアカウントをお持ちの方はこちら", new_user_session_path, class: "d-block text-decoration-none text-muted mb-2" %>
-      <%= link_to "パスワードをお忘れの方はこちら", new_user_password_path, class: "d-block text-decoration-none text-muted" %>
-    </div>
   </div>
 </div>
