@@ -107,12 +107,28 @@ $settings-success: #34c759;
   color: $settings-text-secondary;
   margin-bottom: 1rem;
   line-height: 1.5;
+
+  &--tight {
+    margin-top: -0.5rem;
+  }
 }
 
 .settings-divider {
   border: none;
   border-top: 1px solid rgba(0, 0, 0, 0.2);
   margin: 1.75rem 0;
+}
+
+.settings-steps {
+  margin: 0 0 1.5rem;
+  padding-left: 1.25rem;
+  font-size: 0.875rem;
+  color: $settings-text-secondary;
+  line-height: 1.8;
+
+  li {
+    padding-left: 0.25rem;
+  }
 }
 
 // 設定カード（iOS風グループ化）
