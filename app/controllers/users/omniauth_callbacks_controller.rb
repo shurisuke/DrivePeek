@@ -22,7 +22,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     # ログイン済みユーザーからのSNS連携（設定画面から）
     if user_signed_in?
       current_user.link_omniauth(auth)
-      redirect_to edit_user_registration_path(section: :sns), notice: "#{provider_name}と連携しました"
+      redirect_to sns_settings_path, notice: "#{provider_name}と連携しました"
       return
     end
 
@@ -40,7 +40,7 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
         flash[:notice] = "#{provider_name}で登録しました"
         sign_in @user, event: :authentication
         # 新規登録後はプロフィール設定ページへ
-        redirect_to users_profile_setup_path(from: "signup")
+        redirect_to profile_settings_path(from: "signup")
       else
         # エラー詳細を表示
         error_message = @user.errors.full_messages.join(", ")

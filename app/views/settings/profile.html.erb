@@ -14,7 +14,7 @@
       </div>
     <% end %>
 
-    <%= simple_form_for(@user, url: users_profile_setup_path(from: params[:from]), method: :patch, html: { class: "auth-form auth-form--profile" }) do |f| %>
+    <%= simple_form_for(@user, url: profile_settings_path(from: params[:from]), method: :patch, html: { class: "auth-form auth-form--profile" }) do |f| %>
       <% if @user.errors.any? %>
         <ul class="auth-errors">
           <% @user.errors.full_messages.uniq.each do |message| %>

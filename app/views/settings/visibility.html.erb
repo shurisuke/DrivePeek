@@ -1,0 +1,26 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <%= link_to settings_path, class: "auth-back-link" do %>
+        <i class="bi bi-chevron-left"></i>
+      <% end %>
+      <h2 class="auth-title">公開設定</h2>
+    </div>
+
+    <%= form_with url: settings_path, method: :patch do |f| %>
+      <div class="profile-form-list">
+        <div class="profile-form-item profile-form-item--toggle">
+          <div class="profile-form-toggle-header">
+            <label class="profile-form-label">プランを公開</label>
+            <label class="toggle-switch">
+              <%= f.check_box :status, { checked: current_user.active?, onchange: "this.form.requestSubmit()" }, "active", "hidden" %>
+              <span class="toggle-slider"></span>
+            </label>
+          </div>
+          <span class="profile-form-hint">他のユーザーがあなたのプランを閲覧できます</span>
+          <span class="profile-form-hint">※ 出発・帰宅地点やユーザー情報は公開されません</span>
+        </div>
+      </div>
+    <% end %>
+  </div>
+</div>

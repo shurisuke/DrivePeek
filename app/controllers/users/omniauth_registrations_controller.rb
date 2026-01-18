@@ -8,14 +8,14 @@ class Users::OmniauthRegistrationsController < ApplicationController
 
     # SNS連携のみのユーザーは解除不可
     if current_user.sns_only_user? && current_user.identities.count == 1
-      redirect_to edit_user_registration_path(section: :sns), alert: "ログイン方法がなくなるため、連携を解除できません"
+      redirect_to sns_settings_path, alert: "ログイン方法がなくなるため、連携を解除できません"
       return
     end
 
     if identity&.destroy
-      redirect_to edit_user_registration_path(section: :sns), notice: "SNS連携を解除しました"
+      redirect_to sns_settings_path, notice: "SNS連携を解除しました"
     else
-      redirect_to edit_user_registration_path(section: :sns), alert: "連携解除に失敗しました"
+      redirect_to sns_settings_path, alert: "連携解除に失敗しました"
     end
   end
 end
