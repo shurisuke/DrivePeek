@@ -81,6 +81,31 @@ ja:
               blank: "を入力してください"
               invalid: "が正しくありません"
 
+  contacts:
+    categories:
+      bug: "不具合報告"
+      feature: "機能要望"
+      other: "その他"
+
+  activemodel:
+    attributes:
+      contact:
+        category: "お問い合わせ種別"
+        body: "お問い合わせ内容"
+        email: "メールアドレス"
+    errors:
+      models:
+        contact:
+          attributes:
+            category:
+              blank: "を選択してください"
+              inclusion: "を選択してください"
+            body:
+              blank: "を入力してください"
+            email:
+              blank: "を入力してください"
+              invalid: "の形式が正しくありません"
+
   errors:
     messages:
       confirmation: "が一致しません"
