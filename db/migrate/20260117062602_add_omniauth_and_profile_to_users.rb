@@ -3,7 +3,7 @@ class AddOmniauthAndProfileToUsers < ActiveRecord::Migration[8.1]
     # SNS認証用
     add_column :users, :provider, :string
     add_column :users, :uid, :string
-    add_index :users, [:provider, :uid], unique: true
+    add_index :users, [ :provider, :uid ], unique: true
 
     # プロフィール情報（コメント機能用）
     add_column :users, :birth_date, :date
