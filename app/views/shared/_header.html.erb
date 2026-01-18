@@ -20,7 +20,17 @@
             <li><%= link_to plans_path do %><i class="fa-solid fa-earth-asia"></i><span>みんなの旅</span><% end %></li>
             <li><%= link_to favorites_path do %><i class="fa-solid fa-bookmark"></i><span>お気に入り</span><% end %></li>
             <li><%= link_to plans_my_plans_path do %><i class="fa-solid fa-route"></i><span>作ったプラン</span><% end %></li>
-            <li><%= link_to account_profile_path do %><i class="fa-solid fa-gear"></i><span>設定</span><% end %></li>
+            <li>
+              <%= link_to settings_path do %>
+                <i class="fa-solid fa-gear"></i>
+                <span class="menu-text-with-badge">
+                  設定
+                  <% if current_user.age_group.blank? || current_user.residence.blank? %>
+                    <span class="menu-badge"></span>
+                  <% end %>
+                </span>
+              <% end %>
+            </li>
           <% else %>
             <li><%= link_to "TOP", unauthenticated_root_path %></li>
             <li><%= link_to "新規登録", new_user_registration_path %></li>
