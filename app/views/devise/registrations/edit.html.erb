@@ -93,14 +93,14 @@
             <span class="settings-info-value"><%= current_user.email %></span>
           </div>
 
-          <%# 確認待ちメールがある場合 %>
-          <% if current_user.unconfirmed_email.present? %>
+          <%# 確認待ちメールがある場合（期限内のみ表示） %>
+          <% if current_user.unconfirmed_email.present? && current_user.confirmation_pending? %>
             <div class="settings-pending-email">
               <i class="bi bi-envelope-exclamation"></i>
               <div>
-                <p class="settings-pending-email-title">確認メールを送信しました</p>
+                <p class="settings-pending-email-title">確認待ち（残り<%= remaining_minutes(current_user.confirmation_sent_at) %>分）</p>
                 <p class="settings-pending-email-address"><%= current_user.unconfirmed_email %></p>
-                <p class="settings-pending-email-hint">メール内のリンクをクリックして変更を確定してください</p>
+                <p class="settings-pending-email-hint">確認メールのリンクをクリックして変更を確定してください</p>
               </div>
             </div>
           <% end %>
@@ -122,55 +122,50 @@
                         error: false,
                         input_html: { class: "form-control", autocomplete: "current-password" } %>
           </div>
-          <p class="settings-hint" style="margin-top: -0.5rem;">変更を保存するには入力が必要です</p>
+          <p class="settings-hint settings-hint--tight">変更を保存するには入力が必要です</p>
 
           <%= f.button :submit, "確認メールを送信", class: "auth-submit" %>
+
+          <div class="auth-divider">または</div>
+
+          <div class="auth-links auth-links--compact">
+            <%= link_to "パスワードを忘れた場合", new_user_password_path %>
+          </div>
         </div>
       <% end %>
 
     <%# === パスワード変更セクション === %>
     <% when "password" %>
-      <%= simple_form_for(resource, as: resource_name, url: registration_path(resource_name), html: { method: :put }) do |f| %>
-        <%= hidden_field_tag :section, "password" %>
-        <% if resource.errors.any? %>
-          <ul class="auth-errors">
-            <% resource.errors.full_messages.uniq.each do |message| %>
-              <li><%= message %></li>
-            <% end %>
-          </ul>
+      <div class="settings-section">
+        <div class="settings-info-block">
+          <span class="settings-info-label">登録済みメールアドレス</span>
+          <span class="settings-info-value"><%= current_user.email %></span>
+        </div>
+
+        <%# パスワードリセット確認待ち（30分以内） %>
+        <% if current_user.reset_password_sent_at.present? && current_user.reset_password_sent_at > 30.minutes.ago %>
+          <div class="settings-pending-email">
+            <i class="bi bi-envelope-exclamation"></i>
+            <div>
+              <p class="settings-pending-email-title">確認待ち（残り<%= remaining_minutes(current_user.reset_password_sent_at) %>分）</p>
+              <p class="settings-pending-email-hint">再設定メールのリンクをクリックしてパスワードを変更してください</p>
+            </div>
+          </div>
         <% end %>
 
-        <div class="settings-section">
-          <div class="form-group mb-3">
-            <%= f.input :password,
-                        label: '新しいパスワード',
-                        required: true,
-                        error: false,
-                        input_html: { class: "form-control", autocomplete: "new-password", placeholder: "6文字以上" } %>
-          </div>
+        <hr class="settings-divider">
 
-          <div class="form-group mb-3">
-            <%= f.input :password_confirmation,
-                        label: '新しいパスワード（確認）',
-                        required: true,
-                        error: false,
-                        input_html: { class: "form-control", autocomplete: "new-password" } %>
-          </div>
+        <ol class="settings-steps">
+          <li>下のボタンで再設定用メールを送信</li>
+          <li>メール内のリンクをクリック</li>
+          <li>新しいパスワードを入力して変更完了</li>
+        </ol>
 
-          <hr class="settings-divider">
-
-          <div class="form-group mb-3">
-            <%= f.input :current_password,
-                        label: '現在のパスワード',
-                        required: true,
-                        error: false,
-                        input_html: { class: "form-control", autocomplete: "current-password" } %>
-          </div>
-          <p class="settings-hint" style="margin-top: -0.5rem;">変更を保存するには入力が必要です</p>
-
-          <%= f.button :submit, "変更を保存", class: "auth-submit" %>
-        </div>
-      <% end %>
+        <%= form_with url: user_password_path, method: :post, scope: :user do |f| %>
+          <%= f.hidden_field :email, value: current_user.email %>
+          <%= f.submit "再設定メールを送信", class: "auth-submit" %>
+        <% end %>
+      </div>
 
     <%# === アカウント操作セクション === %>
     <% when "account" %>

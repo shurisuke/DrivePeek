@@ -239,6 +239,14 @@ $auth-success: #34c759;
       color: $auth-primary-hover;
     }
   }
+
+  &--compact {
+    margin: 0;
+
+    a {
+      padding: 0;
+    }
+  }
 }
 
 .auth-errors {
