@@ -1,9 +1,13 @@
 Rails.application.routes.draw do
+  # 開発環境のみ：メール確認用UI
+  mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
+
   # Devise関連
   devise_for :users, controllers: {
     registrations: "users/registrations",        # 新規登録画面
     sessions: "users/sessions",                  # ログイン画面
     passwords: "users/passwords",                # パスワード再設定リクエスト画面
+    confirmations: "users/confirmations",        # メール確認
     omniauth_callbacks: "users/omniauth_callbacks" # SNS認証コールバック
   }
 

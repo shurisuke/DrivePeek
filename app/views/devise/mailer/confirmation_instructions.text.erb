@@ -1,0 +1,12 @@
+<%= @email %> 様
+
+DrivePeekをご利用いただきありがとうございます。
+
+以下のリンクをクリックして、メールアドレスを確認してください。
+
+<%= confirmation_url(@resource, confirmation_token: @token) %>
+
+このメールに心当たりがない場合は、無視してください。
+
+---
+DrivePeek
