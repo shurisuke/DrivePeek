@@ -1,0 +1,618 @@
+// 設定画面・アカウント管理ページ用スタイル
+
+// カラーパレット（sns_authと共通）
+$settings-primary: #506d53;
+$settings-primary-hover: #3d5440;
+$settings-text: #1d1d1f;
+$settings-text-secondary: #86868b;
+$settings-background: #f5f5f7;
+$settings-input-bg: #f5f5f7;
+$settings-error: #ff3b30;
+$settings-success: #34c759;
+
+// プロフィール設定促進カード（iOS風）
+.settings-prompt-card {
+  display: block;
+  position: relative;
+  padding: 1rem 1.25rem;
+  margin-bottom: 1rem;
+  background-color: #fff;
+  border-radius: 12px;
+  text-decoration: none;
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.15);
+  transition: all 0.2s ease;
+
+  &:hover {
+    box-shadow: 0 3px 14px rgba(0, 0, 0, 0.2);
+  }
+}
+
+.settings-prompt-badge {
+  position: absolute;
+  left: 2rem;
+  top: 1.25rem;
+  width: 10px;
+  height: 10px;
+  background-color: #ffcc00;
+  border-radius: 50%;
+  box-shadow: 0 0 0 2px rgba(#ffcc00, 0.25);
+  animation: settings-badge-pulse 2s ease-in-out infinite;
+}
+
+@keyframes settings-badge-pulse {
+  0%, 100% { opacity: 1; transform: scale(1); }
+  50% { opacity: 0.8; transform: scale(0.95); }
+}
+
+.settings-prompt-title {
+  font-size: 0.9375rem;
+  font-weight: 600;
+  color: $settings-text;
+  text-align: center;
+  margin: 0 0 0.5rem;
+}
+
+.settings-prompt-description {
+  font-size: 0.8125rem;
+  color: $settings-text-secondary;
+  margin: 0 0 0.75rem;
+  line-height: 1.6;
+  text-align: center;
+}
+
+.settings-prompt-action {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 0.25rem;
+  font-size: 0.875rem;
+  font-weight: 500;
+  color: $settings-primary;
+
+  i {
+    font-size: 0.75rem;
+    transition: transform 0.3s ease;
+  }
+}
+
+.settings-prompt-card:hover .settings-prompt-action i {
+  transform: translateX(4px);
+}
+
+// 設定セクション
+.settings-section {
+  margin-bottom: 0;
+
+  &--account {
+    margin-top: 0.5rem;
+  }
+}
+
+.settings-section-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $settings-text-secondary;
+  text-transform: uppercase;
+  letter-spacing: 0.02em;
+  margin-bottom: 0.75rem;
+  padding-left: 0.25rem;
+
+  &--danger {
+    color: $settings-error;
+  }
+}
+
+.settings-hint {
+  font-size: 0.8125rem;
+  color: $settings-text-secondary;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+.settings-divider {
+  border: none;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  margin: 1.75rem 0;
+}
+
+// 設定カード（iOS風グループ化）
+.settings-card {
+  background-color: $settings-input-bg;
+  border-radius: 12px;
+  overflow: hidden;
+  margin-bottom: 1rem;
+}
+
+.settings-card-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  background-color: #fff;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+// SNS連携
+.sns-connections {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.sns-connection-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 1rem 1.125rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+}
+
+.sns-connection-info {
+  display: flex;
+  align-items: center;
+  gap: 0.875rem;
+
+  i {
+    font-size: 1.375rem;
+    width: 1.5rem;
+    text-align: center;
+
+    &.bi-line {
+      color: #06C755;
+    }
+
+    &.bi-twitter-x {
+      color: #000;
+    }
+  }
+}
+
+.sns-connection-name {
+  font-size: 1rem;
+  font-weight: 500;
+  color: $settings-text;
+}
+
+.sns-connection-status {
+  font-size: 0.8125rem;
+  color: $settings-text-secondary;
+  margin-right: 7.5px;
+}
+
+.sns-connection-btn {
+  padding: 0.4375rem 0.875rem;
+  font-size: 0.8125rem;
+  font-weight: 600;
+  border: none;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+
+  &--link {
+    background-color: $settings-primary;
+    color: #fff;
+
+    &:hover {
+      background-color: $settings-primary-hover;
+    }
+  }
+
+  &--unlink {
+    background-color: $settings-error;
+    color: #fff;
+
+    &:hover {
+      background-color: darken($settings-error, 8%);
+    }
+  }
+
+  &--connected {
+    background-color: rgba($settings-success, 0.1);
+    color: $settings-success;
+    cursor: default;
+    pointer-events: none;
+  }
+}
+
+// 設定アイテム
+.settings-item-label {
+  font-size: 1rem;
+  color: $settings-text;
+}
+
+.settings-item-value {
+  font-size: 1rem;
+  color: $settings-text-secondary;
+}
+
+// 2行構成の情報ブロック（ラベル上、値下）
+.settings-info-block {
+  padding: 0.75rem 0 0;
+  text-align: center;
+}
+
+.settings-info-label {
+  display: block;
+  font-size: 0.8125rem;
+  font-weight: 500;
+  color: $settings-text-secondary;
+  margin-bottom: 0.25rem;
+}
+
+.settings-info-value {
+  display: block;
+  font-size: 1rem;
+  color: $settings-text-secondary;
+  overflow: hidden;
+  white-space: nowrap;
+  text-overflow: ellipsis;
+}
+
+// アカウントカード
+.account-card {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 1.25rem;
+  background: linear-gradient(135deg, rgba($settings-primary, 0.08) 0%, rgba($settings-primary, 0.02) 100%);
+  border-radius: 16px;
+  margin: 20px 0;
+}
+
+.account-card-avatar {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 45px;
+    color: $settings-primary;
+  }
+}
+
+.account-card-info {
+  flex: 1;
+  min-width: 0;
+}
+
+.account-card-detail {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.875rem;
+  color: $settings-text-secondary;
+  margin-top: 0.375rem;
+
+  &:first-child {
+    margin-top: 0;
+  }
+
+  i {
+    font-size: 0.875rem;
+    flex-shrink: 0;
+    width: 1rem;
+    text-align: center;
+  }
+
+  span {
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+}
+
+// プロフィール編集カード
+.profile-card {
+  background-color: #fff;
+  border-radius: 12px;
+  padding: 1.25rem;
+  margin-bottom: 0;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+}
+
+.profile-card-title {
+  font-size: 0.8125rem;
+  font-weight: 600;
+  color: $settings-text-secondary;
+  margin-bottom: 1rem;
+  padding-bottom: 0.5rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &--danger {
+    color: $settings-error;
+    border-bottom-color: rgba($settings-error, 0.2);
+  }
+}
+
+.profile-card-content {
+  .form-group {
+    margin-bottom: 1rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  .settings-hint {
+    margin-top: 0.5rem;
+    margin-bottom: 0;
+  }
+}
+
+// 設定メニュー（iOS風リスト）
+.settings-menu {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+}
+
+.settings-menu-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  color: $settings-text;
+  text-decoration: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  transition: background-color 0.15s ease;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  &:active {
+    background-color: rgba(0, 0, 0, 0.06);
+  }
+
+  span {
+    font-size: 1rem;
+  }
+
+  > i {
+    font-size: 0.875rem;
+    color: $settings-text-secondary;
+  }
+
+  &--with-icon {
+    .settings-menu-item-left {
+      display: flex;
+      align-items: center;
+      gap: 0.75rem;
+
+      > i {
+        font-size: 1.125rem;
+        color: $settings-text-secondary;
+        width: 1.25rem;
+        text-align: center;
+      }
+    }
+  }
+
+  &--logout {
+    justify-content: center;
+    gap: 0.5rem;
+    color: $settings-error;
+
+    i {
+      color: $settings-error;
+    }
+
+    &:hover {
+      background-color: rgba($settings-error, 0.04);
+    }
+  }
+
+  &--danger {
+    justify-content: center;
+    gap: 0.5rem;
+    color: $settings-error;
+
+    i {
+      color: $settings-error;
+    }
+
+    &:hover {
+      background-color: rgba($settings-error, 0.04);
+    }
+  }
+
+  &--muted {
+    color: $settings-text-secondary;
+
+    > i {
+      color: $settings-text-secondary;
+    }
+  }
+}
+
+.settings-select {
+  width: auto;
+  min-width: 100px;
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 0.875rem;
+  border-radius: 8px;
+}
+
+.settings-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.settings-link-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 1rem 1.125rem;
+  text-decoration: none;
+  color: $settings-text;
+  transition: background-color 0.2s ease;
+
+  &:hover {
+    background-color: rgba(0, 0, 0, 0.02);
+  }
+
+  i {
+    color: $settings-text-secondary;
+    font-size: 0.875rem;
+  }
+}
+
+// プロフィール編集フォーム（iOS風リスト）
+.profile-form-list {
+  background-color: #fff;
+  border-radius: 12px;
+  overflow: hidden;
+
+  &--separate {
+    margin-top: 0;
+  }
+}
+
+.profile-form-item {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0.875rem 1rem;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  &--stacked {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.5rem;
+  }
+
+  &--toggle {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.25rem;
+  }
+}
+
+.profile-form-toggle-header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.profile-form-label {
+  font-size: 1rem;
+  font-weight: 500;
+  color: $settings-text;
+  white-space: nowrap;
+}
+
+.profile-form-label-group {
+  display: flex;
+  flex-direction: column;
+  gap: 0.125rem;
+}
+
+.profile-form-hint {
+  font-size: 0.75rem;
+  color: $settings-text-secondary;
+}
+
+.profile-form-input {
+  width: 100%;
+  padding: 0.625rem 0.875rem;
+  font-size: 1rem;
+  color: $settings-text;
+  background-color: $settings-input-bg;
+  border: none;
+  border-radius: 8px;
+  transition: all 0.2s ease;
+
+  &:focus {
+    outline: none;
+    background-color: #fff;
+    box-shadow: 0 0 0 2px rgba($settings-primary, 0.2);
+  }
+}
+
+.profile-form-select {
+  padding: 0.5rem 2rem 0.5rem 0.75rem;
+  font-size: 1rem;
+  color: $settings-text;
+  background-color: $settings-input-bg;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2386868b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+  background-repeat: no-repeat;
+  background-position: right 0.5rem center;
+  background-size: 10px;
+  -webkit-appearance: none;
+  appearance: none;
+
+  &:focus {
+    outline: none;
+    box-shadow: 0 0 0 2px rgba($settings-primary, 0.2);
+  }
+}
+
+// トグルスイッチ
+.toggle-switch {
+  position: relative;
+  display: inline-block;
+  width: 34px;
+  height: 20px;
+  flex-shrink: 0;
+
+  input {
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .toggle-slider {
+      background-color: $settings-primary;
+    }
+
+    &:checked + .toggle-slider::before {
+      transform: translateX(14px);
+    }
+  }
+}
+
+.toggle-slider {
+  position: absolute;
+  cursor: pointer;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: #e9e9eb;
+  border-radius: 20px;
+  transition: 0.3s;
+
+  &::before {
+    content: "";
+    position: absolute;
+    height: 16px;
+    width: 16px;
+    left: 2px;
+    bottom: 2px;
+    background-color: white;
+    border-radius: 50%;
+    transition: 0.3s;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
+  }
+}

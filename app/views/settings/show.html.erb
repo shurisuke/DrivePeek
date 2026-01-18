@@ -1,0 +1,117 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <%= link_to :back, class: "auth-back-link" do %>
+        <i class="bi bi-chevron-left"></i>
+      <% end %>
+      <h2 class="auth-title">設定</h2>
+    </div>
+
+    <%# プロフィール未設定時の促進カード %>
+    <% if current_user.age_group.blank? || current_user.residence.blank? %>
+      <%= link_to users_profile_setup_path, class: "settings-prompt-card" do %>
+        <span class="settings-prompt-badge"></span>
+        <p class="settings-prompt-title">プロフィールを設定しましょう</p>
+        <p class="settings-prompt-description">簡単なプロフィールを設定すると、<br>あなたに合うスポットが見つかりやすくなります</p>
+        <span class="settings-prompt-action">
+          設定する
+          <i class="bi bi-chevron-right"></i>
+        </span>
+      <% end %>
+    <% end %>
+
+    <%# アカウント情報セクション %>
+    <div class="settings-section">
+      <div class="account-card">
+        <div class="account-card-avatar">
+          <i class="bi bi-person-circle"></i>
+        </div>
+        <div class="account-card-info">
+          <div class="account-card-detail">
+            <i class="bi bi-person"></i>
+            <% if current_user.comment_profile.present? %>
+              <span><%= current_user.comment_profile %></span>
+            <% else %>
+              <span class="text-muted">プロフィール未設定</span>
+            <% end %>
+          </div>
+          <% if current_user.email.present? %>
+            <div class="account-card-detail">
+              <i class="bi bi-envelope"></i>
+              <span><%= current_user.email %></span>
+            </div>
+          <% end %>
+          <% if current_user.linked_with?("line") %>
+            <div class="account-card-detail">
+              <i class="bi bi-line"></i>
+              <span>LINE連携中</span>
+            </div>
+          <% end %>
+          <% if current_user.linked_with?("twitter2") %>
+            <div class="account-card-detail">
+              <i class="bi bi-twitter-x"></i>
+              <span>X連携中</span>
+            </div>
+          <% end %>
+          <div class="account-card-detail">
+            <i class="bi bi-<%= current_user.active? ? 'globe' : 'lock' %>"></i>
+            <span><%= current_user.active? ? "公開" : "非公開" %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%# 設定メニュー %>
+    <div class="settings-section">
+      <div class="settings-menu">
+        <%= link_to users_profile_setup_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
+          <span class="settings-menu-item-left">
+            <i class="bi bi-person"></i>
+            <span>プロフィール</span>
+          </span>
+          <i class="bi bi-chevron-right"></i>
+        <% end %>
+        <%= link_to edit_user_registration_path(section: :visibility), class: "settings-menu-item settings-menu-item--with-icon" do %>
+          <span class="settings-menu-item-left">
+            <i class="bi bi-globe"></i>
+            <span>公開設定</span>
+          </span>
+          <i class="bi bi-chevron-right"></i>
+        <% end %>
+        <% unless current_user.sns_only_user? %>
+          <%= link_to edit_user_registration_path(section: :email), class: "settings-menu-item settings-menu-item--with-icon" do %>
+            <span class="settings-menu-item-left">
+              <i class="bi bi-envelope"></i>
+              <span>メールアドレスを変更</span>
+            </span>
+            <i class="bi bi-chevron-right"></i>
+          <% end %>
+          <%= link_to edit_user_registration_path(section: :password), class: "settings-menu-item settings-menu-item--with-icon" do %>
+            <span class="settings-menu-item-left">
+              <i class="bi bi-key"></i>
+              <span>パスワードを変更</span>
+            </span>
+            <i class="bi bi-chevron-right"></i>
+          <% end %>
+        <% end %>
+        <%= link_to edit_user_registration_path(section: :sns), class: "settings-menu-item settings-menu-item--with-icon" do %>
+          <span class="settings-menu-item-left">
+            <i class="bi bi-link-45deg"></i>
+            <span>SNS連携</span>
+          </span>
+          <i class="bi bi-chevron-right"></i>
+        <% end %>
+      </div>
+    </div>
+
+    <%# アカウント操作 %>
+    <div class="settings-section settings-section--account">
+      <div class="settings-menu">
+        <%= link_to edit_user_registration_path(section: :account), class: "settings-menu-item settings-menu-item--muted" do %>
+          <span>ログアウト / 退会</span>
+          <i class="bi bi-chevron-right"></i>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>
