@@ -15,10 +15,6 @@ Rails.application.routes.draw do
   scope :users, as: :users do
     # SNS連携解除
     delete "auth/unlink/:provider", to: "users/omniauth_registrations#unlink", as: :omniauth_unlink
-
-    # プロフィール設定（登録後の共通フロー）
-    get   "profile_setup", to: "users/profile_setup#edit",   as: :profile_setup
-    patch "profile_setup", to: "users/profile_setup#update"
   end
 
   # ログイン時のルート
@@ -37,7 +33,15 @@ Rails.application.routes.draw do
   end
 
   # 設定
-  resource :settings, only: %i[show update]
+  resource :settings, only: %i[show update] do
+    get :profile
+    patch :profile, action: :update_profile
+    get :email
+    get :password
+    get :sns
+    get :account
+    get :visibility
+  end
 
   # プラン
   namespace :plans do

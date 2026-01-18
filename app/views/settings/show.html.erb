@@ -9,7 +9,7 @@
 
     <%# プロフィール未設定時の促進カード %>
     <% if current_user.age_group.blank? || current_user.residence.blank? %>
-      <%= link_to users_profile_setup_path, class: "settings-prompt-card" do %>
+      <%= link_to profile_settings_path, class: "settings-prompt-card" do %>
         <span class="settings-prompt-badge"></span>
         <p class="settings-prompt-title">プロフィールを設定しましょう</p>
         <p class="settings-prompt-description">簡単なプロフィールを設定すると、<br>あなたに合うスポットが見つかりやすくなります</p>
@@ -64,14 +64,14 @@
     <%# 設定メニュー %>
     <div class="settings-section">
       <div class="settings-menu">
-        <%= link_to users_profile_setup_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
+        <%= link_to profile_settings_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
           <span class="settings-menu-item-left">
             <i class="bi bi-person"></i>
             <span>プロフィール</span>
           </span>
           <i class="bi bi-chevron-right"></i>
         <% end %>
-        <%= link_to edit_user_registration_path(section: :visibility), class: "settings-menu-item settings-menu-item--with-icon" do %>
+        <%= link_to visibility_settings_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
           <span class="settings-menu-item-left">
             <i class="bi bi-globe"></i>
             <span>公開設定</span>
@@ -79,14 +79,14 @@
           <i class="bi bi-chevron-right"></i>
         <% end %>
         <% unless current_user.sns_only_user? %>
-          <%= link_to edit_user_registration_path(section: :email), class: "settings-menu-item settings-menu-item--with-icon" do %>
+          <%= link_to email_settings_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
             <span class="settings-menu-item-left">
               <i class="bi bi-envelope"></i>
               <span>メールアドレスを変更</span>
             </span>
             <i class="bi bi-chevron-right"></i>
           <% end %>
-          <%= link_to edit_user_registration_path(section: :password), class: "settings-menu-item settings-menu-item--with-icon" do %>
+          <%= link_to password_settings_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
             <span class="settings-menu-item-left">
               <i class="bi bi-key"></i>
               <span>パスワードを変更</span>
@@ -94,7 +94,7 @@
             <i class="bi bi-chevron-right"></i>
           <% end %>
         <% end %>
-        <%= link_to edit_user_registration_path(section: :sns), class: "settings-menu-item settings-menu-item--with-icon" do %>
+        <%= link_to sns_settings_path, class: "settings-menu-item settings-menu-item--with-icon" do %>
           <span class="settings-menu-item-left">
             <i class="bi bi-link-45deg"></i>
             <span>SNS連携</span>
@@ -107,7 +107,7 @@
     <%# アカウント操作 %>
     <div class="settings-section settings-section--account">
       <div class="settings-menu">
-        <%= link_to edit_user_registration_path(section: :account), class: "settings-menu-item settings-menu-item--muted" do %>
+        <%= link_to account_settings_path, class: "settings-menu-item settings-menu-item--muted" do %>
           <span>ログアウト / 退会</span>
           <i class="bi bi-chevron-right"></i>
         <% end %>

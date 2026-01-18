@@ -1,0 +1,62 @@
+<div class="auth-page">
+  <div class="auth-card">
+    <div class="auth-header">
+      <%= link_to settings_path, class: "auth-back-link" do %>
+        <i class="bi bi-chevron-left"></i>
+      <% end %>
+      <h2 class="auth-title">SNS連携</h2>
+    </div>
+
+    <div class="settings-section">
+      <div class="sns-connections">
+        <% can_unlink = !(current_user.sns_only_user? && current_user.identities.count == 1) %>
+
+        <%# LINE %>
+        <div class="sns-connection-item">
+          <div class="sns-connection-info">
+            <i class="bi bi-line"></i>
+            <span class="sns-connection-name">LINE</span>
+          </div>
+          <% if current_user.linked_with?("line") %>
+            <% if can_unlink %>
+              <%= button_to "解除", users_omniauth_unlink_path(provider: "line"),
+                            method: :delete,
+                            class: "sns-connection-btn sns-connection-btn--unlink",
+                            data: { turbo_confirm: "LINE連携を解除しますか？" } %>
+            <% else %>
+              <span class="sns-connection-status">連携中</span>
+            <% end %>
+          <% else %>
+            <%= button_to "連携", user_line_omniauth_authorize_path,
+                          method: :post,
+                          class: "sns-connection-btn sns-connection-btn--link",
+                          data: { turbo: false } %>
+          <% end %>
+        </div>
+
+        <%# X (Twitter) %>
+        <div class="sns-connection-item">
+          <div class="sns-connection-info">
+            <i class="bi bi-twitter-x"></i>
+            <span class="sns-connection-name">X</span>
+          </div>
+          <% if current_user.linked_with?("twitter2") %>
+            <% if can_unlink %>
+              <%= button_to "解除", users_omniauth_unlink_path(provider: "twitter2"),
+                            method: :delete,
+                            class: "sns-connection-btn sns-connection-btn--unlink",
+                            data: { turbo_confirm: "X連携を解除しますか？" } %>
+            <% else %>
+              <span class="sns-connection-status">連携中</span>
+            <% end %>
+          <% else %>
+            <%= button_to "連携", user_twitter2_omniauth_authorize_path,
+                          method: :post,
+                          class: "sns-connection-btn sns-connection-btn--link",
+                          data: { turbo: false } %>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  </div>
+</div>
