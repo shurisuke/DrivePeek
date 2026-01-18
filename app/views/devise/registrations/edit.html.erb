@@ -93,6 +93,18 @@
             <span class="settings-info-value"><%= current_user.email %></span>
           </div>
 
+          <%# 確認待ちメールがある場合 %>
+          <% if current_user.unconfirmed_email.present? %>
+            <div class="settings-pending-email">
+              <i class="bi bi-envelope-exclamation"></i>
+              <div>
+                <p class="settings-pending-email-title">確認メールを送信しました</p>
+                <p class="settings-pending-email-address"><%= current_user.unconfirmed_email %></p>
+                <p class="settings-pending-email-hint">メール内のリンクをクリックして変更を確定してください</p>
+              </div>
+            </div>
+          <% end %>
+
           <hr class="settings-divider">
 
           <div class="form-group mb-3">
@@ -112,7 +124,7 @@
           </div>
           <p class="settings-hint" style="margin-top: -0.5rem;">変更を保存するには入力が必要です</p>
 
-          <%= f.button :submit, "変更を保存", class: "auth-submit" %>
+          <%= f.button :submit, "確認メールを送信", class: "auth-submit" %>
         </div>
       <% end %>
 
