@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_17_033008) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_18_042628) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -37,6 +37,16 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_033008) do
     t.bigint "plan_id", null: false
     t.datetime "updated_at", null: false
     t.index ["plan_id"], name: "index_goal_points_on_plan_id"
+  end
+
+  create_table "identities", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.string "provider", null: false
+    t.string "uid", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["provider", "uid"], name: "index_identities_on_provider_and_uid", unique: true
+    t.index ["user_id"], name: "index_identities_on_user_id"
   end
 
   create_table "like_plans", force: :cascade do |t|
@@ -253,13 +263,15 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_033008) do
   end
 
   create_table "users", force: :cascade do |t|
+    t.integer "age_group"
     t.datetime "created_at", null: false
-    t.string "email", default: "", null: false
+    t.string "email", default: ""
     t.string "encrypted_password", default: "", null: false
-    t.string "name", null: false
+    t.integer "gender", default: 0
     t.datetime "remember_created_at"
     t.datetime "reset_password_sent_at"
     t.string "reset_password_token"
+    t.string "residence"
     t.integer "status", default: 0, null: false
     t.string "unconfirmed_email"
     t.datetime "updated_at", null: false
@@ -270,6 +282,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_17_033008) do
 
   add_foreign_key "genres", "genres", column: "parent_id"
   add_foreign_key "goal_points", "plans"
+  add_foreign_key "identities", "users"
   add_foreign_key "like_plans", "plans"
   add_foreign_key "like_plans", "users"
   add_foreign_key "like_spots", "spots"
