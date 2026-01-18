@@ -129,7 +129,8 @@ Devise.setup do |config|
   # config.pepper = 'd32907522562de187e2cabc7e01d3ebf4e0992c491e041dddb8eccf4a10f386a041a1f1c5f261d4755dd814b2f22c3ea1d575a37bebcfb25cb7efafb6b6785c2'
 
   # Send a notification to the original email when the user's email is changed.
-  # config.send_email_changed_notification = false
+  # 旧メールへの通知は無効（確認メールのみ送信）
+  config.send_email_changed_notification = false
 
   # Send a notification email when the user's password is changed.
   # config.send_password_change_notification = false
@@ -143,7 +144,8 @@ Devise.setup do |config|
   # without confirming their account.
   # Default is 0.days, meaning the user cannot access the website without
   # confirming their account.
-  # config.allow_unconfirmed_access_for = 2.days
+  # nil = 確認なしでもアクセス可能（SNSログインと整合性を取る）
+  config.allow_unconfirmed_access_for = nil
 
   # A period that the user is allowed to confirm their account before their
   # token becomes invalid. For example, if set to 3.days, the user can confirm

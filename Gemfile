@@ -83,6 +83,7 @@ end
 group :development do
   gem "web-console"
   gem "annotate"
+  gem "letter_opener_web"  # 開発環境でメールをブラウザで確認
 end
 
 group :test do

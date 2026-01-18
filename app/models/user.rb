@@ -2,6 +2,7 @@ class User < ApplicationRecord
   # Devise modules
   devise :database_authenticatable, :registerable,
          :recoverable, :rememberable, :validatable,
+         :confirmable,
          :omniauthable, omniauth_providers: [ :twitter2, :line ]
 
   # Enums
@@ -58,6 +59,11 @@ class User < ApplicationRecord
     !sns_only_user?
   end
 
+  # SNS認証のみのユーザーはメール確認不要
+  def confirmation_required?
+    !sns_only_user?
+  end
+
   # OmniAuthコールバックからユーザーを検索
   def self.from_omniauth(auth)
     Identity.find_by(provider: auth.provider, uid: auth.uid)&.user
@@ -71,6 +77,7 @@ class User < ApplicationRecord
     )
     user.registering_via_sns = true
     user.identities.build(provider: auth.provider, uid: auth.uid)
+    user.skip_confirmation!
     user.save
     user
   end

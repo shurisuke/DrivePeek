@@ -2,8 +2,25 @@ ja:
   devise:
     failure:
       unauthenticated: "ログインが必要です"
+      unconfirmed: "メールアドレスの確認が必要です。確認メールをご確認ください。"
     omniauth_callbacks:
       success: "%{kind}でログインしました"
+    confirmations:
+      confirmed: "メールアドレスを確認しました"
+      send_instructions: "確認メールを送信しました"
+      send_paranoid_instructions: "メールアドレスが登録されている場合、確認メールを送信しました"
+    registrations:
+      signed_up: "登録が完了しました"
+      signed_up_but_unconfirmed: "確認メールを送信しました。メール内のリンクをクリックして登録を完了してください。"
+      update_needs_confirmation: "メールアドレスの変更を受け付けました。新しいアドレスに確認メールを送信しましたので、リンクをクリックして変更を確定してください。"
+      updated: "アカウント情報を更新しました"
+    mailer:
+      confirmation_instructions:
+        subject: "【DrivePeek】メールアドレスの確認"
+      email_changed:
+        subject: "【DrivePeek】メールアドレスが変更されました"
+      password_change:
+        subject: "【DrivePeek】パスワードが変更されました"
 
   views:
     pagination:

@@ -9,9 +9,15 @@ class Users::RegistrationsController < Devise::RegistrationsController
     resource_updated = update_resource(resource, account_update_params)
 
     if resource_updated
-      # 成功時: 設定トップページへ
+      # 成功時
       bypass_sign_in resource, scope: resource_name if sign_in_after_change_password?
-      redirect_to after_update_path_for(resource), notice: update_success_message
+
+      # メール変更で確認待ちの場合は同じ画面に留まる
+      if params[:section] == "email" && resource.unconfirmed_email.present?
+        redirect_to edit_user_registration_path(section: :email), notice: update_success_message
+      else
+        redirect_to after_update_path_for(resource), notice: update_success_message
+      end
     else
       # 失敗時: 同じセクションの画面に戻る
       clean_up_passwords resource
@@ -58,7 +64,11 @@ class Users::RegistrationsController < Devise::RegistrationsController
   def update_success_message
     case params[:section]
     when "email"
-      "メールアドレスを変更しました"
+      if resource.unconfirmed_email.present?
+        "確認メールを送信しました。メール内のリンクをクリックして変更を確定してください。"
+      else
+        "メールアドレスを変更しました"
+      end
     when "password"
       "パスワードを変更しました"
     else
