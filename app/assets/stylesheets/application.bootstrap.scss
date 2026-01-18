@@ -23,6 +23,8 @@
 @use "shared/footer";
 @use "shared/share_buttons";
 @use "shared/save_modal";
+@use "shared/auth";
+@use "shared/settings";
 
 @use "pages/top_guest";
 @use "pages/top_user";

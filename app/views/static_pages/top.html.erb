@@ -28,6 +28,22 @@
           ログイン
         <% end %>
       </div>
+
+      <div class="sns-quick-login">
+        <span class="sns-quick-login-text">SNSでかんたん登録</span>
+        <div class="sns-quick-login-buttons">
+          <%= button_to user_line_omniauth_authorize_path, method: :post,
+                        class: "sns-quick-btn sns-quick-btn--line",
+                        data: { turbo: false } do %>
+            <i class="bi bi-line"></i>
+          <% end %>
+          <%= button_to user_twitter2_omniauth_authorize_path, method: :post,
+                        class: "sns-quick-btn sns-quick-btn--x",
+                        data: { turbo: false } do %>
+            <i class="bi bi-twitter-x"></i>
+          <% end %>
+        </div>
+      </div>
     </div>
   </div>
 </div>

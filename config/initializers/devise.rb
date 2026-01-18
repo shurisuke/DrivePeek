@@ -273,6 +273,21 @@ Devise.setup do |config|
   # up on your models and hooks.
   # config.omniauth :github, 'APP_ID', 'APP_SECRET', scope: 'user,public_repo'
 
+  # X (Twitter) OAuth 2.0
+  if ENV["TWITTER_CLIENT_ID"].present?
+    config.omniauth :twitter2,
+                    ENV["TWITTER_CLIENT_ID"],
+                    ENV["TWITTER_CLIENT_SECRET"],
+                    scope: "tweet.read users.read"
+  end
+
+  # LINE Login
+  if ENV["LINE_CHANNEL_ID"].present?
+    config.omniauth :line,
+                    ENV["LINE_CHANNEL_ID"],
+                    ENV["LINE_CHANNEL_SECRET"]
+  end
+
   # ==> Warden configuration
   # If you want to use other strategies, that are not supported by Devise, or
   # change the failure app, you can configure them inside the config.warden block.

@@ -51,6 +51,12 @@ gem "simple_form"
 # 認証機能
 gem "devise"
 
+# SNS認証（OAuth）
+gem "omniauth"
+gem "omniauth-twitter2"  # X (Twitter) OAuth 2.0
+gem "omniauth-line"      # LINE Login
+gem "omniauth-rails_csrf_protection"  # CSRF対策
+
 # Bootstrap 5
 gem "bootstrap", "~> 5.3.3"
 

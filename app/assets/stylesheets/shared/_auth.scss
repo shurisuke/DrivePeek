@@ -1,0 +1,533 @@
+// 認証ページ共通 - Apple/iOS Style Design
+
+// カラーパレット
+$auth-primary: #506d53;      // App Personal Color
+$auth-primary-hover: #3d5440;
+$auth-text: #1d1d1f;
+$auth-text-secondary: #86868b;
+$auth-background: #f5f5f7;
+$auth-card-bg: #ffffff;
+$auth-input-bg: #f5f5f7;
+$auth-border: #d2d2d7;
+$auth-error: #ff3b30;
+$auth-success: #34c759;
+
+.auth-page {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  min-height: 100vh;
+  background-color: $auth-background;
+  padding: 1rem;
+}
+
+.auth-card {
+  width: 100%;
+  max-width: 400px;
+  padding: 2.5rem 2rem;
+  background: $auth-card-bg;
+  border-radius: 20px;
+  box-shadow:
+    0 4px 6px rgba(0, 0, 0, 0.06),
+    0 10px 20px rgba(0, 0, 0, 0.06);
+
+  // 登録フォームは幅を広げる（横並びレイアウト）
+  &--wide {
+    max-width: 700px;
+
+    .form-group {
+      display: flex;
+      align-items: center;
+      gap: 1rem;
+
+      // ラベル
+      .form-label,
+      > label:first-child {
+        flex: 0 0 140px;
+        margin-bottom: 0;
+        text-align: right;
+      }
+
+      // 入力欄
+      .form-control,
+      .form-select,
+      .gender-radio-group {
+        flex: 1;
+      }
+    }
+  }
+}
+
+.auth-title {
+  margin: 0 0 1rem;
+  color: $auth-text;
+  font-size: 1.75rem;
+  font-weight: 500;
+  text-align: center;
+  letter-spacing: -0.02em;
+}
+
+.auth-description {
+  color: $auth-text-secondary;
+  font-size: 0.9375rem;
+  text-align: center;
+  margin-bottom: 1rem;
+  line-height: 1.5;
+}
+
+// プログレスバー（iOSスタイル）
+.auth-progress {
+  margin-bottom: 2rem;
+}
+
+.auth-progress-bar {
+  height: 4px;
+  background-color: rgba(0, 0, 0, 0.06);
+  border-radius: 2px;
+  overflow: hidden;
+}
+
+.auth-progress-fill {
+  height: 100%;
+  background: linear-gradient(90deg, $auth-primary, lighten($auth-primary, 10%));
+  border-radius: 2px;
+  transition: width 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+  width: 0;
+}
+
+.auth-progress-text {
+  margin-top: 0.5rem;
+  font-size: 0.75rem;
+  font-weight: 500;
+  color: $auth-text-secondary;
+  text-align: right;
+
+  &::after {
+    content: "0%";
+  }
+}
+
+// 登録フォーム: 3フィールド（各33%）
+.auth-form--register {
+  // 1. email (33%)
+  &:has([data-field="email"]:valid) .auth-progress-fill { width: 33%; }
+  &:has([data-field="email"]:valid) .auth-progress-text::after { content: "33%"; }
+
+  // 2. password (66%)
+  &:has([data-field="email"]:valid):has([data-field="password"]:valid) .auth-progress-fill { width: 66%; }
+  &:has([data-field="email"]:valid):has([data-field="password"]:valid) .auth-progress-text::after { content: "66%"; }
+
+  // 3. password_confirmation (100%)
+  &:has([data-field="email"]:valid):has([data-field="password"]:valid):has([data-field="password_confirmation"]:valid) .auth-progress-fill { width: 100%; }
+  &:has([data-field="email"]:valid):has([data-field="password"]:valid):has([data-field="password_confirmation"]:valid) .auth-progress-text::after { content: "100%"; }
+}
+
+// プロフィール設定フォーム: 3フィールド（各33%）
+.auth-form--profile {
+  // 1. age_group (33%)
+  &:has([data-field="age_group"]:valid) .auth-progress-fill { width: 33%; }
+  &:has([data-field="age_group"]:valid) .auth-progress-text::after { content: "33%"; }
+
+  // 2. gender (66%)
+  &:has([data-field="age_group"]:valid):has([data-field-group="gender"] :checked) .auth-progress-fill { width: 66%; }
+  &:has([data-field="age_group"]:valid):has([data-field-group="gender"] :checked) .auth-progress-text::after { content: "66%"; }
+
+  // 3. residence (100%)
+  &:has([data-field="age_group"]:valid):has([data-field-group="gender"] :checked):has([data-field="residence"]:valid) .auth-progress-fill { width: 100%; }
+  &:has([data-field="age_group"]:valid):has([data-field-group="gender"] :checked):has([data-field="residence"]:valid) .auth-progress-text::after { content: "100%"; }
+}
+
+// フォームグループ
+.auth-card {
+  .form-group {
+    margin-bottom: 1.25rem;
+  }
+
+  .form-label,
+  label.form-label {
+    display: block;
+    margin-bottom: 0.5rem;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $auth-text;
+
+    abbr {
+      color: $auth-error;
+      text-decoration: none;
+    }
+  }
+
+  .form-control,
+  .form-select {
+    width: 100%;
+    padding: 0.875rem 1rem;
+    font-size: 1rem;
+    color: $auth-text;
+    background-color: $auth-input-bg;
+    border: 1px solid transparent;
+    border-radius: 12px;
+    transition: all 0.2s ease;
+    -webkit-appearance: none;
+
+    &::placeholder {
+      color: $auth-text-secondary;
+    }
+
+    &:focus {
+      outline: none;
+      background-color: #fff;
+      border-color: $auth-primary;
+      box-shadow: 0 0 0 3px rgba($auth-primary, 0.12);
+    }
+  }
+
+  .form-select {
+    background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 16 16'%3e%3cpath fill='none' stroke='%2386868b' stroke-linecap='round' stroke-linejoin='round' stroke-width='2' d='m2 5 6 6 6-6'/%3e%3c/svg%3e");
+    background-repeat: no-repeat;
+    background-position: right 1rem center;
+    background-size: 12px;
+    padding-right: 2.5rem;
+  }
+}
+
+// シンプルな区切り線
+.auth-separator {
+  border: none;
+  border-top: 1px solid $auth-border;
+  margin: 1.5rem 0;
+}
+
+.auth-divider {
+  display: flex;
+  align-items: center;
+  margin: 1.75rem 0;
+  color: $auth-text-secondary;
+  font-size: 0.8125rem;
+
+  &::before,
+  &::after {
+    content: "";
+    flex: 1;
+    height: 1px;
+    background-color: $auth-border;
+  }
+
+  &::before {
+    margin-right: 1rem;
+  }
+
+  &::after {
+    margin-left: 1rem;
+  }
+}
+
+.auth-links {
+  text-align: center;
+  margin-top: 0;
+
+  a {
+    display: inline-block;
+    color: $auth-primary;
+    font-size: 0.9375rem;
+    text-decoration: none;
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background-color: rgba($auth-primary, 0.1);
+      color: $auth-primary-hover;
+    }
+  }
+}
+
+.auth-errors {
+  margin-bottom: 1.5rem;
+  padding: 1rem;
+  background-color: rgba($auth-error, 0.08);
+  border-radius: 12px;
+  list-style: none;
+
+  li {
+    color: $auth-error;
+    font-size: 0.875rem;
+    margin-bottom: 0.25rem;
+    padding-left: 1.25rem;
+    position: relative;
+
+    &::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+    }
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+}
+
+// メインボタン
+.auth-submit {
+  display: block;
+  width: 100%;
+  padding: 1rem 1.5rem;
+  margin-top: 1.5rem;
+  font-size: 1rem;
+  font-weight: 600;
+  color: #fff;
+  background-color: $auth-primary;
+  border: none;
+  border-radius: 12px;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+  text-align: center;
+
+  &:hover {
+    background-color: $auth-primary-hover;
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--secondary {
+    background-color: $auth-input-bg;
+    color: $auth-text;
+    margin-top: 0;
+
+    &:hover {
+      background-color: darken($auth-input-bg, 5%);
+    }
+  }
+
+  &--danger {
+    background-color: $auth-error;
+    color: #fff;
+    border: none;
+    margin-top: 0.5rem;
+
+    &:hover {
+      background-color: darken($auth-error, 8%);
+    }
+  }
+}
+
+.auth-notice {
+  padding: 1rem 1.25rem;
+  margin-bottom: 1.5rem;
+  background-color: rgba($auth-primary, 0.08);
+  border-radius: 12px;
+  font-size: 0.875rem;
+  color: $auth-text;
+  line-height: 1.5;
+
+  p {
+    margin: 0 0 0.5rem;
+
+    &:last-child {
+      margin-bottom: 0;
+    }
+  }
+
+  strong {
+    color: $auth-primary;
+  }
+}
+
+// 認証方法選択ボタン
+.auth-buttons {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.auth-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 100%;
+  padding: 0.9375rem 1.5rem;
+  font-size: 1rem;
+  font-weight: 500;
+  border-radius: 12px;
+  border: none;
+  cursor: pointer;
+  transition: all 0.2s ease;
+  text-decoration: none;
+
+  i {
+    font-size: 1.25rem;
+    margin-right: 0.625rem;
+  }
+
+  &:hover {
+    transform: translateY(-1px);
+  }
+
+  &:active {
+    transform: translateY(0);
+  }
+
+  &--email {
+    background-color: #4A90D9;
+    color: #fff;
+
+    &:hover {
+      background-color: #3a7bc8;
+      color: #fff;
+    }
+  }
+
+  &--line {
+    background-color: #06C755;
+    color: #fff;
+
+    &:hover {
+      background-color: #05b34d;
+      color: #fff;
+    }
+  }
+
+  &--x {
+    background-color: #000;
+    color: #fff;
+
+    &:hover {
+      background-color: #1a1a1a;
+      color: #fff;
+    }
+  }
+}
+
+// ヘッダー（戻る + タイトル）
+.auth-header {
+  display: flex;
+  align-items: center;
+  position: relative;
+  margin-bottom: 1.5rem;
+
+  .auth-back-link {
+    position: absolute;
+    left: -0.5rem;
+  }
+
+  .auth-title {
+    flex: 1;
+    text-align: center;
+    margin-bottom: 0;
+  }
+}
+
+// 戻るリンク
+.auth-back-link {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 2.25rem;
+  height: 2.25rem;
+  color: $auth-primary;
+  text-decoration: none;
+  border-radius: 50%;
+  transition: all 0.2s ease;
+
+  i {
+    font-size: 1.25rem;
+  }
+
+  &:hover {
+    background-color: rgba($auth-primary, 0.1);
+  }
+}
+
+// 性別ラジオボタン（iOS Segmented Control風）
+.gender-radio-group {
+  display: flex;
+  background-color: $auth-input-bg;
+  border-radius: 10px;
+  padding: 3px;
+  margin-top: 0;
+
+  &--compact {
+    margin-top: 0;
+    border-radius: 8px;
+    padding: 2px;
+    min-width: 260px;
+
+    .form-check {
+      flex: 1 1 0;
+      min-width: 0;
+    }
+
+    .form-check-label {
+      display: block;
+      width: 100%;
+      padding: 0.5rem 0.25rem;
+      font-size: 0.8125rem;
+      white-space: nowrap;
+
+      &:hover {
+        background-color: rgba(255, 255, 255, 0.5);
+      }
+    }
+  }
+
+  .form-check {
+    flex: 1;
+    margin: 0;
+    padding: 0;
+
+    &-inline {
+      margin-right: 0;
+    }
+  }
+
+  .form-check-input {
+    position: absolute;
+    opacity: 0;
+    width: 0;
+    height: 0;
+
+    &:checked + .form-check-label {
+      background-color: #fff;
+      color: $auth-text;
+      box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06);
+    }
+  }
+
+  .form-check-label {
+    display: block;
+    width: 100%;
+    padding: 0.625rem 0.5rem;
+    text-align: center;
+    font-size: 0.875rem;
+    font-weight: 500;
+    color: $auth-text-secondary;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      color: $auth-text;
+    }
+  }
+}
+
+// スキップリンク
+.auth-skip {
+  margin-top: 1.25rem;
+  text-align: center;
+}
+
+.auth-skip-link {
+  color: $auth-text-secondary;
+  font-size: 0.875rem;
+  text-decoration: none;
+  transition: color 0.2s ease;
+
+  &:hover {
+    color: $auth-primary;
+  }
+}

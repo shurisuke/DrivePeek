@@ -1,4 +1,10 @@
 ja:
+  devise:
+    failure:
+      unauthenticated: "ログインが必要です"
+    omniauth_callbacks:
+      success: "%{kind}でログインしました"
+
   views:
     pagination:
       first: "&laquo; 最初"
@@ -6,3 +12,28 @@ ja:
       previous: "&lsaquo; 前"
       next: "次 &rsaquo;"
       truncate: "..."
+
+  enums:
+    user:
+      gender:
+        male: "男性"
+        female: "女性"
+        not_specified: "回答しない"
+      age_group:
+        teens: "10代"
+        twenties: "20代"
+        thirties: "30代"
+        forties: "40代"
+        fifties: "50代"
+        sixties_plus: "60代以上"
+
+  activerecord:
+    attributes:
+      user:
+        email: "メールアドレス"
+        password: "パスワード"
+        password_confirmation: "パスワード（確認）"
+        current_password: "現在のパスワード"
+        age_group: "年代"
+        gender: "性別"
+        residence: "居住地"

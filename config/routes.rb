@@ -1,10 +1,21 @@
 Rails.application.routes.draw do
   # Devise関連
   devise_for :users, controllers: {
-    registrations: "users/registrations", # 新規登録画面
-    sessions: "users/sessions",           # ログイン画面
-    passwords: "users/passwords"          # パスワード再設定リクエスト画面
+    registrations: "users/registrations",        # 新規登録画面
+    sessions: "users/sessions",                  # ログイン画面
+    passwords: "users/passwords",                # パスワード再設定リクエスト画面
+    omniauth_callbacks: "users/omniauth_callbacks" # SNS認証コールバック
   }
+
+  # ユーザー関連
+  scope :users, as: :users do
+    # SNS連携解除
+    delete "auth/unlink/:provider", to: "users/omniauth_registrations#unlink", as: :omniauth_unlink
+
+    # プロフィール設定（登録後の共通フロー）
+    get   "profile_setup", to: "users/profile_setup#edit",   as: :profile_setup
+    patch "profile_setup", to: "users/profile_setup#update"
+  end
 
   # ログイン時のルート
   authenticated :user do
@@ -21,10 +32,8 @@ Rails.application.routes.draw do
     get "/users/sign_out" => "devise/sessions#destroy"
   end
 
-  # マイページ
-  namespace :account do
-    resource :profile, only: %i[show edit update]
-  end
+  # 設定
+  resource :settings, only: %i[show update]
 
   # プラン
   namespace :plans do

@@ -1,0 +1,36 @@
+<%# プロフィール入力フィールド（共通パーシャル） %>
+<%# 使用箇所: メール登録、SNS登録後 %>
+
+<div class="form-group">
+  <label class="form-label">年代</label>
+  <%= f.select :age_group,
+               User.age_groups.keys.map { |k| [I18n.t("enums.user.age_group.#{k}"), k] },
+               { include_blank: '選択してください' },
+               class: "form-select", "data-field": "age_group" %>
+</div>
+
+<div class="form-group" data-field-group="gender">
+  <label class="form-label">性別</label>
+  <div class="gender-radio-group">
+    <% User.genders.keys.each do |gender_key| %>
+      <div class="form-check form-check-inline">
+        <%= f.radio_button :gender, gender_key, class: "form-check-input" %>
+        <%= f.label :gender, I18n.t("enums.user.gender.#{gender_key}"), value: gender_key, class: "form-check-label" %>
+      </div>
+    <% end %>
+  </div>
+</div>
+
+<div class="form-group">
+  <label class="form-label">居住地</label>
+  <select name="user[residence]" class="form-select" data-field="residence">
+    <option value="">選択してください</option>
+    <% User::PREFECTURES_BY_REGION.each do |region, prefectures| %>
+      <optgroup label="<%= region %>">
+        <% prefectures.each do |pref| %>
+          <option value="<%= pref %>" <%= 'selected' if f.object.residence == pref %>><%= pref %></option>
+        <% end %>
+      </optgroup>
+    <% end %>
+  </select>
+</div>
