@@ -58,7 +58,7 @@ gem "omniauth-line"      # LINE Login
 gem "omniauth-rails_csrf_protection"  # CSRF対策
 
 # Bootstrap 5
-gem "bootstrap", "~> 5.3.3"
+gem "bootstrap", "~> 5.3.8"
 
 # リスト順序管理
 gem "acts_as_list"
