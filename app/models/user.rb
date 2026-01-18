@@ -117,4 +117,9 @@ class User < ApplicationRecord
     parts << age_gender if age_gender.present?
     parts.join(" / ")
   end
+
+  # メール確認の有効期限内か（ビューから呼び出し用）
+  def confirmation_pending?
+    confirmation_sent_at.present? && confirmation_sent_at > 30.minutes.ago
+  end
 end
