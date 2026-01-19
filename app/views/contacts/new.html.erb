@@ -8,6 +8,11 @@
     </div>
 
     <%= form_with model: @contact, url: contacts_path, class: "auth-form" do |f| %>
+      <%# Honeypot: ボット対策（人間には見えない） %>
+      <div style="position: absolute; left: -9999px;" aria-hidden="true">
+        <%= text_field_tag :website, nil, tabindex: "-1", autocomplete: "off" %>
+      </div>
+
       <% if @contact.errors.any? %>
         <ul class="auth-errors">
           <% @contact.errors.full_messages.uniq.each do |message| %>
