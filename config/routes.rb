@@ -55,6 +55,11 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
+    # 地図関連
+    namespace :map do
+      resource :infowindow, only: :create
+    end
+
     # スポットのジャンル取得（Turbo Frame lazy loading）
     resources :spots, only: [] do
       resource :genres, only: [ :show ], controller: "spots/genres"

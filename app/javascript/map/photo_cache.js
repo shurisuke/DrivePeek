@@ -1,9 +1,9 @@
 // ================================================================
-// 写真URLキャッシュ
-// 用途: Places APIの写真URLをキャッシュしてリクエスト数を削減
+// 写真キャッシュ
+// 用途: Places APIの写真情報をキャッシュしてリクエスト数を削減
 // ================================================================
 
-// placeId -> photoUrl のキャッシュ
+// placeId -> { photoUrl, photos } のキャッシュ
 const cache = new Map()
 
 /**
@@ -13,37 +13,55 @@ const cache = new Map()
  */
 export const getCachedPhotoUrl = (placeId) => {
   if (!placeId) return null
-  return cache.get(placeId) || null
+  return cache.get(placeId)?.photoUrl || null
 }
 
 /**
- * 写真URLをキャッシュに保存
+ * キャッシュからphotos配列を取得
+ * @param {string} placeId
+ * @returns {Array|null}
+ */
+export const getCachedPhotos = (placeId) => {
+  if (!placeId) return null
+  return cache.get(placeId)?.photos || null
+}
+
+/**
+ * 写真情報をキャッシュに保存
  * @param {string} placeId
  * @param {string|null} photoUrl
+ * @param {Array|null} photos
  */
+export const setCachedPhotos = (placeId, photoUrl, photos) => {
+  if (!placeId) return
+  cache.set(placeId, { photoUrl, photos })
+}
+
+// 後方互換性のため
 export const setCachedPhotoUrl = (placeId, photoUrl) => {
   if (!placeId) return
-  cache.set(placeId, photoUrl)
+  const existing = cache.get(placeId)
+  cache.set(placeId, { ...existing, photoUrl })
 }
 
 /**
- * 写真URLを取得（キャッシュ優先、なければAPI呼び出し）
+ * 写真情報を取得（キャッシュ優先、なければAPI呼び出し）
  * @param {Object} options
  * @param {string} options.placeId - Place ID
  * @param {google.maps.Map} options.map - マップインスタンス
- * @returns {Promise<string|null>}
+ * @returns {Promise<{ photoUrl: string|null, photos: Array }>}
  */
-export const getPhotoUrl = async ({ placeId, map }) => {
-  if (!placeId || !map) return null
+export const getPlacePhotos = async ({ placeId, map }) => {
+  if (!placeId || !map) return { photoUrl: null, photos: [] }
 
   // キャッシュにあればそれを返す
-  const cached = getCachedPhotoUrl(placeId)
-  if (cached !== null) {
-    return cached
+  const cached = cache.get(placeId)
+  if (cached !== undefined) {
+    return { photoUrl: cached.photoUrl, photos: cached.photos || [] }
   }
 
   // Places APIで取得
-  if (!google.maps.places) return null
+  if (!google.maps.places) return { photoUrl: null, photos: [] }
 
   return new Promise((resolve) => {
     const service = new google.maps.places.PlacesService(map)
@@ -51,15 +69,27 @@ export const getPhotoUrl = async ({ placeId, map }) => {
       { placeId, fields: ["photos"] },
       (place, status) => {
         let photoUrl = null
-        if (status === google.maps.places.PlacesServiceStatus.OK && place?.photos?.[0]) {
-          photoUrl = place.photos[0].getUrl({ maxWidth: 520 })
+        let photos = []
+        if (status === google.maps.places.PlacesServiceStatus.OK && place?.photos) {
+          photos = place.photos.slice(0, 5) // 最大5枚
+          if (photos[0]?.getUrl) {
+            photoUrl = photos[0].getUrl({ maxWidth: 520 })
+          }
         }
-        // キャッシュに保存（nullも保存して再リクエスト防止）
-        setCachedPhotoUrl(placeId, photoUrl)
-        resolve(photoUrl)
+        // キャッシュに保存
+        setCachedPhotos(placeId, photoUrl, photos)
+        resolve({ photoUrl, photos })
       }
     )
   })
+}
+
+/**
+ * 写真URLを取得（後方互換性）
+ */
+export const getPhotoUrl = async ({ placeId, map }) => {
+  const { photoUrl } = await getPlacePhotos({ placeId, map })
+  return photoUrl
 }
 
 /**

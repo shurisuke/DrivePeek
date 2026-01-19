@@ -1,20 +1,30 @@
 // ================================================================
 // InfoWindow（単一責務）
 // 用途: InfoWindowの生成・表示・イベント処理を一元管理
+// HTMLはRails Partialから取得（fetch）
 // ================================================================
 
 import { getMapInstance } from "map/state"
 import { normalizeDisplayAddress } from "map/geocoder"
 
-// 1個だけ使い回す（シングルトン）
+// シングルトン
 let infoWindow = null
 let mapClickListener = null
 
-/**
- * place_idからプラン内のスポットを検索
- * @param {string} placeId - Google Place ID
- * @returns {{ planSpotId: string } | null} - 見つかった場合はplanSpotIdを返す
- */
+// ズーム状態を保持（Stimulusコントローラからのイベントで更新）
+let currentZoomIndex = 2  // md
+
+// Stimulusからのズーム変更イベントをリッスン
+document.addEventListener("infowindow:zoomChange", (e) => {
+  if (e.detail?.zoomIndex !== undefined) {
+    currentZoomIndex = e.detail.zoomIndex
+  }
+})
+
+// ================================================================
+// ユーティリティ
+// ================================================================
+
 const findPlanSpotByPlaceId = (placeId) => {
   if (!placeId) return null
   const spotBlock = document.querySelector(`.spot-block[data-place-id="${placeId}"]`)
@@ -29,107 +39,158 @@ const getInfoWindow = () => {
   return infoWindow
 }
 
-/**
- * 地図クリック時にInfoWindowを閉じるリスナーを設定
- */
 const setupMapClickToClose = () => {
   const map = getMapInstance()
   if (!map || mapClickListener) return
 
-  mapClickListener = map.addListener("click", () => {
+  mapClickListener = map.addListener("click", (event) => {
+    if (event.placeId) return
     closeInfoWindow()
   })
 }
 
-
-/**
- * InfoWindow を閉じる
- */
 export const closeInfoWindow = () => {
   if (infoWindow) {
     infoWindow.close()
   }
 }
 
-/**
- * InfoWindow用HTMLを生成
- * @param {Object} options
- * @param {string} options.photoUrl - 写真URL（なければプレースホルダー）
- * @param {string} options.name - 名称
- * @param {string} options.address - 住所
- * @param {string} options.buttonId - ボタンのDOM ID
- * @param {boolean} options.showButton - 「プランに追加」ボタンを表示するか
- * @param {string} [options.buttonLabel] - ボタンのラベル（デフォルト: "プランに追加"）
- * @param {string} [options.planSpotId] - 削除モード時のplanSpotId
- * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label}]
- */
-const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, buttonLabel, planSpotId, editButtons }) => {
-  const safeName = name || "名称不明"
-  const safeAddress = address || "住所不明"
+// ================================================================
+// Rails API からHTMLを取得
+// ================================================================
 
-  // 写真がある場合のみ写真ブロックを表示
-  const photoArea = photoUrl
-    ? `<div class="dp-infowindow__photo">
-        <img class="dp-infowindow__img" src="${photoUrl}" alt="${safeName}">
-      </div>`
-    : ""
+const fetchInfoWindowHtml = async (params) => {
+  const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
 
-  const label = buttonLabel || "プランに追加"
-  const isDeleteMode = !!planSpotId
-  const deleteClass = isDeleteMode ? " dp-infowindow__btn--delete" : ""
-  const dataAttr = isDeleteMode ? ` data-plan-spot-id="${planSpotId}"` : ""
-
-  const buttonArea = showButton
-    ? `<button type="button" class="dp-infowindow__btn${deleteClass}" id="${buttonId}"${dataAttr}>${label}</button>`
-    : ""
-
-  // 複数の編集ボタンに対応（variant: "orange" でオレンジボタン）
-  const editButtonsArea = (editButtons || [])
-    .map(btn => {
-      const variantClass = btn.variant ? ` dp-infowindow__edit-btn--${btn.variant}` : ""
-      return `<button type="button" class="dp-infowindow__edit-btn${variantClass}" id="${btn.id}">${btn.label}</button>`
+  const response = await fetch("/api/map/infowindow", {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      "X-CSRF-Token": csrfToken,
+      "Accept": "text/html"
+    },
+    body: JSON.stringify({
+      ...params,
+      zoom_index: currentZoomIndex
     })
-    .join("")
+  })
 
-  return `
-    <div class="dp-infowindow">
-      ${photoArea}
-      <div class="dp-infowindow__body">
-        <div class="dp-infowindow__name">${safeName}</div>
-        <div class="dp-infowindow__address">${safeAddress}</div>
-        ${buttonArea}
-        ${editButtonsArea}
-      </div>
-    </div>
-  `
+  if (!response.ok) {
+    throw new Error(`HTTP error! status: ${response.status}`)
+  }
+
+  return response.text()
 }
+
+// ================================================================
+// Place データ抽出
+// ================================================================
 
 export const extractLatLng = (place) => {
   const loc = place?.geometry?.location
   if (!loc) return null
-  // LatLng は関数のことが多い
   const lat = typeof loc.lat === "function" ? loc.lat() : Number(loc.lat)
   const lng = typeof loc.lng === "function" ? loc.lng() : Number(loc.lng)
   if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
   return { lat, lng }
 }
 
-const extractPhotoUrl = (place) => {
-  // PlaceResult.photos[0].getUrl() が使えることが多い
-  const photo = place?.photos?.[0]
-  if (!photo?.getUrl) return null
-  return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
+const extractPhotoUrls = (photos, maxCount = 5) => {
+  if (!photos || !Array.isArray(photos)) return []
+  return photos.slice(0, maxCount).map(photo => {
+    if (!photo?.getUrl) return null
+    return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
+  }).filter(Boolean)
 }
 
-/**
- * InfoWindow を表示する（PlaceResult 用）
- * @param {Object} options
- * @param {google.maps.Marker|google.maps.LatLng} options.anchor - InfoWindowを表示する基準
- * @param {Object} options.place - PlaceResult オブジェクト
- * @param {string} options.buttonId - ボタンのDOM ID
- * @param {boolean} [options.showButton=true] - 「プランに追加」ボタンを表示するか
- */
-export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
+// ================================================================
+// Stimulus イベントリスナー設定
+// ================================================================
+
+const setupStimulusEventListeners = (iw, { place, onAddSpot, onDeleteSpot, onEditAction }) => {
+  const infoWindowEl = document.querySelector(".dp-infowindow")
+  if (!infoWindowEl) return
+
+  // 閉じるイベント
+  infoWindowEl.addEventListener("infowindow:close", () => {
+    iw.close()
+  })
+
+  // ギャラリー開くイベント
+  infoWindowEl.addEventListener("infowindow:openGallery", (e) => {
+    const photos = place?.photos || []
+    document.dispatchEvent(new CustomEvent("photo-gallery:open", {
+      detail: {
+        placeId: e.detail?.placeId || place?.place_id,
+        photos,
+        name: place?.name || "名称不明"
+      }
+    }))
+  })
+
+  // スポット追加イベント
+  if (onAddSpot) {
+    infoWindowEl.addEventListener("infowindow:addSpot", () => {
+      onAddSpot()
+    })
+  }
+
+  // スポット削除イベント
+  if (onDeleteSpot) {
+    infoWindowEl.addEventListener("infowindow:deleteSpot", (e) => {
+      onDeleteSpot(e.detail?.planSpotId)
+    })
+  }
+
+  // 編集アクションイベント
+  if (onEditAction) {
+    infoWindowEl.addEventListener("infowindow:editAction", (e) => {
+      onEditAction(e.detail?.action)
+    })
+  }
+}
+
+// ================================================================
+// ローディング表示
+// ================================================================
+
+export const showLoadingInfoWindow = (position) => {
+  const map = getMapInstance()
+  if (!map) return
+
+  setupMapClickToClose()
+
+  const iw = getInfoWindow()
+  iw.setContent(`
+    <div class="dp-infowindow">
+      <div class="dp-infowindow__header">
+        <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+      <div class="dp-infowindow__body" style="padding: 24px;">
+        <div class="dp-infowindow__loading">
+          <div class="dp-infowindow__spinner"></div>
+        </div>
+      </div>
+    </div>
+  `)
+  iw.setPosition(position)
+  iw.open(map)
+}
+
+// ================================================================
+// 検索結果/POI用 InfoWindow
+// ================================================================
+
+export const showSearchResultInfoWindow = async ({
+  anchor,
+  place,
+  buttonId,
+  showButton = true,
+  buttonLabel: providedButtonLabel = null,
+  planSpotId: providedPlanSpotId = null
+}) => {
   const map = getMapInstance()
   if (!map) return
 
@@ -138,117 +199,135 @@ export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton
 
   const rawAddress = place.formatted_address || place.vicinity || ""
   const address = normalizeDisplayAddress(rawAddress) || rawAddress
-  const photoUrl = extractPhotoUrl(place)
+  const photoUrls = extractPhotoUrls(place.photos)
   const name = place.name
 
-  // ✅ place_idがプランに存在するかチェック
-  const existingSpot = findPlanSpotByPlaceId(place.place_id)
-  const isInPlan = !!existingSpot
-  const buttonLabel = isInPlan ? "プランから削除" : "プランに追加"
-  const planSpotId = existingSpot?.planSpotId || null
+  // ボタンラベル・planSpotIdが渡されていればそれを使用、なければDOMチェック
+  let buttonLabel = providedButtonLabel
+  let planSpotId = providedPlanSpotId
 
-  // 地図クリック時にInfoWindowを閉じるリスナーを設定
+  if (showButton && buttonLabel === null) {
+    const existingSpot = findPlanSpotByPlaceId(place.place_id)
+    const isInPlan = !!existingSpot
+    buttonLabel = isInPlan ? "プランから削除" : "プランに追加"
+    planSpotId = existingSpot?.planSpotId || null
+  }
+
   setupMapClickToClose()
 
   const iw = getInfoWindow()
-  iw.setContent(
-    buildInfoWindowHtml({
-      photoUrl,
+
+  try {
+    const html = await fetchInfoWindowHtml({
       name,
       address,
-      buttonId,
-      showButton,
-      buttonLabel,
-      planSpotId,
+      photo_urls: photoUrls,
+      types: place.types || [],
+      place_id: place.place_id,
+      show_button: showButton,
+      button_label: buttonLabel,
+      plan_spot_id: planSpotId
     })
-  )
 
-  // anchor が Marker の場合と LatLng の場合で分岐
-  if (anchor instanceof google.maps.Marker) {
-    iw.open({ map, anchor })
-  } else {
-    iw.setPosition(anchor)
-    iw.open(map)
+    iw.setContent(html)
+
+    if (anchor instanceof google.maps.Marker) {
+      iw.open({ map, anchor })
+    } else {
+      iw.setPosition(anchor)
+      iw.open(map)
+    }
+
+    // domready後にStimulusイベントをセットアップ
+    google.maps.event.addListenerOnce(iw, "domready", () => {
+      setupStimulusEventListeners(iw, {
+        place,
+        onAddSpot: () => {
+          document.dispatchEvent(new CustomEvent("spot:add", {
+            detail: {
+              buttonId,
+              place_id: place.place_id,
+              name: name || null,
+              address: address || null,
+              lat: latLng.lat,
+              lng: latLng.lng,
+              types: Array.isArray(place.types) ? place.types : []
+            }
+          }))
+        },
+        onDeleteSpot: (spotId) => {
+          document.dispatchEvent(new CustomEvent("spot:delete", {
+            detail: { buttonId, planSpotId: spotId }
+          }))
+        }
+      })
+    })
+  } catch (error) {
+    console.error("InfoWindow fetch error:", error)
   }
-
-  // ボタン非表示の場合はイベント設定不要
-  if (!showButton) return
-
-  // domready 後にボタンへ click を付ける
-  google.maps.event.addListenerOnce(iw, "domready", () => {
-    const btn = document.getElementById(buttonId)
-    if (!btn) return
-
-    btn.addEventListener("click", () => {
-      const planSpotId = btn.dataset.planSpotId
-
-      if (planSpotId) {
-        // 削除モード
-        document.dispatchEvent(new CustomEvent("spot:delete", {
-          detail: { buttonId, planSpotId }
-        }))
-      } else {
-        // 追加モード
-        document.dispatchEvent(new CustomEvent("spot:add", {
-          detail: {
-            buttonId,
-            place_id: place.place_id,
-            name: name || null,
-            address: address || null,
-            lat: latLng.lat,
-            lng: latLng.lng,
-            types: Array.isArray(place.types) ? place.types : [],
-          },
-        }))
-      }
-    })
-  })
 }
 
-/**
- * InfoWindow を表示する（シンプルなピン用）
- * プランスポット/出発/帰宅などPlaceResultを持たないピン向け
- * @param {Object} options
- * @param {google.maps.Marker} options.marker - 対象マーカー
- * @param {string} options.name - 名称
- * @param {string} [options.address] - 住所
- * @param {string} [options.photoUrl] - 写真URL
- * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label, onClick}]
- */
-export const showPlanPinInfoWindow = ({ marker, name, address, photoUrl, editButtons }) => {
+// ================================================================
+// プランピン用 InfoWindow
+// ================================================================
+
+export const showPlanPinInfoWindow = async ({ marker, name, address, photoUrl, photos, placeId, editButtons }) => {
   const map = getMapInstance()
   if (!map) return
 
-  // 地図クリック時にInfoWindowを閉じるリスナーを設定
   setupMapClickToClose()
 
   const iw = getInfoWindow()
 
-  iw.setContent(
-    buildInfoWindowHtml({
-      photoUrl: photoUrl || null,
+  // photos配列からURL配列を生成
+  const photoUrls = photos?.length > 0
+    ? extractPhotoUrls(photos)
+    : (photoUrl ? [photoUrl] : [])
+
+  // editButtonsをRailsに渡す形式に変換
+  const editButtonsForRails = (editButtons || []).map(btn => ({
+    id: btn.id,
+    label: btn.label,
+    variant: btn.variant,
+    action: btn.id // アクション識別用
+  }))
+
+  try {
+    const html = await fetchInfoWindowHtml({
       name,
       address: address || null,
-      buttonId: "",
-      showButton: false,
-      editButtons: editButtons || [],
+      photo_urls: photoUrls,
+      types: [],
+      place_id: photos?.length > 0 ? placeId : null,
+      show_button: false,
+      edit_buttons: editButtonsForRails
     })
-  )
 
-  iw.open({ map, anchor: marker })
+    iw.setContent(html)
+    iw.open({ map, anchor: marker })
 
-  // 編集ボタンがある場合はクリックイベントを設定
-  if (editButtons && editButtons.length > 0) {
+    // domready後にStimulusイベントをセットアップ
     google.maps.event.addListenerOnce(iw, "domready", () => {
-      editButtons.forEach(btn => {
-        const editBtn = document.getElementById(btn.id)
-        if (!editBtn || !btn.onClick) return
+      // editButtonsのonClickコールバックをマッピング
+      const editActionMap = {}
+      ;(editButtons || []).forEach(btn => {
+        if (btn.onClick) {
+          editActionMap[btn.id] = btn.onClick
+        }
+      })
 
-        editBtn.addEventListener("click", () => {
-          iw.close()
-          btn.onClick()
-        })
+      setupStimulusEventListeners(iw, {
+        place: { photos, name, place_id: placeId },
+        onEditAction: (actionId) => {
+          const callback = editActionMap[actionId]
+          if (callback) {
+            iw.close()
+            callback()
+          }
+        }
       })
     })
+  } catch (error) {
+    console.error("InfoWindow fetch error:", error)
   }
 }

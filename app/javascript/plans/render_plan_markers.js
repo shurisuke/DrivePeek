@@ -14,7 +14,7 @@ import {
 } from "map/state"
 import { showPlanPinInfoWindow } from "map/infowindow"
 import { COLORS } from "map/constants"
-import { getPhotoUrl } from "map/photo_cache"
+import { getPlacePhotos } from "map/photo_cache"
 
 // ================================================================
 // SVG番号ピン生成
@@ -338,12 +338,14 @@ export const renderPlanMarkers = (planData, { pinColor = COLORS.MY_PLAN } = {}) 
 
         // placeIdがあれば写真を取得（キャッシュ優先）
         if (spotInfo.placeId) {
-          getPhotoUrl({ placeId: spotInfo.placeId, map }).then((photoUrl) => {
+          getPlacePhotos({ placeId: spotInfo.placeId, map }).then(({ photoUrl, photos }) => {
             showPlanPinInfoWindow({
               marker,
               name: spotInfo.name || `スポット ${spotNumber}`,
               address: spotInfo.address,
               photoUrl,
+              photos,
+              placeId: spotInfo.placeId,
               editButtons,
             })
           })

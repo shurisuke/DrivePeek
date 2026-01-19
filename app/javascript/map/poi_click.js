@@ -4,10 +4,16 @@
 // ================================================================
 
 import { getMapInstance } from "map/state"
-import { showSearchResultInfoWindow } from "map/infowindow"
+import { showSearchResultInfoWindow, showLoadingInfoWindow } from "map/infowindow"
 
 // PlacesService のキャッシュ
 let placesService = null
+
+// POI詳細キャッシュ（placeId -> place）
+const placeDetailsCache = new Map()
+
+// キャッシュの有効期限（5分）
+const CACHE_TTL_MS = 5 * 60 * 1000
 
 const getPlacesService = () => {
   if (!placesService) {
@@ -16,6 +22,35 @@ const getPlacesService = () => {
     placesService = new google.maps.places.PlacesService(map)
   }
   return placesService
+}
+
+/**
+ * キャッシュからPOI詳細を取得
+ * @param {string} placeId
+ * @returns {Object|null} キャッシュされたplace、または期限切れ/未キャッシュならnull
+ */
+const getCachedPlace = (placeId) => {
+  const cached = placeDetailsCache.get(placeId)
+  if (!cached) return null
+
+  const now = Date.now()
+  if (now - cached.timestamp > CACHE_TTL_MS) {
+    placeDetailsCache.delete(placeId)
+    return null
+  }
+  return cached.place
+}
+
+/**
+ * POI詳細をキャッシュに保存
+ * @param {string} placeId
+ * @param {Object} place
+ */
+const cachePlace = (placeId, place) => {
+  placeDetailsCache.set(placeId, {
+    place,
+    timestamp: Date.now()
+  })
 }
 
 /**
@@ -32,6 +67,22 @@ export const setupPoiClickForEdit = () => {
   map.addListener("click", (event) => {
     if (!event.placeId) return
     event.stop()
+
+    // キャッシュチェック
+    const cachedPlace = getCachedPlace(event.placeId)
+    if (cachedPlace) {
+      const buttonId = `dp-add-spot-poi-${cachedPlace.place_id}`
+      showSearchResultInfoWindow({
+        anchor: event.latLng,
+        place: cachedPlace,
+        buttonId,
+        showButton: true,
+      })
+      return
+    }
+
+    // ローディング表示
+    showLoadingInfoWindow(event.latLng)
 
     const service = getPlacesService()
     if (!service) return
@@ -54,6 +105,9 @@ export const setupPoiClickForEdit = () => {
           console.warn("POI詳細取得失敗:", status)
           return
         }
+
+        // キャッシュに保存
+        cachePlace(place.place_id, place)
 
         const buttonId = `dp-add-spot-poi-${place.place_id}`
 
@@ -83,6 +137,20 @@ export const setupPoiClickForView = () => {
     if (!event.placeId) return
     event.stop()
 
+    // キャッシュチェック
+    const cachedPlace = getCachedPlace(event.placeId)
+    if (cachedPlace) {
+      showSearchResultInfoWindow({
+        anchor: event.latLng,
+        place: cachedPlace,
+        showButton: false,
+      })
+      return
+    }
+
+    // ローディング表示
+    showLoadingInfoWindow(event.latLng)
+
     const service = getPlacesService()
     if (!service) return
 
@@ -103,6 +171,9 @@ export const setupPoiClickForView = () => {
           console.warn("POI詳細取得失敗:", status)
           return
         }
+
+        // キャッシュに保存
+        cachePlace(place.place_id, place)
 
         showSearchResultInfoWindow({
           anchor: event.latLng,

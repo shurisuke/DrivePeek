@@ -1,0 +1,211 @@
+<%#
+  InfoWindow コンテンツ
+
+  locals:
+    - name: スポット名
+    - address: 住所
+    - photo_urls: 写真URL配列
+    - types: Google Place types配列
+    - place_id: Google Place ID
+    - show_button: 「プランに追加」ボタン表示
+    - button_label: ボタンラベル
+    - plan_spot_id: 削除モード時のID
+    - edit_buttons: 編集ボタン配列 [{id, label, variant}]
+    - zoom_scale: ズームスケール
+%>
+<%
+  safe_name = name.presence || "名称不明"
+  safe_address = address.presence || "住所不明"
+  type_labels = place_type_labels(types)
+  urls = photo_urls.presence || []
+  has_multiple_photos = urls.size > 1
+  is_delete_mode = plan_spot_id.present?
+  delete_class = is_delete_mode ? " dp-infowindow__btn--delete" : ""
+  btn_label = button_label.presence || "プランに追加"
+%>
+
+<div class="dp-infowindow dp-infowindow--<%= zoom_scale %>"
+     data-controller="infowindow"
+     data-infowindow-place-id-value="<%= place_id %>"
+     data-infowindow-photo-count-value="<%= urls.size %>"
+     data-infowindow-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
+     data-infowindow-zoom-index-value="<%= zoom_index %>">
+
+  <%# タブ切り替え用ラジオボタン %>
+  <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
+  <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
+
+  <%# ヘッダー %>
+  <div class="dp-infowindow__header">
+    <div class="dp-infowindow__tabs">
+      <label for="iw-tab-info" class="dp-infowindow__tab">
+        <i class="bi bi-geo-alt"></i> スポット
+      </label>
+      <label for="iw-tab-comment" class="dp-infowindow__tab">
+        <i class="bi bi-chat"></i> コメント
+      </label>
+    </div>
+    <div class="dp-infowindow__stats">
+      <button type="button"
+              class="dp-infowindow__stat dp-infowindow__stat--like"
+              data-action="click->infowindow#toggleLike"
+              data-infowindow-target="likeBtn"
+              data-liked="false">
+        <i class="bi bi-heart"></i>
+        <span data-infowindow-target="likeCount">12</span>
+      </button>
+      <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
+        <i class="bi bi-chat"></i>
+        <span>3</span>
+      </label>
+    </div>
+    <button type="button"
+            class="dp-infowindow__close"
+            data-action="click->infowindow#close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <%# ズームコントロール %>
+  <div class="dp-infowindow__zoom-controls">
+    <button type="button"
+            class="dp-infowindow__zoom-btn"
+            data-action="click->infowindow#zoomOut"
+            data-infowindow-target="zoomOutBtn">
+      <i class="bi bi-dash"></i>
+    </button>
+    <button type="button"
+            class="dp-infowindow__zoom-btn"
+            data-action="click->infowindow#zoomIn"
+            data-infowindow-target="zoomInBtn">
+      <i class="bi bi-plus"></i>
+    </button>
+  </div>
+
+  <%# スポット情報パネル %>
+  <div class="dp-infowindow__panel dp-infowindow__panel--info">
+    <%# 写真エリア %>
+    <% if urls.any? %>
+      <div class="dp-infowindow__photo">
+        <div class="dp-infowindow__slider" data-infowindow-target="slider">
+          <% urls.each_with_index do |url, i| %>
+            <div class="dp-infowindow__slide<%= ' dp-infowindow__slide--active' if i == 0 %>"
+                 data-index="<%= i %>">
+              <img class="dp-infowindow__img" src="<%= url %>" alt="<%= safe_name %>">
+            </div>
+          <% end %>
+        </div>
+
+        <% if has_multiple_photos %>
+          <button type="button"
+                  class="dp-infowindow__arrow dp-infowindow__arrow--prev"
+                  data-action="click->infowindow#prevSlide">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button type="button"
+                  class="dp-infowindow__arrow dp-infowindow__arrow--next"
+                  data-action="click->infowindow#nextSlide">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        <% end %>
+
+        <% if place_id.present? %>
+          <button type="button"
+                  class="dp-infowindow__expand-btn"
+                  data-action="click->infowindow#openGallery">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+        <% end %>
+
+        <% if has_multiple_photos %>
+          <div class="dp-infowindow__indicator" data-infowindow-target="indicator">
+            <% urls.each_with_index do |_, i| %>
+              <span class="dp-infowindow__dot<%= ' dp-infowindow__dot--active' if i == 0 %>"
+                    data-index="<%= i %>"
+                    data-action="click->infowindow#goToSlide"></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="dp-infowindow__photo dp-infowindow__photo--empty">
+        <i class="bi bi-image"></i>
+      </div>
+    <% end %>
+
+    <%# ジャンルタグ %>
+    <div class="dp-infowindow__genres">
+      <% type_labels.each do |label| %>
+        <span class="dp-infowindow__genre"><%= label %></span>
+      <% end %>
+    </div>
+
+    <%# 本文 %>
+    <div class="dp-infowindow__body">
+      <div class="dp-infowindow__name"><%= safe_name %></div>
+      <div class="dp-infowindow__address"><%= safe_address %></div>
+
+      <% if show_button %>
+        <button type="button"
+                class="dp-infowindow__btn<%= delete_class %>"
+                data-action="click->infowindow#handleMainButton"
+                data-infowindow-target="mainBtn"
+                <%= "data-plan-spot-id=#{plan_spot_id}" if is_delete_mode %>>
+          <%= btn_label %>
+        </button>
+      <% end %>
+
+      <% Array(edit_buttons).each do |btn| %>
+        <%
+          variant_class = btn[:variant].present? ? " dp-infowindow__edit-btn--#{btn[:variant]}" : ""
+        %>
+        <button type="button"
+                class="dp-infowindow__edit-btn<%= variant_class %>"
+                id="<%= btn[:id] %>"
+                data-action="click->infowindow#handleEditButton"
+                data-edit-action="<%= btn[:action] %>">
+          <%= btn[:label] %>
+        </button>
+      <% end %>
+    </div>
+  </div>
+
+  <%# コメントパネル %>
+  <div class="dp-infowindow__panel dp-infowindow__panel--comment">
+    <div class="dp-infowindow__comments">
+      <%# TODO: 実際のコメントデータに置き換え %>
+      <div class="dp-infowindow__comment">
+        <div class="dp-infowindow__comment-text">景色が最高でした！</div>
+        <div class="dp-infowindow__comment-meta">
+          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 栃木県20代</span>
+          <span class="dp-infowindow__comment-date">2024/01/15</span>
+        </div>
+      </div>
+      <div class="dp-infowindow__comment">
+        <div class="dp-infowindow__comment-text">子連れにおすすめ</div>
+        <div class="dp-infowindow__comment-meta">
+          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 東京都30代</span>
+          <span class="dp-infowindow__comment-date">2024/01/10</span>
+        </div>
+      </div>
+      <div class="dp-infowindow__comment">
+        <div class="dp-infowindow__comment-text">駐車場が広くて便利</div>
+        <div class="dp-infowindow__comment-meta">
+          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 埼玉県40代</span>
+          <span class="dp-infowindow__comment-date">2024/01/05</span>
+        </div>
+      </div>
+    </div>
+    <div class="dp-infowindow__comment-input">
+      <input type="text"
+             placeholder="コメントを入力..."
+             class="dp-infowindow__comment-field"
+             data-infowindow-target="commentField">
+      <button type="button"
+              class="dp-infowindow__comment-submit"
+              data-action="click->infowindow#submitComment">
+        <i class="bi bi-send"></i>
+      </button>
+    </div>
+  </div>
+</div>
