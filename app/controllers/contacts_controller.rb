@@ -10,7 +10,7 @@ class ContactsController < ApplicationController
     @contact = Contact.new(contact_params)
 
     if @contact.valid?
-      # TODO: #243でメール送信を実装
+      ContactMailer.notify_admin(@contact).deliver_now
       redirect_to new_contact_path, notice: "お問い合わせを送信しました"
     else
       render :new, status: :unprocessable_entity
