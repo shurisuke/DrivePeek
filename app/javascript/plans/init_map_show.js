@@ -11,7 +11,7 @@
 // ================================================================
 
 import { renderMap } from "map/render_map"
-import { setupPoiClickForView } from "map/poi_click"
+import { setupPoiClick } from "map/poi_click"
 import { getPlanDataFromPage } from "plans/plan_data"
 import { renderRoutePolylinesForShow, fitMapToSpots } from "plans/route_renderer_show"
 import { waitForGoogleMaps, isShowPage } from "map/utils"
@@ -35,7 +35,7 @@ document.addEventListener("turbo:load", async () => {
   renderMap(fallbackCenter)
 
   // POIクリック（閲覧モード、追加ボタンなし）
-  setupPoiClickForView()
+  setupPoiClick(false)
 
   // プランデータがあればマーカーを描画
   const planData = getPlanDataFromPage()

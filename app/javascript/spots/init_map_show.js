@@ -10,25 +10,13 @@
 // ================================================================
 
 import { renderMap } from "map/render_map"
-import { setupPoiClickForView } from "map/poi_click"
+import { setupPoiClick } from "map/poi_click"
 import { getMapInstance, setSpotPinMarker } from "map/state"
-import { showSearchResultInfoWindow } from "map/infowindow"
+import { showInfoWindowWithFrame } from "map/infowindow"
 import { waitForGoogleMaps, isSpotShowPage } from "map/utils"
 import { COLORS } from "map/constants"
 
 const SPOT_PIN_COLOR = COLORS.COMMUNITY
-
-// PlacesService のキャッシュ
-let placesService = null
-
-const getPlacesService = () => {
-  if (!placesService) {
-    const map = getMapInstance()
-    if (!map) return null
-    placesService = new google.maps.places.PlacesService(map)
-  }
-  return placesService
-}
 
 const createSpotPinSvg = () => {
   const svg = `
@@ -65,39 +53,12 @@ const renderSpotMarker = (spotData) => {
   })
 
   marker.addListener("click", () => {
-    if (!spotData.placeId) {
-      console.warn("[spots/init_map_show] placeId not found")
-      return
-    }
-
-    const service = getPlacesService()
-    if (!service) return
-
-    service.getDetails(
-      {
-        placeId: spotData.placeId,
-        fields: [
-          "place_id",
-          "name",
-          "formatted_address",
-          "vicinity",
-          "geometry",
-          "photos",
-        ],
-      },
-      (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
-          console.warn("[spots/init_map_show] Place詳細取得失敗:", status)
-          return
-        }
-
-        showSearchResultInfoWindow({
-          anchor: marker,
-          place,
-          showButton: false,
-        })
-      }
-    )
+    showInfoWindowWithFrame({
+      anchor: marker,
+      spotId: spotData.id,
+      placeId: spotData.placeId,
+      showButton: false,
+    })
   })
 
   setSpotPinMarker(marker)
@@ -125,7 +86,7 @@ document.addEventListener("turbo:load", async () => {
     : { lat: 35.681236, lng: 139.767125 }
 
   renderMap(center)
-  setupPoiClickForView()
+  setupPoiClick(false)
 
   if (spotData) {
     renderSpotMarker(spotData)

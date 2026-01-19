@@ -8,7 +8,7 @@ import {
   clearSearchHitMarkers,
   setSearchHitMarkers,
 } from "map/state"
-import { showSearchResultInfoWindow, extractLatLng } from "map/infowindow"
+import { showInfoWindowWithFrame } from "map/infowindow"
 
 export const setupSearchBox = () => {
   const map = getMapInstance()
@@ -40,17 +40,27 @@ export const setupSearchBox = () => {
         title: place.name,
       })
 
-      // ★ クリックで共通InfoWindow表示
+      // ★ クリックで共通InfoWindow表示（Turbo Frame方式）
       marker.addListener("click", () => {
-        const latLng = extractLatLng(place)
-        if (!latLng) return
+        const loc = place.geometry?.location
+        if (!loc) return
 
-        const buttonId = `dp-add-spot-${place.place_id || index}`
-        showSearchResultInfoWindow({
+        const lat = typeof loc.lat === "function" ? loc.lat() : Number(loc.lat)
+        const lng = typeof loc.lng === "function" ? loc.lng() : Number(loc.lng)
+
+        // 郵便番号を除去（〒XXX-XXXX または 日本、〒XXX-XXXX）
+        const rawAddress = place.formatted_address || null
+        const address = rawAddress?.replace(/^日本、\s*/, "").replace(/〒\d{3}-\d{4}\s*/, "").trim() || null
+
+        showInfoWindowWithFrame({
           anchor: marker,
-          place,
-          buttonId,
+          placeId: place.place_id,
+          name: place.name,
+          address,
+          lat,
+          lng,
           showButton: true,
+          planId: document.getElementById("map")?.dataset.planId,
         })
       })
 

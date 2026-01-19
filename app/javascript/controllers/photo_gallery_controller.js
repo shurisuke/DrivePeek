@@ -9,8 +9,8 @@ import { Controller } from "@hotwired/stimulus"
 export default class extends Controller {
   static targets = ["slider", "indicator", "title", "prevBtn", "nextBtn"]
 
-  // Google Places photos 配列（getUrl()を持つ）
-  photos = []
+  // 写真URL配列
+  photoUrls = []
   currentIndex = 0
 
   connect() {
@@ -20,13 +20,13 @@ export default class extends Controller {
 
   /**
    * モーダルを開く
-   * @param {CustomEvent} event - detail: { placeId, photos, name }
+   * @param {CustomEvent} event - detail: { photoUrls, name }
    */
   open(event) {
-    const { photos, name } = event.detail
-    if (!photos || photos.length === 0) return
+    const { photoUrls, name } = event.detail
+    if (!photoUrls || photoUrls.length === 0) return
 
-    this.photos = photos.slice(0, 5) // 最大5枚
+    this.photoUrls = photoUrls.slice(0, 5)
     this.currentIndex = 0
 
     // タイトル設定
@@ -59,25 +59,18 @@ export default class extends Controller {
     // クリーンアップ
     this.sliderTarget.innerHTML = ""
     this.indicatorTarget.innerHTML = ""
-    this.photos = []
+    this.photoUrls = []
   }
 
   /**
    * スライダーをレンダリング
    */
   renderSlider() {
-    this.sliderTarget.innerHTML = this.photos.map((photo, index) => {
-      const photoUrl = photo.getUrl ? photo.getUrl({ maxWidth: 1200, maxHeight: 900 }) : null
-      if (!photoUrl) {
-        return `<div class="photo-gallery-modal__slide">
-          <div class="photo-gallery-modal__loading">写真を読み込めませんでした</div>
-        </div>`
-      }
-
+    this.sliderTarget.innerHTML = this.photoUrls.map((url, index) => {
       return `<div class="photo-gallery-modal__slide" data-index="${index}">
         <div class="photo-gallery-modal__spinner"></div>
         <img class="photo-gallery-modal__img"
-             src="${photoUrl}"
+             src="${url}"
              alt="写真 ${index + 1}"
              loading="${index === 0 ? 'eager' : 'lazy'}">
       </div>`
@@ -103,12 +96,12 @@ export default class extends Controller {
    * インジケーター（ドット）をレンダリング
    */
   renderIndicator() {
-    if (this.photos.length <= 1) {
+    if (this.photoUrls.length <= 1) {
       this.indicatorTarget.innerHTML = ""
       return
     }
 
-    this.indicatorTarget.innerHTML = this.photos.map((_, index) => {
+    this.indicatorTarget.innerHTML = this.photoUrls.map((_, index) => {
       const activeClass = index === 0 ? " photo-gallery-modal__dot--active" : ""
       return `<span class="photo-gallery-modal__dot${activeClass}"
                     data-index="${index}"
@@ -124,7 +117,7 @@ export default class extends Controller {
     const slideWidth = slider.clientWidth
     const newIndex = Math.round(slider.scrollLeft / slideWidth)
 
-    if (newIndex !== this.currentIndex && newIndex >= 0 && newIndex < this.photos.length) {
+    if (newIndex !== this.currentIndex && newIndex >= 0 && newIndex < this.photoUrls.length) {
       this.currentIndex = newIndex
       this.updateIndicator()
       this.updateArrows()
@@ -154,7 +147,7 @@ export default class extends Controller {
    * 次の写真へ
    */
   next() {
-    if (this.currentIndex < this.photos.length - 1) {
+    if (this.currentIndex < this.photoUrls.length - 1) {
       this.scrollToIndex(this.currentIndex + 1)
     }
   }
@@ -188,7 +181,7 @@ export default class extends Controller {
    * 矢印ボタンの表示/非表示を更新
    */
   updateArrows() {
-    if (this.photos.length <= 1) {
+    if (this.photoUrls.length <= 1) {
       // 1枚以下なら両方非表示
       if (this.hasPrevBtnTarget) this.prevBtnTarget.hidden = true
       if (this.hasNextBtnTarget) this.nextBtnTarget.hidden = true
@@ -202,7 +195,7 @@ export default class extends Controller {
 
     // 最後の写真なら右矢印非表示
     if (this.hasNextBtnTarget) {
-      this.nextBtnTarget.hidden = this.currentIndex === this.photos.length - 1
+      this.nextBtnTarget.hidden = this.currentIndex === this.photoUrls.length - 1
     }
   }
 }
