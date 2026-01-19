@@ -7,7 +7,10 @@ module Api
       # GET /api/spots/:spot_id/genres
       def show
         @spot.detect_genres!
-        render partial: "spots/genres", locals: { spot: @spot.reload }
+        @spot.reload
+
+        partial = params[:inline] == "true" ? "spots/genres_inline" : "spots/genres"
+        render partial: partial, locals: { spot: @spot }
       end
 
       private

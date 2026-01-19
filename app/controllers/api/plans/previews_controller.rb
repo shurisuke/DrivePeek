@@ -5,7 +5,7 @@ module Api
       # GET /api/plans/:plan_id/preview
       def show
         plan = Plan.publicly_visible
-                   .includes(plan_spots: :spot)
+                   .includes(plan_spots: { spot: :genres })
                    .find(params[:plan_id])
 
         render json: plan.preview_data
