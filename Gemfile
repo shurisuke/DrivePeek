@@ -69,6 +69,9 @@ gem "kaminari"
 # AI API (OpenAI)
 gem "ruby-openai"
 
+# メール送信 (Resend)
+gem "resend"
+
 # Ruby の SSL 接続を安定化させる
 gem "openssl"
 

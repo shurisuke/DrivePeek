@@ -66,6 +66,9 @@ Rails.application.configure do
   # Set host to be used by links generated in mailer templates.
   config.action_mailer.default_url_options = { host: "drivepeek.onrender.com", protocol: "https" }
 
+  # Resend でメール送信
+  config.action_mailer.delivery_method = :resend
+
   # Specify outgoing SMTP server. Remember to add smtp/* credentials via bin/rails credentials:edit.
   # config.action_mailer.smtp_settings = {
   #   user_name: Rails.application.credentials.dig(:smtp, :user_name),
