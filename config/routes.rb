@@ -97,4 +97,7 @@ Rails.application.routes.draw do
   # 静的ページ（利用規約・プライバシーポリシー）
   get "terms" => "static_pages#terms", as: :terms
   get "privacy" => "static_pages#privacy", as: :privacy
+
+  # お問い合わせ
+  resources :contacts, only: %i[new create]
 end
