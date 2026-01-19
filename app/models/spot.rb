@@ -14,6 +14,7 @@ class Spot < ApplicationRecord
   validates :lng, presence: true
 
   # Callbacks
+  after_commit :geocode_if_needed, on: %i[create update]
   after_commit :clear_cities_cache, if: :should_clear_cities_cache?
 
   CITIES_CACHE_KEY = "spots/cities_by_prefecture".freeze
@@ -112,30 +113,18 @@ class Spot < ApplicationRecord
     false
   end
 
-  # Google Places のペイロードを適用
-  # - 新規: 全属性をセット
-  # - 既存: 空欄のみ補完、photo_reference は常に更新（鮮度優先）
-  def apply_google_payload(payload)
-    payload = payload.to_h.with_indifferent_access
-
-    self.name    ||= payload[:name]
-    self.address ||= payload[:address]
-    self.lat     ||= payload[:lat]
-    self.lng     ||= payload[:lng]
-
-    # prefecture / city は ReverseGeocoder で補完
-    geocode_if_needed
-  end
-
   private
 
+  # prefecture/city が未設定なら ReverseGeocoder で補完
   def geocode_if_needed
     return if prefecture.present? && city.present?
     return unless lat.present? && lng.present?
 
     result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)
-    self.prefecture ||= result[:prefecture]
-    self.city       ||= result[:city]
+    updates = {}
+    updates[:prefecture] = result[:prefecture] if prefecture.blank? && result[:prefecture].present?
+    updates[:city] = result[:city] if city.blank? && result[:city].present?
+    update_columns(updates) if updates.any?
   end
 
   def should_clear_cities_cache?

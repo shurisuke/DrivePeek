@@ -55,7 +55,10 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
-    # スポットのジャンル取得（Turbo Frame lazy loading）
+    # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
+    resource :infowindow, only: %i[show create]
+
+    # スポット関連
     resources :spots, only: [] do
       resource :genres, only: [ :show ], controller: "spots/genres"
     end

@@ -4,28 +4,26 @@ module Api
     before_action :set_plan
 
     def create
-      result = SpotSetupService.new(
-        plan: @plan,
-        spot_params: spot_params
-      ).setup
+      spot = Spot.find(params[:spot_id])
+      plan_spot = @plan.plan_spots.create!(spot: spot)
 
-      if result.success?
-        @plan.recalculate_for!(result.plan_spot, action: :create)
-        @plan.reload
+      @plan.recalculate_for!(plan_spot, action: :create)
+      @plan.reload
 
-        respond_to do |format|
-          format.turbo_stream { render "plans/refresh_plan_tab" }
-          format.json do
-            render json: {
-              plan_spot_id: result.plan_spot.id,
-              spot_id: result.spot.id,
-              position: result.plan_spot.position
-            }, status: :created
-          end
+      respond_to do |format|
+        format.turbo_stream { render "plans/refresh_plan_tab" }
+        format.json do
+          render json: {
+            plan_spot_id: plan_spot.id,
+            spot_id: spot.id,
+            position: plan_spot.position
+          }, status: :created
         end
-      else
-        render json: { message: result.error_message, details: result.errors }, status: :unprocessable_entity
       end
+    rescue ActiveRecord::RecordNotFound
+      render json: { message: "スポットが見つかりません" }, status: :not_found
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { message: e.message }, status: :unprocessable_entity
     end
 
     private
@@ -34,13 +32,6 @@ module Api
       @plan = current_user.plans
         .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
         .find(params[:plan_id])
-    end
-
-    def spot_params
-      params.require(:spot).permit(
-        :place_id, :name, :address, :lat, :lng,
-        top_types: []
-      )
     end
   end
 end

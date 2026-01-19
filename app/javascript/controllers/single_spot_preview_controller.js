@@ -5,7 +5,7 @@ import {
   clearSpotPinMarker,
   getCommunityPreviewMarkers,
 } from "map/state"
-import { showSearchResultInfoWindow, closeInfoWindow } from "map/infowindow"
+import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { COLORS } from "map/constants"
 
 // ================================================================
@@ -15,18 +15,6 @@ import { COLORS } from "map/constants"
 // ================================================================
 
 const SPOT_PIN_COLOR = COLORS.COMMUNITY
-
-// PlacesService のキャッシュ
-let placesService = null
-
-const getPlacesService = () => {
-  if (!placesService) {
-    const map = getMapInstance()
-    if (!map) return null
-    placesService = new google.maps.places.PlacesService(map)
-  }
-  return placesService
-}
 
 const createSpotPinSvg = () => {
   const svg = `
@@ -45,6 +33,7 @@ export default class extends Controller {
     name: String,
     address: String,
     placeId: String,
+    genres: Array,
   }
 
   show(event) {
@@ -73,7 +62,7 @@ export default class extends Controller {
     if (existingMarker) {
       // 既存マーカーがあればそれを使用（新しいマーカーは作らない）
       map.panTo(position)
-      this.#showInfoWindowWithPhoto(existingMarker)
+      this.#showInfoWindow(existingMarker)
       return
     }
 
@@ -92,52 +81,23 @@ export default class extends Controller {
     })
 
     marker.addListener("click", () => {
-      this.#showInfoWindowWithPhoto(marker)
+      this.#showInfoWindow(marker)
     })
 
     setSpotPinMarker(marker)
     map.panTo(position)
-    this.#showInfoWindowWithPhoto(marker)
+    this.#showInfoWindow(marker)
   }
 
-  // Places APIから詳細を取得してInfoWindowを表示
-  #showInfoWindowWithPhoto(marker) {
-    if (!this.placeIdValue) {
-      console.warn("[single_spot_preview] placeId not found")
-      return
-    }
-
-    const service = getPlacesService()
-    if (!service) return
-
-    service.getDetails(
-      {
-        placeId: this.placeIdValue,
-        fields: [
-          "place_id",
-          "name",
-          "formatted_address",
-          "vicinity",
-          "geometry",
-          "photos",
-          "types",
-        ],
-      },
-      (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
-          console.warn("[single_spot_preview] Place詳細取得失敗:", status)
-          return
-        }
-
-        const buttonId = `dp-add-spot-preview-${place.place_id}`
-
-        showSearchResultInfoWindow({
-          anchor: marker,
-          place,
-          buttonId,
-          showButton: true,
-        })
-      }
-    )
+  #showInfoWindow(marker) {
+    showInfoWindowWithFrame({
+      anchor: marker,
+      placeId: this.placeIdValue,
+      name: this.nameValue,
+      address: this.addressValue,
+      genres: this.genresValue || [],
+      showButton: true,
+      planId: document.getElementById("map")?.dataset.planId,
+    })
   }
 }

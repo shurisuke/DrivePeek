@@ -1,78 +1,53 @@
 // ================================================================
 // POIクリック処理
 // 用途: 地図上のPOI（店舗・施設等）クリック時にInfoWindowを表示
+// 設計: Turbo Frame方式（Google Places APIをスキップし即時表示）
 // ================================================================
 
 import { getMapInstance } from "map/state"
-import { showSearchResultInfoWindow } from "map/infowindow"
+import { showInfoWindowWithFrame } from "map/infowindow"
 
-// PlacesService のキャッシュ
-let placesService = null
-
-const getPlacesService = () => {
-  if (!placesService) {
-    const map = getMapInstance()
-    if (!map) return null
-    placesService = new google.maps.places.PlacesService(map)
-  }
-  return placesService
+/**
+ * plan_idを取得
+ */
+const getPlanId = () => {
+  const mapEl = document.getElementById("map")
+  return mapEl?.dataset.planId || null
 }
 
 /**
- * POIクリックイベントをセットアップ（編集モード用）
- * 追加ボタンを表示する
+ * POIクリックの共通処理（Turbo Frame方式）
+ * Google Places APIを呼ばず、即座にInfoWindowを表示
  */
-export const setupPoiClickForEdit = () => {
+const handlePoiClick = (event, { showButton = true } = {}) => {
+  if (!event.placeId) return
+  event.stop()
+
   const map = getMapInstance()
-  if (!map) {
-    console.error("[poi_click] map instance not found")
-    return
-  }
+  if (!map) return
 
-  map.addListener("click", (event) => {
-    if (!event.placeId) return
-    event.stop()
+  // 位置情報を取得
+  const lat = event.latLng.lat()
+  const lng = event.latLng.lng()
 
-    const service = getPlacesService()
-    if (!service) return
-
-    service.getDetails(
-      {
-        placeId: event.placeId,
-        fields: [
-          "place_id",
-          "name",
-          "formatted_address",
-          "vicinity",
-          "geometry",
-          "photos",
-          "types",
-        ],
-      },
-      (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
-          console.warn("POI詳細取得失敗:", status)
-          return
-        }
-
-        const buttonId = `dp-add-spot-poi-${place.place_id}`
-
-        showSearchResultInfoWindow({
-          anchor: event.latLng,
-          place,
-          buttonId,
-          showButton: true,
-        })
-      }
-    )
+  // Turbo Frame方式で即座にInfoWindowを表示
+  // スケルトン表示 → Rails APIがSpot作成 + HTML返却
+  showInfoWindowWithFrame({
+    anchor: event.latLng,
+    placeId: event.placeId,
+    name: null, // Railsが取得
+    lat,
+    lng,
+    showButton,
+    planId: getPlanId()
   })
 }
 
 /**
- * POIクリックイベントをセットアップ（閲覧モード用）
- * 追加ボタンを表示しない
+ * POIクリックイベントをセットアップ
+ * @param {boolean} showButton - 追加ボタンを表示するか（編集モード: true、閲覧モード: false）
  */
-export const setupPoiClickForView = () => {
+export const setupPoiClick = (showButton = true) => {
   const map = getMapInstance()
   if (!map) {
     console.error("[poi_click] map instance not found")
@@ -80,36 +55,6 @@ export const setupPoiClickForView = () => {
   }
 
   map.addListener("click", (event) => {
-    if (!event.placeId) return
-    event.stop()
-
-    const service = getPlacesService()
-    if (!service) return
-
-    service.getDetails(
-      {
-        placeId: event.placeId,
-        fields: [
-          "place_id",
-          "name",
-          "formatted_address",
-          "vicinity",
-          "geometry",
-          "photos",
-        ],
-      },
-      (place, status) => {
-        if (status !== google.maps.places.PlacesServiceStatus.OK || !place) {
-          console.warn("POI詳細取得失敗:", status)
-          return
-        }
-
-        showSearchResultInfoWindow({
-          anchor: event.latLng,
-          place,
-          showButton: false,
-        })
-      }
-    )
+    handlePoiClick(event, { showButton })
   })
 }

@@ -11,18 +11,16 @@
 
 import { renderMap } from "map/render_map"
 import { setupSearchBox } from "map/search_box"
-import { setupPoiClickForEdit } from "map/poi_click"
+import { setupPoiClick } from "map/poi_click"
 import { addCurrentLocationMarker } from "map/current_location"
 import { getPlanDataFromPage } from "plans/plan_data"
 import { waitForGoogleMaps, isEditPage } from "map/utils"
-import { bindSpotAddHandler } from "plans/spot_add_handler"
 import { bindPlanMapSync } from "plans/plan_map_sync"
 import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
 import { bindTollUsedHandler } from "plans/toll_used_handler"
 import { bindStayDurationHandler } from "plans/stay_duration_handler"
 
 // 編集画面専用ハンドラーをバインド（各ハンドラーは内部で二重バインド防止済み）
-bindSpotAddHandler()
 bindPlanMapSync()
 bindSpotReorderHandler()
 bindTollUsedHandler()
@@ -53,7 +51,7 @@ document.addEventListener("turbo:load", async () => {
   setupSearchBox()
 
   // POIクリック（追加ボタンあり）を有効化
-  setupPoiClickForEdit()
+  setupPoiClick(true)
 
   // 現在地マーカー
   addCurrentLocationMarker()

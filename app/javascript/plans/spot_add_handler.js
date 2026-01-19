@@ -14,20 +14,6 @@ const getPlanId = () => {
 
 const getCsrfToken = () => document.querySelector('meta[name="csrf-token"]')?.content
 
-// Google types から不要なものを除外して最大3件を返す
-const filterTopTypes = (types) => {
-  const excludeList = [
-    "establishment",
-    "point_of_interest",
-    "premise",
-    "plus_code",
-    "political",
-    "geocode",
-  ]
-  const filtered = (types || []).filter((t) => !excludeList.includes(t))
-  return filtered.length > 0 ? filtered.slice(0, 3) : (types || []).slice(0, 3)
-}
-
 const handleSpotAdd = async (event) => {
   const detail = event.detail
   const planId = getPlanId()
@@ -37,7 +23,7 @@ const handleSpotAdd = async (event) => {
     return
   }
 
-  if (!detail?.place_id) {
+  if (!detail?.spot_id) {
     alert("スポット情報が不足しています")
     return
   }
@@ -84,16 +70,7 @@ const handleSpotAdd = async (event) => {
 
   try {
     const url = `/api/plans/${planId}/plan_spots`
-    const body = {
-      spot: {
-        place_id: detail.place_id,
-        name: detail.name,
-        address: detail.address,
-        lat: detail.lat,
-        lng: detail.lng,
-        top_types: filterTopTypes(detail.types),
-      },
-    }
+    const body = { spot_id: detail.spot_id }
 
     await postTurboStream(url, body)
 

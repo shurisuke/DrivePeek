@@ -1,169 +1,186 @@
 // ================================================================
 // InfoWindow（単一責務）
 // 用途: InfoWindowの生成・表示・イベント処理を一元管理
+// 新設計: 全てのケースで統一されたRails APIを使用
 // ================================================================
 
 import { getMapInstance } from "map/state"
-import { normalizeDisplayAddress } from "map/geocoder"
 
-// 1個だけ使い回す（シングルトン）
+// シングルトン
 let infoWindow = null
 let mapClickListener = null
 
-/**
- * place_idからプラン内のスポットを検索
- * @param {string} placeId - Google Place ID
- * @returns {{ planSpotId: string } | null} - 見つかった場合はplanSpotIdを返す
- */
-const findPlanSpotByPlaceId = (placeId) => {
-  if (!placeId) return null
-  const spotBlock = document.querySelector(`.spot-block[data-place-id="${placeId}"]`)
-  if (!spotBlock) return null
-  return { planSpotId: spotBlock.dataset.planSpotId }
-}
+// ズーム状態を保持（Stimulusコントローラからのイベントで更新）
+let currentZoomIndex = 2  // md
+
+// Stimulusからのズーム変更イベントをリッスン
+document.addEventListener("infowindow-ui:zoomChange", (e) => {
+  if (e.detail?.zoomIndex !== undefined) {
+    currentZoomIndex = e.detail.zoomIndex
+  }
+})
+
+// ================================================================
+// ユーティリティ
+// ================================================================
 
 const getInfoWindow = () => {
   if (!infoWindow) {
-    infoWindow = new google.maps.InfoWindow()
+    infoWindow = new google.maps.InfoWindow({
+      pixelOffset: new google.maps.Size(0, -30),
+      disableAutoPan: true
+    })
   }
   return infoWindow
 }
 
-/**
- * 地図クリック時にInfoWindowを閉じるリスナーを設定
- */
 const setupMapClickToClose = () => {
   const map = getMapInstance()
   if (!map || mapClickListener) return
 
-  mapClickListener = map.addListener("click", () => {
+  mapClickListener = map.addListener("click", (event) => {
+    if (event.placeId) return
     closeInfoWindow()
   })
 }
 
-
-/**
- * InfoWindow を閉じる
- */
 export const closeInfoWindow = () => {
   if (infoWindow) {
     infoWindow.close()
   }
 }
 
-/**
- * InfoWindow用HTMLを生成
- * @param {Object} options
- * @param {string} options.photoUrl - 写真URL（なければプレースホルダー）
- * @param {string} options.name - 名称
- * @param {string} options.address - 住所
- * @param {string} options.buttonId - ボタンのDOM ID
- * @param {boolean} options.showButton - 「プランに追加」ボタンを表示するか
- * @param {string} [options.buttonLabel] - ボタンのラベル（デフォルト: "プランに追加"）
- * @param {string} [options.planSpotId] - 削除モード時のplanSpotId
- * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label}]
- */
-const buildInfoWindowHtml = ({ photoUrl, name, address, buttonId, showButton, buttonLabel, planSpotId, editButtons }) => {
-  const safeName = name || "名称不明"
-  const safeAddress = address || "住所不明"
+// ================================================================
+// Turbo Frame 方式 InfoWindow
+// POIクリック時にGoogle Places APIをスキップして即時表示
+// ================================================================
 
-  // 写真がある場合のみ写真ブロックを表示
-  const photoArea = photoUrl
-    ? `<div class="dp-infowindow__photo">
-        <img class="dp-infowindow__img" src="${photoUrl}" alt="${safeName}">
-      </div>`
-    : ""
-
-  const label = buttonLabel || "プランに追加"
-  const isDeleteMode = !!planSpotId
-  const deleteClass = isDeleteMode ? " dp-infowindow__btn--delete" : ""
-  const dataAttr = isDeleteMode ? ` data-plan-spot-id="${planSpotId}"` : ""
-
-  const buttonArea = showButton
-    ? `<button type="button" class="dp-infowindow__btn${deleteClass}" id="${buttonId}"${dataAttr}>${label}</button>`
-    : ""
-
-  // 複数の編集ボタンに対応（variant: "orange" でオレンジボタン）
-  const editButtonsArea = (editButtons || [])
-    .map(btn => {
-      const variantClass = btn.variant ? ` dp-infowindow__edit-btn--${btn.variant}` : ""
-      return `<button type="button" class="dp-infowindow__edit-btn${variantClass}" id="${btn.id}">${btn.label}</button>`
-    })
-    .join("")
-
-  return `
-    <div class="dp-infowindow">
-      ${photoArea}
-      <div class="dp-infowindow__body">
-        <div class="dp-infowindow__name">${safeName}</div>
-        <div class="dp-infowindow__address">${safeAddress}</div>
-        ${buttonArea}
-        ${editButtonsArea}
-      </div>
-    </div>
-  `
-}
-
-export const extractLatLng = (place) => {
-  const loc = place?.geometry?.location
-  if (!loc) return null
-  // LatLng は関数のことが多い
-  const lat = typeof loc.lat === "function" ? loc.lat() : Number(loc.lat)
-  const lng = typeof loc.lng === "function" ? loc.lng() : Number(loc.lng)
-  if (!Number.isFinite(lat) || !Number.isFinite(lng)) return null
-  return { lat, lng }
-}
-
-const extractPhotoUrl = (place) => {
-  // PlaceResult.photos[0].getUrl() が使えることが多い
-  const photo = place?.photos?.[0]
-  if (!photo?.getUrl) return null
-  return photo.getUrl({ maxWidth: 520, maxHeight: 260 })
-}
-
-/**
- * InfoWindow を表示する（PlaceResult 用）
- * @param {Object} options
- * @param {google.maps.Marker|google.maps.LatLng} options.anchor - InfoWindowを表示する基準
- * @param {Object} options.place - PlaceResult オブジェクト
- * @param {string} options.buttonId - ボタンのDOM ID
- * @param {boolean} [options.showButton=true] - 「プランに追加」ボタンを表示するか
- */
-export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton = true }) => {
+export const showInfoWindowWithFrame = ({
+  anchor,           // LatLng or Marker
+  spotId = null,    // 既存spotの場合
+  placeId = null,   // POI/検索の場合
+  name = null,
+  address = null,
+  genres = [],      // ジャンル名の配列
+  lat = null,
+  lng = null,
+  showButton = true,
+  planId = null,
+  planSpotId = null, // 削除モード時のPlanSpot ID
+  editMode = null   // "start_point" | "goal_point" | null
+}) => {
   const map = getMapInstance()
   if (!map) return
 
-  const latLng = extractLatLng(place)
-  if (!latLng) return
-
-  const rawAddress = place.formatted_address || place.vicinity || ""
-  const address = normalizeDisplayAddress(rawAddress) || rawAddress
-  const photoUrl = extractPhotoUrl(place)
-  const name = place.name
-
-  // ✅ place_idがプランに存在するかチェック
-  const existingSpot = findPlanSpotByPlaceId(place.place_id)
-  const isInPlan = !!existingSpot
-  const buttonLabel = isInPlan ? "プランから削除" : "プランに追加"
-  const planSpotId = existingSpot?.planSpotId || null
-
-  // 地図クリック時にInfoWindowを閉じるリスナーを設定
   setupMapClickToClose()
 
   const iw = getInfoWindow()
-  iw.setContent(
-    buildInfoWindowHtml({
-      photoUrl,
-      name,
-      address,
-      buttonId,
-      showButton,
-      buttonLabel,
-      planSpotId,
-    })
-  )
+  const zoomScale = ["xs", "sm", "md", "lg", "xl"][currentZoomIndex] || "md"
 
-  // anchor が Marker の場合と LatLng の場合で分岐
+  // オフセット: editMode(出発・帰宅)は0px、既存スポットは30px、POIは60px
+  const offsetY = editMode ? 0 : (spotId ? -30 : -60)
+  iw.setOptions({ pixelOffset: new google.maps.Size(0, offsetY) })
+
+  // クエリパラメータを構築
+  const params = new URLSearchParams({
+    show_button: showButton,
+    zoom_index: currentZoomIndex
+  })
+  if (spotId) params.append("spot_id", spotId)
+  if (placeId) params.append("place_id", placeId)
+  if (name) params.append("name", name)
+  if (address) params.append("address", address)
+  if (lat) params.append("lat", lat)
+  if (lng) params.append("lng", lng)
+  if (planId) params.append("plan_id", planId)
+  if (editMode) params.append("edit_mode", editMode)
+
+  // editMode の場合はスケルトン不要（データは揃っている）
+  if (editMode) {
+    iw.setContent(`
+      <turbo-frame id="infowindow-content" src="/api/infowindow?${params.toString()}">
+        <div class="dp-infowindow dp-infowindow--${zoomScale} dp-infowindow--point dp-infowindow--loading"></div>
+      </turbo-frame>
+    `)
+
+    if (anchor instanceof google.maps.Marker) {
+      iw.open({ map, anchor })
+    } else {
+      iw.setPosition(anchor)
+      iw.open(map)
+    }
+    return
+  }
+
+  // スポット用: スケルトン + Turbo Frame で即時表示
+  iw.setContent(`
+    <turbo-frame id="infowindow-content" src="/api/infowindow?${params.toString()}">
+      <div class="dp-infowindow dp-infowindow--${zoomScale}">
+        <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
+        <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
+
+        <div class="dp-infowindow__header">
+          <div class="dp-infowindow__tabs">
+            <label for="iw-tab-info" class="dp-infowindow__tab" style="background:#fff;color:#1c1c1e;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
+              <i class="bi bi-geo-alt"></i> スポット
+            </label>
+            <label for="iw-tab-comment" class="dp-infowindow__tab">
+              <i class="bi bi-chat"></i> コメント
+            </label>
+          </div>
+          <div class="dp-infowindow__stats">
+            <span class="dp-infowindow__stat"><i class="bi bi-heart"></i> <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span></span>
+            <span class="dp-infowindow__stat"><i class="bi bi-chat"></i> <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span></span>
+          </div>
+          <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+            <i class="bi bi-x-lg"></i>
+          </button>
+        </div>
+
+        <div class="dp-infowindow__panel dp-infowindow__panel--info" style="display: block;">
+          <div class="dp-infowindow__photo dp-infowindow__photo--skeleton">
+            <div class="dp-infowindow__spinner"></div>
+          </div>
+
+          <div class="dp-infowindow__genres">
+            ${genres?.length > 0
+              ? genres.slice(0, 2).map(g => `<span class="dp-infowindow__genre">${g}</span>`).join("")
+              : `<span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
+                 <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>`
+            }
+          </div>
+
+          <div class="dp-infowindow__body">
+            <div class="dp-infowindow__name">${name || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 60%;\"></span>"}</div>
+            <div class="dp-infowindow__address">${address || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 80%;\"></span>"}</div>
+            ${planSpotId
+              ? `<button type="button"
+                         class="dp-infowindow__btn dp-infowindow__btn--delete"
+                         data-controller="infowindow-spot-action"
+                         data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
+                         data-infowindow-spot-action-method-value="DELETE"
+                         data-action="click->infowindow-spot-action#submit">
+                   プランから削除
+                 </button>`
+              : (spotId && planId)
+              ? `<button type="button"
+                         class="dp-infowindow__btn"
+                         data-controller="infowindow-spot-action"
+                         data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
+                         data-infowindow-spot-action-method-value="POST"
+                         data-infowindow-spot-action-spot-id-value="${spotId}"
+                         data-action="click->infowindow-spot-action#submit">
+                   プランに追加
+                 </button>`
+              : `<div class="dp-infowindow__btn dp-infowindow__btn--skeleton"></div>`
+            }
+          </div>
+        </div>
+      </div>
+    </turbo-frame>
+  `)
+
+  // Marker か LatLng かで開き方を分岐
   if (anchor instanceof google.maps.Marker) {
     iw.open({ map, anchor })
   } else {
@@ -171,84 +188,25 @@ export const showSearchResultInfoWindow = ({ anchor, place, buttonId, showButton
     iw.open(map)
   }
 
-  // ボタン非表示の場合はイベント設定不要
-  if (!showButton) return
-
-  // domready 後にボタンへ click を付ける
+  // Turbo Frame ロード後にStimulusイベントリスナーを設定
   google.maps.event.addListenerOnce(iw, "domready", () => {
-    const btn = document.getElementById(buttonId)
-    if (!btn) return
+    const turboFrame = document.getElementById("infowindow-content")
+    if (!turboFrame) return
 
-    btn.addEventListener("click", () => {
-      const planSpotId = btn.dataset.planSpotId
+    turboFrame.addEventListener("turbo:frame-load", () => {
+      const infoWindowEl = document.querySelector(".dp-infowindow")
+      if (!infoWindowEl) return
 
-      if (planSpotId) {
-        // 削除モード
-        document.dispatchEvent(new CustomEvent("spot:delete", {
-          detail: { buttonId, planSpotId }
-        }))
-      } else {
-        // 追加モード
-        document.dispatchEvent(new CustomEvent("spot:add", {
+      // ギャラリー開くイベント
+      infoWindowEl.addEventListener("infowindow-ui:openGallery", (e) => {
+        document.dispatchEvent(new CustomEvent("photo-gallery:open", {
           detail: {
-            buttonId,
-            place_id: place.place_id,
-            name: name || null,
-            address: address || null,
-            lat: latLng.lat,
-            lng: latLng.lng,
-            types: Array.isArray(place.types) ? place.types : [],
-          },
+            photoUrls: e.detail?.photoUrls || [],
+            name: name || "名称不明"
+          }
         }))
-      }
-    })
+      })
+    }, { once: true })
   })
 }
 
-/**
- * InfoWindow を表示する（シンプルなピン用）
- * プランスポット/出発/帰宅などPlaceResultを持たないピン向け
- * @param {Object} options
- * @param {google.maps.Marker} options.marker - 対象マーカー
- * @param {string} options.name - 名称
- * @param {string} [options.address] - 住所
- * @param {string} [options.photoUrl] - 写真URL
- * @param {Array} [options.editButtons] - 編集ボタンの配列 [{id, label, onClick}]
- */
-export const showPlanPinInfoWindow = ({ marker, name, address, photoUrl, editButtons }) => {
-  const map = getMapInstance()
-  if (!map) return
-
-  // 地図クリック時にInfoWindowを閉じるリスナーを設定
-  setupMapClickToClose()
-
-  const iw = getInfoWindow()
-
-  iw.setContent(
-    buildInfoWindowHtml({
-      photoUrl: photoUrl || null,
-      name,
-      address: address || null,
-      buttonId: "",
-      showButton: false,
-      editButtons: editButtons || [],
-    })
-  )
-
-  iw.open({ map, anchor: marker })
-
-  // 編集ボタンがある場合はクリックイベントを設定
-  if (editButtons && editButtons.length > 0) {
-    google.maps.event.addListenerOnce(iw, "domready", () => {
-      editButtons.forEach(btn => {
-        const editBtn = document.getElementById(btn.id)
-        if (!editBtn || !btn.onClick) return
-
-        editBtn.addEventListener("click", () => {
-          iw.close()
-          btn.onClick()
-        })
-      })
-    })
-  }
-}

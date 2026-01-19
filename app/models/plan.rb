@@ -103,11 +103,13 @@ class Plan < ApplicationRecord
     {
       spots: ordered_plan_spots.map do |ps|
         {
+          id: ps.spot.id,
           lat: ps.spot.lat,
           lng: ps.spot.lng,
           name: ps.spot.name,
           address: ps.spot.address,
-          place_id: ps.spot.place_id
+          place_id: ps.spot.place_id,
+          genres: ps.spot.genres.first(2).map(&:name)
         }
       end,
       # スポット間のポリラインのみ（最後のスポット→帰宅は除外）

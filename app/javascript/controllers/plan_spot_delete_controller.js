@@ -16,14 +16,17 @@ export default class extends Controller {
     const planSpotId = this.planSpotIdValue
 
     // Turbo Stream (remove) がDOMへ反映された"後"に通知したい
+    // DOM更新完了を待つため、requestAnimationFrame を2回ネスト
     requestAnimationFrame(() => {
-      document.dispatchEvent(
-        new CustomEvent("plan:spot-deleted", {
-          detail: { planId, planSpotId },
-        })
-      )
-      // ✅ マーカー再描画のため navibar:updated を発火
-      document.dispatchEvent(new CustomEvent("navibar:updated"))
+      requestAnimationFrame(() => {
+        document.dispatchEvent(
+          new CustomEvent("plan:spot-deleted", {
+            detail: { planId, planSpotId },
+          })
+        )
+        // ✅ マーカー再描画のため navibar:updated を発火
+        document.dispatchEvent(new CustomEvent("navibar:updated"))
+      })
     })
   }
 }

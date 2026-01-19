@@ -1,0 +1,47 @@
+<%# 写真ギャラリーモーダル（Stimulusで制御） %>
+<div class="photo-gallery-modal"
+     hidden
+     data-controller="photo-gallery"
+     data-action="photo-gallery:open@document->photo-gallery#open keydown.esc->photo-gallery#close keydown.left->photo-gallery#prev keydown.right->photo-gallery#next">
+  <div class="photo-gallery-modal__overlay" data-action="click->photo-gallery#close"></div>
+  <div class="photo-gallery-modal__content">
+    <%# タイトル（上部中央） %>
+    <div class="photo-gallery-modal__header">
+      <span class="photo-gallery-modal__title" data-photo-gallery-target="title"></span>
+    </div>
+
+    <%# 左矢印ボタン %>
+    <button type="button"
+            class="photo-gallery-modal__arrow photo-gallery-modal__arrow--prev"
+            data-photo-gallery-target="prevBtn"
+            data-action="click->photo-gallery#prev"
+            hidden>
+      <i class="bi bi-chevron-left"></i>
+    </button>
+
+    <div class="photo-gallery-modal__slider"
+         data-photo-gallery-target="slider"
+         data-action="scroll->photo-gallery#onScroll">
+      <%# スライドはJSで動的に生成 %>
+    </div>
+
+    <%# 右矢印ボタン %>
+    <button type="button"
+            class="photo-gallery-modal__arrow photo-gallery-modal__arrow--next"
+            data-photo-gallery-target="nextBtn"
+            data-action="click->photo-gallery#next"
+            hidden>
+      <i class="bi bi-chevron-right"></i>
+    </button>
+
+    <%# フッター（インジケーター + 閉じるボタン） %>
+    <div class="photo-gallery-modal__footer">
+      <div class="photo-gallery-modal__indicator" data-photo-gallery-target="indicator">
+        <%# ドットはJSで動的に生成 %>
+      </div>
+      <button type="button" class="photo-gallery-modal__close-btn" data-action="click->photo-gallery#close">
+        閉じる
+      </button>
+    </div>
+  </div>
+</div>
