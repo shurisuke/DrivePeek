@@ -1,0 +1,14 @@
+<%# app/views/spots/_genres_inline.html.erb %>
+<%# InfoWindow用のジャンル表示（Turbo Frameで遅延ロード） %>
+<%# locals: spot: %>
+
+<%= turbo_frame_tag dom_id(spot, :genres_inline), src: (api_spot_genres_path(spot, inline: true) if spot.genres.empty?) do %>
+  <% if spot.genres.empty? %>
+    <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
+    <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
+  <% else %>
+    <% spot.genres.limit(2).each do |genre| %>
+      <span class="dp-infowindow__genre"><%= genre.name %></span>
+    <% end %>
+  <% end %>
+<% end %>

@@ -1,35 +1,34 @@
 <%#
-  InfoWindow コンテンツ
+  InfoWindow コンテンツ（スポット用）
 
   locals:
-    - name: スポット名
-    - address: 住所
+    - spot: Spotモデル
     - photo_urls: 写真URL配列
-    - types: Google Place types配列
-    - place_id: Google Place ID
     - show_button: 「プランに追加」ボタン表示
     - button_label: ボタンラベル
+    - plan_id: プランID
     - plan_spot_id: 削除モード時のID
-    - edit_buttons: 編集ボタン配列 [{id, label, variant}]
     - zoom_scale: ズームスケール
+    - zoom_index: ズームインデックス
 %>
 <%
-  safe_name = name.presence || "名称不明"
-  safe_address = address.presence || "住所不明"
-  type_labels = place_type_labels(types)
+  safe_name = spot.name.presence || "名称不明"
+  safe_address = spot.address.presence || "住所不明"
   urls = photo_urls.presence || []
   has_multiple_photos = urls.size > 1
   is_delete_mode = plan_spot_id.present?
   delete_class = is_delete_mode ? " dp-infowindow__btn--delete" : ""
-  btn_label = button_label.presence || "プランに追加"
+  btn_label = button_label.presence || (is_delete_mode ? "プランから削除" : "プランに追加")
 %>
 
+<%= turbo_frame_tag "infowindow-content" do %>
 <div class="dp-infowindow dp-infowindow--<%= zoom_scale %>"
-     data-controller="infowindow"
-     data-infowindow-place-id-value="<%= place_id %>"
-     data-infowindow-photo-count-value="<%= urls.size %>"
-     data-infowindow-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
-     data-infowindow-zoom-index-value="<%= zoom_index %>">
+     data-controller="infowindow-ui"
+     data-infowindow-ui-spot-id-value="<%= spot.id %>"
+     data-infowindow-ui-place-id-value="<%= spot.place_id %>"
+     data-infowindow-ui-photo-count-value="<%= urls.size %>"
+     data-infowindow-ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
+     data-infowindow-ui-zoom-index-value="<%= zoom_index %>">
 
   <%# タブ切り替え用ラジオボタン %>
   <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
@@ -48,11 +47,11 @@
     <div class="dp-infowindow__stats">
       <button type="button"
               class="dp-infowindow__stat dp-infowindow__stat--like"
-              data-action="click->infowindow#toggleLike"
-              data-infowindow-target="likeBtn"
+              data-action="click->infowindow-ui#toggleLike"
+              data-infowindow-ui-target="likeBtn"
               data-liked="false">
         <i class="bi bi-heart"></i>
-        <span data-infowindow-target="likeCount">12</span>
+        <span data-infowindow-ui-target="likeCount">12</span>
       </button>
       <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
         <i class="bi bi-chat"></i>
@@ -61,7 +60,7 @@
     </div>
     <button type="button"
             class="dp-infowindow__close"
-            data-action="click->infowindow#close">
+            onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
       <i class="bi bi-x-lg"></i>
     </button>
   </div>
@@ -70,14 +69,14 @@
   <div class="dp-infowindow__zoom-controls">
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow#zoomOut"
-            data-infowindow-target="zoomOutBtn">
+            data-action="click->infowindow-ui#zoomOut"
+            data-infowindow-ui-target="zoomOutBtn">
       <i class="bi bi-dash"></i>
     </button>
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow#zoomIn"
-            data-infowindow-target="zoomInBtn">
+            data-action="click->infowindow-ui#zoomIn"
+            data-infowindow-ui-target="zoomInBtn">
       <i class="bi bi-plus"></i>
     </button>
   </div>
@@ -87,7 +86,7 @@
     <%# 写真エリア %>
     <% if urls.any? %>
       <div class="dp-infowindow__photo">
-        <div class="dp-infowindow__slider" data-infowindow-target="slider">
+        <div class="dp-infowindow__slider" data-infowindow-ui-target="slider">
           <% urls.each_with_index do |url, i| %>
             <div class="dp-infowindow__slide<%= ' dp-infowindow__slide--active' if i == 0 %>"
                  data-index="<%= i %>">
@@ -99,30 +98,30 @@
         <% if has_multiple_photos %>
           <button type="button"
                   class="dp-infowindow__arrow dp-infowindow__arrow--prev"
-                  data-action="click->infowindow#prevSlide">
+                  data-action="click->infowindow-ui#prevSlide">
             <i class="bi bi-chevron-left"></i>
           </button>
           <button type="button"
                   class="dp-infowindow__arrow dp-infowindow__arrow--next"
-                  data-action="click->infowindow#nextSlide">
+                  data-action="click->infowindow-ui#nextSlide">
             <i class="bi bi-chevron-right"></i>
           </button>
         <% end %>
 
-        <% if place_id.present? %>
+        <% if spot.place_id.present? %>
           <button type="button"
                   class="dp-infowindow__expand-btn"
-                  data-action="click->infowindow#openGallery">
+                  data-action="click->infowindow-ui#openGallery">
             <i class="bi bi-arrows-fullscreen"></i>
           </button>
         <% end %>
 
         <% if has_multiple_photos %>
-          <div class="dp-infowindow__indicator" data-infowindow-target="indicator">
+          <div class="dp-infowindow__indicator" data-infowindow-ui-target="indicator">
             <% urls.each_with_index do |_, i| %>
               <span class="dp-infowindow__dot<%= ' dp-infowindow__dot--active' if i == 0 %>"
                     data-index="<%= i %>"
-                    data-action="click->infowindow#goToSlide"></span>
+                    data-action="click->infowindow-ui#goToSlide"></span>
             <% end %>
           </div>
         <% end %>
@@ -133,11 +132,9 @@
       </div>
     <% end %>
 
-    <%# ジャンルタグ %>
+    <%# ジャンルタグ（Turbo Frameで遅延ロード） %>
     <div class="dp-infowindow__genres">
-      <% type_labels.each do |label| %>
-        <span class="dp-infowindow__genre"><%= label %></span>
-      <% end %>
+      <%= render "spots/genres_inline", spot: spot %>
     </div>
 
     <%# 本文 %>
@@ -145,26 +142,46 @@
       <div class="dp-infowindow__name"><%= safe_name %></div>
       <div class="dp-infowindow__address"><%= safe_address %></div>
 
-      <% if show_button %>
-        <button type="button"
-                class="dp-infowindow__btn<%= delete_class %>"
-                data-action="click->infowindow#handleMainButton"
-                data-infowindow-target="mainBtn"
-                <%= "data-plan-spot-id=#{plan_spot_id}" if is_delete_mode %>>
-          <%= btn_label %>
-        </button>
+      <% if show_button && plan_id.present? %>
+        <% if is_delete_mode %>
+          <%# 削除モード: DELETE /plans/:plan_id/plan_spots/:id %>
+          <button type="button"
+                  class="dp-infowindow__btn dp-infowindow__btn--delete"
+                  data-controller="infowindow-spot-action"
+                  data-infowindow-spot-action-url-value="<%= plan_plan_spot_path(plan_id, plan_spot_id) %>"
+                  data-infowindow-spot-action-method-value="DELETE"
+                  data-action="click->infowindow-spot-action#submit">
+            <%= btn_label %>
+          </button>
+        <% else %>
+          <%# 追加モード: POST /api/plans/:plan_id/plan_spots %>
+          <button type="button"
+                  class="dp-infowindow__btn"
+                  data-controller="infowindow-spot-action"
+                  data-infowindow-spot-action-url-value="<%= api_plan_plan_spots_path(plan_id) %>"
+                  data-infowindow-spot-action-method-value="POST"
+                  data-infowindow-spot-action-spot-id-value="<%= spot.id %>"
+                  data-action="click->infowindow-spot-action#submit">
+            <%= btn_label %>
+          </button>
+        <% end %>
       <% end %>
 
-      <% Array(edit_buttons).each do |btn| %>
-        <%
-          variant_class = btn[:variant].present? ? " dp-infowindow__edit-btn--#{btn[:variant]}" : ""
-        %>
+      <% if edit_mode == "start_point" %>
         <button type="button"
-                class="dp-infowindow__edit-btn<%= variant_class %>"
-                id="<%= btn[:id] %>"
-                data-action="click->infowindow#handleEditButton"
-                data-edit-action="<%= btn[:action] %>">
-          <%= btn[:label] %>
+                class="dp-infowindow__edit-btn"
+                data-action="click->infowindow-ui#handleEditButton"
+                data-edit-action="start_point"
+                onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+          出発地点を変更
+        </button>
+      <% elsif edit_mode == "goal_point" %>
+        <button type="button"
+                class="dp-infowindow__edit-btn"
+                data-action="click->infowindow-ui#handleEditButton"
+                data-edit-action="goal_point"
+                onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+          帰宅地点を変更
         </button>
       <% end %>
     </div>
@@ -200,12 +217,13 @@
       <input type="text"
              placeholder="コメントを入力..."
              class="dp-infowindow__comment-field"
-             data-infowindow-target="commentField">
+             data-infowindow-ui-target="commentField">
       <button type="button"
               class="dp-infowindow__comment-submit"
-              data-action="click->infowindow#submitComment">
+              data-action="click->infowindow-ui#submitComment">
         <i class="bi bi-send"></i>
       </button>
     </div>
   </div>
 </div>
+<% end %>

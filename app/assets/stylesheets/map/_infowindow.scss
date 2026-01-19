@@ -39,11 +39,23 @@ $iw-font-xl: 18;
 
 .gm-style-iw-c {
   padding: 0 !important;
-  border-radius: 16px !important;
+  border-radius: 10px !important;
   box-shadow:
     0 2px 8px rgba(0, 0, 0, 0.08),
     0 8px 24px rgba(0, 0, 0, 0.12) !important;
   overflow: visible !important;
+  outline: none !important;
+}
+
+/* フォーカス時の青い枠を無効化 */
+.gm-style-iw,
+.gm-style-iw-a,
+.gm-style-iw-t,
+.gm-style-iw-c,
+.gm-style-iw-d,
+.gm-style-iw-chr,
+.gm-style-iw *:focus {
+  outline: none !important;
 }
 
 .gm-style-iw-d {
@@ -70,6 +82,7 @@ $iw-font-xl: 18;
   font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
   box-sizing: border-box;
   background: #fff;
+  border-radius: 10px;
   pointer-events: none; /* 全体は透過 */
 
   /* サブピクセルぼやけ対策 */
@@ -131,7 +144,6 @@ $iw-font-xl: 18;
       }
       .dp-infowindow__genre {
         padding: #{round(2 * $scale)}px #{round(8 * $scale)}px;
-        border-radius: #{round(4 * $scale)}px;
       }
       .dp-infowindow__body { padding: #{round(8 * $scale)}px #{round(16 * $scale)}px; }
       .dp-infowindow__name { margin-bottom: #{round(2 * $scale)}px; }
@@ -140,6 +152,17 @@ $iw-font-xl: 18;
         border-radius: #{round(8 * $scale)}px;
         padding: #{round(9 * $scale)}px #{round(14 * $scale)}px;
         margin-top: #{round(10 * $scale)}px;
+      }
+      .dp-infowindow__edit-row {
+        margin-top: #{round(10 * $scale)}px;
+      }
+      .dp-infowindow__edit-input {
+        border-radius: #{round(8 * $scale)}px 0 0 #{round(8 * $scale)}px;
+        padding: #{round(8 * $scale)}px #{round(12 * $scale)}px;
+      }
+      .dp-infowindow__edit-submit {
+        border-radius: 0 #{round(8 * $scale)}px #{round(8 * $scale)}px 0;
+        padding: #{round(9 * $scale)}px #{round(14 * $scale)}px;
       }
       .dp-infowindow__comments { padding: #{round(12 * $scale)}px #{round(16 * $scale)}px; }
       .dp-infowindow__comment { padding: #{round(8 * $scale)}px 0; }
@@ -175,7 +198,9 @@ $iw-font-xl: 18;
 .dp-infowindow__indicator,
 .dp-infowindow__zoom-btn,
 .dp-infowindow__comment-field,
-.dp-infowindow__comment-submit {
+.dp-infowindow__comment-submit,
+.dp-infowindow__edit-input,
+.dp-infowindow__edit-submit {
   pointer-events: auto !important;
 }
 
@@ -613,6 +638,10 @@ $iw-font-xl: 18;
   justify-content: center;
   gap: 6px;
   padding: 8px 16px 0;
+
+  turbo-frame {
+    display: contents;
+  }
 }
 
 .dp-infowindow__genre {
@@ -620,10 +649,23 @@ $iw-font-xl: 18;
   padding: 2px 8px;
   font-size: 10px;
   font-weight: 500;
-  color: #8e8e93;
-  background-color: #f2f2f7;
-  border-radius: 4px;
+  color: #444;
+  background-color: #f0f0f0;
+  border-radius: 999px;
   letter-spacing: -0.01em;
+
+  &--skeleton {
+    width: 48px;
+    height: 18px;
+    background: linear-gradient(90deg, #f2f2f7 25%, #e5e5ea 50%, #f2f2f7 75%);
+    background-size: 200% 100%;
+    animation: dp-infowindow-skeleton 1.5s infinite;
+  }
+}
+
+@keyframes dp-infowindow-skeleton {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
 }
 
 /* ✅ コンテンツエリア */
@@ -911,5 +953,135 @@ $iw-font-xl: 18;
       border-radius: 50%;
       animation: dp-btn-spin 0.7s linear infinite;
     }
+  }
+}
+
+/* ==========================================
+   スケルトンローディング
+========================================== */
+
+/* 写真エリアのスケルトン */
+.dp-infowindow__photo--skeleton {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: linear-gradient(90deg, #f2f2f7 25%, #e5e5ea 50%, #f2f2f7 75%);
+  background-size: 200% 100%;
+  animation: dp-infowindow-skeleton 1.5s infinite;
+}
+
+/* テキストスケルトン */
+.dp-infowindow__skeleton-text {
+  display: inline-block;
+  height: 1em;
+  background: linear-gradient(90deg, #e5e5ea 25%, #d1d1d6 50%, #e5e5ea 75%);
+  background-size: 200% 100%;
+  animation: dp-infowindow-skeleton 1.5s infinite;
+  border-radius: 4px;
+  vertical-align: middle;
+}
+
+/* ボタンスケルトン */
+.dp-infowindow__btn--skeleton {
+  height: 38px;
+  background: linear-gradient(90deg, #e5e5ea 25%, #d1d1d6 50%, #e5e5ea 75%);
+  background-size: 200% 100%;
+  animation: dp-infowindow-skeleton 1.5s infinite;
+  pointer-events: none;
+}
+
+/* ==========================================
+   出発・帰宅地点用（シンプル版）
+========================================== */
+.dp-infowindow--point {
+  /* 高さを自動調整（パネルなし） */
+
+  .dp-infowindow__header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    position: relative;
+    padding: 12px 16px 8px;
+    margin-bottom: 0;
+  }
+
+  .dp-infowindow__title {
+    flex: 1;
+    text-align: center;
+    font-size: 15px;
+    font-weight: 600;
+    color: #1c1c1e;
+    letter-spacing: -0.01em;
+  }
+
+  .dp-infowindow__close {
+    position: absolute;
+    right: 8px;
+    top: 50%;
+    transform: translateY(-50%);
+  }
+
+  .dp-infowindow__body {
+    padding: 0 16px 16px;
+  }
+
+  .dp-infowindow__address {
+    text-align: center;
+  }
+
+  .dp-infowindow__edit-btn,
+  .dp-infowindow__edit-row {
+    margin-top: 12px;
+  }
+}
+
+/* 編集モード（InfoWindow内） */
+.dp-infowindow__edit {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.dp-infowindow__edit-row {
+  display: flex;
+  align-items: stretch;
+}
+
+.dp-infowindow__edit-input {
+  flex: 1;
+  min-width: 0;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-weight: 600;
+  border: 1px solid var(--personal, rgb(80, 109, 83));
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+  outline: none;
+  transition: border-color 0.15s ease;
+
+  &::placeholder {
+    color: #c7c7cc;
+    font-weight: 400;
+  }
+}
+
+.dp-infowindow__edit-submit {
+  flex-shrink: 0;
+  padding: 9px 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #fff;
+  background-color: var(--personal, rgb(80, 109, 83));
+  border: none;
+  border-radius: 0 8px 8px 0;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    filter: brightness(0.95);
+  }
+
+  &:active {
+    transform: scale(0.98);
   }
 }
