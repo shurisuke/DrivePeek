@@ -4,11 +4,8 @@ export default class extends Controller {
   static targets = [
     "slider",
     "indicator",
-    "likeBtn",
-    "likeCount",
     "zoomOutBtn",
-    "zoomInBtn",
-    "commentField"
+    "zoomInBtn"
   ]
 
   static values = {
@@ -100,31 +97,7 @@ export default class extends Controller {
   }
 
   // ==================== いいね ====================
-  toggleLike(event) {
-    event.stopPropagation()
-    const btn = this.likeBtnTarget
-    const isLiked = btn.dataset.liked === "true"
-    const icon = btn.querySelector("i")
-    let count = parseInt(this.likeCountTarget.textContent, 10) || 0
-
-    if (isLiked) {
-      btn.dataset.liked = "false"
-      btn.classList.remove("dp-infowindow__stat--liked")
-      icon.classList.remove("bi-heart-fill")
-      icon.classList.add("bi-heart")
-      count = Math.max(0, count - 1)
-    } else {
-      btn.dataset.liked = "true"
-      btn.classList.add("dp-infowindow__stat--liked")
-      icon.classList.remove("bi-heart")
-      icon.classList.add("bi-heart-fill")
-      count += 1
-    }
-
-    this.likeCountTarget.textContent = count
-
-    // TODO: サーバーに送信
-  }
+  // Turbo Frame で処理するため、JSでの処理は不要
 
   // ==================== 写真ギャラリー ====================
   openGallery(event) {
@@ -147,17 +120,6 @@ export default class extends Controller {
     this.dispatch("editAction", { detail: { action } })
     // InfoWindowを閉じる（Googleの閉じるボタンをクリック）
     this.element.closest(".gm-style-iw-a")?.querySelector("button.gm-ui-hover-effect")?.click()
-  }
-
-  // ==================== コメント ====================
-  submitComment(event) {
-    event.stopPropagation()
-    const text = this.commentFieldTarget.value.trim()
-    if (!text) return
-
-    // TODO: サーバーに送信
-    console.log("Submit comment:", text)
-    this.commentFieldTarget.value = ""
   }
 
   // ==================== 外部からのズーム状態取得 ====================

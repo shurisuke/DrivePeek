@@ -19,6 +19,10 @@
   is_delete_mode = plan_spot_id.present?
   delete_class = is_delete_mode ? " dp-infowindow__btn--delete" : ""
   btn_label = button_label.presence || (is_delete_mode ? "プランから削除" : "プランに追加")
+  comments = spot.spot_comments.chronological.includes(:user)
+  comment_count = comments.size
+  is_logged_in = user_signed_in?
+  like_spot = is_logged_in ? current_user.like_spots.find_by(spot: spot) : nil
 %>
 
 <%= turbo_frame_tag "infowindow-content" do %>
@@ -37,32 +41,21 @@
   <%# ヘッダー %>
   <div class="dp-infowindow__header">
     <div class="dp-infowindow__tabs">
-      <label for="iw-tab-info" class="dp-infowindow__tab">
-        <i class="bi bi-geo-alt"></i> スポット
-      </label>
-      <label for="iw-tab-comment" class="dp-infowindow__tab">
-        <i class="bi bi-chat"></i> コメント
-      </label>
+      <label for="iw-tab-info" class="dp-infowindow__tab">スポット</label>
+      <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
     </div>
     <div class="dp-infowindow__stats">
-      <button type="button"
-              class="dp-infowindow__stat dp-infowindow__stat--like"
-              data-action="click->infowindow-ui#toggleLike"
-              data-infowindow-ui-target="likeBtn"
-              data-liked="false">
-        <i class="bi bi-heart"></i>
-        <span data-infowindow-ui-target="likeCount">12</span>
-      </button>
+      <%= render "like_spots/infowindow_button", spot: spot, like_spot: like_spot %>
       <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
         <i class="bi bi-chat"></i>
-        <span>3</span>
+        <span id="comment-count"><%= comment_count %></span>
       </label>
+      <button type="button"
+              class="dp-infowindow__close"
+              onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+        <i class="bi bi-x-lg"></i>
+      </button>
     </div>
-    <button type="button"
-            class="dp-infowindow__close"
-            onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
-      <i class="bi bi-x-lg"></i>
-    </button>
   </div>
 
   <%# ズームコントロール %>
@@ -189,41 +182,35 @@
 
   <%# コメントパネル %>
   <div class="dp-infowindow__panel dp-infowindow__panel--comment">
-    <div class="dp-infowindow__comments">
-      <%# TODO: 実際のコメントデータに置き換え %>
-      <div class="dp-infowindow__comment">
-        <div class="dp-infowindow__comment-text">景色が最高でした！</div>
-        <div class="dp-infowindow__comment-meta">
-          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 栃木県20代</span>
-          <span class="dp-infowindow__comment-date">2024/01/15</span>
-        </div>
+    <% if is_logged_in %>
+      <%# ログイン時：コメント一覧 + 投稿フォーム %>
+      <div class="dp-infowindow__comments" id="comments-list">
+        <% if comments.any? %>
+          <%= render partial: "spot_comments/comment",
+                     collection: comments,
+                     as: :comment,
+                     locals: { current_user: current_user } %>
+        <% else %>
+          <div id="comments-empty" class="dp-infowindow__comments-empty">
+            まだコメントはありません
+          </div>
+        <% end %>
       </div>
-      <div class="dp-infowindow__comment">
-        <div class="dp-infowindow__comment-text">子連れにおすすめ</div>
-        <div class="dp-infowindow__comment-meta">
-          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 東京都30代</span>
-          <span class="dp-infowindow__comment-date">2024/01/10</span>
-        </div>
+      <div class="dp-infowindow__comment-footer">
+        <%= render "spot_comments/form", spot: spot %>
       </div>
-      <div class="dp-infowindow__comment">
-        <div class="dp-infowindow__comment-text">駐車場が広くて便利</div>
-        <div class="dp-infowindow__comment-meta">
-          <span class="dp-infowindow__comment-user"><i class="bi bi-person-fill"></i> 埼玉県40代</span>
-          <span class="dp-infowindow__comment-date">2024/01/05</span>
+    <% else %>
+      <%# 未ログイン時：登録促進 %>
+      <div class="dp-infowindow__comments-guest">
+        <div class="dp-infowindow__comments-guest-message">
+          <i class="bi bi-chat-dots"></i>
+          <p>会員登録すると<br>コメントを閲覧・投稿できます</p>
         </div>
+        <%= link_to new_user_registration_path, class: "dp-infowindow__comments-guest-btn" do %>
+          新規登録はこちら
+        <% end %>
       </div>
-    </div>
-    <div class="dp-infowindow__comment-input">
-      <input type="text"
-             placeholder="コメントを入力..."
-             class="dp-infowindow__comment-field"
-             data-infowindow-ui-target="commentField">
-      <button type="button"
-              class="dp-infowindow__comment-submit"
-              data-action="click->infowindow-ui#submitComment">
-        <i class="bi bi-send"></i>
-      </button>
-    </div>
+    <% end %>
   </div>
 </div>
 <% end %>
