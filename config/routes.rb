@@ -83,7 +83,9 @@ Rails.application.routes.draw do
   end
 
   # スポット
-  resources :spots, only: %i[show]
+  resources :spots, only: %i[show] do
+    resources :comments, only: %i[create destroy], controller: "spot_comments"
+  end
 
   # お気に入り一覧
   get "favorites" => "favorites#index"

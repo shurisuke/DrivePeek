@@ -1,0 +1,27 @@
+<%#
+  コメント投稿フォーム
+  locals:
+    - spot: Spotモデル
+%>
+<%= form_with model: [spot, SpotComment.new],
+              url: spot_comments_path(spot),
+              id: "comment-form",
+              class: "dp-infowindow__comment-form",
+              data: { controller: "comment-form", comment_form_max_length_value: 100 } do |f| %>
+  <div class="dp-infowindow__comment-input">
+    <%= f.text_area :body,
+                    placeholder: "コメントを入力...",
+                    class: "dp-infowindow__comment-field",
+                    maxlength: 100,
+                    autocomplete: "off",
+                    required: true,
+                    rows: 1,
+                    data: { comment_form_target: "input", action: "input->comment-form#updateCounter input->comment-form#autoResize" } %>
+    <div class="dp-infowindow__comment-actions">
+      <span class="dp-infowindow__comment-counter" data-comment-form-target="counter">0/100</span>
+      <%= f.button type: :submit, class: "dp-infowindow__comment-submit" do %>
+        <i class="bi bi-send-fill"></i>
+      <% end %>
+    </div>
+  </div>
+<% end %>

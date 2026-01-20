@@ -1,0 +1,16 @@
+<%# コメントを削除 %>
+<%= turbo_stream.remove @comment %>
+
+<%# コメント数を更新 %>
+<%= turbo_stream.replace "comment-count" do %>
+  <span id="comment-count"><%= @spot.spot_comments.count %></span>
+<% end %>
+
+<%# コメントが0件になったら空メッセージを表示 %>
+<% if @spot.spot_comments.count == 0 %>
+  <%= turbo_stream.append "comments-list" do %>
+    <div id="comments-empty" class="dp-infowindow__comments-empty">
+      まだコメントはありません
+    </div>
+  <% end %>
+<% end %>

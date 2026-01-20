@@ -1,0 +1,32 @@
+<%#
+  コメント1件の表示（チャット風）
+  locals:
+    - comment: SpotCommentモデル
+    - current_user: ログインユーザー（nilの場合あり）
+%>
+<% is_own = current_user == comment.user %>
+<div class="dp-comment<%= ' dp-comment--own' if is_own %>"
+     id="<%= dom_id(comment) %>">
+  <div class="dp-comment__avatar"<%= " style=\"background: #{avatar_color_for(comment.user)}\"".html_safe unless is_own %>>
+    <i class="bi bi-person-fill"></i>
+  </div>
+  <div class="dp-comment__main">
+    <div class="dp-comment__bubble">
+      <div class="dp-comment__text"><%= comment.body %></div>
+      <% if current_user == comment.user %>
+        <%= button_to spot_comment_path(comment.spot, comment),
+                      method: :delete,
+                      class: "dp-comment__delete",
+                      data: { turbo_confirm: "コメントを削除しますか？" } do %>
+          <i class="bi bi-x"></i>
+        <% end %>
+      <% end %>
+    </div>
+    <div class="dp-comment__meta">
+      <span class="dp-comment__profile">
+        <%= current_user == comment.user ? "自分" : (comment.user.comment_profile.presence || "ユーザー") %>
+      </span>
+      <span class="dp-comment__date"><%= comment.created_at.strftime("%-m/%-d") %></span>
+    </div>
+  </div>
+</div>
