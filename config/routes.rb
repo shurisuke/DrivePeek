@@ -55,7 +55,6 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
-
     # AIチャット
     resources :ai_chats, only: %i[create]
 
