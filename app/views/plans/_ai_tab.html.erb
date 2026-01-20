@@ -1,64 +1,256 @@
-<%# AI提案タブ: ChatGPT風ダミーUI（見た目のみ） %>
+<%# AI提案タブ: ChatGPT風チャットUI %>
 
-<div class="ai-chat">
+<div class="ai-chat" data-controller="ai-chat">
   <%# メッセージ一覧エリア %>
-  <div class="ai-chat__messages">
-    <%# AI側: 未実装のお知らせ %>
-    <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__bubble ai-chat__bubble--notice">
-        ※ AI機能は現在開発中です。<br>以下は会話イメージの例です。
-      </div>
-    </div>
-
+  <div class="ai-chat__messages" id="ai-chat-messages" data-ai-chat-target="messages">
     <%# AI側: 案内文 %>
     <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__bubble">
-        こんにちは！ドライブプランのAIアシスタントです。<br>
-        出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          こんにちは！ドライブプランのAIアシスタントです。<br>
+          出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:30</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
       </div>
     </div>
+
+    <div class="ai-chat__divider"></div>
 
     <%# ユーザー側: ダミーメッセージ %>
     <div class="ai-chat__msg ai-chat__msg--user">
-      <div class="ai-chat__bubble">
-        栃木で日帰りドライブしたいです。朝9時に出発して、夕方までに帰りたいです。
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          栃木で日帰りドライブしたいです。朝9時に出発して、夕方までに帰りたいです。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:32</span>
+        </div>
       </div>
     </div>
 
+    <div class="ai-chat__divider"></div>
+
     <%# AI側: ダミー応答 %>
     <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__bubble">
-        栃木の日帰りドライブですね！<br><br>
-        以下のルートはいかがでしょうか？<br>
-        <strong>宇都宮 → 大谷資料館 → 日光東照宮 → いろは坂</strong><br><br>
-        所要時間は約7〜8時間を想定しています。途中でランチ休憩も取れますよ。<br>
-        もう少し詳しく教えていただけると、より具体的なプランをご提案できます。
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          栃木の日帰りドライブですね！<br><br>
+          以下のルートはいかがでしょうか？<br>
+          <strong>宇都宮 → 大谷資料館 → 日光東照宮 → いろは坂</strong><br><br>
+          所要時間は約7〜8時間を想定しています。途中でランチ休憩も取れますよ。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:32</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
       </div>
     </div>
+
+    <div class="ai-chat__divider"></div>
 
     <%# ユーザー側: ダミーメッセージ %>
     <div class="ai-chat__msg ai-chat__msg--user">
-      <div class="ai-chat__bubble">
-        いいですね！大谷資料館は行ってみたいです。
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          いいですね！大谷資料館は行ってみたいです。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:35</span>
+        </div>
       </div>
     </div>
 
+    <div class="ai-chat__divider"></div>
+
     <%# AI側: ダミー応答 %>
     <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__bubble">
-        大谷資料館は地下採掘場跡で、神秘的な空間が広がっています。<br>
-        プランに追加しますか？他にも気になるスポットがあればお知らせください。
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          大谷資料館は地下採掘場跡で、神秘的な空間が広がっています。<br>
+          プランに追加しますか？他にも気になるスポットがあればお知らせください。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:35</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# ユーザー側: ダミーメッセージ2 %>
+    <div class="ai-chat__msg ai-chat__msg--user">
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          はい、追加してください！あと、ランチにおすすめの場所はありますか？
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:38</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# AI側: ダミー応答2 %>
+    <div class="ai-chat__msg ai-chat__msg--assistant">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          大谷資料館をプランに追加しました！<br><br>
+          ランチのおすすめですね。大谷資料館の近くには「大谷石の里」というレストランがあります。地元の食材を使った料理が楽しめますよ。<br><br>
+          また、宇都宮といえば餃子も有名です。「宇都宮みんみん」や「正嗣」などの人気店もルート上にあります。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:38</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# ユーザー側: ダミーメッセージ3 %>
+    <div class="ai-chat__msg ai-chat__msg--user">
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          餃子いいですね！宇都宮みんみんを追加してください。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:40</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# AI側: ダミー応答3 %>
+    <div class="ai-chat__msg ai-chat__msg--assistant">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          宇都宮みんみんをプランに追加しました！<br><br>
+          現在のプランはこちらです：<br>
+          <strong>1. 出発（9:00）→ 2. 宇都宮みんみん（11:00）→ 3. 大谷資料館（13:00）→ 4. 日光東照宮（15:00）→ 5. いろは坂（17:00）→ 帰宅</strong><br><br>
+          他に追加したいスポットや、順番の変更はありますか？
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:40</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# ユーザー側: ダミーメッセージ4 %>
+    <div class="ai-chat__msg ai-chat__msg--user">
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          いい感じです！このプランで行きます。ありがとうございます！
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:42</span>
+        </div>
+      </div>
+    </div>
+
+    <div class="ai-chat__divider"></div>
+
+    <%# AI側: ダミー応答4 %>
+    <div class="ai-chat__msg ai-chat__msg--assistant">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          よかったです！素敵なドライブになりますように。🚗✨<br><br>
+          何か変更があればいつでも声をかけてくださいね。楽しんできてください！
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time">14:42</span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+            <i class="bi bi-arrow-clockwise"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%# タイピングインジケーター %>
+    <div class="ai-chat__msg ai-chat__msg--assistant ai-chat__typing" data-ai-chat-target="typing" style="display: none;">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          <span class="ai-chat__typing-dots">
+            <span></span>
+            <span></span>
+            <span></span>
+          </span>
+        </div>
       </div>
     </div>
   </div>
 
-  <%# 入力フォーム（見た目のみ） %>
+  <%# 入力フォーム %>
   <div class="ai-chat__composer">
-    <form class="ai-chat__form" onsubmit="return false;">
-      <textarea class="ai-chat__input" placeholder="メッセージを入力..." rows="2"></textarea>
-      <div class="ai-chat__actions">
-        <button type="button" class="ai-chat__btn ai-chat__btn--cancel">キャンセル</button>
-        <button type="button" class="ai-chat__btn ai-chat__btn--send">送信</button>
+    <form class="ai-chat__form" data-action="submit->ai-chat#send">
+      <div class="ai-chat__input-row">
+        <textarea
+          class="ai-chat__input"
+          placeholder="メッセージを入力..."
+          rows="1"
+          data-ai-chat-target="input"
+          data-action="input->ai-chat#autoResize keydown->ai-chat#handleKeydown"
+        ></textarea>
+        <button type="submit" class="ai-chat__send-btn" data-ai-chat-target="sendBtn">
+          <i class="bi bi-arrow-up"></i>
+        </button>
       </div>
     </form>
   </div>
