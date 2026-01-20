@@ -1,0 +1,33 @@
+<%# AI提案タブ: ChatGPT風チャットUI %>
+
+<div class="ai-chat" data-controller="ai-chat">
+  <%# メッセージ一覧エリア %>
+  <div class="ai-chat__messages" id="ai-chat-messages" data-ai-chat-target="messages">
+    <%# AI側: 案内文（初期表示） %>
+    <div class="ai-chat__msg ai-chat__msg--assistant">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble">
+          こんにちは！ドライブプランのAIアシスタントです。<br>
+          出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
+        </div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <i class="bi bi-clipboard"></i>
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <%# タイピングインジケーター %>
+    <%= render "plans/ai/typing" %>
+  </div>
+
+  <%# 入力フォーム %>
+  <div class="ai-chat__composer">
+    <%= render "plans/ai/form", plan: plan %>
+  </div>
+</div>

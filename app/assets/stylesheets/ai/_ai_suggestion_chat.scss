@@ -1,144 +1,391 @@
 /* ==========================================
-   AI Suggestion Chat (ChatGPT風ダミーUI)
+   AI Suggestion Chat (ChatGPT風UI)
 ========================================== */
 
 .ai-chat {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background-color: #f7f7f8;
+  background-color: #fff;
 }
 
-/* メッセージ一覧エリア */
+/* ==========================================
+   メッセージ一覧エリア
+========================================== */
 .ai-chat__messages {
   flex: 1;
   overflow-y: auto;
   padding: 16px;
+  padding-left: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
+  padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   display: flex;
   flex-direction: column;
-  gap: 16px;
+  gap: 4px;
 }
 
-/* メッセージ行（左右寄せ共通） */
+/* ==========================================
+   メッセージ共通
+========================================== */
 .ai-chat__msg {
   display: flex;
-  max-width: 85%;
+  gap: 10px;
+  animation: fadeInUp 0.2s ease-out;
 }
 
-/* AI側メッセージ（左寄せ） */
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+/* AI側メッセージ */
 .ai-chat__msg--assistant {
   align-self: flex-start;
+  max-width: 100%;
 }
 
 /* ユーザー側メッセージ（右寄せ） */
 .ai-chat__msg--user {
   align-self: flex-end;
+  max-width: 85%;
+  flex-direction: row-reverse;
 }
 
-/* 吹き出し */
+/* ==========================================
+   AIアイコン
+========================================== */
+.ai-chat__icon {
+  width: 28px;
+  height: 28px;
+  border-radius: 50%;
+  background-color: #fff;
+  color: #506d53;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+
+  i {
+    font-size: 22px;
+  }
+}
+
+/* ==========================================
+   コンテンツラッパー
+========================================== */
+.ai-chat__content {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  min-width: 0;
+}
+
+/* ==========================================
+   吹き出し
+========================================== */
 .ai-chat__bubble {
-  padding: 12px 16px;
-  border-radius: 16px;
-  line-height: 1.6;
+  padding: 10px 14px;
+  border-radius: 18px;
+  line-height: 1.5;
   word-break: break-word;
   font-size: 14px;
 }
 
-/* AI側の吹き出しスタイル */
+/* AI側（枠なし、テキストのみ） */
 .ai-chat__msg--assistant .ai-chat__bubble {
-  background-color: #fff;
-  color: #333;
-  border: 1px solid #e5e5e5;
-  border-bottom-left-radius: 4px;
+  background-color: transparent;
+  color: #1c1c1e;
+  padding: 4px 0;
+
+  /* マークダウン要素の余白管理 */
+  > *:first-child { margin-top: 0; }
+  > *:last-child { margin-bottom: 0; }
+
+  /* 段落 */
+  p {
+    margin: 0 0 16px;
+  }
+
+  /* 見出し共通 */
+  h1, h2, h3, h4 {
+    font-weight: 600;
+    letter-spacing: -0.01em;
+    line-height: 1.4;
+  }
+
+  /* h1: メインタイトル */
+  h1 {
+    font-size: 18px;
+    margin: 32px 0 12px;
+    padding-bottom: 8px;
+    border-bottom: 1px solid #e5e5ea;
+  }
+
+  /* h2: セクション見出し */
+  h2 {
+    font-size: 16px;
+    margin: 28px 0 10px;
+  }
+
+  /* h3: サブ見出し */
+  h3 {
+    font-size: 15px;
+    margin: 24px 0 8px;
+    color: #3a3a3c;
+  }
+
+  /* h4: 小見出し */
+  h4 {
+    font-size: 14px;
+    margin: 20px 0 6px;
+    color: #48484a;
+  }
+
+  /* リスト */
+  ul, ol {
+    margin: 12px 0 16px;
+    padding-left: 24px;
+
+    ul, ol {
+      margin: 4px 0 4px;
+    }
+  }
+
+  li {
+    margin: 6px 0;
+    line-height: 1.6;
+  }
+
+  /* インライン要素 */
+  strong { font-weight: 600; }
+
+  code {
+    background: #f5f5f7;
+    padding: 2px 6px;
+    border-radius: 4px;
+    font-size: 13px;
+  }
 }
 
-/* お知らせ用の吹き出し */
-.ai-chat__bubble--notice {
-  background-color: #fff8e6 !important;
-  border-color: #f0d58c !important;
-  color: #8a6d00 !important;
-  font-size: 13px;
-}
-
-/* ユーザー側の吹き出しスタイル */
+/* ユーザー側（緑吹き出し） */
 .ai-chat__msg--user .ai-chat__bubble {
   background-color: #506d53;
   color: #fff;
   border-bottom-right-radius: 4px;
 }
 
-/* 入力フォームエリア（下部固定風） */
+/* ==========================================
+   メタ情報（時刻・アクションボタン）
+========================================== */
+.ai-chat__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding-left: 2px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.ai-chat__msg:hover .ai-chat__meta {
+  opacity: 1;
+}
+
+/* ユーザーメッセージのメタは右寄せ */
+.ai-chat__msg--user .ai-chat__meta {
+  justify-content: flex-end;
+  padding-right: 2px;
+}
+
+.ai-chat__time {
+  font-size: 11px;
+  color: #8e8e93;
+}
+
+.ai-chat__action-btn {
+  width: 24px;
+  height: 24px;
+  border-radius: 6px;
+  background-color: transparent;
+  border: none;
+  color: #8e8e93;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background-color: #f5f5f7;
+    color: #1c1c1e;
+  }
+
+  i {
+    font-size: 12px;
+  }
+}
+
+/* コピー成功時 */
+.ai-chat__action-btn--copied {
+  color: #506d53 !important;
+}
+
+/* ==========================================
+   区切り線
+========================================== */
+.ai-chat__divider {
+  height: 1px;
+  background-color: #f0f0f0;
+  margin: 12px 0;
+}
+
+/* ==========================================
+   タイピングインジケーター
+========================================== */
+.ai-chat__typing-dots {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  padding: 4px 0;
+
+  span {
+    width: 8px;
+    height: 8px;
+    background-color: #8e8e93;
+    border-radius: 50%;
+    animation: typingBounce 1.4s infinite ease-in-out both;
+
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.16s; }
+    &:nth-child(3) { animation-delay: 0.32s; }
+  }
+}
+
+@keyframes typingBounce {
+  0%, 80%, 100% {
+    transform: scale(0.6);
+    opacity: 0.4;
+  }
+  40% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+/* ==========================================
+   入力フォームエリア
+========================================== */
 .ai-chat__composer {
   flex-shrink: 0;
-  padding: 12px 16px 16px;
+  padding: 12px 16px;
+  padding-left: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
+  padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   background-color: #fff;
-  border-top: 1px solid #e5e5e5;
+  border-top: 1px solid #e5e5ea;
 }
 
 .ai-chat__form {
   display: flex;
-  flex-direction: column;
-  gap: 8px;
+  margin: 0;
 }
 
-/* テキストエリア */
-.ai-chat__input {
+.ai-chat__input-row {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
   width: 100%;
-  padding: 12px;
-  border: 1px solid #d9d9d9;
-  border-radius: 8px;
-  font-size: 14px;
-  line-height: 1.5;
+  background-color: #f5f5f7;
+  border: 1px solid #e5e5ea;
+  border-radius: 20px;
+  padding: 6px 6px 6px 14px;
+}
+
+.ai-chat__input {
+  flex: 1;
+  padding: 6px 0;
+  border: none;
+  font-size: 15px;
+  line-height: 1.4;
   resize: none;
   outline: none;
-
-  &:focus {
-    border-color: #506d53;
-    box-shadow: 0 0 0 2px rgba(80, 109, 83, 0.1);
-  }
+  background: transparent;
+  max-height: 100px;
+  overflow-y: auto;
+  transition: opacity 0.15s ease;
 
   &::placeholder {
-    color: #999;
+    color: #8e8e93;
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
   }
 }
 
-/* ボタンエリア */
-.ai-chat__actions {
-  display: flex;
-  justify-content: flex-end;
-  gap: 8px;
-}
-
-/* ボタン共通 */
-.ai-chat__btn {
-  padding: 8px 20px;
-  border-radius: 6px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background-color 0.15s ease;
-  outline: none;
-}
-
-/* キャンセルボタン */
-.ai-chat__btn--cancel {
-  background-color: #f5f5f5;
-  color: #666;
-  border: 1px solid #d9d9d9;
-
-  &:hover {
-    background-color: #e8e8e8;
-  }
-}
-
-/* 送信ボタン（5px下げる） */
-.ai-chat__btn--send {
+.ai-chat__send-btn {
+  width: 32px;
+  height: 32px;
+  border-radius: 50%;
   background-color: #506d53;
   color: #fff;
-  border: 1px solid #506d53;
-  margin-top: 5px;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  transition: background-color 0.15s ease, transform 0.1s ease;
 
   &:hover {
     background-color: #3d5640;
   }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  &:disabled {
+    background-color: #c7c7cc;
+    cursor: not-allowed;
+  }
+
+  &--sending {
+    background-color: #506d53;
+    cursor: wait;
+  }
+
+  i {
+    font-size: 16px;
+    font-weight: bold;
+  }
+}
+
+/* 送信中スピナー */
+.ai-chat__send-spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid rgba(255, 255, 255, 0.3);
+  border-top-color: #fff;
+  border-radius: 50%;
+  animation: sendSpinner 0.8s linear infinite;
+}
+
+@keyframes sendSpinner {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+/* ==========================================
+   レスポンシブ対応
+========================================== */
+.tab-content.tab-ai.active {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
 }

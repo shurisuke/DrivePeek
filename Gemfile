@@ -69,6 +69,9 @@ gem "kaminari"
 # AI API (OpenAI)
 gem "ruby-openai"
 
+# マークダウン変換
+gem "kramdown"
+
 # メール送信 (Resend)
 gem "resend"
 
