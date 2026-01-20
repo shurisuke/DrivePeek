@@ -7,6 +7,15 @@ export default class extends Controller {
   connect() {
     this.isSending = false
     this.scrollToBottom()
+
+    // Turboイベントをリッスン
+    this.element.addEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
+    this.element.addEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
+  }
+
+  disconnect() {
+    this.element.removeEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
+    this.element.removeEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
   }
 
   // テキストエリアの自動リサイズ
@@ -23,8 +32,9 @@ export default class extends Controller {
   }
 
   // Enter で送信、Shift+Enter で改行
+  // ※ IME変換中（isComposing）は送信しない
   handleKeydown(event) {
-    if (event.key === "Enter" && !event.shiftKey) {
+    if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault()
       if (this.inputTarget.value.trim()) {
         this.element.querySelector("form").requestSubmit()
@@ -32,64 +42,25 @@ export default class extends Controller {
     }
   }
 
-  // フォーム送信（Phase 1: ダミー動作）
-  send(event) {
-    event.preventDefault()
-
+  // フォーム送信開始（Turboイベント）
+  handleSubmitStart(event) {
+    // ユーザーメッセージを即座に表示
     const message = this.inputTarget.value.trim()
-    if (!message) return
-
-    // ユーザーメッセージを追加
-    this.appendMessage(message, "user")
-
-    // 入力欄をクリア
-    this.inputTarget.value = ""
-    this.autoResize()
-
-    // 送信中状態にする
-    this.setSending(true)
-
-    // タイピングインジケーター表示
-    this.showTyping()
-
-    // 2秒後にダミー応答（Phase 2で実際のAPI呼び出しに置き換え）
-    setTimeout(() => {
-      this.hideTyping()
-      this.setSending(false)
-      this.appendMessage("申し訳ありません。AI機能は現在開発中です。もうしばらくお待ちください。", "assistant")
-    }, 2000)
-  }
-
-  // 送信中状態の切り替え
-  setSending(isSending) {
-    this.isSending = isSending
-    this.sendBtnTarget.disabled = isSending
-    this.inputTarget.disabled = isSending
-
-    if (isSending) {
-      this.sendBtnTarget.classList.add("ai-chat__send-btn--sending")
-      this.sendBtnTarget.innerHTML = '<span class="ai-chat__send-spinner"></span>'
-    } else {
-      this.sendBtnTarget.classList.remove("ai-chat__send-btn--sending")
-      this.sendBtnTarget.innerHTML = '<i class="bi bi-arrow-up"></i>'
+    if (message) {
+      this.appendUserMessage(message)
     }
+
+    this.setSending(true)
+    this.showTyping()
   }
 
-  // メッセージを追加
-  appendMessage(content, role) {
-    // 区切り線を追加
+  // ユーザーメッセージを即座に追加
+  appendUserMessage(content) {
     const divider = document.createElement("div")
     divider.className = "ai-chat__divider"
 
     const msgDiv = document.createElement("div")
-    msgDiv.className = `ai-chat__msg ai-chat__msg--${role}`
-
-    if (role === "assistant") {
-      const iconDiv = document.createElement("div")
-      iconDiv.className = "ai-chat__icon"
-      iconDiv.innerHTML = '<i class="bi bi-stars"></i>'
-      msgDiv.appendChild(iconDiv)
-    }
+    msgDiv.className = "ai-chat__msg ai-chat__msg--user"
 
     const contentDiv = document.createElement("div")
     contentDiv.className = "ai-chat__content"
@@ -101,43 +72,48 @@ export default class extends Controller {
 
     const metaDiv = document.createElement("div")
     metaDiv.className = "ai-chat__meta"
-
     const timeSpan = document.createElement("span")
     timeSpan.className = "ai-chat__time"
     timeSpan.textContent = this.getCurrentTime()
     metaDiv.appendChild(timeSpan)
 
-    if (role === "assistant") {
-      const copyBtn = document.createElement("button")
-      copyBtn.type = "button"
-      copyBtn.className = "ai-chat__action-btn"
-      copyBtn.title = "コピー"
-      copyBtn.innerHTML = '<i class="bi bi-clipboard"></i>'
-      copyBtn.addEventListener("click", (e) => this.copyMessage(e))
-      metaDiv.appendChild(copyBtn)
-
-      const regenBtn = document.createElement("button")
-      regenBtn.type = "button"
-      regenBtn.className = "ai-chat__action-btn"
-      regenBtn.title = "再生成"
-      regenBtn.innerHTML = '<i class="bi bi-arrow-clockwise"></i>'
-      regenBtn.addEventListener("click", (e) => this.regenerate(e))
-      metaDiv.appendChild(regenBtn)
-    }
-
     contentDiv.appendChild(metaDiv)
     msgDiv.appendChild(contentDiv)
 
-    // タイピングインジケーターの前に挿入
     if (this.hasTypingTarget) {
       this.messagesTarget.insertBefore(divider, this.typingTarget)
       this.messagesTarget.insertBefore(msgDiv, this.typingTarget)
-    } else {
-      this.messagesTarget.appendChild(divider)
-      this.messagesTarget.appendChild(msgDiv)
     }
 
     this.scrollToBottom()
+  }
+
+  // フォーム送信完了（Turboイベント）
+  handleSubmitEnd(event) {
+    this.setSending(false)
+    this.hideTyping()
+    // 少し遅延してスクロール（Turbo Streamの反映を待つ）
+    setTimeout(() => this.scrollToBottom(), 100)
+  }
+
+  // 送信中状態の切り替え
+  setSending(isSending) {
+    this.isSending = isSending
+
+    if (this.hasSendBtnTarget) {
+      this.sendBtnTarget.disabled = isSending
+      if (isSending) {
+        this.sendBtnTarget.classList.add("ai-chat__send-btn--sending")
+        this.sendBtnTarget.innerHTML = '<span class="ai-chat__send-spinner"></span>'
+      } else {
+        this.sendBtnTarget.classList.remove("ai-chat__send-btn--sending")
+        this.sendBtnTarget.innerHTML = '<i class="bi bi-arrow-up"></i>'
+      }
+    }
+
+    if (this.hasInputTarget) {
+      this.inputTarget.disabled = isSending
+    }
   }
 
   // 現在時刻を取得
@@ -167,9 +143,8 @@ export default class extends Controller {
     })
   }
 
-  // 再生成（Phase 2で実装）
+  // 再生成（将来実装）
   regenerate(event) {
-    // TODO: Phase 2で実装
     console.log("再生成機能は開発中です")
   }
 
@@ -190,6 +165,8 @@ export default class extends Controller {
 
   // 最下部にスクロール
   scrollToBottom() {
-    this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
+    if (this.hasMessagesTarget) {
+      this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
+    }
   }
 }

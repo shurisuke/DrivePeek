@@ -55,6 +55,10 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
+
+    # AIチャット
+    resources :ai_chats, only: %i[create]
+
     # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
     resource :infowindow, only: %i[show create]
 

@@ -1,0 +1,28 @@
+<div class="ai-chat__divider"></div>
+<div class="ai-chat__msg ai-chat__msg--<%= role %>">
+  <% if role == "assistant" %>
+    <div class="ai-chat__icon">
+      <i class="bi bi-stars"></i>
+    </div>
+  <% end %>
+  <div class="ai-chat__content">
+    <div class="ai-chat__bubble">
+      <% if role == "assistant" %>
+        <%= Kramdown::Document.new(content, hard_wrap: true).to_html.html_safe %>
+      <% else %>
+        <%= simple_format(content, {}, wrapper_tag: nil) %>
+      <% end %>
+    </div>
+    <div class="ai-chat__meta">
+      <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+      <% if role == "assistant" %>
+        <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+          <i class="bi bi-clipboard"></i>
+        </button>
+        <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
+          <i class="bi bi-arrow-clockwise"></i>
+        </button>
+      <% end %>
+    </div>
+  </div>
+</div>

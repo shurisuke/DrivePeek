@@ -1,0 +1,15 @@
+<%# AI応答を追加（タイピングインジケーターの前に挿入） %>
+<%# ※ユーザーメッセージはJS側で即座に表示済み %>
+<%= turbo_stream.before "ai-chat-typing" do %>
+  <%= render "api/ai_chats/message", content: @ai_response, role: "assistant" %>
+<% end %>
+
+<%# フォームをリセット %>
+<%= turbo_stream.replace "ai-chat-form" do %>
+  <%= render "api/ai_chats/form", plan: @plan %>
+<% end %>
+
+<%# タイピングインジケーターを非表示（JSで制御） %>
+<%= turbo_stream.replace "ai-chat-typing" do %>
+  <%= render "api/ai_chats/typing" %>
+<% end %>

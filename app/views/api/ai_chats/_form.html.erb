@@ -1,0 +1,15 @@
+<%= form_with url: api_ai_chats_path(plan_id: plan.id), id: "ai-chat-form", class: "ai-chat__form" do |f| %>
+  <div class="ai-chat__input-row">
+    <textarea
+      name="message"
+      class="ai-chat__input"
+      placeholder="メッセージを入力..."
+      rows="1"
+      data-ai-chat-target="input"
+      data-action="input->ai-chat#autoResize keydown->ai-chat#handleKeydown"
+    ></textarea>
+    <button type="submit" class="ai-chat__send-btn" data-ai-chat-target="sendBtn">
+      <i class="bi bi-arrow-up"></i>
+    </button>
+  </div>
+<% end %>
