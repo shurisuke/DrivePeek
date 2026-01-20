@@ -1,9 +1,9 @@
 # frozen_string_literal: true
 
 module MapHelper
-  # InfoWindowのズームスケール（5段階）
-  INFOWINDOW_ZOOM_SCALES = %w[xs sm md lg xl].freeze
-  INFOWINDOW_DEFAULT_ZOOM_INDEX = 2  # md
+  # InfoWindowのズームスケール（4段階）
+  INFOWINDOW_ZOOM_SCALES = %w[sm md lg xl].freeze
+  INFOWINDOW_DEFAULT_ZOOM_INDEX = 1  # md
 
   # Google Place types → 日本語ラベル
   PLACE_TYPE_LABELS = {

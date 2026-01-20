@@ -1,0 +1,5 @@
+<div id="comment-form-errors" class="dp-infowindow__comment-errors">
+  <% if comment.errors.any? %>
+    <span><%= comment.errors.full_messages.first %></span>
+  <% end %>
+</div>

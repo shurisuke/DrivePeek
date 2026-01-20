@@ -1,0 +1,17 @@
+<%# 新しいコメントをリストの末尾に追加 %>
+<%= turbo_stream.append "comments-list" do %>
+  <%= render "spot_comments/comment", comment: @comment, current_user: current_user %>
+<% end %>
+
+<%# フォームをクリア %>
+<%= turbo_stream.replace "comment-form" do %>
+  <%= render "spot_comments/form", spot: @spot %>
+<% end %>
+
+<%# コメント数を更新 %>
+<%= turbo_stream.replace "comment-count" do %>
+  <span id="comment-count"><%= @spot.spot_comments.count %></span>
+<% end %>
+
+<%# 空メッセージを削除（あれば） %>
+<%= turbo_stream.remove "comments-empty" %>

@@ -8,10 +8,9 @@ import { getMapInstance } from "map/state"
 
 // シングルトン
 let infoWindow = null
-let mapClickListener = null
 
 // ズーム状態を保持（Stimulusコントローラからのイベントで更新）
-let currentZoomIndex = 2  // md
+let currentZoomIndex = 1  // md（4段階: sm=0, md=1, lg=2, xl=3）
 
 // Stimulusからのズーム変更イベントをリッスン
 document.addEventListener("infowindow-ui:zoomChange", (e) => {
@@ -32,16 +31,6 @@ const getInfoWindow = () => {
     })
   }
   return infoWindow
-}
-
-const setupMapClickToClose = () => {
-  const map = getMapInstance()
-  if (!map || mapClickListener) return
-
-  mapClickListener = map.addListener("click", (event) => {
-    if (event.placeId) return
-    closeInfoWindow()
-  })
 }
 
 export const closeInfoWindow = () => {
@@ -72,10 +61,8 @@ export const showInfoWindowWithFrame = ({
   const map = getMapInstance()
   if (!map) return
 
-  setupMapClickToClose()
-
   const iw = getInfoWindow()
-  const zoomScale = ["xs", "sm", "md", "lg", "xl"][currentZoomIndex] || "md"
+  const zoomScale = ["sm", "md", "lg", "xl"][currentZoomIndex] || "md"
 
   // オフセット: editMode(出発・帰宅)は0px、既存スポットは30px、POIは60px
   const offsetY = editMode ? 0 : (spotId ? -30 : -60)
@@ -121,19 +108,30 @@ export const showInfoWindowWithFrame = ({
 
         <div class="dp-infowindow__header">
           <div class="dp-infowindow__tabs">
-            <label for="iw-tab-info" class="dp-infowindow__tab" style="background:#fff;color:#1c1c1e;box-shadow:0 1px 3px rgba(0,0,0,0.1);">
-              <i class="bi bi-geo-alt"></i> スポット
-            </label>
-            <label for="iw-tab-comment" class="dp-infowindow__tab">
-              <i class="bi bi-chat"></i> コメント
-            </label>
+            <label for="iw-tab-info" class="dp-infowindow__tab" style="color:#f7931e;border-bottom:2px solid #f7931e;">スポット</label>
+            <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
           </div>
           <div class="dp-infowindow__stats">
-            <span class="dp-infowindow__stat"><i class="bi bi-heart"></i> <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span></span>
-            <span class="dp-infowindow__stat"><i class="bi bi-chat"></i> <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span></span>
+            <button type="button" class="dp-infowindow__stat dp-infowindow__stat--like">
+              <i class="bi bi-heart"></i>
+              <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
+            </button>
+            <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
+              <i class="bi bi-chat"></i>
+              <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
+            </label>
+            <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+              <i class="bi bi-x-lg"></i>
+            </button>
           </div>
-          <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
-            <i class="bi bi-x-lg"></i>
+        </div>
+
+        <div class="dp-infowindow__zoom-controls">
+          <button type="button" class="dp-infowindow__zoom-btn" disabled>
+            <i class="bi bi-dash"></i>
+          </button>
+          <button type="button" class="dp-infowindow__zoom-btn" disabled>
+            <i class="bi bi-plus"></i>
           </button>
         </div>
 
@@ -153,26 +151,26 @@ export const showInfoWindowWithFrame = ({
           <div class="dp-infowindow__body">
             <div class="dp-infowindow__name">${name || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 60%;\"></span>"}</div>
             <div class="dp-infowindow__address">${address || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 80%;\"></span>"}</div>
-            ${planSpotId
-              ? `<button type="button"
-                         class="dp-infowindow__btn dp-infowindow__btn--delete"
-                         data-controller="infowindow-spot-action"
-                         data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
-                         data-infowindow-spot-action-method-value="DELETE"
-                         data-action="click->infowindow-spot-action#submit">
-                   プランから削除
-                 </button>`
-              : (spotId && planId)
-              ? `<button type="button"
-                         class="dp-infowindow__btn"
-                         data-controller="infowindow-spot-action"
-                         data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
-                         data-infowindow-spot-action-method-value="POST"
-                         data-infowindow-spot-action-spot-id-value="${spotId}"
-                         data-action="click->infowindow-spot-action#submit">
-                   プランに追加
-                 </button>`
-              : `<div class="dp-infowindow__btn dp-infowindow__btn--skeleton"></div>`
+            ${(showButton && planId)
+              ? (planSpotId
+                ? `<button type="button"
+                           class="dp-infowindow__btn dp-infowindow__btn--delete"
+                           data-controller="infowindow-spot-action"
+                           data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
+                           data-infowindow-spot-action-method-value="DELETE"
+                           data-action="click->infowindow-spot-action#submit">
+                     プランから削除
+                   </button>`
+                : `<button type="button"
+                           class="dp-infowindow__btn"
+                           data-controller="infowindow-spot-action"
+                           data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
+                           data-infowindow-spot-action-method-value="POST"
+                           data-infowindow-spot-action-spot-id-value="${spotId}"
+                           data-action="click->infowindow-spot-action#submit">
+                     プランに追加
+                   </button>`)
+              : ""
             }
           </div>
         </div>

@@ -41,6 +41,7 @@ class User < ApplicationRecord
   has_many :liked_spots, through: :like_spots, source: :spot
   has_many :like_plans, dependent: :destroy
   has_many :liked_plans, through: :like_plans, source: :plan
+  has_many :spot_comments, dependent: :destroy
 
   # Validations
   validates :email, presence: true, uniqueness: true,
@@ -115,7 +116,7 @@ class User < ApplicationRecord
     parts << residence if residence.present?
     age_gender = [ age_group_display, gender_display ].compact.join
     parts << age_gender if age_gender.present?
-    parts.join(" / ")
+    parts.join(" ")
   end
 
   # メール確認の有効期限内か（ビューから呼び出し用）
