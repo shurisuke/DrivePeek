@@ -178,6 +178,7 @@ export default class extends Controller {
     })
 
     this.updateLabel()
+    this.dispatchSelectionChange()
   }
 
   // ラベルクリック時のイベント伝播を止める（展開トグルを防ぐ）
@@ -196,6 +197,12 @@ export default class extends Controller {
     }
 
     this.updateLabel()
+    this.dispatchSelectionChange()
+  }
+
+  // 選択変更イベントを発火（親コントローラーに通知）
+  dispatchSelectionChange() {
+    this.element.dispatchEvent(new CustomEvent("multi-select:change", { bubbles: true }))
   }
 
   // 親チェックボックスの状態を更新（全選択/一部選択/未選択）

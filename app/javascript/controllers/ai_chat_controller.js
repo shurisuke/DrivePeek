@@ -2,13 +2,22 @@ import { Controller } from "@hotwired/stimulus"
 import { clearAiSuggestionMarkers } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 
-// AI提案チャットのUI制御
+// ================================================================
+// AiChatController
+// 用途: AI提案チャットのUI制御
+// - メッセージ送受信（Turboイベント連携）
+// - テキストエリア自動リサイズ / Enter送信
+// - タイピングインジケーター表示
+// - 会話クリア時のマーカー削除
+// ================================================================
+
 export default class extends Controller {
   static targets = ["messages", "input", "sendBtn", "typing"]
 
   connect() {
     this.isSending = false
     this.scrollToBottom()
+    this.updateSendButtonState()
 
     // Turboイベントをリッスン
     this.element.addEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
@@ -25,7 +34,7 @@ export default class extends Controller {
     clearAiSuggestionMarkers()
     closeInfoWindow()
     // AI提案ピンクリアボタンを非表示に
-    const pinClearBtn = document.getElementById("ai-suggestion-clear")
+    const pinClearBtn = document.getElementById("ai-pin-clear")
     if (pinClearBtn) pinClearBtn.hidden = true
     // 会話クリアボタンを無効化
     this.setClearButtonEnabled(false)
@@ -44,10 +53,15 @@ export default class extends Controller {
     const newHeight = Math.min(textarea.scrollHeight, 100)
     textarea.style.height = `${newHeight}px`
 
-    // 送信中でなければ、空の場合は送信ボタンを無効化
-    if (!this.isSending) {
-      this.sendBtnTarget.disabled = !textarea.value.trim()
-    }
+    this.updateSendButtonState()
+  }
+
+  // 送信ボタンの状態を更新（テキストがあれば有効）
+  updateSendButtonState() {
+    if (this.isSending || !this.hasSendBtnTarget) return
+
+    const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
+    this.sendBtnTarget.disabled = !hasText
   }
 
   // Enter で送信、Shift+Enter で改行
@@ -55,8 +69,9 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault()
-      if (this.inputTarget.value.trim()) {
-        this.element.querySelector("#ai-chat-form").requestSubmit()
+      const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
+      if (hasText) {
+        this.element.querySelector(".ai-chat__form").requestSubmit()
       }
     }
   }
@@ -64,7 +79,7 @@ export default class extends Controller {
   // フォーム送信開始（Turboイベント）
   handleSubmitStart(event) {
     // ユーザーメッセージを即座に表示
-    const message = this.inputTarget.value.trim()
+    const message = this.hasInputTarget ? this.inputTarget.value.trim() : ""
     if (message) {
       this.appendUserMessage(message)
     }
@@ -92,8 +107,18 @@ export default class extends Controller {
   handleSubmitEnd(event) {
     this.setSending(false)
     this.hideTyping()
+    this.clearTextInput()
     // 会話が追加されたのでクリアボタンを有効化
     this.setClearButtonEnabled(true)
+  }
+
+  // テキスト入力をクリア
+  clearTextInput() {
+    if (this.hasInputTarget) {
+      this.inputTarget.value = ""
+      this.inputTarget.style.height = "auto"
+    }
+    this.updateSendButtonState()
   }
 
   // 送信中状態の切り替え

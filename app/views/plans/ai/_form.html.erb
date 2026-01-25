@@ -1,15 +1,38 @@
-<%= form_with url: api_ai_chats_path(plan_id: plan.id), id: "ai-chat-form", class: "ai-chat__form" do |f| %>
-  <div class="ai-chat__input-row">
-    <textarea
-      name="message"
-      class="ai-chat__input"
-      placeholder="メッセージを入力..."
-      rows="1"
-      data-ai-chat-target="input"
-      data-action="input->ai-chat#autoResize keydown->ai-chat#handleKeydown"
-    ></textarea>
-    <button type="submit" class="ai-chat__send-btn" data-ai-chat-target="sendBtn">
-      <i class="bi bi-arrow-up"></i>
-    </button>
-  </div>
-<% end %>
+<div class="ai-chat__composer-area" id="ai-chat-form">
+  <%= form_with url: api_ai_chats_path(plan_id: plan.id), class: "ai-chat__form" do |f| %>
+    <%# メッセージ入力行 + 送信ボタン + メニュー %>
+    <div class="ai-chat__input-row-wrapper">
+      <div class="ai-chat__input-row">
+        <textarea
+          name="message"
+          class="ai-chat__input"
+          placeholder="どこらへんで何したい？（例: 那須で自然を満喫したい）"
+          rows="1"
+          data-ai-chat-target="input"
+          data-action="input->ai-chat#autoResize keydown->ai-chat#handleKeydown"
+        ></textarea>
+      </div>
+      <button type="submit" class="ai-chat__send-btn" data-ai-chat-target="sendBtn">
+        <i class="bi bi-arrow-up"></i>
+      </button>
+      <%# 三点メニュー %>
+      <div class="ai-chat__menu" data-controller="dropdown">
+        <button type="button"
+                class="ai-chat__menu-btn ai-chat__menu-btn--large"
+                data-action="click->dropdown#toggle"
+                aria-label="メニュー">
+          <i class="bi bi-three-dots"></i>
+        </button>
+        <div class="ai-chat__menu-dropdown" data-dropdown-target="menu" hidden>
+          <%= link_to destroy_all_api_ai_chats_path(plan_id: plan.id),
+                id: "ai-chat-clear-btn",
+                class: "ai-chat__menu-item ai-chat__menu-item--danger #{'ai-chat__menu-item--disabled' unless plan.ai_chat_messages.exists?}",
+                data: { turbo_method: :delete, action: "click->dropdown#close turbo:submit-end->ai-chat#clearConversation" } do %>
+            <i class="bi bi-trash"></i>
+            <span>会話をクリア</span>
+          <% end %>
+        </div>
+      </div>
+    </div>
+  <% end %>
+</div>

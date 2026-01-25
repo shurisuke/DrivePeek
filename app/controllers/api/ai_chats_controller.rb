@@ -4,9 +4,16 @@ module Api
     before_action :set_plan
 
     def create
+      # メッセージが空の場合はエラー
       return head :unprocessable_entity if user_message.blank?
 
-      @result = AiChatMessage.chat(plan: @plan, user: current_user, message: user_message, mode: mode)
+      chat_response = AiChatMessage.chat(
+        plan: @plan,
+        user: current_user,
+        message: user_message
+      )
+      @result = chat_response[:result]
+      @message = chat_response[:message]
 
       respond_to do |format|
         format.turbo_stream
@@ -31,10 +38,6 @@ module Api
 
     def user_message
       @user_message ||= params[:message].to_s.strip
-    end
-
-    def mode
-      @mode ||= params[:mode].to_s.presence_in(%w[plan spot]) || "plan"
     end
   end
 end

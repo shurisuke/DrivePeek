@@ -62,14 +62,6 @@ Rails.application.routes.draw do
       end
     end
 
-    # AI提案スポット解決
-    resources :ai_spots, only: [] do
-      collection do
-        post :resolve
-        post :resolve_batch
-      end
-    end
-
     # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
     resource :infowindow, only: %i[show create]
 
@@ -86,6 +78,7 @@ Rails.application.routes.draw do
       resources :plan_spots, only: %i[create] do
         collection do
           patch :reorder, to: "plan_spots/reorders#update"
+          post :adopt
         end
 
         member do

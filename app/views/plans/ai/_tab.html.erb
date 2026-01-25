@@ -33,18 +33,23 @@
 
     <%# 保存済み会話履歴を表示（時系列順：古い→新しい） %>
     <% plan.ai_chat_messages.chronological.each do |msg| %>
-      <%= render "plans/ai/message", content: msg.display_message, role: msg.role, spots: msg.display_spots, plan: plan, intro: msg.display_intro, closing: msg.display_closing %>
+      <%= render "plans/ai/message",
+                 content: msg.display_message,
+                 role: msg.role,
+                 spots: msg.display_spots,
+                 plan_data: msg.display_plan,
+                 plan: plan,
+                 intro: msg.display_intro,
+                 closing: msg.display_closing,
+                 response_type: msg.response_type %>
     <% end %>
 
     <%# タイピングインジケーター %>
     <%= render "plans/ai/typing" %>
   </div>
 
-  <%# 入力フォーム + モード切替（一体化） %>
+  <%# 入力フォーム %>
   <div class="ai-chat__composer">
-    <div class="ai-chat__header" id="ai-chat-header">
-      <%= render "plans/ai/header", plan: plan %>
-    </div>
     <%= render "plans/ai/form", plan: plan %>
   </div>
 </div>

@@ -1,6 +1,6 @@
 // ================================================================
-// AiSuggestionClearController
-// 用途: AI提案マーカーをクリアするボタン
+// AiPinClearController
+// 用途: AI提案ピンをクリアするボタン
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -12,10 +12,5 @@ export default class extends Controller {
     clearAiSuggestionMarkers()
     closeInfoWindow()
     this.element.hidden = true
-  }
-
-  // 外部から表示を切り替えるためのメソッド
-  show() {
-    this.element.hidden = false
   }
 }

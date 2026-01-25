@@ -1,3 +1,17 @@
+# AIチャットメッセージ
+#
+# content の形式:
+#   - user: プレーンテキスト（ユーザーの入力）
+#   - assistant: JSON形式
+#     {
+#       type: "plan" | "spots" | "answer" | "conversation",
+#       theme: "テーマ名",           # planモードのみ
+#       description: "説明",         # planモードのみ
+#       intro: "導入文",             # spotsモードのみ
+#       spots: [{ spot_id, name, address, description, lat, lng, place_id }],
+#       closing: "締めの言葉"
+#     }
+#
 class AiChatMessage < ApplicationRecord
   belongs_to :user
   belongs_to :plan
@@ -11,18 +25,21 @@ class AiChatMessage < ApplicationRecord
   scope :chronological, -> { order(created_at: :asc) }
 
   # AIとチャットし、メッセージを保存して結果を返す
-  def self.chat(plan:, user:, message:, mode:)
+  # @param plan [Plan] 現在編集中のプラン
+  # @param user [User] ユーザー
+  # @param message [String] ユーザーからのメッセージ（希望内容 + 場所）
+  # @return [Hash] { result: Hash, message: AiChatMessage }
+  def self.chat(plan:, user:, message:)
+    # ユーザーメッセージを保存
     plan.ai_chat_messages.create!(user: user, role: "user", content: message)
 
-    history = plan.ai_chat_messages.recent.limit(5).reverse
-    result = AiChatService.chat(message, plan: plan, history: history, mode: mode)
+    result = AiChatService.chat(message, plan: plan)
 
-    plan.ai_chat_messages.create!(user: user, role: "assistant", content: result.to_json)
-    result
+    ai_message = plan.ai_chat_messages.create!(user: user, role: "assistant", content: result.to_json)
+    { result: result, message: ai_message }
   end
 
   # AI応答のメッセージ部分を取得
-  # assistantの場合はJSONをパースして取り出す
   def display_message
     return content unless assistant?
 
@@ -36,26 +53,36 @@ class AiChatMessage < ApplicationRecord
     parsed_content[:spots] || []
   end
 
-  # AI応答の締めの言葉を取得（スポットモード用）
+  # AI応答の締めの言葉を取得
   def display_closing
     return "" unless assistant?
 
     parsed_content[:closing] || ""
   end
 
-  # AI応答の導入文を取得（スポットモード用）
+  # AI応答の導入文を取得
   def display_intro
     return "" unless assistant?
 
     parsed_content[:intro] || ""
   end
 
-  # スポットモードかどうか（spotsにdescriptionがあるか）
-  def spot_mode?
-    return false unless assistant?
+  # レスポンスのタイプを取得（plan / spots / answer / conversation）
+  def response_type
+    return nil unless assistant?
 
-    spots = display_spots
-    spots.present? && spots.first.is_a?(Hash) && spots.first[:description].present?
+    parsed_content[:type] || detect_type
+  end
+
+  # プランを取得（プランモード用）
+  def display_plan
+    return nil unless assistant?
+
+    parsed_content[:plan] || (response_type == "plan" ? {
+      theme: parsed_content[:theme],
+      description: parsed_content[:description],
+      spots: parsed_content[:spots] || []
+    } : nil)
   end
 
   def assistant?
@@ -68,5 +95,12 @@ class AiChatMessage < ApplicationRecord
     @parsed_content ||= JSON.parse(content, symbolize_names: true)
   rescue JSON::ParserError
     { message: content, spots: [] }
+  end
+
+  # type が返されない場合のフォールバック
+  def detect_type
+    return "plan" if parsed_content[:theme].present?
+    return "spots" if parsed_content[:intro].present? && parsed_content[:spots].present?
+    "conversation"
   end
 end

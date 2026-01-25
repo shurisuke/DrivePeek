@@ -197,20 +197,6 @@ class Plan < ApplicationRecord
     end
   end
 
-  # ✅ 合計有料道路料金
-  def total_toll_cost
-    cost = 0
-    cost += start_point.move_cost.to_i if start_point&.toll_used?
-    cost += plan_spots.where(toll_used: true).sum(:move_cost)
-    cost
-  end
-
-  # ✅ 有料道路使用の有無
-  def has_toll_roads?
-    return true if start_point&.toll_used?
-    plan_spots.exists?(toll_used: true)
-  end
-
   # ================================================================
   # ファクトリメソッド
   # ================================================================
@@ -229,6 +215,20 @@ class Plan < ApplicationRecord
       plan.save!
 
       plan
+    end
+  end
+
+  # ================================================================
+  # プラン採用（AI提案 / コミュニティプラン）
+  # ================================================================
+
+  # スポットを一括置換して経路再計算
+  # @param spot_ids [Array<Integer>] 採用するスポットのID配列
+  def adopt_spots!(spot_ids)
+    transaction do
+      plan_spots.destroy_all
+      spot_ids.each { |id| plan_spots.create!(spot_id: id) }
+      recalculate_for!(nil, action: :create)
     end
   end
 

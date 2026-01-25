@@ -1,4 +1,6 @@
-<%# locals: content:, role:, spots: [], plan: nil, intro: "", closing: "", show_pins: false %>
+<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false %>
+<%# プラン内スポットのplace_idを一度だけ取得（N+1回避） %>
+<% existing_place_ids = plan&.spots&.pluck(:place_id) || [] %>
 <div class="ai-chat__message-wrapper">
   <div class="ai-chat__divider"></div>
   <div class="ai-chat__msg ai-chat__msg--<%= role %>">
@@ -9,13 +11,57 @@
   <% end %>
   <div class="ai-chat__content">
     <% spots = local_assigns.fetch(:spots, []) %>
+    <% plan_data = local_assigns.fetch(:plan_data, nil) %>
     <% intro = local_assigns.fetch(:intro, "") %>
     <% closing = local_assigns.fetch(:closing, "") %>
-    <% show_pins = local_assigns.fetch(:show_pins, false) %>
-    <% spot_mode = spots.present? && spots.first.is_a?(Hash) && spots.first[:description].present? %>
+    <% response_type = local_assigns.fetch(:response_type, nil) %>
 
-    <% if spot_mode %>
-      <%# スポットモード: 導入文 → カード（説明含む） → 締め %>
+    <% if response_type == "plan" || plan_data.present? %>
+      <%# プランモード: 導入文 → カード（説明含む）→ 移動時間 → 採用ボタン → 締め %>
+      <%# auto_show: 新規応答時のみtrue、履歴表示時はfalse %>
+      <% auto_show_value = local_assigns.fetch(:auto_show, false) %>
+      <div data-controller="ai-plan-adopt"
+           data-ai-plan-adopt-plan-id-value="<%= plan&.id %>"
+           data-ai-plan-adopt-auto-show-value="<%= auto_show_value %>">
+
+        <%# 導入文（テーマ + 説明） %>
+        <% if plan_data[:theme].present? || plan_data[:description].present? %>
+          <div class="ai-chat__bubble ai-chat__bubble--intro">
+            <% if plan_data[:theme].present? %>
+              <strong><%= plan_data[:theme] %></strong><br>
+            <% end %>
+            <%= plan_data[:description] %>
+          </div>
+        <% end %>
+
+        <%# スポットカード %>
+        <div class="ai-chat__spots" data-ai-plan-adopt-target="spots">
+          <% plan_data[:spots].each_with_index do |spot, index| %>
+            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true, existing_place_ids: existing_place_ids %>
+          <% end %>
+        </div>
+
+        <%# プラン採用ボタン %>
+        <div class="ai-plan-card__actions">
+          <button type="button"
+                  class="ai-plan-card__adopt-btn"
+                  data-action="click->ai-plan-adopt#adoptPlan"
+                  data-ai-plan-adopt-target="adoptBtn">
+            <i class="bi bi-check-circle"></i> このプランを採用
+          </button>
+        </div>
+      </div>
+
+      <% if closing.present? %>
+        <div class="ai-chat__bubble ai-chat__bubble--closing">
+          <%= closing %>
+        </div>
+      <% end %>
+
+    <% elsif response_type == "spots" %>
+      <%# スポット提案モード: 導入文 → カード（説明含む） → 締め %>
+      <%# auto_show: 新規応答時のみtrue、履歴表示時はfalse %>
+      <% auto_show_value = local_assigns.fetch(:auto_show, false) %>
       <% if intro.present? %>
         <div class="ai-chat__bubble ai-chat__bubble--intro">
           <%= intro %>
@@ -23,9 +69,10 @@
       <% end %>
       <div class="ai-chat__spots"
            data-ai-chat-target="spotSuggestions"
-           <% if show_pins %>data-controller="ai-spots-batch"<% end %>>
+           data-controller="ai-spots-batch"
+           data-ai-spots-batch-auto-show-value="<%= auto_show_value %>">
         <% spots.each_with_index do |spot, index| %>
-          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true %>
+          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true, existing_place_ids: existing_place_ids %>
         <% end %>
       </div>
       <% if closing.present? %>
@@ -33,24 +80,36 @@
           <%= closing %>
         </div>
       <% end %>
+
+    <% elsif response_type == "answer" %>
+      <%# 詳細説明モード: 回答 → 関連スポット（参考表示） → 締め %>
+      <% if content.present? %>
+        <div class="ai-chat__bubble">
+          <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
+        </div>
+      <% end %>
+      <% if spots.present? %>
+        <div class="ai-chat__related-spots">
+          <small class="ai-chat__related-label">関連スポット</small>
+          <% spots.each_with_index do |spot, index| %>
+            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: false, compact: true, existing_place_ids: existing_place_ids %>
+          <% end %>
+        </div>
+      <% end %>
+      <% if closing.present? %>
+        <div class="ai-chat__bubble ai-chat__bubble--closing">
+          <%= closing %>
+        </div>
+      <% end %>
+
     <% else %>
-      <%# プランモード: 従来の表示（説明 → カード全部） %>
+      <%# 会話/質問回答モード: メッセージのみ %>
       <% if content.present? %>
         <div class="ai-chat__bubble">
           <% if role == "assistant" %>
             <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
           <% else %>
             <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
-          <% end %>
-        </div>
-      <% end %>
-
-      <% if role == "assistant" && spots.present? %>
-        <div class="ai-chat__spots"
-             data-ai-chat-target="spotSuggestions"
-             <% if show_pins %>data-controller="ai-spots-batch"<% end %>>
-          <% spots.each_with_index do |spot, index| %>
-            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1 %>
           <% end %>
         </div>
       <% end %>

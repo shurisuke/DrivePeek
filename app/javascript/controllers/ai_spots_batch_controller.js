@@ -11,7 +11,7 @@ import { createAiSuggestionPinSvg } from "map/constants"
 // ================================================================
 // AiSpotsBatchController
 // 用途: AI提案スポットカードを一括処理してマップにピン表示
-// - サーバー側で一括Geocode + Spot解決（1リクエスト）
+// - DB検証済みスポットをマーカー表示
 // - 全マーカーが収まるようにマップをパン
 //
 // パルスアニメーション設計:
@@ -49,21 +49,28 @@ const createPulseOverlay = (position) => {
 }
 
 export default class extends Controller {
+  static values = {
+    autoShow: { type: Boolean, default: false },  // 自動でピン表示（デフォルトoff）
+  }
+
   connect() {
     this._isConnected = true
 
-    // 既存のAI提案マーカーをクリア（オーバーレイも含む）
-    clearAiSuggestionMarkers()
+    // autoShow が true の場合のみ自動でピン表示
+    if (this.autoShowValue) {
+      // 既存のAI提案マーカーをクリア（オーバーレイも含む）
+      clearAiSuggestionMarkers()
 
-    // 少し遅延してから処理開始（DOM安定化のため）
-    setTimeout(() => this.#processAllSpots(), 100)
+      // 少し遅延してから処理開始（DOM安定化のため）
+      setTimeout(() => this.#processAllSpots(), 100)
+    }
   }
 
   disconnect() {
     this._isConnected = false
   }
 
-  async #processAllSpots() {
+  #processAllSpots() {
     const map = getMapInstance()
     if (!map) return
 
@@ -71,31 +78,35 @@ export default class extends Controller {
     const cards = this.element.querySelectorAll("[data-controller*='ai-spot-action']")
     if (cards.length === 0) return
 
-    // 各カードから情報を抽出
+    // 各カードからDB検証済み情報を抽出
     const spotInfos = Array.from(cards).map((card, index) => ({
       card,
       name: card.dataset.aiSpotActionNameValue,
-      address: card.dataset.aiSpotActionAddressValue,
       planId: card.dataset.aiSpotActionPlanIdValue,
       number: index + 1,
+      spotId: parseInt(card.dataset.aiSpotActionSpotIdValue, 10),
+      lat: parseFloat(card.dataset.aiSpotActionLatValue),
+      lng: parseFloat(card.dataset.aiSpotActionLngValue),
+      placeId: card.dataset.aiSpotActionPlaceIdValue,
     }))
 
-    // サーバーAPIで一括解決
-    const resolvedSpots = await this.#resolveBatch(spotInfos)
-    if (resolvedSpots.length === 0) return
+    // 有効なスポット（座標あり）のみ処理
+    const validSpots = spotInfos.filter((s) => !isNaN(s.spotId) && !isNaN(s.lat) && !isNaN(s.lng))
+    if (validSpots.length === 0) return
 
     // 全マーカーを一括作成
     const bounds = new google.maps.LatLngBounds()
 
-    resolvedSpots.forEach(({ spotData, info }) => {
-      const position = { lat: spotData.lat, lng: spotData.lng }
+    validSpots.forEach((info) => {
+      const position = { lat: info.lat, lng: info.lng }
       bounds.extend(position)
 
-      // マーカー作成
+      // マーカー作成（zIndexで番号順に重なるよう制御）
       const marker = new google.maps.Marker({
         map,
         position,
         title: info.name,
+        zIndex: 1000 - info.number,  // 番号が小さいほど前面に表示
         icon: {
           url: createAiSuggestionPinSvg(info.number),
           scaledSize: new google.maps.Size(36, 36),
@@ -109,6 +120,7 @@ export default class extends Controller {
       pulse.setMap(map)
       addAiSuggestionOverlay(pulse)
 
+      const spotData = { spot_id: info.spotId, lat: info.lat, lng: info.lng, place_id: info.placeId }
       marker.addListener("click", () => {
         this.#showInfoWindow(marker, spotData, info.planId)
       })
@@ -127,51 +139,17 @@ export default class extends Controller {
     })
 
     // 全マーカーが収まるようにマップをフィット
-    if (resolvedSpots.length === 1) {
-      map.panTo(resolvedSpots[0].spotData)
+    if (validSpots.length === 1) {
+      const firstSpot = validSpots[0]
+      map.panTo({ lat: firstSpot.lat, lng: firstSpot.lng })
       map.setZoom(15)
     } else {
       map.fitBounds(bounds, { padding: 50 })
     }
 
     // AI提案ピンクリアボタンを表示
-    const clearBtn = document.getElementById("ai-suggestion-clear")
+    const clearBtn = document.getElementById("ai-pin-clear")
     if (clearBtn) clearBtn.hidden = false
-  }
-
-  // サーバーAPIで一括解決
-  async #resolveBatch(spotInfos) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-
-    const spots = spotInfos.map((info) => ({
-      name: info.name,
-      address: info.address,
-    }))
-
-    try {
-      const response = await fetch("/api/ai_spots/resolve_batch", {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-        },
-        body: JSON.stringify({ spots }),
-      })
-
-      if (!response.ok) return []
-
-      const data = await response.json()
-
-      // 成功したスポットのみ返す
-      return data.spots
-        .filter((spot) => !spot.error && spot.lat && spot.lng)
-        .map((spot) => ({
-          spotData: spot,
-          info: spotInfos[spot.index],
-        }))
-    } catch {
-      return []
-    }
   }
 
   // InfoWindow表示

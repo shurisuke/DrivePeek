@@ -14,6 +14,7 @@ class ReverseGeocoder
   GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
   # 住所から緯度経度を取得（Forward Geocoding）
+  # @return [Hash, nil] { lat:, lng:, prefecture: } or nil
   def self.geocode_address(address)
     return nil if address.blank?
 
@@ -35,8 +36,14 @@ class ReverseGeocoder
     json = JSON.parse(response.body)
 
     if json["status"] == "OK"
-      location = json.dig("results", 0, "geometry", "location")
-      { lat: location["lat"], lng: location["lng"] }
+      result = json["results"].first
+      location = result.dig("geometry", "location")
+      components = result["address_components"] || []
+
+      # 都道府県を抽出
+      prefecture = components.find { |c| c["types"].include?("administrative_area_level_1") }&.dig("long_name")
+
+      { lat: location["lat"], lng: location["lng"], prefecture: prefecture }
     else
       Rails.logger.warn "[ReverseGeocoder] geocode_address failed: #{json['status']}"
       nil

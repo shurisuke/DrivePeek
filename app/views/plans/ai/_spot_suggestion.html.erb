@@ -1,16 +1,20 @@
 <%# AI提案スポットカード %>
-<%# locals: spot:, plan:, number: 1, show_description: false %>
-<div class="ai-spot-card"
+<%# locals: spot:, plan:, number: 1, show_description: false, compact: false, existing_place_ids: [] %>
+<% compact = local_assigns.fetch(:compact, false) %>
+<div class="ai-spot-card<%= ' ai-spot-card--compact' if compact %>"
      data-controller="ai-spot-action"
      data-ai-spot-action-name-value="<%= spot[:name] %>"
-     data-ai-spot-action-address-value="<%= spot[:address] %>"
      data-ai-spot-action-plan-id-value="<%= plan&.id %>"
      data-ai-spot-action-number-value="<%= number %>"
-     data-ai-spot-action-auto-show-value="false">
+     data-ai-spot-action-spot-id-value="<%= spot[:spot_id] %>"
+     data-ai-spot-action-lat-value="<%= spot[:lat] %>"
+     data-ai-spot-action-lng-value="<%= spot[:lng] %>"
+     data-ai-spot-action-place-id-value="<%= spot[:place_id] %>">
   <div class="ai-spot-card__header">
     <span class="ai-spot-card__number"><%= number %></span>
     <span class="ai-spot-card__name"><%= spot[:name] %></span>
   </div>
+
   <div class="ai-spot-card__address"><i class="bi bi-geo-alt"></i><%= spot[:address] %></div>
 
   <% if local_assigns[:show_description] && spot[:description].present? %>
@@ -23,18 +27,30 @@
     <% end %>
   <% end %>
 
-  <div class="ai-spot-card__actions">
-    <button type="button"
-            class="ai-spot-card__link"
-            data-action="click->ai-spot-action#showOnMap">
-      地図で見る
-    </button>
-    <button type="button"
-            class="ai-spot-card__link ai-spot-card__link--primary"
-            data-action="click->ai-spot-action#addToPlan"
-            data-ai-spot-action-target="addBtn">
-      プランに追加
-      <i class="bi bi-chevron-right"></i>
-    </button>
-  </div>
+  <% unless compact %>
+    <% existing_place_ids = local_assigns.fetch(:existing_place_ids, []) %>
+    <% already_added = existing_place_ids.include?(spot[:place_id]) %>
+    <div class="ai-spot-card__actions">
+      <button type="button"
+              class="ai-spot-card__link"
+              data-action="click->ai-spot-action#showOnMap">
+        地図で見る
+      </button>
+      <% if already_added %>
+        <button type="button"
+                class="ai-spot-card__link ai-spot-card__btn--added"
+                disabled>
+          <i class="bi bi-check-lg"></i> 追加済み
+        </button>
+      <% else %>
+        <button type="button"
+                class="ai-spot-card__link ai-spot-card__link--primary"
+                data-action="click->ai-spot-action#addToPlan"
+                data-ai-spot-action-target="addBtn">
+          プランに追加
+          <i class="bi bi-chevron-right"></i>
+        </button>
+      <% end %>
+    </div>
+  <% end %>
 </div>
