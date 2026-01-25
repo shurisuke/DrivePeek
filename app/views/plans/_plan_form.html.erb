@@ -43,6 +43,18 @@
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-search" aria-hidden="true"></i>
     </button>
+
+    <!-- AI提案ピンクリアボタン -->
+    <button type="button"
+            id="ai-suggestion-clear"
+            class="map-floating-btn map-floating-btn--purple"
+            hidden
+            title="AI提案ピンをクリア"
+            data-controller="ai-suggestion-clear"
+            data-action="click->ai-suggestion-clear#clear">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+      <i class="bi bi-stars" aria-hidden="true"></i>
+    </button>
   </div>
 
   <!-- 左ナビバー（Turbo Frame化） -->
@@ -80,3 +92,6 @@
   </div>
 
 </div>
+
+<%# InfoWindowスケルトンテンプレート（JSから参照） %>
+<%= render "map/infowindow_skeleton" %>

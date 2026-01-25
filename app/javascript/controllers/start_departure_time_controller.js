@@ -27,55 +27,6 @@ export default class extends Controller {
     this._showWheelPicker()
   }
 
-  showHelp(event) {
-    event.preventDefault()
-    event.stopPropagation()
-    this._showHelpDialog()
-  }
-
-  _showHelpDialog() {
-    // 既存のダイアログがあれば削除
-    const existingDialog = document.getElementById("departure-time-help-dialog")
-    if (existingDialog) existingDialog.remove()
-
-    // スポットが追加されているかどうかで内容を分岐
-    const hasSpots = !this.element.classList.contains("start-departure-time--no-spots")
-
-    const title = hasSpots
-      ? "時間の変更"
-      : "時間設定について"
-
-    const text = hasSpots
-      ? "時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
-      : "時刻をタップ<br>↓<br>出発時間・滞在時間を設定<br>↓<br>旅のタイムスケジュールが完成"
-
-    const dialog = document.createElement("dialog")
-    dialog.id = "departure-time-help-dialog"
-    dialog.innerHTML = `
-      <div class="departure-time-help-dialog__content">
-        <h3 class="departure-time-help-dialog__title">${title}</h3>
-        <p class="departure-time-help-dialog__text">${text}</p>
-      </div>
-      <button type="button" class="departure-time-help-dialog__close-btn">OK</button>
-    `
-    document.body.appendChild(dialog)
-
-    const closeBtn = dialog.querySelector(".departure-time-help-dialog__close-btn")
-    closeBtn.addEventListener("click", () => {
-      dialog.close()
-      dialog.remove()
-    })
-
-    dialog.addEventListener("click", (e) => {
-      if (e.target === dialog) {
-        dialog.close()
-        dialog.remove()
-      }
-    })
-
-    dialog.showModal()
-  }
-
   // ============================
   // Wheel Picker
   // ============================

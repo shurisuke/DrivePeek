@@ -16,9 +16,6 @@
   safe_address = spot.address.presence || "住所不明"
   urls = photo_urls.presence || []
   has_multiple_photos = urls.size > 1
-  is_delete_mode = plan_spot_id.present?
-  delete_class = is_delete_mode ? " dp-infowindow__btn--delete" : ""
-  btn_label = button_label.presence || (is_delete_mode ? "プランから削除" : "プランに追加")
   comments = spot.spot_comments.chronological.includes(:user)
   comment_count = comments.size
   is_logged_in = user_signed_in?
@@ -136,28 +133,8 @@
       <div class="dp-infowindow__address"><%= safe_address %></div>
 
       <% if show_button && plan_id.present? %>
-        <% if is_delete_mode %>
-          <%# 削除モード: DELETE /plans/:plan_id/plan_spots/:id %>
-          <button type="button"
-                  class="dp-infowindow__btn dp-infowindow__btn--delete"
-                  data-controller="infowindow-spot-action"
-                  data-infowindow-spot-action-url-value="<%= plan_plan_spot_path(plan_id, plan_spot_id) %>"
-                  data-infowindow-spot-action-method-value="DELETE"
-                  data-action="click->infowindow-spot-action#submit">
-            <%= btn_label %>
-          </button>
-        <% else %>
-          <%# 追加モード: POST /api/plans/:plan_id/plan_spots %>
-          <button type="button"
-                  class="dp-infowindow__btn"
-                  data-controller="infowindow-spot-action"
-                  data-infowindow-spot-action-url-value="<%= api_plan_plan_spots_path(plan_id) %>"
-                  data-infowindow-spot-action-method-value="POST"
-                  data-infowindow-spot-action-spot-id-value="<%= spot.id %>"
-                  data-action="click->infowindow-spot-action#submit">
-            <%= btn_label %>
-          </button>
-        <% end %>
+        <% plan_spot = plan_spot_id.present? ? PlanSpot.find_by(id: plan_spot_id) : nil %>
+        <%= render "map/infowindow_spot_button", spot: spot, plan_id: plan_id, plan_spot: plan_spot %>
       <% end %>
 
       <% if edit_mode == "start_point" %>

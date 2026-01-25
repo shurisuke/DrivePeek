@@ -39,6 +39,102 @@ export const closeInfoWindow = () => {
   }
 }
 
+// place_idからプラン内のスポット情報を取得（DOMを単一の情報源として使用）
+const findPlanSpotByPlaceId = (placeId) => {
+  if (!placeId) return null
+  // CSSセレクタ注入を避けるため、全要素を取得してからフィルタ
+  const blocks = document.querySelectorAll('.spot-block[data-place-id]')
+  const block = Array.from(blocks).find(b => b.dataset.placeId === placeId)
+  if (!block) return null
+  return {
+    planSpotId: block.dataset.planSpotId,
+    spotId: block.dataset.spotId
+  }
+}
+
+// スケルトンHTMLを構築（テンプレートから生成）
+const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButton, planId, planSpotId, spotId, placeId }) => {
+  // place_idからプラン内のスポットを検索（DOMベース）
+  if (!planSpotId && !spotId && placeId) {
+    const found = findPlanSpotByPlaceId(placeId)
+    if (found) {
+      planSpotId = found.planSpotId
+      spotId = found.spotId
+    }
+  }
+  const template = document.getElementById("infowindow-skeleton-template")
+  if (!template) {
+    // テンプレートがない場合はシンプルなローディング表示
+    return `<turbo-frame id="infowindow-content" src="${src}">
+      <div class="dp-infowindow dp-infowindow--${zoomScale} dp-infowindow--loading">
+        <div class="dp-infowindow__spinner"></div>
+      </div>
+    </turbo-frame>`
+  }
+
+  const clone = template.content.cloneNode(true)
+  const wrapper = clone.querySelector(".dp-infowindow")
+  wrapper.classList.add(`dp-infowindow--${zoomScale}`)
+
+  // 名前・住所が渡された場合は表示
+  if (name) {
+    const nameEl = clone.querySelector('[data-slot="name"]')
+    if (nameEl) nameEl.textContent = name
+  }
+  if (address) {
+    const addressEl = clone.querySelector('[data-slot="address"]')
+    if (addressEl) addressEl.textContent = address
+  }
+
+  // ジャンルが渡された場合は表示
+  if (genres?.length > 0) {
+    const genresEl = clone.querySelector('[data-slot="genres"]')
+    if (genresEl) {
+      genresEl.innerHTML = genres.slice(0, 2)
+        .map(g => `<span class="dp-infowindow__genre">${g}</span>`)
+        .join("")
+    }
+  }
+
+  // ボタン
+  if (showButton && planId) {
+    const buttonSlot = clone.querySelector('[data-slot="button"]')
+    if (buttonSlot) {
+      if (planSpotId) {
+        buttonSlot.innerHTML = `<button type="button"
+          class="dp-infowindow__btn dp-infowindow__btn--delete"
+          data-controller="infowindow-spot-action"
+          data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
+          data-infowindow-spot-action-method-value="DELETE"
+          data-action="click->infowindow-spot-action#submit">
+          プランから削除
+        </button>`
+      } else if (spotId) {
+        buttonSlot.innerHTML = `<button type="button"
+          class="dp-infowindow__btn"
+          data-controller="infowindow-spot-action"
+          data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
+          data-infowindow-spot-action-method-value="POST"
+          data-infowindow-spot-action-spot-id-value="${spotId}"
+          data-action="click->infowindow-spot-action#submit">
+          プランに追加
+        </button>`
+      }
+    }
+  }
+
+  // Turbo Frameでラップ
+  const turboFrame = document.createElement("turbo-frame")
+  turboFrame.id = "infowindow-content"
+  turboFrame.src = src
+  turboFrame.appendChild(clone)
+
+  // HTML文字列として返す
+  const container = document.createElement("div")
+  container.appendChild(turboFrame)
+  return container.innerHTML
+}
+
 // ================================================================
 // Turbo Frame 方式 InfoWindow
 // POIクリック時にGoogle Places APIをスキップして即時表示
@@ -82,6 +178,21 @@ export const showInfoWindowWithFrame = ({
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
 
+  // InfoWindowが画面中央に来るように、アンカー位置を少し南にずらしてパン
+  const calcCenteredPosition = (anchorPos) => {
+    const bounds = map.getBounds()
+    if (!bounds) return anchorPos
+
+    const ne = bounds.getNorthEast()
+    const sw = bounds.getSouthWest()
+    const latRange = ne.lat() - sw.lat()
+
+    // InfoWindowの高さ分（緯度範囲の30%）北にオフセット
+    // → マーカーが画面下部に、InfoWindowが中央に来る
+    const offsetLat = latRange * 0.3
+    return new google.maps.LatLng(anchorPos.lat() + offsetLat, anchorPos.lng())
+  }
+
   // editMode の場合はスケルトン不要（データは揃っている）
   if (editMode) {
     iw.setContent(`
@@ -90,101 +201,43 @@ export const showInfoWindowWithFrame = ({
       </turbo-frame>
     `)
 
+    const anchorPos = anchor instanceof google.maps.Marker ? anchor.getPosition() : anchor
     if (anchor instanceof google.maps.Marker) {
       iw.open({ map, anchor })
     } else {
       iw.setPosition(anchor)
       iw.open(map)
     }
+    map.panTo(calcCenteredPosition(anchorPos))
     return
   }
 
   // スポット用: スケルトン + Turbo Frame で即時表示
-  iw.setContent(`
-    <turbo-frame id="infowindow-content" src="/api/infowindow?${params.toString()}">
-      <div class="dp-infowindow dp-infowindow--${zoomScale}">
-        <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
-        <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
-
-        <div class="dp-infowindow__header">
-          <div class="dp-infowindow__tabs">
-            <label for="iw-tab-info" class="dp-infowindow__tab" style="color:#f7931e;border-bottom:2px solid #f7931e;">スポット</label>
-            <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
-          </div>
-          <div class="dp-infowindow__stats">
-            <button type="button" class="dp-infowindow__stat dp-infowindow__stat--like">
-              <i class="bi bi-heart"></i>
-              <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
-            </button>
-            <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
-              <i class="bi bi-chat"></i>
-              <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
-            </label>
-            <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
-              <i class="bi bi-x-lg"></i>
-            </button>
-          </div>
-        </div>
-
-        <div class="dp-infowindow__zoom-controls">
-          <button type="button" class="dp-infowindow__zoom-btn" disabled>
-            <i class="bi bi-dash"></i>
-          </button>
-          <button type="button" class="dp-infowindow__zoom-btn" disabled>
-            <i class="bi bi-plus"></i>
-          </button>
-        </div>
-
-        <div class="dp-infowindow__panel dp-infowindow__panel--info" style="display: block;">
-          <div class="dp-infowindow__photo dp-infowindow__photo--skeleton">
-            <div class="dp-infowindow__spinner"></div>
-          </div>
-
-          <div class="dp-infowindow__genres">
-            ${genres?.length > 0
-              ? genres.slice(0, 2).map(g => `<span class="dp-infowindow__genre">${g}</span>`).join("")
-              : `<span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
-                 <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>`
-            }
-          </div>
-
-          <div class="dp-infowindow__body">
-            <div class="dp-infowindow__name">${name || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 60%;\"></span>"}</div>
-            <div class="dp-infowindow__address">${address || "<span class=\"dp-infowindow__skeleton-text\" style=\"width: 80%;\"></span>"}</div>
-            ${(showButton && planId)
-              ? (planSpotId
-                ? `<button type="button"
-                           class="dp-infowindow__btn dp-infowindow__btn--delete"
-                           data-controller="infowindow-spot-action"
-                           data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
-                           data-infowindow-spot-action-method-value="DELETE"
-                           data-action="click->infowindow-spot-action#submit">
-                     プランから削除
-                   </button>`
-                : `<button type="button"
-                           class="dp-infowindow__btn"
-                           data-controller="infowindow-spot-action"
-                           data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
-                           data-infowindow-spot-action-method-value="POST"
-                           data-infowindow-spot-action-spot-id-value="${spotId}"
-                           data-action="click->infowindow-spot-action#submit">
-                     プランに追加
-                   </button>`)
-              : ""
-            }
-          </div>
-        </div>
-      </div>
-    </turbo-frame>
-  `)
+  const skeletonContent = buildSkeletonContent({
+    src: `/api/infowindow?${params.toString()}`,
+    zoomScale,
+    name,
+    address,
+    genres,
+    showButton,
+    planId,
+    planSpotId,
+    spotId,
+    placeId
+  })
+  iw.setContent(skeletonContent)
 
   // Marker か LatLng かで開き方を分岐
+  const anchorPos = anchor instanceof google.maps.Marker ? anchor.getPosition() : anchor
   if (anchor instanceof google.maps.Marker) {
     iw.open({ map, anchor })
   } else {
     iw.setPosition(anchor)
     iw.open(map)
   }
+
+  // InfoWindowが画面中央に来るようにパン
+  map.panTo(calcCenteredPosition(anchorPos))
 
   // Turbo Frame ロード後にStimulusイベントリスナーを設定
   google.maps.event.addListenerOnce(iw, "domready", () => {

@@ -6,3 +6,12 @@
 <%= turbo_stream.update "navibar_footer" do %>
   <%= render "plans/navibar_footer", plan: @plan %>
 <% end %>
+
+<%# InfoWindowのボタンを更新（開いている場合のみ） %>
+<% if @spot.present? %>
+  <%# 削除後は@plan_spot.destroyed?がtrueになるのでnilを渡す %>
+  <% active_plan_spot = @plan_spot&.destroyed? ? nil : @plan_spot %>
+  <%= turbo_stream.update "infowindow-spot-button" do %>
+    <%= render "map/infowindow_spot_button", spot: @spot, plan_id: @plan.id, plan_spot: active_plan_spot %>
+  <% end %>
+<% end %>

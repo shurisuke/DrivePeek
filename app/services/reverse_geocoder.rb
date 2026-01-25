@@ -13,6 +13,39 @@ class ReverseGeocoder
 
   GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"
 
+  # 住所から緯度経度を取得（Forward Geocoding）
+  def self.geocode_address(address)
+    return nil if address.blank?
+
+    uri = URI.parse(GOOGLE_GEOCODING_API_URL)
+    uri.query = URI.encode_www_form({
+      address: address,
+      key: ENV["GOOGLE_MAPS_API_KEY"],
+      language: "ja",
+      region: "jp"
+    })
+
+    http = Net::HTTP.new(uri.host, uri.port)
+    http.use_ssl = true
+    http.open_timeout = 5
+    http.read_timeout = 5
+
+    request = Net::HTTP::Get.new(uri.request_uri)
+    response = http.request(request)
+    json = JSON.parse(response.body)
+
+    if json["status"] == "OK"
+      location = json.dig("results", 0, "geometry", "location")
+      { lat: location["lat"], lng: location["lng"] }
+    else
+      Rails.logger.warn "[ReverseGeocoder] geocode_address failed: #{json['status']}"
+      nil
+    end
+  rescue StandardError => e
+    Rails.logger.error "[ReverseGeocoder] geocode_address error: #{e.message}"
+    nil
+  end
+
   def self.lookup_address(lat:, lng:)
     Rails.logger.debug "[DEBUG] lookup_address called with lat=#{lat}, lng=#{lng}"
 

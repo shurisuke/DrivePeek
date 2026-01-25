@@ -4,19 +4,19 @@ module Api
     before_action :set_plan
 
     def create
-      spot = Spot.find(params[:spot_id])
-      plan_spot = @plan.plan_spots.create!(spot: spot)
+      @spot = Spot.find(params[:spot_id])
+      @plan_spot = @plan.plan_spots.create!(spot: @spot)
 
-      @plan.recalculate_for!(plan_spot, action: :create)
+      @plan.recalculate_for!(@plan_spot, action: :create)
       @plan.reload
 
       respond_to do |format|
         format.turbo_stream { render "plans/refresh_plan_tab" }
         format.json do
           render json: {
-            plan_spot_id: plan_spot.id,
-            spot_id: spot.id,
-            position: plan_spot.position
+            plan_spot_id: @plan_spot.id,
+            spot_id: @spot.id,
+            position: @plan_spot.position
           }, status: :created
         end
       end
