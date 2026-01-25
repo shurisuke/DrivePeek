@@ -191,7 +191,7 @@ class AiChatService
       end
 
       # 直前の応答で使用したスロット構成を推測（spots数から）
-      slots = DEFAULT_SLOTS.take([spot_names.size, 3].max)
+      slots = DEFAULT_SLOTS.take([ spot_names.size, 3 ].max)
 
       {
         user_message: nil,
@@ -235,8 +235,8 @@ class AiChatService
         change_idx = $1.to_i - 1
         return nil unless change_idx.between?(0, spot_count - 1)
         return {
-          change_indices: [change_idx],
-          keep_indices: (0...spot_count).to_a - [change_idx]
+          change_indices: [ change_idx ],
+          keep_indices: (0...spot_count).to_a - [ change_idx ]
         }
       end
 
@@ -248,8 +248,8 @@ class AiChatService
           change_idx = slots.index(slot_type)
           next unless change_idx && change_idx < spot_count
           return {
-            change_indices: [change_idx],
-            keep_indices: (0...spot_count).to_a - [change_idx]
+            change_indices: [ change_idx ],
+            keep_indices: (0...spot_count).to_a - [ change_idx ]
           }
         end
       end
@@ -261,8 +261,8 @@ class AiChatService
         keep_idx = previous_context[:spot_details].find_index { |s| s[:name]&.include?(keep_name) }
         if keep_idx
           return {
-            change_indices: (0...spot_count).to_a - [keep_idx],
-            keep_indices: [keep_idx]
+            change_indices: (0...spot_count).to_a - [ keep_idx ],
+            keep_indices: [ keep_idx ]
           }
         end
       end
@@ -274,8 +274,8 @@ class AiChatService
         if keep_idx
           # 残す以外を変更
           return {
-            change_indices: (0...spot_count).to_a - [keep_idx],
-            keep_indices: [keep_idx]
+            change_indices: (0...spot_count).to_a - [ keep_idx ],
+            keep_indices: [ keep_idx ]
           }
         end
       end
@@ -604,20 +604,20 @@ class AiChatService
       slots ||= DEFAULT_SLOTS
 
       prompt = case response_mode
-               when :answer
+      when :answer
                  build_answer_prompt(candidates, user_request)
-               when :spots
+      when :spots
                  build_spots_prompt(candidates, user_request)
-               else
+      else
                  build_plan_prompt(candidates, user_request, start_location, previous_context, slots, partial_change)
-               end
+      end
 
       response = openai_client.chat(
         parameters: {
           model: MODEL,
           max_tokens: MAX_TOKENS,
           response_format: { type: "json_object" },
-          messages: [{ role: "system", content: prompt }]
+          messages: [ { role: "system", content: prompt } ]
         }
       )
 
