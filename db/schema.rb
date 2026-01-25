@@ -10,9 +10,21 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_20_062425) do
+ActiveRecord::Schema[8.1].define(version: 2026_01_20_140724) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
+
+  create_table "ai_chat_messages", force: :cascade do |t|
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.bigint "plan_id", null: false
+    t.string "role", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["plan_id", "created_at"], name: "index_ai_chat_messages_on_plan_id_and_created_at"
+    t.index ["plan_id"], name: "index_ai_chat_messages_on_plan_id"
+    t.index ["user_id"], name: "index_ai_chat_messages_on_user_id"
+  end
 
   create_table "genres", force: :cascade do |t|
     t.string "category"
@@ -294,6 +306,8 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_062425) do
     t.index ["status"], name: "index_users_on_status"
   end
 
+  add_foreign_key "ai_chat_messages", "plans"
+  add_foreign_key "ai_chat_messages", "users"
   add_foreign_key "genres", "genres", column: "parent_id"
   add_foreign_key "goal_points", "plans"
   add_foreign_key "identities", "users"

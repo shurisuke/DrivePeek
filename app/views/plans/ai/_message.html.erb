@@ -1,28 +1,69 @@
-<div class="ai-chat__divider"></div>
-<div class="ai-chat__msg ai-chat__msg--<%= role %>">
+<%# locals: content:, role:, spots: [], plan: nil, intro: "", closing: "", show_pins: false %>
+<div class="ai-chat__message-wrapper">
+  <div class="ai-chat__divider"></div>
+  <div class="ai-chat__msg ai-chat__msg--<%= role %>">
   <% if role == "assistant" %>
     <div class="ai-chat__icon">
       <i class="bi bi-stars"></i>
     </div>
   <% end %>
   <div class="ai-chat__content">
-    <div class="ai-chat__bubble">
-      <% if role == "assistant" %>
-        <%= Kramdown::Document.new(content, hard_wrap: true).to_html.html_safe %>
-      <% else %>
-        <%= simple_format(content, {}, wrapper_tag: nil) %>
+    <% spots = local_assigns.fetch(:spots, []) %>
+    <% intro = local_assigns.fetch(:intro, "") %>
+    <% closing = local_assigns.fetch(:closing, "") %>
+    <% show_pins = local_assigns.fetch(:show_pins, false) %>
+    <% spot_mode = spots.present? && spots.first.is_a?(Hash) && spots.first[:description].present? %>
+
+    <% if spot_mode %>
+      <%# スポットモード: 導入文 → カード（説明含む） → 締め %>
+      <% if intro.present? %>
+        <div class="ai-chat__bubble ai-chat__bubble--intro">
+          <%= intro %>
+        </div>
       <% end %>
-    </div>
+      <div class="ai-chat__spots"
+           data-ai-chat-target="spotSuggestions"
+           <% if show_pins %>data-controller="ai-spots-batch"<% end %>>
+        <% spots.each_with_index do |spot, index| %>
+          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true %>
+        <% end %>
+      </div>
+      <% if closing.present? %>
+        <div class="ai-chat__bubble ai-chat__bubble--closing">
+          <%= closing %>
+        </div>
+      <% end %>
+    <% else %>
+      <%# プランモード: 従来の表示（説明 → カード全部） %>
+      <% if content.present? %>
+        <div class="ai-chat__bubble">
+          <% if role == "assistant" %>
+            <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
+          <% else %>
+            <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
+          <% end %>
+        </div>
+      <% end %>
+
+      <% if role == "assistant" && spots.present? %>
+        <div class="ai-chat__spots"
+             data-ai-chat-target="spotSuggestions"
+             <% if show_pins %>data-controller="ai-spots-batch"<% end %>>
+          <% spots.each_with_index do |spot, index| %>
+            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1 %>
+          <% end %>
+        </div>
+      <% end %>
+    <% end %>
+
     <div class="ai-chat__meta">
       <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
       <% if role == "assistant" %>
         <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
           <i class="bi bi-clipboard"></i>
         </button>
-        <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#regenerate" title="再生成">
-          <i class="bi bi-arrow-clockwise"></i>
-        </button>
       <% end %>
     </div>
+  </div>
   </div>
 </div>

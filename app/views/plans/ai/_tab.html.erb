@@ -1,5 +1,20 @@
 <%# AI提案タブ: ChatGPT風チャットUI %>
 
+<%# ユーザーメッセージ用テンプレート（JS即時表示用） %>
+<template id="user-message-template">
+  <div class="ai-chat__message-wrapper">
+    <div class="ai-chat__divider"></div>
+    <div class="ai-chat__msg ai-chat__msg--user">
+      <div class="ai-chat__content">
+        <div class="ai-chat__bubble"></div>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time"></span>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>
+
 <div class="ai-chat" data-controller="ai-chat">
   <%# メッセージ一覧エリア %>
   <div class="ai-chat__messages" id="ai-chat-messages" data-ai-chat-target="messages">
@@ -13,21 +28,23 @@
           こんにちは！ドライブプランのAIアシスタントです。<br>
           出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
         </div>
-        <div class="ai-chat__meta">
-          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
-          <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
-            <i class="bi bi-clipboard"></i>
-          </button>
-        </div>
       </div>
     </div>
+
+    <%# 保存済み会話履歴を表示（時系列順：古い→新しい） %>
+    <% plan.ai_chat_messages.chronological.each do |msg| %>
+      <%= render "plans/ai/message", content: msg.display_message, role: msg.role, spots: msg.display_spots, plan: plan, intro: msg.display_intro, closing: msg.display_closing %>
+    <% end %>
 
     <%# タイピングインジケーター %>
     <%= render "plans/ai/typing" %>
   </div>
 
-  <%# 入力フォーム %>
+  <%# 入力フォーム + モード切替（一体化） %>
   <div class="ai-chat__composer">
+    <div class="ai-chat__header" id="ai-chat-header">
+      <%= render "plans/ai/header", plan: plan %>
+    </div>
     <%= render "plans/ai/form", plan: plan %>
   </div>
 </div>

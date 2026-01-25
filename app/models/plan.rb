@@ -7,6 +7,7 @@ class Plan < ApplicationRecord
   has_one :goal_point, dependent: :destroy
   has_many :like_plans, dependent: :destroy
   has_many :liked_by_users, through: :like_plans, source: :user
+  has_many :ai_chat_messages, dependent: :destroy
 
   # Scopes
   scope :with_multiple_spots, -> {
