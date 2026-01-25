@@ -1,5 +1,4 @@
 import { Controller } from "@hotwired/stimulus"
-import { closeInfoWindow } from "map/infowindow"
 
 // InfoWindow内のスポット追加・削除ボタン用
 // button_toの代わりにfetchでRails APIを呼び出し、マップを再描画する
@@ -13,10 +12,7 @@ export default class extends Controller {
   async submit(event) {
     event.preventDefault()
 
-    // 1. InfoWindowを閉じる
-    closeInfoWindow()
-
-    // 2. Rails APIを呼び出し
+    // Rails APIを呼び出し
     try {
       const response = await this.fetchApi()
 

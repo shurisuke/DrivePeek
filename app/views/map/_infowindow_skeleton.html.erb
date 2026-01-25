@@ -1,0 +1,64 @@
+<%#
+  InfoWindow スケルトン（読み込み中表示）
+  JavaScriptから<template>要素として参照される
+%>
+<template id="infowindow-skeleton-template">
+  <div class="dp-infowindow">
+    <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
+    <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
+
+    <div class="dp-infowindow__header">
+      <div class="dp-infowindow__tabs">
+        <label for="iw-tab-info" class="dp-infowindow__tab" style="color:#f7931e;border-bottom:2px solid #f7931e;">スポット</label>
+        <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
+      </div>
+      <div class="dp-infowindow__stats">
+        <button type="button" class="dp-infowindow__stat dp-infowindow__stat--like">
+          <i class="bi bi-heart"></i>
+          <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
+        </button>
+        <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
+          <i class="bi bi-chat"></i>
+          <span class="dp-infowindow__skeleton-text" style="width: 16px;"></span>
+        </label>
+        <button type="button" class="dp-infowindow__close" onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+    </div>
+
+    <div class="dp-infowindow__zoom-controls">
+      <button type="button" class="dp-infowindow__zoom-btn" disabled>
+        <i class="bi bi-dash"></i>
+      </button>
+      <button type="button" class="dp-infowindow__zoom-btn" disabled>
+        <i class="bi bi-plus"></i>
+      </button>
+    </div>
+
+    <div class="dp-infowindow__panel dp-infowindow__panel--info" style="display: block;">
+      <div class="dp-infowindow__photo dp-infowindow__photo--skeleton">
+        <div class="dp-infowindow__spinner"></div>
+      </div>
+
+      <div class="dp-infowindow__genres" data-slot="genres">
+        <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
+        <span class="dp-infowindow__genre dp-infowindow__genre--skeleton"></span>
+      </div>
+
+      <div class="dp-infowindow__body">
+        <div class="dp-infowindow__name" data-slot="name">
+          <span class="dp-infowindow__skeleton-text" style="width: 60%;"></span>
+        </div>
+        <div class="dp-infowindow__address" data-slot="address">
+          <span class="dp-infowindow__skeleton-text" style="width: 80%;"></span>
+        </div>
+        <div data-slot="button">
+          <button type="button" class="dp-infowindow__btn" disabled>
+            プランに追加
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>
+</template>

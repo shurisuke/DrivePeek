@@ -27,7 +27,10 @@
       <button
         type="button"
         class="start-departure-time__help-btn"
-        data-action="click->start-departure-time#showHelp"
+        data-controller="help-dialog"
+        data-help-dialog-title-value="時間の変更"
+        data-help-dialog-body-value="時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
+        data-action="click->help-dialog#show"
         aria-label="ヘルプ"
       >?</button>
 

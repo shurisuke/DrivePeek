@@ -244,83 +244,26 @@
   align-items: center;
   justify-content: center;
 
-  width: 16px;
-  height: 16px;
-  margin-top: 31px; /* スポットがある時用 */
+  width: 20px;
+  height: 20px;
+  margin-top: 29px; /* スポットがある時用 */
   margin-bottom: 0; /* スポットがある時用 */
-  padding: 0;
-  border: none;
+  padding: 1px 1px 0 0;
+  border: 1.5px solid #c7c7cc;
   border-radius: 50%;
 
-  background: #888;
-  color: #fff;
-  font-size: 10px;
-  font-weight: 700;
+  background: transparent;
+  color: #8e8e93;
+  font-size: 12px;
+  font-weight: 600;
   line-height: 1;
 
   cursor: pointer;
+  transition: all 0.15s ease;
 
   &:hover {
-    background: #666;
+    border-color: #8e8e93;
+    color: #636366;
   }
 }
 
-/* ✅ ヘルプダイアログ（iOS風アラート） */
-#departure-time-help-dialog {
-  width: 270px;
-  max-width: 90vw;
-  padding: 0;
-  border: none;
-  border-radius: 14px;
-  background: rgba(255, 255, 255, 0.95);
-  backdrop-filter: blur(20px);
-  -webkit-backdrop-filter: blur(20px);
-  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
-  overflow: hidden;
-
-  &::backdrop {
-    background: rgba(0, 0, 0, 0.4);
-  }
-}
-
-.departure-time-help-dialog__content {
-  padding: 20px 16px 16px;
-  text-align: center;
-}
-
-.departure-time-help-dialog__title {
-  margin: 0 0 8px;
-  font-size: 17px;
-  font-weight: 600;
-  color: #000;
-  letter-spacing: -0.3px;
-}
-
-.departure-time-help-dialog__text {
-  margin: 15px 0 0 0;
-  font-size: 13px;
-  line-height: 1.5;
-  color: #666;
-}
-
-.departure-time-help-dialog__close-btn {
-  display: block;
-  width: 100%;
-  padding: 12px;
-  border: none;
-  border-top: 1px solid rgba(0, 0, 0, 0.1);
-  background: transparent;
-  color: #007aff;
-  font-size: 17px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: background 0.15s;
-
-  &:hover {
-    background: rgba(0, 0, 0, 0.04);
-  }
-
-  &:active {
-    background: rgba(0, 0, 0, 0.08);
-  }
-}

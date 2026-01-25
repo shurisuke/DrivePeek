@@ -14,6 +14,37 @@ class Spot < ApplicationRecord
   validates :lat, presence: true
   validates :lng, presence: true
 
+  # 近傍検索の閾値（0.001度 ≈ 約100m）
+  PROXIMITY_THRESHOLD = 0.001
+
+  # 近傍のSpotを検索
+  scope :nearby, ->(lat:, lng:, threshold: PROXIMITY_THRESHOLD) {
+    where(lat: (lat - threshold)..(lat + threshold))
+      .where(lng: (lng - threshold)..(lng + threshold))
+  }
+
+  # 座標から既存Spotを検索、なければPlaces APIで検索して作成
+  # @return [Spot, nil]
+  def self.find_or_create_from_location(name:, address:, lat:, lng:)
+    return nil if name.blank? || lat.zero? || lng.zero?
+
+    # 1. 近傍の既存Spotを検索
+    existing = nearby(lat: lat, lng: lng).first
+    return existing if existing
+
+    # 2. Google Places APIで検索
+    place = GooglePlacesAdapter.find_place(name: name, lat: lat, lng: lng)
+    return nil unless place
+
+    # 3. place_idで検索、なければ作成
+    find_or_create_by!(place_id: place[:place_id]) do |spot|
+      spot.name = place[:name] || name
+      spot.address = address
+      spot.lat = place[:lat] || lat
+      spot.lng = place[:lng] || lng
+    end
+  end
+
   # Callbacks
   after_commit :geocode_if_needed, on: %i[create update]
   after_commit :clear_cities_cache, if: :should_clear_cities_cache?

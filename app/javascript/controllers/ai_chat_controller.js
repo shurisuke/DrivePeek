@@ -1,12 +1,23 @@
 import { Controller } from "@hotwired/stimulus"
+import { clearAiSuggestionMarkers } from "map/state"
+import { closeInfoWindow } from "map/infowindow"
 
-// AI提案チャットのUI制御
+// ================================================================
+// AiChatController
+// 用途: AI提案チャットのUI制御
+// - メッセージ送受信（Turboイベント連携）
+// - テキストエリア自動リサイズ / Enter送信
+// - タイピングインジケーター表示
+// - 会話クリア時のマーカー削除
+// ================================================================
+
 export default class extends Controller {
   static targets = ["messages", "input", "sendBtn", "typing"]
 
   connect() {
     this.isSending = false
     this.scrollToBottom()
+    this.updateSendButtonState()
 
     // Turboイベントをリッスン
     this.element.addEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
@@ -18,6 +29,23 @@ export default class extends Controller {
     this.element.removeEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
   }
 
+  // 会話クリア時にAI提案マーカーもクリア
+  clearConversation() {
+    clearAiSuggestionMarkers()
+    closeInfoWindow()
+    // AI提案ピンクリアボタンを非表示に
+    const pinClearBtn = document.getElementById("ai-pin-clear")
+    if (pinClearBtn) pinClearBtn.hidden = true
+    // 会話クリアボタンを無効化
+    this.setClearButtonEnabled(false)
+  }
+
+  // 会話クリアボタンの有効/無効を切り替え
+  setClearButtonEnabled(enabled) {
+    const btn = document.getElementById("ai-chat-clear-btn")
+    if (btn) btn.disabled = !enabled
+  }
+
   // テキストエリアの自動リサイズ
   autoResize() {
     const textarea = this.inputTarget
@@ -25,10 +53,15 @@ export default class extends Controller {
     const newHeight = Math.min(textarea.scrollHeight, 100)
     textarea.style.height = `${newHeight}px`
 
-    // 送信中でなければ、空の場合は送信ボタンを無効化
-    if (!this.isSending) {
-      this.sendBtnTarget.disabled = !textarea.value.trim()
-    }
+    this.updateSendButtonState()
+  }
+
+  // 送信ボタンの状態を更新（テキストがあれば有効）
+  updateSendButtonState() {
+    if (this.isSending || !this.hasSendBtnTarget) return
+
+    const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
+    this.sendBtnTarget.disabled = !hasText
   }
 
   // Enter で送信、Shift+Enter で改行
@@ -36,8 +69,9 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault()
-      if (this.inputTarget.value.trim()) {
-        this.element.querySelector("form").requestSubmit()
+      const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
+      if (hasText) {
+        this.element.querySelector(".ai-chat__form").requestSubmit()
       }
     }
   }
@@ -45,7 +79,7 @@ export default class extends Controller {
   // フォーム送信開始（Turboイベント）
   handleSubmitStart(event) {
     // ユーザーメッセージを即座に表示
-    const message = this.inputTarget.value.trim()
+    const message = this.hasInputTarget ? this.inputTarget.value.trim() : ""
     if (message) {
       this.appendUserMessage(message)
     }
@@ -54,37 +88,18 @@ export default class extends Controller {
     this.showTyping()
   }
 
-  // ユーザーメッセージを即座に追加
+  // ユーザーメッセージを即座に追加（テンプレートを使用）
   appendUserMessage(content) {
-    const divider = document.createElement("div")
-    divider.className = "ai-chat__divider"
+    const template = document.getElementById("user-message-template")
+    if (!template) return
 
-    const msgDiv = document.createElement("div")
-    msgDiv.className = "ai-chat__msg ai-chat__msg--user"
-
-    const contentDiv = document.createElement("div")
-    contentDiv.className = "ai-chat__content"
-
-    const bubbleDiv = document.createElement("div")
-    bubbleDiv.className = "ai-chat__bubble"
-    bubbleDiv.innerHTML = content.replace(/\n/g, "<br>")
-    contentDiv.appendChild(bubbleDiv)
-
-    const metaDiv = document.createElement("div")
-    metaDiv.className = "ai-chat__meta"
-    const timeSpan = document.createElement("span")
-    timeSpan.className = "ai-chat__time"
-    timeSpan.textContent = this.getCurrentTime()
-    metaDiv.appendChild(timeSpan)
-
-    contentDiv.appendChild(metaDiv)
-    msgDiv.appendChild(contentDiv)
+    const clone = template.content.cloneNode(true)
+    clone.querySelector(".ai-chat__bubble").innerHTML = content.replace(/\n/g, "<br>")
+    clone.querySelector(".ai-chat__time").textContent = this.getCurrentTime()
 
     if (this.hasTypingTarget) {
-      this.messagesTarget.insertBefore(divider, this.typingTarget)
-      this.messagesTarget.insertBefore(msgDiv, this.typingTarget)
+      this.messagesTarget.insertBefore(clone, this.typingTarget)
     }
-
     this.scrollToBottom()
   }
 
@@ -92,8 +107,18 @@ export default class extends Controller {
   handleSubmitEnd(event) {
     this.setSending(false)
     this.hideTyping()
-    // 少し遅延してスクロール（Turbo Streamの反映を待つ）
-    setTimeout(() => this.scrollToBottom(), 100)
+    this.clearTextInput()
+    // 会話が追加されたのでクリアボタンを有効化
+    this.setClearButtonEnabled(true)
+  }
+
+  // テキスト入力をクリア
+  clearTextInput() {
+    if (this.hasInputTarget) {
+      this.inputTarget.value = ""
+      this.inputTarget.style.height = "auto"
+    }
+    this.updateSendButtonState()
   }
 
   // 送信中状態の切り替え
@@ -129,7 +154,6 @@ export default class extends Controller {
     const text = bubble.textContent || bubble.innerText
 
     navigator.clipboard.writeText(text).then(() => {
-      // アイコンを一時的に変更
       const icon = btn.querySelector("i")
       icon.classList.remove("bi-clipboard")
       icon.classList.add("bi-check")
@@ -143,16 +167,10 @@ export default class extends Controller {
     })
   }
 
-  // 再生成（将来実装）
-  regenerate(event) {
-    console.log("再生成機能は開発中です")
-  }
-
   // タイピングインジケーター表示
   showTyping() {
     if (this.hasTypingTarget) {
       this.typingTarget.style.display = "flex"
-      this.scrollToBottom()
     }
   }
 

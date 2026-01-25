@@ -1,0 +1,33 @@
+<%#
+  InfoWindow スポット追加/削除ボタン
+
+  locals:
+    - spot: Spotモデル
+    - plan_id: プランID
+    - plan_spot: PlanSpotモデル（nilの場合は追加モード）
+%>
+<% is_delete_mode = plan_spot.present? %>
+<% btn_label = is_delete_mode ? "プランから削除" : "プランに追加" %>
+
+<div id="infowindow-spot-button">
+  <% if is_delete_mode %>
+    <button type="button"
+            class="dp-infowindow__btn dp-infowindow__btn--delete"
+            data-controller="infowindow-spot-action"
+            data-infowindow-spot-action-url-value="<%= plan_plan_spot_path(plan_id, plan_spot.id) %>"
+            data-infowindow-spot-action-method-value="DELETE"
+            data-action="click->infowindow-spot-action#submit">
+      <%= btn_label %>
+    </button>
+  <% else %>
+    <button type="button"
+            class="dp-infowindow__btn"
+            data-controller="infowindow-spot-action"
+            data-infowindow-spot-action-url-value="<%= api_plan_plan_spots_path(plan_id) %>"
+            data-infowindow-spot-action-method-value="POST"
+            data-infowindow-spot-action-spot-id-value="<%= spot.id %>"
+            data-action="click->infowindow-spot-action#submit">
+      <%= btn_label %>
+    </button>
+  <% end %>
+</div>

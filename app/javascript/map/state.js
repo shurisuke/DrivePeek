@@ -26,6 +26,10 @@ let communityPreviewPolylines = []; // コミュニティプランの経路（�
 // --- 単一スポットピン（カード・スポット詳細から地図表示用） ---
 let spotPinMarker = null;           // 単一スポットピン（単体）
 
+// --- AI提案マーカー ---
+let aiSuggestionMarkers = [];       // AI提案スポット（配列）
+let aiSuggestionOverlays = [];      // AI提案パルスオーバーレイ（配列）
+
 // --- map instance ---
 export const getMapInstance = () => map;
 
@@ -155,3 +159,27 @@ export const setSpotPinMarker = (marker) => {
   clearSpotPinMarker();
   spotPinMarker = marker;
 };
+
+// --- AI提案マーカー ---
+export const clearAiSuggestionMarkers = () => {
+  aiSuggestionMarkers.forEach((m) => m.setMap(null));
+  aiSuggestionMarkers = [];
+  // パルスオーバーレイもクリア
+  aiSuggestionOverlays.forEach((o) => o.setMap(null));
+  aiSuggestionOverlays = [];
+};
+
+export const setAiSuggestionMarkers = (markers) => {
+  clearAiSuggestionMarkers();
+  aiSuggestionMarkers = markers;
+};
+
+export const addAiSuggestionMarker = (marker) => {
+  aiSuggestionMarkers.push(marker);
+};
+
+export const addAiSuggestionOverlay = (overlay) => {
+  aiSuggestionOverlays.push(overlay);
+};
+
+export const getAiSuggestionMarkers = () => aiSuggestionMarkers;

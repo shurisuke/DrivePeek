@@ -4,10 +4,25 @@ module Api
     before_action :set_plan
 
     def create
-      @user_message = params[:message].to_s.strip
-      return head :unprocessable_entity if @user_message.blank?
+      # メッセージが空の場合はエラー
+      return head :unprocessable_entity if user_message.blank?
 
-      @ai_response = AiChatService.chat(@user_message, plan: @plan)
+      chat_response = AiChatMessage.chat(
+        plan: @plan,
+        user: current_user,
+        message: user_message
+      )
+      @result = chat_response[:result]
+      @message = chat_response[:message]
+
+      respond_to do |format|
+        format.turbo_stream
+        format.html { redirect_to edit_plan_path(@plan) }
+      end
+    end
+
+    def destroy_all
+      @plan.ai_chat_messages.destroy_all
 
       respond_to do |format|
         format.turbo_stream
@@ -19,6 +34,10 @@ module Api
 
     def set_plan
       @plan = current_user.plans.find(params[:plan_id])
+    end
+
+    def user_message
+      @user_message ||= params[:message].to_s.strip
     end
   end
 end

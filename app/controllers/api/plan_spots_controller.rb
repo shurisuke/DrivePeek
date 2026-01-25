@@ -4,19 +4,19 @@ module Api
     before_action :set_plan
 
     def create
-      spot = Spot.find(params[:spot_id])
-      plan_spot = @plan.plan_spots.create!(spot: spot)
+      @spot = Spot.find(params[:spot_id])
+      @plan_spot = @plan.plan_spots.create!(spot: @spot)
 
-      @plan.recalculate_for!(plan_spot, action: :create)
+      @plan.recalculate_for!(@plan_spot, action: :create)
       @plan.reload
 
       respond_to do |format|
         format.turbo_stream { render "plans/refresh_plan_tab" }
         format.json do
           render json: {
-            plan_spot_id: plan_spot.id,
-            spot_id: spot.id,
-            position: plan_spot.position
+            plan_spot_id: @plan_spot.id,
+            spot_id: @spot.id,
+            position: @plan_spot.position
           }, status: :created
         end
       end
@@ -24,6 +24,25 @@ module Api
       render json: { message: "スポットが見つかりません" }, status: :not_found
     rescue ActiveRecord::RecordInvalid => e
       render json: { message: e.message }, status: :unprocessable_entity
+    end
+
+    # プランを一括採用（AI提案 / コミュニティプラン共通）
+    # POST /api/plans/:plan_id/plan_spots/adopt
+    def adopt
+      spot_ids = Array(params[:spots]).map { |s| s["spot_id"] || s[:spot_id] }.compact.map(&:to_i)
+      return head :unprocessable_entity if spot_ids.empty?
+
+      @plan.adopt_spots!(spot_ids)
+      @plan = Plan.includes(:start_point, :goal_point, plan_spots: { spot: :genres }).find(@plan.id)
+
+      respond_to do |format|
+        format.turbo_stream { render "plans/refresh_plan_tab" }
+        format.json { render json: { success: true } }
+      end
+    rescue ActiveRecord::RecordNotFound => e
+      render json: { error: "スポットが見つかりません" }, status: :not_found
+    rescue ActiveRecord::RecordInvalid => e
+      render json: { error: e.message }, status: :unprocessable_entity
     end
 
     private

@@ -93,5 +93,16 @@ body.no-footer .plan-form.navibar--wide .plan-save {
       box-shadow: 0 4px 12px rgba(239, 68, 68, 0.5);
     }
   }
+
+  /* グラデーション紫（AI提案ピンをクリア） */
+  &--purple {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    box-shadow: 0 2px 8px rgba(118, 75, 162, 0.4);
+
+    &:hover {
+      background: linear-gradient(135deg, #5a71d4 0%, #6a4291 100%);
+      box-shadow: 0 4px 12px rgba(118, 75, 162, 0.5);
+    }
+  }
 }
 

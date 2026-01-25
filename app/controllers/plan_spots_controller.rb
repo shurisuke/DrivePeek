@@ -7,6 +7,7 @@ class PlanSpotsController < ApplicationController
   before_action :set_plan_spot, only: %i[destroy]
 
   def destroy
+    @spot = @plan_spot.spot
     @plan_spot.destroy!
     @plan.recalculate_for!(@plan_spot, action: :destroy)
     @plan.reload

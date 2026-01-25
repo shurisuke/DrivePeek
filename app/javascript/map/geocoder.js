@@ -40,6 +40,7 @@ export const geocodeAddress = (address) => {
         location: result.geometry.location,     // google.maps.LatLng（lat(), lng() が取れる）
         viewport: result.geometry.viewport,     // google.maps.LatLngBounds | undefined（fitBoundsに使える）
         formattedAddress: result.formatted_address, // 表示用住所（例: "日本、〒... 栃木県..."）
+        placeId: result.place_id,               // Google Places ID
       });
     });
   });
