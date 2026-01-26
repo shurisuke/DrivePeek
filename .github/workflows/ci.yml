@@ -74,3 +74,22 @@ jobs:
 
       - name: Run tests
         run: bundle exec rspec
+
+  security:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v4
+
+      - name: Set up Ruby
+        uses: ruby/setup-ruby@v1
+        with:
+          ruby-version: 3.2.2
+          bundler-cache: true
+
+      - name: Run Brakeman
+        run: bundle exec brakeman -q --no-pager
+
+      - name: Run bundler-audit
+        run: bundle exec bundler-audit check --update
