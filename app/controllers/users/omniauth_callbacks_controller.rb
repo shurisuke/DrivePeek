@@ -32,7 +32,8 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
     if @user
       # 既存ユーザー：通常ログイン
       flash[:notice] = "#{provider_name}でログインしました"
-      sign_in_and_redirect @user, event: :authentication
+      sign_in @user, event: :authentication
+      redirect_to new_plan_path
     else
       # 新規ユーザー：直接登録
       @user = User.create_from_omniauth(auth)

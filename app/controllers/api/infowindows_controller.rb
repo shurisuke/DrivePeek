@@ -1,14 +1,23 @@
 # frozen_string_literal: true
 
 module Api
-  class InfowindowsController < BaseController
+  # InfoWindowは認証不要（公開プラン閲覧時にも使用）
+  # ログイン状態に応じてUIを出し分ける
+  # createのみ認証必須（スポット作成・API呼び出しコスト保護）
+  class InfowindowsController < ApplicationController
+    before_action :authenticate_user!, only: :create
     # GET /api/infowindow
     # Turbo Frame用：spotId または place_id でInfoWindow HTMLを返す
     # Google API は1回のみ呼び出し（photos 取得）
     def show
       @edit_mode = params[:edit_mode]
 
-      # 出発・帰宅地点の場合はシンプルなパーシャルを返す
+      # ログイン前はAPI呼び出しなしでゲスト用UIを返す（コスト削減）
+      unless user_signed_in?
+        return render partial: "map/infowindow_guest", locals: guest_locals
+      end
+
+      # 出発・帰宅地点の場合はシンプルなパーシャルを返す（ログイン後のみ）
       if @edit_mode.present?
         return render partial: "map/infowindow_home", locals: home_locals
       end
@@ -124,8 +133,9 @@ module Api
       zoom_index = (params[:zoom_index] || MapHelper::INFOWINDOW_DEFAULT_ZOOM_INDEX).to_i
       zoom_scale = MapHelper::INFOWINDOW_ZOOM_SCALES[zoom_index] || "md"
 
-      # DBから住所を取得
-      plan = Plan.find_by(id: params[:plan_id])
+      # DBから住所を取得（自分のプラン → 公開プランの順で検索）
+      plan = current_user.plans.find_by(id: params[:plan_id]) ||
+             Plan.publicly_visible.find_by(id: params[:plan_id])
       point = @edit_mode == "start_point" ? plan&.start_point : plan&.goal_point
       address = point&.address
 
@@ -135,6 +145,16 @@ module Api
         edit_mode: @edit_mode,
         zoom_scale: zoom_scale,
         plan_id: params[:plan_id]
+      }
+    end
+
+    def guest_locals
+      zoom_index = (params[:zoom_index] || MapHelper::INFOWINDOW_DEFAULT_ZOOM_INDEX).to_i
+      zoom_scale = MapHelper::INFOWINDOW_ZOOM_SCALES[zoom_index] || "md"
+
+      {
+        zoom_scale: zoom_scale,
+        zoom_index: zoom_index
       }
     end
 
