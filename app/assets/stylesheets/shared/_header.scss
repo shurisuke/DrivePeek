@@ -27,6 +27,7 @@ body {
   padding: 6px;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
   transition: all 0.3s ease;
+  cursor: pointer;
 
   &:hover {
     background-color: white;
@@ -128,6 +129,8 @@ body {
 
   &__nav {
     ul {
+      padding-left: 0;
+
       li {
         text-align: center;
         overflow: hidden;

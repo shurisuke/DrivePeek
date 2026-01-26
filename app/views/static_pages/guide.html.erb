@@ -1,0 +1,154 @@
+<% content_for :hide_footer, true %>
+
+<div class="guide-page" data-controller="swipe-carousel">
+  <!-- スワイプエリア（左） -->
+  <div class="guide-swipe-zone guide-swipe-zone--left" data-bs-target="#guideCarousel" data-bs-slide="prev">
+    <i class="fa-solid fa-chevron-left"></i>
+  </div>
+
+  <!-- スワイプエリア（右） -->
+  <div class="guide-swipe-zone guide-swipe-zone--right" data-bs-target="#guideCarousel" data-bs-slide="next">
+    <i class="fa-solid fa-chevron-right"></i>
+  </div>
+
+  <!-- カルーセル -->
+  <div id="guideCarousel" class="carousel slide h-100" data-bs-touch="true" data-bs-interval="false" data-bs-ride="false">
+    <div class="carousel-inner h-100">
+      <!-- スライド1: イントロ -->
+      <div class="carousel-item active h-100" data-page="1">
+        <div class="guide-slide guide-slide--green">
+          <div class="guide-slide__content">
+            <div class="guide-slide__icon">
+              <%= image_tag "drivepeek_icon.png", width: 120, height: 120 %>
+            </div>
+            <h2 class="guide-slide__title">DrivePeekへようこそ！</h2>
+            <p class="guide-slide__subtitle">ドライブプラン作成アプリ</p>
+            <ul class="guide-slide__features">
+              <li><span class="guide-slide__feature-emoji">🗺️</span>みんなの旅を参考にできる</li>
+              <li><span class="guide-slide__feature-emoji">🤖</span>AIがスポット提案</li>
+              <li><span class="guide-slide__feature-emoji">⏱️</span>自動でスケジューリング</li>
+              <li><span class="guide-slide__feature-emoji">🔒</span>プライバシーも安心</li>
+            </ul>
+          </div>
+          <div class="guide-slide__cta">
+            <div class="guide-slide__swipe-hint">
+              <span class="guide-slide__swipe-hint-text">詳しく見る</span>
+              <span class="guide-slide__swipe-hint-arrow">→</span>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- スライド2: みんなの旅 -->
+      <div class="carousel-item h-100" data-page="2">
+        <div class="guide-slide guide-slide--blue">
+          <div class="guide-slide__content">
+            <div class="guide-slide__feature-icon">
+              <i class="fa-solid fa-earth-asia"></i>
+            </div>
+            <h2 class="guide-slide__title">みんなの旅を参考に</h2>
+            <p class="guide-slide__description">
+              近くを旅した誰かのプランを<strong>覗き見</strong>👀<br>
+              リアルなルートから、あなたの旅を描こう
+            </p>
+            <div class="guide-slide__image-wrap">
+              <%= image_tag "community_plans.png", alt: "みんなの旅", class: "guide-slide__image" %>
+            </div>
+          </div>
+          <div class="guide-slide__cta">
+            <%= link_to new_user_registration_path, class: "guide-slide__btn" do %>
+              <i class="fa-solid fa-eye me-2"></i>みんなの旅を見る
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- スライド3: AIチャット -->
+      <div class="carousel-item h-100" data-page="3">
+        <div class="guide-slide guide-slide--purple">
+          <div class="guide-slide__content">
+            <div class="guide-slide__feature-icon guide-slide__feature-icon--ai">
+              <i class="fa-solid fa-robot"></i>
+            </div>
+            <h2 class="guide-slide__title">AIがサポート</h2>
+            <p class="guide-slide__description">
+              行き先に迷ったら、<strong>AIに相談</strong>🤖<br>
+              おすすめスポットを提案します
+            </p>
+            <div class="guide-slide__image-wrap">
+              <%= image_tag "ai_chat.png", alt: "AIチャット", class: "guide-slide__image" %>
+            </div>
+          </div>
+          <div class="guide-slide__cta">
+            <%= link_to new_user_registration_path, class: "guide-slide__btn" do %>
+              <i class="fa-solid fa-robot me-2"></i>AIに相談してみる
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- スライド4: プラン作成 -->
+      <div class="carousel-item h-100" data-page="4">
+        <div class="guide-slide guide-slide--orange">
+          <div class="guide-slide__content">
+            <div class="guide-slide__feature-icon guide-slide__feature-icon--map">
+              <i class="fa-solid fa-clock"></i>
+            </div>
+            <h2 class="guide-slide__title">時間も自動で計算</h2>
+            <p class="guide-slide__description">
+              出発時間・滞在時間を設定するだけ⏱️<br>
+              <strong>自動計算でスケジューリング</strong><br>
+              当日のイメージがリアルに見える
+            </p>
+            <div class="guide-slide__image-wrap">
+              <%= image_tag "plan_create.png", alt: "プラン作成画面", class: "guide-slide__image" %>
+            </div>
+          </div>
+          <div class="guide-slide__cta">
+            <%= link_to new_user_registration_path, class: "guide-slide__btn" do %>
+              <i class="fa-solid fa-clock me-2"></i>プランを作ってみる
+            <% end %>
+          </div>
+        </div>
+      </div>
+
+      <!-- スライド5: プライバシー -->
+      <div class="carousel-item h-100" data-page="5">
+        <div class="guide-slide guide-slide--teal">
+          <div class="guide-slide__content">
+            <div class="guide-slide__feature-icon guide-slide__feature-icon--safe">
+              <i class="fa-solid fa-shield-halved"></i>
+            </div>
+            <h2 class="guide-slide__title">プライバシーも安心</h2>
+            <p class="guide-slide__description">
+              出発場所・帰宅場所は<br>
+              他のユーザーに<strong>絶対に公開されません</strong>🔒<br>
+              アカウントを非公開に設定することもできます<br>
+              匿名で安心してプラン共有を楽しもう
+            </p>
+          </div>
+          <div class="guide-slide__cta">
+            <%= link_to new_user_registration_path, class: "guide-slide__btn guide-slide__btn--large" do %>
+              <i class="fa-solid fa-rocket me-2"></i>さっそく始める！
+            <% end %>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ナビゲーション（画面下部） -->
+  <div class="guide-carousel__nav">
+    <button type="button" class="guide-carousel__nav-btn guide-carousel__nav-btn--prev" data-bs-target="#guideCarousel" data-bs-slide="prev">
+      <i class="fa-solid fa-chevron-left"></i>
+    </button>
+    <div class="guide-carousel__page">
+      <span class="guide-carousel__current">1</span>
+      <span class="guide-carousel__separator">/</span>
+      <span class="guide-carousel__total">5</span>
+    </div>
+    <button type="button" class="guide-carousel__nav-btn guide-carousel__nav-btn--next" data-bs-target="#guideCarousel" data-bs-slide="next">
+      <i class="fa-solid fa-chevron-right"></i>
+    </button>
+  </div>
+</div>

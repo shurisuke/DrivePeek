@@ -1,113 +1,54 @@
-<div class="main-content">
-  <div class="hero-image">
-    <div class="hero-overlay">
-      <div class="hero-title">
-        <p class="lead-first">ドライブプラン作成アプリ</p>
-        <h1 class="display-4 fw-bold first d-flex align-items-center">
-          <%= image_tag "drivepeek_icon.png", width: 100, height: 100 %>
-          DrivePeek
-        </h1>
-        <p class="lead-last">地図×AI×誰かの旅で、理想のプランを作ろう</p>
-      </div>
+<% content_for :hide_footer, true %>
 
-      <div class="text-center mt-5">
-        <%= link_to new_user_registration_path, class: "btn top-main-btn rounded-pill" do %>
-          <i class="fa-solid fa-map-location-dot me-2"></i>
-          登録してプランをつくる
+<div class="top-hero">
+  <!-- すりガラスカード -->
+  <div class="top-hero__card">
+    <!-- ヘルプボタン -->
+    <%= link_to guide_path, class: "top-hero__help" do %>
+      <i class="fa-solid fa-question"></i>
+    <% end %>
+
+    <div class="top-hero__logo">
+      <%= image_tag "drivepeek_icon.png", width: 64, height: 64, alt: "DrivePeek" %>
+    </div>
+    <h1 class="top-hero__title">DrivePeek</h1>
+    <p class="top-hero__tagline">地図 × AI × 誰かの旅で<br>理想のドライブプランを</p>
+
+    <div class="top-hero__actions">
+      <%= link_to new_user_registration_path, class: "top-hero__btn top-hero__btn--primary" do %>
+        <i class="fa-solid fa-user-plus"></i>
+        <span>無料で始める</span>
+      <% end %>
+
+      <%= link_to new_user_session_path, class: "top-hero__btn top-hero__btn--secondary top-hero__btn--full" do %>
+        <i class="fa-solid fa-right-to-bracket"></i>
+        <span>ログイン</span>
+      <% end %>
+    </div>
+
+    <div class="top-hero__sns">
+      <span class="top-hero__sns-label">SNSでかんたん登録</span>
+      <div class="top-hero__sns-buttons">
+        <%= button_to user_line_omniauth_authorize_path, method: :post,
+                      class: "top-hero__sns-btn top-hero__sns-btn--line",
+                      data: { turbo: false } do %>
+          <i class="bi bi-line"></i>
         <% end %>
-      </div>
-
-      <div class="text-center mt-4">
-        <%= link_to new_user_registration_path, class: 'btn sub-btn rounded-pill' do %>
-          <i class="fa-solid fa-user-plus me-2"></i>
-          会員登録
+        <%= button_to user_twitter2_omniauth_authorize_path, method: :post,
+                      class: "top-hero__sns-btn top-hero__sns-btn--x",
+                      data: { turbo: false } do %>
+          <i class="bi bi-twitter-x"></i>
         <% end %>
-
-        <%= link_to new_user_session_path, class: 'btn sub-btn rounded-pill' do %>
-          <i class="fa-solid fa-right-to-bracket me-2"></i>
-          ログイン
-        <% end %>
-      </div>
-
-      <div class="sns-quick-login">
-        <span class="sns-quick-login-text">SNSでかんたん登録</span>
-        <div class="sns-quick-login-buttons">
-          <%= button_to user_line_omniauth_authorize_path, method: :post,
-                        class: "sns-quick-btn sns-quick-btn--line",
-                        data: { turbo: false } do %>
-            <i class="bi bi-line"></i>
-          <% end %>
-          <%= button_to user_twitter2_omniauth_authorize_path, method: :post,
-                        class: "sns-quick-btn sns-quick-btn--x",
-                        data: { turbo: false } do %>
-            <i class="bi bi-twitter-x"></i>
-          <% end %>
-        </div>
       </div>
     </div>
   </div>
+
+  <!-- フッター -->
+  <footer class="top-hero__footer">
+    <%= link_to "利用規約", terms_path %>
+    <span>|</span>
+    <%= link_to "プライバシーポリシー", privacy_path %>
+    <span>|</span>
+    <%= link_to "お問い合わせ", new_contact_path %>
+  </footer>
 </div>
-
-<!-- セクション① -->
-<section class="top-section bg-light">
-  <div class="container">
-    <div class="row align-items-center">
-
-      <!-- 左：文章 -->
-      <div class="col-md-6 d-flex align-items-center justify-content-center">
-        <div>
-          <h3 class="fw-bold text-center">地図とAI、誰かの旅が&nbsp;&nbsp;<br>&nbsp;&nbsp;あなたのドライブを導く。</h3>
-          <p class="mt-4 text-center">ドライブのきっかけは、近くを旅した誰かのプランや、AIのヒント。<br>
-            行きたいエリアのリアルなルートから、あなただけの旅を描こう。<br><br>
-            メモや出発場所・帰宅場所、ユーザー名は公開されないので、<br>
-            プライバシーの面も安心してご利用いただけます</p>
-          <div class="text-center">
-            <%= link_to raw('→ 登録してプランをつくる'), new_user_registration_path, class: 'btn btn-brand mt-4 px-5 py-3' %>
-          </div>
-        </div>
-      </div>
-
-      <!-- 右：イメージ画像（2分割） -->
-      <div class="col-md-6 text-center mb-4 mb-md-0">
-        <div class="section-images-split">
-          <div class="section-image-wrapper shadow">
-            <%= image_tag "community_plans.png", alt: "みんなの旅" %>
-          </div>
-          <div class="section-image-wrapper shadow">
-            <%= image_tag "ai_chat.png", alt: "AIチャット" %>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
-
-<!-- セクション② -->
-<section class="top-section bg-white">
-  <div class="container">
-    <div class="row align-items-center">
-
-      <!-- 左：イメージ画像 -->
-      <div class="col-md-6 text-center mb-4 mb-md-0">
-        <%= image_tag "drivepeek_plan_map.png", alt: "プラン作成画面", class: "img-fluid rounded shadow" %>
-      </div>
-
-      <!-- 右：文章 -->
-      <div class="col-md-6 text-center">
-        <div>
-          <h3 class="fw-bold text-center">直感的にドライブプランを作ろう。</h3>
-          <p class="mt-4 text-center">気になる場所を直感的にプランに追加。<br>
-                                      迷ったら、他の人のプランを覗き見。<br>
-                                      AIのおすすめスポットで、新しい発見にも出会えます。<br><br>
-                                      試しに一度プランを作ってみましょう！<br>
-          </p>
-          <div class="text-center">
-            <%= link_to raw('→ 登録してプランをつくる'), new_user_registration_path, class: 'btn btn-brand mt-4 px-5 py-3' %>
-          </div>
-        </div>
-      </div>
-
-    </div>
-  </div>
-</section>
