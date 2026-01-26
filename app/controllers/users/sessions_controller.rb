@@ -1,6 +1,6 @@
 class Users::SessionsController < Devise::SessionsController
   # ログイン時に自動でremember_meを有効化
-  before_action :configure_sign_in_params, only: [:create]
+  before_action :configure_sign_in_params, only: [ :create ]
 
   # ログイン後のリダイレクト先をプラン作成エントリー画面に変更
   def after_sign_in_path_for(resource)
