@@ -32,10 +32,10 @@
               <% end %>
             </li>
           <% else %>
-            <li><%= link_to "TOP", unauthenticated_root_path %></li>
-            <li><%= link_to "新規登録", new_user_registration_path %></li>
-            <li><%= link_to "ログイン", new_user_session_path %></li>
-            <li><%= link_to "DrivePeekの使い方", unauthenticated_root_path %></li>
+            <li><%= link_to unauthenticated_root_path do %><i class="fa-solid fa-house"></i><span>TOP</span><% end %></li>
+            <li><%= link_to new_user_registration_path do %><i class="fa-solid fa-user-plus"></i><span>新規登録</span><% end %></li>
+            <li><%= link_to new_user_session_path do %><i class="fa-solid fa-right-to-bracket"></i><span>ログイン</span><% end %></li>
+            <li><%= link_to guide_path do %><i class="fa-solid fa-circle-question"></i><span>使い方</span><% end %></li>
           <% end %>
         </ul>
       </div>
