@@ -84,6 +84,11 @@ group :development, :test do
   gem "brakeman", require: false
   gem "rubocop-rails-omakase", require: false
   gem "dotenv-rails"
+
+  # RSpec
+  gem "rspec-rails", "~> 7.1"
+  gem "factory_bot_rails"
+  gem "faker"
 end
 
 group :development do
@@ -95,4 +100,10 @@ end
 group :test do
   gem "capybara"
   gem "selenium-webdriver"
+
+  # RSpec support
+  gem "shoulda-matchers", "~> 6.0"
+  gem "webmock"
+  gem "vcr"
+  gem "database_cleaner-active_record"
 end
