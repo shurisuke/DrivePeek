@@ -1,0 +1,54 @@
+<%#
+  InfoWindow コンテンツ（ゲスト専用：API呼び出しなし）
+
+  locals:
+    - zoom_scale: ズームスケール
+    - zoom_index: ズームインデックス
+%>
+
+<%= turbo_frame_tag "infowindow-content" do %>
+<div class="dp-infowindow dp-infowindow--guest dp-infowindow--guest-standalone dp-infowindow--<%= zoom_scale %>"
+     data-controller="infowindow-ui"
+     data-infowindow-ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
+     data-infowindow-ui-zoom-index-value="<%= zoom_index %>">
+
+  <%# ズームコントロール %>
+  <div class="dp-infowindow__zoom-controls">
+    <button type="button"
+            class="dp-infowindow__zoom-btn"
+            data-action="click->infowindow-ui#zoomOut"
+            data-infowindow-ui-target="zoomOutBtn">
+      <i class="bi bi-dash"></i>
+    </button>
+    <button type="button"
+            class="dp-infowindow__zoom-btn"
+            data-action="click->infowindow-ui#zoomIn"
+            data-infowindow-ui-target="zoomInBtn">
+      <i class="bi bi-plus"></i>
+    </button>
+  </div>
+
+  <%# ゲスト用コンテンツ %>
+  <div class="dp-infowindow__guest-standalone-content">
+    <button type="button"
+            class="dp-infowindow__close"
+            onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
+      <i class="bi bi-x-lg"></i>
+    </button>
+
+    <p>ログインすると…</p>
+    <ul class="dp-infowindow__guest-benefits">
+      <li><i class="bi bi-people"></i>みんなのプランをもっと見る</li>
+      <li><i class="bi bi-stars"></i>AIがドライブプランを提案</li>
+      <li><i class="bi bi-chat-dots"></i>コメントを見る・書く</li>
+      <li><i class="bi bi-clock"></i>スケジュールを自動で計算</li>
+    </ul>
+    <p>さあ、プランを作ろう！</p>
+    <div class="dp-infowindow__guest-buttons">
+      <%= link_to "新規登録", new_user_registration_path, class: "dp-infowindow__guest-btn dp-infowindow__guest-btn--signup", data: { turbo_frame: "_top" } %>
+      <%= link_to "ログイン", new_user_session_path, class: "dp-infowindow__guest-btn dp-infowindow__guest-btn--login", data: { turbo_frame: "_top" } %>
+      <p class="dp-infowindow__guest-sns-hint">SNSで簡単登録できます</p>
+    </div>
+  </div>
+</div>
+<% end %>

@@ -6,29 +6,21 @@
 %>
 
 <%= turbo_frame_tag dom_id(spot, :infowindow_like) do %>
-  <% if user_signed_in? %>
-    <% if is_liked %>
-      <%= button_to like_spot_path(like_spot),
-                    method: :delete,
-                    class: "dp-infowindow__stat dp-infowindow__stat--like dp-infowindow__stat--liked",
-                    data: { turbo_frame: dom_id(spot, :infowindow_like) } do %>
-        <i class="bi bi-heart-fill"></i>
-        <span><%= like_count %></span>
-      <% end %>
-    <% else %>
-      <%= button_to like_spots_path(spot_id: spot.id),
-                    method: :post,
-                    class: "dp-infowindow__stat dp-infowindow__stat--like",
-                    data: { turbo_frame: dom_id(spot, :infowindow_like) } do %>
-        <i class="bi bi-heart"></i>
-        <span><%= like_count %></span>
-      <% end %>
+  <% if is_liked %>
+    <%= button_to like_spot_path(like_spot),
+                  method: :delete,
+                  class: "dp-infowindow__stat dp-infowindow__stat--like dp-infowindow__stat--liked",
+                  data: { turbo_frame: dom_id(spot, :infowindow_like) } do %>
+      <i class="bi bi-heart-fill"></i>
+      <span><%= like_count %></span>
     <% end %>
   <% else %>
-    <%# 未ログイン時は表示のみ（クリック不可） %>
-    <span class="dp-infowindow__stat dp-infowindow__stat--like dp-infowindow__stat--disabled">
+    <%= button_to like_spots_path(spot_id: spot.id),
+                  method: :post,
+                  class: "dp-infowindow__stat dp-infowindow__stat--like",
+                  data: { turbo_frame: dom_id(spot, :infowindow_like) } do %>
       <i class="bi bi-heart"></i>
       <span><%= like_count %></span>
-    </span>
+    <% end %>
   <% end %>
 <% end %>

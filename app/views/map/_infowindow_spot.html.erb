@@ -18,8 +18,7 @@
   has_multiple_photos = urls.size > 1
   comments = spot.spot_comments.chronological.includes(:user)
   comment_count = comments.size
-  is_logged_in = user_signed_in?
-  like_spot = is_logged_in ? current_user.like_spots.find_by(spot: spot) : nil
+  like_spot = current_user.like_spots.find_by(spot: spot)
 %>
 
 <%= turbo_frame_tag "infowindow-content" do %>
@@ -159,35 +158,21 @@
 
   <%# コメントパネル %>
   <div class="dp-infowindow__panel dp-infowindow__panel--comment">
-    <% if is_logged_in %>
-      <%# ログイン時：コメント一覧 + 投稿フォーム %>
-      <div class="dp-infowindow__comments" id="comments-list">
-        <% if comments.any? %>
-          <%= render partial: "spot_comments/comment",
-                     collection: comments,
-                     as: :comment,
-                     locals: { current_user: current_user } %>
-        <% else %>
-          <div id="comments-empty" class="dp-infowindow__comments-empty">
-            まだコメントはありません
-          </div>
-        <% end %>
-      </div>
-      <div class="dp-infowindow__comment-footer">
-        <%= render "spot_comments/form", spot: spot %>
-      </div>
-    <% else %>
-      <%# 未ログイン時：登録促進 %>
-      <div class="dp-infowindow__comments-guest">
-        <div class="dp-infowindow__comments-guest-message">
-          <i class="bi bi-chat-dots"></i>
-          <p>会員登録すると<br>コメントを閲覧・投稿できます</p>
+    <div class="dp-infowindow__comments" id="comments-list">
+      <% if comments.any? %>
+        <%= render partial: "spot_comments/comment",
+                   collection: comments,
+                   as: :comment,
+                   locals: { current_user: current_user } %>
+      <% else %>
+        <div id="comments-empty" class="dp-infowindow__comments-empty">
+          まだコメントはありません
         </div>
-        <%= link_to new_user_registration_path, class: "dp-infowindow__comments-guest-btn" do %>
-          新規登録はこちら
-        <% end %>
-      </div>
-    <% end %>
+      <% end %>
+    </div>
+    <div class="dp-infowindow__comment-footer">
+      <%= render "spot_comments/form", spot: spot %>
+    </div>
   </div>
 </div>
 <% end %>
