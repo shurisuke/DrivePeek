@@ -93,19 +93,19 @@ RSpec.describe Spot, type: :model do
       let!(:osaka_spot) { create(:spot, prefecture: "大阪府", city: "大阪市") }
 
       it "都道府県/市区町村で絞り込む" do
-        result = Spot.filter_by_cities(["東京都/港区"])
+        result = Spot.filter_by_cities([ "東京都/港区" ])
         expect(result).to include(tokyo_spot)
         expect(result).not_to include(osaka_spot)
       end
 
       it "都道府県のみで絞り込む" do
-        result = Spot.filter_by_cities(["東京都"])
+        result = Spot.filter_by_cities([ "東京都" ])
         expect(result).to include(tokyo_spot)
         expect(result).not_to include(osaka_spot)
       end
 
       it "複数の市区町村で絞り込む" do
-        result = Spot.filter_by_cities(["東京都/港区", "大阪府/大阪市"])
+        result = Spot.filter_by_cities([ "東京都/港区", "大阪府/大阪市" ])
         expect(result).to include(tokyo_spot, osaka_spot)
       end
 
@@ -127,7 +127,7 @@ RSpec.describe Spot, type: :model do
       end
 
       it "親ジャンル選択時は子ジャンルも含める" do
-        result = Spot.filter_by_genres([parent_genre.id])
+        result = Spot.filter_by_genres([ parent_genre.id ])
         expect(result).to include(spot_with_parent, spot_with_child)
         expect(result).not_to include(spot_without_genre)
       end
@@ -212,13 +212,13 @@ RSpec.describe Spot, type: :model do
       result = Spot.cities_by_prefecture
 
       # nilや空文字のレコードは含まれない
-      expect(result.keys).to match_array(["東京都", "大阪府"])
+      expect(result.keys).to match_array([ "東京都", "大阪府" ])
     end
   end
 
   describe ".clear_cities_cache" do
     it "キャッシュをクリアする" do
-      Rails.cache.write(Spot::CITIES_CACHE_KEY, { "テスト" => ["市"] })
+      Rails.cache.write(Spot::CITIES_CACHE_KEY, { "テスト" => [ "市" ] })
 
       Spot.clear_cities_cache
 
@@ -238,7 +238,7 @@ RSpec.describe Spot, type: :model do
 
     context "ジャンルが2つ未満の場合" do
       it "GenreDetectorを呼び出す" do
-        allow(GenreDetector).to receive(:detect).and_return([genre1.id, genre2.id])
+        allow(GenreDetector).to receive(:detect).and_return([ genre1.id, genre2.id ])
 
         result = spot.detect_genres!
 

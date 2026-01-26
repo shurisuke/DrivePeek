@@ -49,7 +49,7 @@ RSpec.describe AiChatService, type: :service do
         stub_openai_chat_api_with_response({
           theme: "日光の旅",
           description: "テスト説明",
-          spot_ids: [spot.id],
+          spot_ids: [ spot.id ],
           spot_descriptions: { spot.id.to_s => "素敵なスポットです" },
           closing: "楽しんでください"
         })
@@ -168,13 +168,13 @@ RSpec.describe AiChatService, type: :service do
       end
 
       it "希望に応じてスロットを入れ替える" do
-        result = described_class.send(:build_slots, [:sea])
+        result = described_class.send(:build_slots, [ :sea ])
 
         expect(result).to include(:sea)
       end
 
       it "既存スロットと重複する希望は入れ替えない" do
-        result = described_class.send(:build_slots, [:onsen])
+        result = described_class.send(:build_slots, [ :onsen ])
 
         # onsenは既にDEFAULT_SLOTSに含まれているので変化なし
         expect(result.count(:onsen)).to eq(1)
@@ -182,7 +182,7 @@ RSpec.describe AiChatService, type: :service do
 
       it "優先度が低いスロットから入れ替える" do
         # sightseeingが最も優先度が低いので入れ替え対象
-        result = described_class.send(:build_slots, [:sea])
+        result = described_class.send(:build_slots, [ :sea ])
 
         expect(result).to include(:sea)
         expect(result).not_to include(:sightseeing)
@@ -223,22 +223,22 @@ RSpec.describe AiChatService, type: :service do
       it "「〇番だけ変えて」パターンを検出する" do
         result = described_class.send(:detect_partial_change, "2番だけ変えて", previous_context)
 
-        expect(result[:change_indices]).to eq([1])
-        expect(result[:keep_indices]).to eq([0, 2])
+        expect(result[:change_indices]).to eq([ 1 ])
+        expect(result[:keep_indices]).to eq([ 0, 2 ])
       end
 
       it "「〇〇以外変えて」パターンを検出する" do
         result = described_class.send(:detect_partial_change, "スポットA以外変えて", previous_context)
 
-        expect(result[:keep_indices]).to eq([0])
-        expect(result[:change_indices]).to eq([1, 2])
+        expect(result[:keep_indices]).to eq([ 0 ])
+        expect(result[:change_indices]).to eq([ 1, 2 ])
       end
 
       it "「〇〇は残して」パターンを検出する" do
         result = described_class.send(:detect_partial_change, "スポットBは残して", previous_context)
 
-        expect(result[:keep_indices]).to eq([1])
-        expect(result[:change_indices]).to eq([0, 2])
+        expect(result[:keep_indices]).to eq([ 1 ])
+        expect(result[:change_indices]).to eq([ 0, 2 ])
       end
 
       it "previous_contextがnilの場合nilを返す" do
