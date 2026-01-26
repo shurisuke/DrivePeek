@@ -9,9 +9,9 @@ FactoryBot.define do
     move_distance { 10.5 }
     move_cost { 0 }
     toll_used { false }
-    stay_duration { 60 }
-    arrival_time { Time.zone.parse("09:30") }
-    departure_time { Time.zone.parse("10:30") }
+    stay_duration { 45 }
+    arrival_time { nil }
+    departure_time { nil }
 
     trait :with_toll do
       toll_used { true }

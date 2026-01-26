@@ -64,6 +64,22 @@ module ApiMocks
       stub_request(:post, "https://api.openai.com/v1/chat/completions")
         .to_return(status: status, body: { error: { message: message } }.to_json)
     end
+
+    # 汎用スタブ（デフォルトのJSON応答）
+    def stub_openai_chat_api
+      stub_openai_chat(response_content: {
+        theme: "テストテーマ",
+        description: "テスト説明",
+        spot_ids: [],
+        spot_descriptions: {},
+        closing: "楽しんでください"
+      }.to_json)
+    end
+
+    # カスタムレスポンスでスタブ
+    def stub_openai_chat_api_with_response(response_hash)
+      stub_openai_chat(response_content: response_hash.to_json)
+    end
   end
 end
 

@@ -67,6 +67,11 @@ module ApiMocks
       stub_request(:get, /maps.googleapis.com\/maps\/api\/place\/nearbysearch/)
         .to_return(status: 200, body: response.to_json, headers: { "Content-Type" => "application/json" })
     end
+
+    # Aliases for convenience
+    alias_method :stub_google_directions_api, :stub_directions_api
+    alias_method :stub_google_geocoding_api, :stub_geocoding_api
+    alias_method :stub_google_places_api, :stub_places_api
   end
 end
 
