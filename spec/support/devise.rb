@@ -2,7 +2,7 @@
 
 require "devise"
 
-# Devise mappingをテスト用に設定
+# Wardenテストモード有効化（Feature/System specs用）
 Warden.test_mode!
 
 RSpec.configure do |config|
