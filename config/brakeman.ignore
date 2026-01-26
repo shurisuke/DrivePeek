@@ -1,0 +1,14 @@
+{
+  "ignored_warnings": [
+    {
+      "fingerprint": "74cb5442153732897f09d5ba81fd46d4d423fe7dd0a046ead49ad5bd6e726ed9",
+      "note": "False positive: avatar_color_for returns a safe CSS class name"
+    },
+    {
+      "fingerprint": "6917fbf0dee1e02d070fcd614a2cb7f2f15f864fb89e18d4b3c097aebbf0cb4e",
+      "note": "False positive: start_lat.to_f and start_lng.to_f sanitize input"
+    }
+  ],
+  "updated": "2026-01-26",
+  "brakeman_version": "7.1.1"
+}
