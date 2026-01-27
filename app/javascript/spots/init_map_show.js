@@ -13,6 +13,7 @@ import { renderMap } from "map/render_map"
 import { setupPoiClick } from "map/poi_click"
 import { getMapInstance, setSpotPinMarker } from "map/state"
 import { showInfoWindowWithFrame } from "map/infowindow"
+import { panToVisualCenter } from "map/visual_center"
 import { waitForGoogleMaps, isSpotShowPage } from "map/utils"
 import { COLORS } from "map/constants"
 
@@ -63,9 +64,9 @@ const renderSpotMarker = (spotData) => {
 
   setSpotPinMarker(marker)
 
-  // スポット位置にフォーカス
-  map.setCenter(position)
+  // スポット位置にフォーカス（ボトムシートを考慮）
   map.setZoom(15)
+  panToVisualCenter(position)
 }
 
 document.addEventListener("turbo:load", async () => {

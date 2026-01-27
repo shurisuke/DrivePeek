@@ -243,6 +243,12 @@
       margin: 8px 16px 0;
     }
 
+    /* 「プランを作る」ボタンも写真の下に配置 */
+    .dp-infowindow__btn--create {
+      order: 6;
+      margin: 8px 16px 0;
+    }
+
     /* コメントパネル: デフォルト非表示（フッターはJSでシート直下に移動済み） */
     .dp-infowindow__panel--comment {
       display: none !important;
@@ -267,6 +273,11 @@
     }
 
     #iw-tab-comment:checked ~ .dp-infowindow__panel--info #infowindow-spot-button {
+      display: none;
+    }
+
+    #iw-tab-comment:checked ~ .dp-infowindow__panel--info .dp-infowindow__btn--create,
+    #iw-tab-comment:checked ~ .dp-infowindow__btn--create {
       display: none;
     }
 
