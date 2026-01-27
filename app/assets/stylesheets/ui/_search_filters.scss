@@ -11,7 +11,7 @@
   margin-right: auto;
   background: #fff;
   border-radius: 14px;
-  padding: 16px;
+  padding: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
 }
 
@@ -21,8 +21,8 @@
   position: relative;
   margin-bottom: 0;
   padding: 3px;
-  background-color: #e8e8e8;
-  border-radius: 9px;
+  background-color: #f0f0f0;
+  border-radius: 9px 9px 0 0;
 
   /* スライドする白背景 */
   &::before {
@@ -33,7 +33,7 @@
     width: calc(50% - 3px);
     height: calc(100% - 6px);
     background: #fff;
-    border-radius: 7px;
+    border-radius: 7px 7px 0 0;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
     transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
@@ -150,7 +150,7 @@
 
 /* チェック時: トグルスイッチをオン状態に */
 .search-filters__toggle input[type="checkbox"]:checked + .search-filters__toggle-switch {
-  background: #f5a623;
+  background: #007AFF;
 
   &::after {
     transform: translateX(14px);
@@ -183,11 +183,11 @@
 /* 検索ボタン */
 .search-button {
   width: 100%;
-  margin-top: 5px;
+  margin-top: 0;
   padding: 11px 16px;
   background: linear-gradient(135deg, #506d53, #45604a);
   border: none;
-  border-radius: 10px;
+  border-radius: 0 0 10px 10px;
   color: #fff;
   cursor: pointer;
   display: flex;
@@ -214,7 +214,7 @@
 
   /* 青色バリエーション（共通クラス） */
   &--blue {
-    background: linear-gradient(135deg, #007AFF, #0056CC);
+    background: #007AFF;
     box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
 
     &:hover {
@@ -264,7 +264,7 @@
   font-size: 11px;
   font-weight: 500;
   color: #888;
-  background: rgba(255, 255, 255, 0.7);
+  background: #fff;
   border-radius: 20px;
   letter-spacing: 0.5px;
 }
