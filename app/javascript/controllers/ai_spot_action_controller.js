@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, addAiSuggestionMarker } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createAiSuggestionPinSvg } from "map/constants"
+import { panToVisualCenter } from "map/visual_center"
 
 // ================================================================
 // AiSpotActionController
@@ -77,7 +78,7 @@ export default class extends Controller {
 
     // 既にマーカーがあれば再利用
     if (this._marker && this._spotData) {
-      map.panTo({ lat: this._spotData.lat, lng: this._spotData.lng })
+      panToVisualCenter({ lat: this._spotData.lat, lng: this._spotData.lng })
       this.#showInfoWindow(this._marker, this._spotData)
       return
     }
@@ -109,7 +110,7 @@ export default class extends Controller {
 
     addAiSuggestionMarker(marker)
     this.#showClearButton()
-    map.panTo(position)
+    panToVisualCenter(position)
     this.#showInfoWindow(marker, spotData)
 
     this._marker = marker

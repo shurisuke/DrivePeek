@@ -12,21 +12,55 @@ import { closeInfoWindow } from "map/infowindow"
 // ================================================================
 
 export default class extends Controller {
-  static targets = ["messages", "input", "sendBtn", "typing"]
+  static targets = ["messages", "typing"]
 
   connect() {
     this.isSending = false
     this.scrollToBottom()
+
+    // バインド関数を保持（クリーンアップ用）
+    this.boundAutoResize = this.autoResize.bind(this)
+    this.boundHandleKeydown = this.handleKeydown.bind(this)
+    this.boundHandleSubmitStart = this.handleSubmitStart.bind(this)
+    this.boundHandleSubmitEnd = this.handleSubmitEnd.bind(this)
+
+    // 入力欄がスコープ外（ナビバーフッター）にある場合に対応
+    this.externalInput = document.querySelector(".ai-chat__composer [data-ai-chat-target='input']")
+    this.externalSendBtn = document.querySelector(".ai-chat__composer [data-ai-chat-target='sendBtn']")
+
+    // 外部入力欄のイベントを設定
+    if (this.externalInput) {
+      this.externalInput.addEventListener("input", this.boundAutoResize)
+      this.externalInput.addEventListener("keydown", this.boundHandleKeydown)
+    }
+
+    // 会話クリアボタンのイベント設定（外部にあるため手動で設定）
+    this.clearBtn = document.getElementById("ai-chat-clear-btn")
+    if (this.clearBtn) {
+      this.boundClearConversation = this.clearConversation.bind(this)
+      this.clearBtn.addEventListener("turbo:submit-end", this.boundClearConversation)
+    }
+
     this.updateSendButtonState()
 
-    // Turboイベントをリッスン
-    this.element.addEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
-    this.element.addEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
+    // Turboイベントをリッスン（ナビバー全体から）
+    document.addEventListener("turbo:submit-start", this.boundHandleSubmitStart)
+    document.addEventListener("turbo:submit-end", this.boundHandleSubmitEnd)
   }
 
   disconnect() {
-    this.element.removeEventListener("turbo:submit-start", this.handleSubmitStart.bind(this))
-    this.element.removeEventListener("turbo:submit-end", this.handleSubmitEnd.bind(this))
+    // イベントリスナーのクリーンアップ
+    document.removeEventListener("turbo:submit-start", this.boundHandleSubmitStart)
+    document.removeEventListener("turbo:submit-end", this.boundHandleSubmitEnd)
+
+    if (this.externalInput) {
+      this.externalInput.removeEventListener("input", this.boundAutoResize)
+      this.externalInput.removeEventListener("keydown", this.boundHandleKeydown)
+    }
+
+    if (this.clearBtn && this.boundClearConversation) {
+      this.clearBtn.removeEventListener("turbo:submit-end", this.boundClearConversation)
+    }
   }
 
   // 会話クリア時にAI提案マーカーもクリア
@@ -48,7 +82,9 @@ export default class extends Controller {
 
   // テキストエリアの自動リサイズ
   autoResize() {
-    const textarea = this.inputTarget
+    const textarea = this.getInput()
+    if (!textarea) return
+
     textarea.style.height = "auto"
     const newHeight = Math.min(textarea.scrollHeight, 100)
     textarea.style.height = `${newHeight}px`
@@ -56,12 +92,24 @@ export default class extends Controller {
     this.updateSendButtonState()
   }
 
+  // 入力要素を取得（ナビバーフッター内）
+  getInput() {
+    return this.externalInput
+  }
+
+  // 送信ボタンを取得（ナビバーフッター内）
+  getSendBtn() {
+    return this.externalSendBtn
+  }
+
   // 送信ボタンの状態を更新（テキストがあれば有効）
   updateSendButtonState() {
-    if (this.isSending || !this.hasSendBtnTarget) return
+    const sendBtn = this.getSendBtn()
+    if (this.isSending || !sendBtn) return
 
-    const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
-    this.sendBtnTarget.disabled = !hasText
+    const input = this.getInput()
+    const hasText = input && input.value.trim().length > 0
+    sendBtn.disabled = !hasText
   }
 
   // Enter で送信、Shift+Enter で改行
@@ -69,9 +117,12 @@ export default class extends Controller {
   handleKeydown(event) {
     if (event.key === "Enter" && !event.shiftKey && !event.isComposing) {
       event.preventDefault()
-      const hasText = this.hasInputTarget && this.inputTarget.value.trim().length > 0
+      const input = this.getInput()
+      const hasText = input && input.value.trim().length > 0
       if (hasText) {
-        this.element.querySelector(".ai-chat__form").requestSubmit()
+        // フォームはナビバー側にあるので、外部フォームを取得
+        const form = document.querySelector(".ai-chat__composer .ai-chat__form")
+        if (form) form.requestSubmit()
       }
     }
   }
@@ -79,7 +130,8 @@ export default class extends Controller {
   // フォーム送信開始（Turboイベント）
   handleSubmitStart(event) {
     // ユーザーメッセージを即座に表示
-    const message = this.hasInputTarget ? this.inputTarget.value.trim() : ""
+    const input = this.getInput()
+    const message = input ? input.value.trim() : ""
     if (message) {
       this.appendUserMessage(message)
     }
@@ -100,7 +152,10 @@ export default class extends Controller {
     if (this.hasTypingTarget) {
       this.messagesTarget.insertBefore(clone, this.typingTarget)
     }
-    this.scrollToBottom()
+    // DOM更新後にスクロール
+    requestAnimationFrame(() => {
+      this.scrollToBottom()
+    })
   }
 
   // フォーム送信完了（Turboイベント）
@@ -114,9 +169,10 @@ export default class extends Controller {
 
   // テキスト入力をクリア
   clearTextInput() {
-    if (this.hasInputTarget) {
-      this.inputTarget.value = ""
-      this.inputTarget.style.height = "auto"
+    const input = this.getInput()
+    if (input) {
+      input.value = ""
+      input.style.height = "auto"
     }
     this.updateSendButtonState()
   }
@@ -125,19 +181,21 @@ export default class extends Controller {
   setSending(isSending) {
     this.isSending = isSending
 
-    if (this.hasSendBtnTarget) {
-      this.sendBtnTarget.disabled = isSending
+    const sendBtn = this.getSendBtn()
+    if (sendBtn) {
+      sendBtn.disabled = isSending
       if (isSending) {
-        this.sendBtnTarget.classList.add("ai-chat__send-btn--sending")
-        this.sendBtnTarget.innerHTML = '<span class="ai-chat__send-spinner"></span>'
+        sendBtn.classList.add("ai-chat__send-btn--sending")
+        sendBtn.innerHTML = '<span class="ai-chat__send-spinner"></span>'
       } else {
-        this.sendBtnTarget.classList.remove("ai-chat__send-btn--sending")
-        this.sendBtnTarget.innerHTML = '<i class="bi bi-arrow-up"></i>'
+        sendBtn.classList.remove("ai-chat__send-btn--sending")
+        sendBtn.innerHTML = '<i class="bi bi-arrow-up"></i>'
       }
     }
 
-    if (this.hasInputTarget) {
-      this.inputTarget.disabled = isSending
+    const input = this.getInput()
+    if (input) {
+      input.disabled = isSending
     }
   }
 
@@ -183,8 +241,18 @@ export default class extends Controller {
 
   // 最下部にスクロール
   scrollToBottom() {
-    if (this.hasMessagesTarget) {
-      this.messagesTarget.scrollTop = this.messagesTarget.scrollHeight
+    if (!this.hasMessagesTarget) return
+
+    // メッセージ一覧自体がスクロール可能な場合（モバイル）
+    const el = this.messagesTarget
+    if (el.scrollHeight > el.clientHeight) {
+      el.scrollTop = el.scrollHeight
+    }
+
+    // 親のスクロールコンテナ（デスクトップ: .navibar__content-scroll）
+    const scrollParent = el.closest(".navibar__content-scroll")
+    if (scrollParent) {
+      scrollParent.scrollTop = scrollParent.scrollHeight
     }
   }
 }

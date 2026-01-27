@@ -7,6 +7,7 @@ import {
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createAiSuggestionPinSvg } from "map/constants"
+import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
 // AiSpotsBatchController
@@ -55,7 +56,6 @@ export default class extends Controller {
 
   connect() {
     this._isConnected = true
-
     // autoShow が true の場合のみ自動でピン表示
     if (this.autoShowValue) {
       // 既存のAI提案マーカーをクリア（オーバーレイも含む）
@@ -139,12 +139,24 @@ export default class extends Controller {
     })
 
     // 全マーカーが収まるようにマップをフィット
+    // モバイル時: ボトムシートで隠れる領域を考慮してオフセット
+    const isMobile = window.innerWidth < 768
+    const bottomSheetHeight = isMobile
+      ? (document.querySelector(".navibar")?.offsetHeight || 0)
+      : 0
+
     if (validSpots.length === 1) {
       const firstSpot = validSpots[0]
       map.panTo({ lat: firstSpot.lat, lng: firstSpot.lng })
       map.setZoom(15)
+      if (bottomSheetHeight > 0) {
+        setTimeout(() => map.panBy(0, bottomSheetHeight / 2), 100)
+      }
     } else {
-      map.fitBounds(bounds, { padding: 50 })
+      const padding = isMobile
+        ? { top: 60, right: 16, bottom: bottomSheetHeight + 16, left: 16 }
+        : { top: 50, right: 50, bottom: 50, left: 50 }
+      map.fitBounds(bounds, padding)
     }
 
     // AI提案ピンクリアボタンを表示

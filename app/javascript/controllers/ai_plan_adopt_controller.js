@@ -171,7 +171,19 @@ export default class extends Controller {
       addAiSuggestionMarker(marker)
     })
 
-    map.fitBounds(bounds, { padding: 50 })
+    // モバイル時: ボトムシートで隠れる領域を考慮
+    const isMobile = window.innerWidth < 768
+    if (isMobile) {
+      const bottomSheetHeight = document.querySelector(".navibar")?.offsetHeight || 0
+      map.fitBounds(bounds, {
+        top: 60,
+        right: 16,
+        bottom: bottomSheetHeight + 16,
+        left: 16,
+      })
+    } else {
+      map.fitBounds(bounds, { padding: 50 })
+    }
 
     // AI提案ピンクリアボタンを表示
     const clearBtn = document.getElementById("ai-pin-clear")
