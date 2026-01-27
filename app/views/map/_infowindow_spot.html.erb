@@ -6,6 +6,7 @@
     - photo_urls: 写真URL配列
     - show_button: 「プランに追加」ボタン表示
     - button_label: ボタンラベル
+    - map_mode: 地図モード（"show" = 詳細画面）
     - plan_id: プランID
     - plan_spot_id: 削除モード時のID
     - zoom_scale: ズームスケール
@@ -131,7 +132,9 @@
       <div class="dp-infowindow__name"><%= safe_name %></div>
       <div class="dp-infowindow__address"><%= safe_address %></div>
 
-      <% if show_button && plan_id.present? %>
+      <% if map_mode == "show" && user_signed_in? %>
+        <%= link_to "プランを作る", authenticated_root_path, class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
+      <% elsif show_button && plan_id.present? %>
         <% plan_spot = plan_spot_id.present? ? PlanSpot.find_by(id: plan_spot_id) : nil %>
         <%= render "map/infowindow_spot_button", spot: spot, plan_id: plan_id, plan_spot: plan_spot %>
       <% end %>

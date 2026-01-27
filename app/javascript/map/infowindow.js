@@ -102,7 +102,17 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
   }
 
   // ボタン
-  if (showButton && planId) {
+  const currentMapMode = getMapMode()
+  if (currentMapMode === "show") {
+    const buttonSlot = clone.querySelector('[data-slot="button"]')
+    if (buttonSlot) {
+      buttonSlot.innerHTML = `<a href="/plans/new"
+        class="dp-infowindow__btn dp-infowindow__btn--create"
+        data-turbo-frame="_top">
+        プランを作る
+      </a>`
+    }
+  } else if (showButton && planId) {
     const buttonSlot = clone.querySelector('[data-slot="button"]')
     if (buttonSlot) {
       if (planSpotId) {
@@ -145,6 +155,9 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
 // POIクリック時にGoogle Places APIをスキップして即時表示
 // ================================================================
 
+// 地図モード取得（"show" = 詳細画面）
+const getMapMode = () => document.getElementById("map")?.dataset?.mapMode || null
+
 // モバイル判定（768px未満）
 const isMobile = () => window.innerWidth < 768
 
@@ -166,6 +179,8 @@ const showMobileInfoWindow = async ({
   if (lng) params.append("lng", lng)
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
+  const mobileMapMode = getMapMode()
+  if (mobileMapMode) params.append("map_mode", mobileMapMode)
 
   try {
     // APIからHTMLを取得
@@ -235,6 +250,8 @@ export const showInfoWindowWithFrame = ({
   if (lng) params.append("lng", lng)
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
+  const desktopMapMode = getMapMode()
+  if (desktopMapMode) params.append("map_mode", desktopMapMode)
 
   // editMode の場合はスケルトン不要（データは揃っている）
   if (editMode) {
