@@ -27,6 +27,12 @@
   );
   padding-right: max(0px, (var(--navibar-width, 360px) - 360px) * 0.25);
   min-width: 0;
+
+  /* モバイル時は固定パディング（時刻レールオフセット分を左に確保） */
+  @media (max-width: 767px) {
+    padding-left: 28px;
+    padding-right: 8px;
+  }
 }
 
 /* ------------------------------------------
@@ -42,6 +48,12 @@
   padding-left: calc(15px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.125));
   padding-right: calc(15px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.125));
   box-sizing: border-box;
+
+  /* モバイル時は固定パディング */
+  @media (max-width: 767px) {
+    padding-left: 12px;
+    padding-right: 12px;
+  }
 }
 
 /* ------------------------------------------
@@ -65,4 +77,16 @@
 ------------------------------------------ */
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete {
   right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.40));
+}
+
+/* ------------------------------------------
+   モバイル時アイコン位置調整
+   - 出発・スポット・帰宅アイコンを左にオフセット
+------------------------------------------ */
+@media (max-width: 767px) {
+  .start-icon,
+  .spot-order-column,
+  .goal-icon {
+    transform: translateX(-14px);
+  }
 }

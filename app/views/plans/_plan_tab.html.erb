@@ -4,22 +4,6 @@
     構造: 左カラム（ブロックコンテンツ）+ 右カラム（時刻レール）
 ================================================================ %>
 
-<%# ✅ 時刻レール切り替えボタン（プランタブ内に配置） %>
-<div class="plan-time-toggle-inline"
-     data-controller="plan-time-toggle"
-     data-plan-time-toggle-navibar-selector-value=".navibar">
-  <button type="button"
-          class="plan-time-fab"
-          aria-label="時間表示のオン/オフ"
-          aria-pressed="false"
-          data-action="click->plan-time-toggle#toggle">
-    <%= image_tag "clock.png",
-                  class: "plan-time-fab__icon",
-                  alt: "",
-                  aria: { hidden: true } %>
-  </button>
-</div>
-
 <div class="plan-tab-layout" data-controller="time-rail-sync">
   <%# ✅ 左カラム: ブロックコンテンツ %>
   <div class="plan-tab-content">
@@ -51,17 +35,3 @@
 <% if @plan.plan_spots.empty? %>
   <%= render "plans/plan_tab_guide" %>
 <% end %>
-
-<%# ✅ 出発・帰宅時間サマリー（時刻レールON + 帰宅地点ON時のみ表示） %>
-<div class="plan-time-summary-section">
-  <div class="plan-time-summary">
-    <div class="plan-time-summary__item">
-      <span class="plan-time-summary__label">出発</span>
-      <span class="plan-time-summary__value"><%= @plan.start_point&.departure_time&.strftime("%H:%M") || "--:--" %></span>
-    </div>
-    <div class="plan-time-summary__item plan-time-summary__item--goal">
-      <span class="plan-time-summary__label">帰宅</span>
-      <span class="plan-time-summary__value"><%= @plan.goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
-    </div>
-  </div>
-</div>

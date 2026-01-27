@@ -22,14 +22,16 @@ export default class extends Controller {
   initializeFooter() {
     const activeTabName = this.getActiveTabName()
     this.footerTargets.forEach((footer) => {
-      footer.style.display = footer.dataset.tab === activeTabName ? "block" : "none"
+      const isActive = footer.dataset.tab === activeTabName
+      footer.classList.toggle("is-hidden", !isActive)
     })
   }
 
   // Turbo Stream でフッターが追加された時に呼ばれる
   footerTargetConnected(footer) {
     const activeTabName = this.getActiveTabName()
-    footer.style.display = footer.dataset.tab === activeTabName ? "block" : "none"
+    const isActive = footer.dataset.tab === activeTabName
+    footer.classList.toggle("is-hidden", !isActive)
   }
 
   getActiveTabName() {
@@ -61,9 +63,10 @@ export default class extends Controller {
       }
     })
 
-    // フッターの表示切り替え
+    // フッターの表示切り替え（アクションボタンも含む）
     this.footerTargets.forEach((footer) => {
-      footer.style.display = footer.dataset.tab === tabName ? "block" : "none"
+      const isActive = footer.dataset.tab === tabName
+      footer.classList.toggle("is-hidden", !isActive)
     })
   }
 

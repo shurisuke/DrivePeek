@@ -3,21 +3,16 @@
    時刻レール（2カラム右側）
 ========================================== */
 
-/* 右カラム: 時刻レール（縮小のみ担当） */
+/* 右カラム: 時刻レール（常時表示） */
 .plan-tab-time-rail {
-  display: none; /* デフォルト非表示 */
+  display: block;
+  position: relative; /* innerの基準点 */
   flex: 0 0 var(--rail-width);
   width: var(--rail-width);
   min-width: 0;
   overflow: visible; /* 内部コンテンツがはみ出しても表示 */
 
   background: #fff;
-}
-
-/* 時刻レールON時のみ表示 */
-body.plan-time-open .plan-tab-time-rail {
-  display: block;
-  position: relative; /* innerの基準点 */
 }
 
 /* ✅ 内部ラッパー（左オフセット担当、幅は60px固定） */
@@ -31,6 +26,11 @@ body.plan-time-open .plan-tab-time-rail {
   width: 60px;
   box-sizing: border-box;
   transform: translateX(calc(-1 * var(--rail-right-offset, 0px)));
+
+  /* モバイル時は左にオフセット */
+  @media (max-width: 767px) {
+    transform: translateX(-15px);
+  }
 }
 
 /* ==========================================

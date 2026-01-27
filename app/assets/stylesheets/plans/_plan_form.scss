@@ -108,22 +108,35 @@ body.no-footer {
           transition: all 0.2s ease;
           border-bottom: 3px solid transparent;
 
-          &:hover:not(.active) {
-            color: var(--personal);
-          }
-
+          /* デフォルト（プランタブ）のアクティブスタイル */
           &.active {
             border-bottom: 3px solid var(--personal);
-            color: #1d4928;
+            color: var(--personal);
           }
         }
 
+        /* みんなの旅タブ */
         .tab-community {
           font-size: 15px;
+
+          &.active {
+            border-bottom-color: var(--community);
+            color: var(--community);
+          }
         }
 
+        /* AI提案タブ */
         .tab-ai {
           font-size: 16px;
+
+          &.active {
+            background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            color: transparent;
+            border-bottom: 3px solid;
+            border-image: linear-gradient(135deg, #667eea 0%, #764ba2 100%) 1;
+          }
         }
       }
 
@@ -166,6 +179,8 @@ body.no-footer {
         flex-shrink: 0;
         z-index: 10;
         display: none; /* デフォルト非表示、プランタブ時のみ表示 */
+        position: sticky;
+        bottom: 0;
       }
     }
 
@@ -284,110 +299,6 @@ body.no-footer {
 body.no-footer.goal-point-visible {
   .plan-form .plan-info[data-plan-info-total] {
     display: flex;
-  }
-}
-
-/* ✅ 時刻レールON時も地図・スクロール・フッターの幅はナビバー幅のまま
-   （時刻レールはナビバー内に内包される） */
-
-/* ==========================================
-   時計ボタン（プランタブ内にインライン配置）
-========================================== */
-
-.plan-time-toggle-inline {
-  display: flex;
-  justify-content: center;
-  align-items: center;
-  padding: 15px;
-}
-
-
-/* ==========================================
-   スクロール内：出発・帰宅時間サマリー
-========================================== */
-
-.plan-time-summary-section {
-  display: none; /* デフォルト非表示 */
-  padding: 16px 24px;
-  background: #f8f9fa;
-  border-top: 1px solid #e5e5e5;
-  margin-top: 16px;
-}
-
-.plan-time-summary {
-  display: flex;
-  justify-content: center;
-  gap: 24px;
-}
-
-.plan-time-summary__item {
-  display: flex;
-  align-items: center;
-  gap: 6px;
-}
-
-.plan-time-summary__label {
-  font-size: 0.75rem;
-  color: var(--personal);
-  font-weight: 600;
-}
-
-.plan-time-summary__item--goal .plan-time-summary__label {
-  color: #dc3545;
-}
-
-.plan-time-summary__value {
-  font-size: 0.95rem;
-  font-weight: 600;
-  color: #333;
-  font-variant-numeric: tabular-nums;
-}
-
-/* ✅ 時刻レールON + 帰宅地点ON時のみ表示 */
-body.plan-time-open.goal-point-visible .plan-time-summary-section {
-  display: block;
-}
-
-/* ✅ 時計ボタン */
-.plan-time-fab {
-  width: 32px;
-  height: 32px;
-  border-radius: 9999px;
-
-  background: #fff;
-  border: 1px solid rgba(80, 109, 83, 0.22);
-
-  /* ✅ 影を削除 */
-  box-shadow: none;
-
-  display: inline-flex;
-  align-items: center;
-  justify-content: center;
-
-  cursor: pointer;
-  transition: transform 0.12s ease, box-shadow 0.12s ease, border-color 0.12s ease;
-
-  .plan-time-fab__icon {
-    width: 40px;
-    height: 40px;
-    display: block;
-  }
-
-  &:hover {
-    transform: translateY(-1px);
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
-    border-color: rgba(80, 109, 83, 0.35);
-  }
-
-  &:active {
-    transform: translateY(0);
-    box-shadow: none;
-  }
-
-  &:focus,
-  &:focus-visible {
-    outline: none;
-    box-shadow: none;
   }
 }
 
@@ -643,6 +554,211 @@ body.navibar-resizing .plan-form .navibar-resize-handle,
 body.navibar-resizing .plan-form .plan-time-slot,
 body.navibar-resizing .plan-form .plan-actions {
   transition: none !important;
+}
+
+/* ==========================================
+   ✅ モバイル用ドラッグハンドル（デスクトップでは非表示）
+========================================== */
+.navibar__handle {
+  display: none;
+}
+
+.navibar__handle-bar {
+  width: 40px;
+  height: 4px;
+  background: #d0d0d0;
+  border-radius: 2px;
+}
+
+/* ==========================================
+   ✅ タブ切り替え用の非表示クラス
+========================================== */
+.navibar__footer.is-hidden,
+.navibar__actions.is-hidden,
+.ai-chat__composer.is-hidden {
+  display: none !important;
+}
+
+/* ==========================================
+   ✅ モバイル用アクションボタン（デスクトップでは非表示）
+========================================== */
+.navibar__actions {
+  display: none;
+}
+
+/* ==========================================
+   ✅ モバイルレスポンシブ（ボトムシートUI）
+   768px未満でGoogle Maps風のボトムシートレイアウト
+========================================== */
+@media (max-width: 767px) {
+  body.no-footer {
+    /* ハンバーガーメニューを右上に小さく配置 */
+    .hamburger {
+      top: 8px;
+      right: 12px;
+      width: 40px !important;
+      height: 36px !important;
+    }
+
+    .plan-form {
+      /* CSS変数をモバイル用に上書き */
+      --navibar-width: 100%;
+      --navibar-slide: 0px;
+      --bottom-sheet-height: 40vh;
+
+      /* 地図をフルスクリーン */
+      .map {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100% !important;
+        height: 100vh !important;
+        z-index: 1;
+      }
+
+      /* ナビバー → ボトムシート */
+      .navibar {
+        position: fixed;
+        top: auto;
+        bottom: 0;
+        left: 0;
+        right: 0;
+        width: 100%;
+        height: var(--bottom-sheet-height);
+        max-height: 90vh;
+        overflow: hidden;
+
+        border-radius: 16px 16px 0 0;
+        box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+
+        z-index: 100;
+
+        /* ドラッグハンドルを表示 */
+        .navibar__handle {
+          display: flex;
+          justify-content: center;
+          align-items: center;
+          height: 24px;
+          cursor: grab;
+          touch-action: none;
+          user-select: none;
+          flex-shrink: 0;
+
+          &:active {
+            cursor: grabbing;
+          }
+        }
+
+        /* タブナビを上部に固定（フッターより常に上に表示） */
+        .plan-tab-nav {
+          height: 50px;
+          border-bottom: 1px solid #e0e0e0;
+          flex-shrink: 0;
+          position: relative;
+          z-index: 10;
+          background: #fff;
+
+          .tab-btn {
+            font-size: 14px;
+            padding: 12px 0 8px 0;
+          }
+        }
+
+        /* コンテンツエリアの調整 */
+        .navibar__content {
+          flex: 1;
+          min-height: 0;
+          overflow: hidden;
+        }
+
+        .navibar__content-scroll {
+          height: 100%;
+        }
+      }
+
+      /* リサイズハンドルはモバイルで非表示 */
+      .navibar-resize-handle {
+        display: none;
+      }
+
+      /* フローティングアクションボタンはモバイルで非表示（ナビバー内に移動） */
+      .plan-actions {
+        display: none;
+      }
+
+      /* ナビバー内アクションボタン（モバイル用・iOS風デザイン） */
+      .navibar__actions {
+        display: flex;
+        gap: 10px;
+        padding: 10px 16px;
+        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
+        background: #f9f9f9;
+        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        flex-shrink: 0;
+      }
+
+      .navibar__action-btn {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        gap: 6px;
+        padding: 11px 16px;
+        border: none;
+        border-radius: 10px;
+        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+        font-size: 15px;
+        font-weight: 600;
+        letter-spacing: -0.2px;
+        cursor: pointer;
+        transition: transform 0.1s ease, opacity 0.1s ease;
+        -webkit-tap-highlight-color: transparent;
+
+        i {
+          font-size: 17px;
+          line-height: 1;
+          transform: translateY(1px);
+        }
+
+        &:active {
+          transform: scale(0.97);
+          opacity: 0.7;
+        }
+
+        /* 共有ボタン: iOS風セカンダリ */
+        &--share {
+          background: rgba(0, 0, 0, 0.05);
+          color: #1c1c1e;
+        }
+
+        /* 保存ボタン: iOS風プライマリ（システムブルー） */
+        &--save {
+          background: #007aff;
+          color: #fff;
+
+          &:active {
+            opacity: 0.8;
+          }
+        }
+      }
+
+      /* トグルボタンの上下マージンを削除 */
+      .detail-toggle {
+        margin-top: 0;
+        margin-bottom: 0;
+      }
+
+      /* トグル部分の高さを削減（マージン30px分） */
+      .time-rail-block__toggle-area {
+        height: 40px;
+      }
+
+      /* 時刻レールはモバイルで非表示 */
+      .plan-time-slot {
+        display: none;
+      }
+    }
+  }
 }
 
 /* ==========================================

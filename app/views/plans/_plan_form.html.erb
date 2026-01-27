@@ -95,3 +95,27 @@
 
 <%# InfoWindowスケルトンテンプレート（JSから参照） %>
 <%= render "map/infowindow_skeleton" %>
+
+<%# モバイル用InfoWindowボトムシート %>
+<div id="mobile-infowindow"
+     class="mobile-infowindow"
+     data-controller="mobile-infowindow"
+     hidden>
+  <div class="mobile-infowindow__backdrop" data-action="click->mobile-infowindow#close"></div>
+  <div class="mobile-infowindow__sheet" data-mobile-infowindow-target="sheet">
+    <div class="mobile-infowindow__handle" data-mobile-infowindow-target="handle">
+      <div class="mobile-infowindow__handle-bar"></div>
+    </div>
+    <button type="button"
+            class="mobile-infowindow__close-btn"
+            data-action="click->mobile-infowindow#close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+    <div class="mobile-infowindow__content" id="mobile-infowindow-content">
+      <%# InfoWindow コンテンツがここに挿入される %>
+    </div>
+    <div class="mobile-infowindow__footer" id="mobile-infowindow-footer" hidden>
+      <%# コメントフッターがJSで移動される %>
+    </div>
+  </div>
+</div>
