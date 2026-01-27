@@ -452,10 +452,9 @@ body.no-footer .plan-detail.navibar--collapsed {
       padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
     }
 
-    /* スポットブロックのパディングを固定値に */
-    .spot-block--show .spot-main {
-      padding-left: 16px;
-      padding-right: 16px;
+    /* スポット番号アイコンを右に寄せる */
+    .spot-block .spot-order-icon {
+      margin-left: 12px;
     }
 
     /* 出発・帰宅地点のパディングを調整 */

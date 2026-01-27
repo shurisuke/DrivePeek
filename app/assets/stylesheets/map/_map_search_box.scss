@@ -69,8 +69,10 @@ body.no-footer .plan-form.navibar--wide .plan-save {
     transform: none;
 
     input.form-control {
-      padding: 10px 14px;
+      padding: 8px 14px;
       font-size: 16px; /* iOSでのズーム防止 */
+      height: 40px; /* ハンバーガーメニューと高さを揃える */
+      box-sizing: border-box;
       border-radius: 8px !important;
 
       &::placeholder {
