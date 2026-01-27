@@ -1,6 +1,6 @@
 <%# 検索フォーム（共通パーシャル） %>
 <%# 必要な変数: form_url, selected_cities, cities_by_prefecture, genres_by_category, selected_genre_ids, search_query %>
-<%# オプション: turbo_frame, show_tabs (default: true), search_type, show_favorites_toggle, favorites_only %>
+<%# オプション: turbo_frame, show_tabs (default: true), search_type, show_favorites_toggle, favorites_only, button_class %>
 
 <div class="search-box">
   <%= form_with url: form_url, method: :get, local: true, data: local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame } : {} do %>
@@ -84,7 +84,7 @@
       </label>
     <% end %>
 
-    <button type="submit" class="search-button">
+    <button type="submit" class="search-button <%= local_assigns[:button_class] %>">
       <i class="bi bi-search" aria-hidden="true"></i>
       <span>検索</span>
     </button>

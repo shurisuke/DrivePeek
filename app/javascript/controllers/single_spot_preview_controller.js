@@ -7,6 +7,7 @@ import {
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { COLORS } from "map/constants"
+import { panToVisualCenter } from "map/visual_center"
 
 // ================================================================
 // SingleSpotPreviewController
@@ -61,7 +62,7 @@ export default class extends Controller {
 
     if (existingMarker) {
       // 既存マーカーがあればそれを使用（新しいマーカーは作らない）
-      map.panTo(position)
+      panToVisualCenter(position)
       this.#showInfoWindow(existingMarker)
       return
     }
@@ -85,7 +86,7 @@ export default class extends Controller {
     })
 
     setSpotPinMarker(marker)
-    map.panTo(position)
+    panToVisualCenter(position)
     this.#showInfoWindow(marker)
   }
 

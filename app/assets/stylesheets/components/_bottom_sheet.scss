@@ -1,0 +1,172 @@
+// ============================================
+// ボトムシート（Google Maps風）
+// ============================================
+// モバイル画面で下部からスライドアップするパネル
+// 3段階スナップ（min/mid/max）対応
+
+.bottom-sheet {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  z-index: 1000;
+
+  // 基本スタイル
+  background: #fff;
+  border-radius: 16px 16px 0 0;
+  box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+
+  // 初期状態（最小）
+  height: 10vh;
+
+  // トランジション（ドラッグ中以外）
+  transition: height 300ms cubic-bezier(0.4, 0, 0.2, 1);
+
+  // ドラッグ中はトランジション無効
+  &--dragging {
+    transition: none;
+  }
+
+  // ============================================
+  // ドラッグハンドル
+  // ============================================
+  &__handle {
+    position: relative;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 28px;
+    cursor: grab;
+    touch-action: none; // スクロール防止
+    user-select: none;
+
+    &:active {
+      cursor: grabbing;
+    }
+
+    // ハンドルバー（中央の線）
+    &::after {
+      content: "";
+      width: 40px;
+      height: 4px;
+      background: #d0d0d0;
+      border-radius: 2px;
+      transition: background 0.2s;
+    }
+
+    &:hover::after {
+      background: #b0b0b0;
+    }
+  }
+
+  // ============================================
+  // コンテンツエリア
+  // ============================================
+  &__content {
+    height: calc(100% - 28px); // ハンドル分を除く
+    overflow-y: auto;
+    overflow-x: hidden;
+    overscroll-behavior: contain; // 親へのスクロール伝播防止
+
+    // スクロールバーを薄く
+    &::-webkit-scrollbar {
+      width: 4px;
+    }
+
+    &::-webkit-scrollbar-track {
+      background: transparent;
+    }
+
+    &::-webkit-scrollbar-thumb {
+      background: rgba(0, 0, 0, 0.2);
+      border-radius: 2px;
+    }
+  }
+
+  // ============================================
+  // 状態別スタイル
+  // ============================================
+  &--min {
+    // 最小状態：コンテンツスクロール無効
+    .bottom-sheet__content {
+      overflow: hidden;
+    }
+  }
+
+  &--mid {
+    // 中間状態
+  }
+
+  &--max {
+    // 最大状態：角丸を小さく
+    border-radius: 8px 8px 0 0;
+  }
+
+  // ============================================
+  // 背景オーバーレイ（オプション）
+  // ============================================
+  &__overlay {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.3);
+    z-index: 999;
+    opacity: 0;
+    pointer-events: none;
+    transition: opacity 300ms;
+
+    &--visible {
+      opacity: 1;
+      pointer-events: auto;
+    }
+  }
+}
+
+// ============================================
+// タブバー（ボトムシート内）
+// ============================================
+.bottom-sheet-tabs {
+  display: flex;
+  border-bottom: 1px solid #e0e0e0;
+  background: #fff;
+  padding: 0 16px;
+
+  &__tab {
+    flex: 1;
+    padding: 12px 8px;
+    text-align: center;
+    font-size: 14px;
+    font-weight: 500;
+    color: #666;
+    background: none;
+    border: none;
+    border-bottom: 2px solid transparent;
+    cursor: pointer;
+    transition: color 0.2s, border-color 0.2s;
+
+    &:hover {
+      color: #333;
+    }
+
+    &--active {
+      color: var(--primary-color, #4a7c59);
+      border-bottom-color: var(--primary-color, #4a7c59);
+    }
+
+    // アイコン付きタブ
+    i {
+      display: block;
+      font-size: 20px;
+      margin-bottom: 4px;
+    }
+  }
+}
+
+// ============================================
+// ボトムシート用のボディクラス
+// ============================================
+body.bottom-sheet-open {
+  // ボディのスクロールを防止
+  overflow: hidden;
+  position: fixed;
+  width: 100%;
+}
