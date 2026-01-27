@@ -179,8 +179,6 @@ body.no-footer {
         flex-shrink: 0;
         z-index: 10;
         display: none; /* デフォルト非表示、プランタブ時のみ表示 */
-        position: sticky;
-        bottom: 0;
       }
     }
 
