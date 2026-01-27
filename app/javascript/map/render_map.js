@@ -22,6 +22,7 @@ export const renderMap = (center) => {
     zoom: 12,
     disableDefaultUI: true,
     keyboardShortcuts: false,
+    gestureHandling: "greedy",
   })
 
   setMapInstance(map)
