@@ -11,6 +11,7 @@
 // ================================================================
 
 import { renderMap } from "map/render_map"
+import { setupSearchBox } from "map/search_box"
 import { setupPoiClick } from "map/poi_click"
 import { getPlanDataFromPage } from "plans/plan_data"
 import { renderRoutePolylinesForShow, fitMapToSpots } from "plans/route_renderer_show"
@@ -34,8 +35,11 @@ document.addEventListener("turbo:load", async () => {
   // 地図生成
   renderMap(fallbackCenter)
 
-  // POIクリック（閲覧モード、追加ボタンなし）
-  setupPoiClick(false)
+  // 検索ボックス
+  setupSearchBox()
+
+  // POIクリック（閲覧モード、ボタン表示はmap_modeで制御）
+  setupPoiClick(true)
 
   // プランデータがあればマーカーを描画
   const planData = getPlanDataFromPage()

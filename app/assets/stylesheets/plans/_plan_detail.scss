@@ -5,7 +5,6 @@
    - 編集機能を除去したシンプルなレイアウト
 ========================================== */
 
-@use "../ui/genre_chip" as *;
 
 body.no-footer .plan-detail {
   --navibar-width: 360px;
@@ -97,9 +96,31 @@ body.no-footer .plan-detail {
     }
   }
 
-  .plan-detail__header-spacer {
+  .plan-detail__share-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
     width: 32px;
+    height: 32px;
     flex-shrink: 0;
+    background: transparent;
+    border: none;
+    border-radius: 6px;
+    cursor: pointer;
+    color: #8e8e8e;
+    font-size: 17px;
+    padding: 0;
+    transition: all 0.15s ease;
+
+    &:hover {
+      background: rgba(0, 0, 0, 0.05);
+      color: #666;
+    }
+  }
+
+  /* ドラッグハンドルはデスクトップで非表示 */
+  .navibar__handle {
+    display: none;
   }
 
   .navibar__content {
@@ -229,135 +250,6 @@ body.no-footer .plan-detail {
     font-size: 1.75rem;
   }
 
-  /* ✅ 詳細画面用のスポットブロック */
-  .spot-block--show {
-    padding: 16px 0; /* 左右は .spot-main の動的パディングで制御 */
-
-    &:last-child {
-      margin-bottom: 100px;
-    }
-
-    .spot-main {
-      display: flex;
-      align-items: flex-start;
-      gap: 12px;
-      width: 100%;
-
-      /* プランバー幅に応じて両端に余白を追加 */
-      padding-left: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
-      padding-right: calc(5px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25));
-    }
-
-    .spot-order-icon {
-      width: 30px;
-      height: 30px;
-      background: #3073F0;
-      color: #fff;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1rem;
-      font-weight: 700;
-      flex-shrink: 0;
-      margin-top: -5px;
-    }
-
-    .spot-body {
-      flex: 1;
-      min-width: 0;
-    }
-
-    .spot-name {
-      font-size: 1rem;
-      font-weight: 600;
-      color: #1a1a1a;
-      margin-bottom: 15px;
-      line-height: 1.4;
-
-      &--clickable {
-        cursor: pointer;
-        transition: color 0.2s;
-
-        &:hover {
-          color: var(--personal);
-        }
-      }
-    }
-
-    .spot-address {
-      font-size: 0.85rem;
-      color: #666;
-      margin-bottom: 12px;
-      line-height: 1.4;
-    }
-
-    .spot-genres {
-      @include genre-list;
-      margin-bottom: 8px;
-    }
-
-    .genre-chip {
-      @include genre-chip-sm;
-    }
-
-    .spot-memo {
-      background: #f8f9fa;
-      border-left: 3px solid var(--personal);
-      padding: 8px 12px;
-      margin: 8px 0;
-      border-radius: 0 4px 4px 0;
-
-      &__content {
-        font-size: 0.85rem;
-        color: #333;
-        line-height: 1.5;
-
-        p {
-          margin: 0;
-        }
-      }
-    }
-
-    .spot-next-move {
-      width: 265px;
-      font-size: 0.9rem;
-
-      display: grid;
-      grid-template-columns: 1fr auto auto;
-      align-items: center;
-      gap: 10px;
-
-      margin: 20px auto 0;
-
-      .label {
-        font-size: 0.82rem;
-        font-weight: 500;
-        color: rgb(35, 35, 35);
-      }
-
-      .km, .time {
-        font-weight: 400;
-        font-size: calc(1em + 2px);
-        color: #2d2d2d;
-        padding-left: 12px;
-        border-left: 1px solid rgba(0, 0, 0, 0.10);
-      }
-
-      .km-unit, .time-unit {
-        font-size: 13px;
-        margin-left: 2px;
-      }
-    }
-
-    .toll-indicator {
-      text-align: center;
-      margin-top: 8px;
-      font-size: 0.75rem;
-      color: #888;
-    }
-  }
-
   /* ✅ 詳細画面用の帰宅地点ブロック */
   .goal-point-block--show {
     padding: 16px 24px;
@@ -482,6 +374,95 @@ body.no-footer .plan-detail.navibar--collapsed {
 
     &:hover .navibar-resize-handle__grip {
       border-left-color: rgba(80, 109, 83, 0.8);
+    }
+  }
+}
+
+/* ==========================================
+   ✅ モバイル対応（768px未満）
+========================================== */
+@media (max-width: 767px) {
+  body.no-footer .plan-detail {
+    --navibar-width: 100%;
+    --navibar-slide: 0px;
+    --bottom-sheet-height: 45vh;
+
+    /* 地図をフルスクリーン */
+    .map {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100% !important;
+      height: 100vh !important;
+      z-index: 1;
+    }
+
+    /* ナビバー → ボトムシート */
+    .navibar {
+      position: fixed;
+      top: auto;
+      bottom: 0;
+      left: 0;
+      right: 0;
+      width: 100%;
+      height: var(--bottom-sheet-height);
+      max-height: 90vh;
+      overflow: hidden;
+
+      border-radius: 16px 16px 0 0;
+      box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+
+      z-index: 100;
+
+      /* ドラッグハンドルを表示 */
+      .navibar__handle {
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        height: 24px;
+        cursor: grab;
+        touch-action: none;
+        user-select: none;
+        flex-shrink: 0;
+
+        &:active {
+          cursor: grabbing;
+        }
+      }
+
+      /* コンテンツエリアの調整 */
+      .navibar__content {
+        flex: 1;
+        min-height: 0;
+        overflow: hidden;
+      }
+
+      .navibar__content-scroll {
+        height: 100%;
+      }
+    }
+
+    /* リサイズハンドルはモバイルで非表示 */
+    .navibar-resize-handle {
+      display: none;
+    }
+
+    /* フッターにsafe-area対応 */
+    .navibar__footer {
+      padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    }
+
+    /* スポットブロックのパディングを固定値に */
+    .spot-block--show .spot-main {
+      padding-left: 16px;
+      padding-right: 16px;
+    }
+
+    /* 出発・帰宅地点のパディングを調整 */
+    .start-point-block--show,
+    .goal-point-block--show {
+      padding-left: 16px;
+      padding-right: 16px;
     }
   }
 }
