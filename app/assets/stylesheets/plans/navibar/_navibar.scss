@@ -14,11 +14,22 @@
   display: flex;
   flex-direction: column;
   height: calc(100vh - 60px); /* タブナビの高さを除いた全高 */
+
+  /* モバイル時は親の高さに合わせる */
+  @media (max-width: 767px) {
+    height: 100%;
+  }
 }
 
 /* AI提案タブ選択時: 親スクロールを無効化 */
 .navibar__content-scroll:has(.tab-ai.active) {
   overflow-y: hidden;
+
+  /* モバイル時も同様 */
+  @media (max-width: 767px) {
+    overflow: hidden;
+    height: 100%;
+  }
 }
 
 html { scrollbar-gutter: stable; }

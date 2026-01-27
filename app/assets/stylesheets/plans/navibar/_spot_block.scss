@@ -578,3 +578,74 @@
   padding-left: 0;
 }
 
+/* ------------------------------------------
+   モバイル用並び替えボタン（上下）
+------------------------------------------ */
+
+/* デスクトップ: columnラッパーは透過 */
+.spot-order-column {
+  display: contents;
+}
+
+.spot-reorder-buttons {
+  display: none;
+}
+
+@media (max-width: 767px) {
+  /* モバイル: アイコン+矢印を縦並びで一体化（headerの高さに影響させない） */
+  .spot-order-column {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+    margin-left: 3px;
+    position: relative;
+  }
+
+  .spot-block .spot-order-icon {
+    margin-left: 0;
+  }
+
+  .spot-reorder-buttons {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    position: absolute;
+    top: calc(100% + 26px);
+    left: 50%;
+    transform: translateX(-50%);
+  }
+
+  .spot-reorder-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 26px;
+    height: 26px;
+    padding: 0;
+    border: none;
+    background: rgba(0, 0, 0, 0.04);
+    color: #999;
+    font-size: 12px;
+    cursor: pointer;
+    border-radius: 50%;
+    transition: background 0.15s, color 0.15s;
+    -webkit-tap-highlight-color: transparent;
+
+    &:active {
+      background: rgba(0, 0, 0, 0.12);
+      color: #555;
+    }
+  }
+
+  /* ドラッグカーソルを解除 */
+  .spot-block {
+    cursor: default;
+  }
+
+  .spot-block:active {
+    cursor: default;
+  }
+}
+

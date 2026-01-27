@@ -56,6 +56,47 @@ body.no-footer .plan-form.navibar--wide .plan-save {
   gap: 12px;
 }
 
+/* ==========================================
+   モバイルレスポンシブ（検索バー・フローティングボタン）
+========================================== */
+@media (max-width: 767px) {
+  .map-search-box {
+    /* 上部中央に固定（画面幅いっぱい） */
+    top: 10px;
+    left: 12px;
+    right: 60px; /* ハンバーガーメニュー分のスペース確保 */
+    width: auto;
+    transform: none;
+
+    input.form-control {
+      padding: 10px 14px;
+      font-size: 16px; /* iOSでのズーム防止 */
+      border-radius: 8px !important;
+
+      &::placeholder {
+        font-size: 14px;
+      }
+    }
+  }
+
+  .map-floating-buttons {
+    /* 検索バーの下に配置 */
+    top: 56px;
+    left: 12px;
+    transform: none;
+    gap: 8px;
+  }
+
+  .map-floating-btn {
+    padding: 8px 12px;
+    border-radius: 20px;
+
+    i {
+      font-size: 14px;
+    }
+  }
+}
+
 /* 共通のフローティングボタンスタイル */
 .map-floating-btn {
   display: flex;

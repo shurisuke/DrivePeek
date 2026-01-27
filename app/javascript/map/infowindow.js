@@ -5,6 +5,7 @@
 // ================================================================
 
 import { getMapInstance } from "map/state"
+import { panToVisualCenter } from "map/visual_center"
 
 // シングルトン
 let infoWindow = null
@@ -36,6 +37,10 @@ const getInfoWindow = () => {
 export const closeInfoWindow = () => {
   if (infoWindow) {
     infoWindow.close()
+  }
+  // モバイルの場合はモバイルInfoWindowも閉じる
+  if (isMobile()) {
+    closeMobileInfoWindow()
   }
 }
 
@@ -140,6 +145,50 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
 // POIクリック時にGoogle Places APIをスキップして即時表示
 // ================================================================
 
+// モバイル判定（768px未満）
+const isMobile = () => window.innerWidth < 768
+
+// モバイル用InfoWindow表示
+const showMobileInfoWindow = async ({
+  spotId, placeId, name, address, genres, lat, lng,
+  showButton, planId, planSpotId, editMode
+}) => {
+  // クエリパラメータを構築
+  const params = new URLSearchParams({
+    show_button: showButton,
+    zoom_index: 1  // モバイルは常にmd
+  })
+  if (spotId) params.append("spot_id", spotId)
+  if (placeId) params.append("place_id", placeId)
+  if (name) params.append("name", name)
+  if (address) params.append("address", address)
+  if (lat) params.append("lat", lat)
+  if (lng) params.append("lng", lng)
+  if (planId) params.append("plan_id", planId)
+  if (editMode) params.append("edit_mode", editMode)
+
+  try {
+    // APIからHTMLを取得
+    const response = await fetch(`/api/infowindow?${params.toString()}`, {
+      headers: { "Accept": "text/html" }
+    })
+    if (!response.ok) throw new Error("Failed to fetch infowindow")
+    const html = await response.text()
+
+    // モバイルInfoWindowを表示
+    document.dispatchEvent(new CustomEvent("mobileInfowindow:show", {
+      detail: { html }
+    }))
+  } catch (error) {
+    console.error("[showMobileInfoWindow] Error:", error)
+  }
+}
+
+// モバイルInfoWindowを閉じる
+export const closeMobileInfoWindow = () => {
+  document.dispatchEvent(new CustomEvent("mobileInfowindow:close"))
+}
+
 export const showInfoWindowWithFrame = ({
   anchor,           // LatLng or Marker
   spotId = null,    // 既存spotの場合
@@ -156,6 +205,15 @@ export const showInfoWindowWithFrame = ({
 }) => {
   const map = getMapInstance()
   if (!map) return
+
+  // モバイルの場合はボトムシートで表示
+  if (isMobile()) {
+    showMobileInfoWindow({
+      spotId, placeId, name, address, genres, lat, lng,
+      showButton, planId, planSpotId, editMode
+    })
+    return
+  }
 
   const iw = getInfoWindow()
   const zoomScale = ["sm", "md", "lg", "xl"][currentZoomIndex] || "md"
@@ -178,21 +236,6 @@ export const showInfoWindowWithFrame = ({
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
 
-  // InfoWindowが画面中央に来るように、アンカー位置を少し南にずらしてパン
-  const calcCenteredPosition = (anchorPos) => {
-    const bounds = map.getBounds()
-    if (!bounds) return anchorPos
-
-    const ne = bounds.getNorthEast()
-    const sw = bounds.getSouthWest()
-    const latRange = ne.lat() - sw.lat()
-
-    // InfoWindowの高さ分（緯度範囲の30%）北にオフセット
-    // → マーカーが画面下部に、InfoWindowが中央に来る
-    const offsetLat = latRange * 0.3
-    return new google.maps.LatLng(anchorPos.lat() + offsetLat, anchorPos.lng())
-  }
-
   // editMode の場合はスケルトン不要（データは揃っている）
   if (editMode) {
     iw.setContent(`
@@ -208,7 +251,8 @@ export const showInfoWindowWithFrame = ({
       iw.setPosition(anchor)
       iw.open(map)
     }
-    map.panTo(calcCenteredPosition(anchorPos))
+    // ナビバー・ボトムシートを考慮した中央表示
+    panToVisualCenter(anchorPos, { offsetY: -80 })
     return
   }
 
@@ -236,8 +280,8 @@ export const showInfoWindowWithFrame = ({
     iw.open(map)
   }
 
-  // InfoWindowが画面中央に来るようにパン
-  map.panTo(calcCenteredPosition(anchorPos))
+  // ナビバー・ボトムシートを考慮した中央表示（InfoWindow高さ分上にオフセット）
+  panToVisualCenter(anchorPos, { offsetY: -120 })
 
   // Turbo Frame ロード後にStimulusイベントリスナーを設定
   google.maps.event.addListenerOnce(iw, "domready", () => {

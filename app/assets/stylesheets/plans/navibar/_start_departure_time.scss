@@ -19,12 +19,12 @@
     gap: 0;
 
     .start-departure-time__help-btn {
-      margin-top: 0; /* スポットなし時は上余白なし */
+      margin-top: 10px; /* スポットなし時は少し下げる */
     }
 
     .start-departure-time__main {
       margin-top: auto; /* 下寄せ */
-      transform: translateY(0);
+      transform: translateY(-2px);
       padding: 0;
     }
   }

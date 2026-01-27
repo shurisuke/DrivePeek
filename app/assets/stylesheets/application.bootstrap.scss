@@ -17,6 +17,8 @@
 @use "ui/multi_select";
 @use "ui/search_filters";
 
+@use "components/bottom_sheet";
+
 @use "shared/alerts";
 @use "shared/logo";
 @use "shared/header";
@@ -38,6 +40,8 @@
 @use "map/map_button";
 @use "map/infowindow";
 @use "map/photo_gallery_modal";
+
+@use "mobile/infowindow" as mobile-infowindow;
 
 @use "ai/ai_suggestion_chat";
 

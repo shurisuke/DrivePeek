@@ -3,11 +3,17 @@
 ========================================== */
 
 .ai-chat {
-  position: relative;
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+  display: block;
   background-color: #fff;
+  padding-bottom: 80px; /* composer分の余白 */
+
+  /* モバイル時はflexboxで下部配置 + ボトムシートと一緒に収納 */
+  @media (max-width: 767px) {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    padding-bottom: 0;
+  }
 }
 
 /* ==========================================
@@ -113,14 +119,18 @@
    メッセージ一覧エリア
 ========================================== */
 .ai-chat__messages {
-  flex: 1;
-  overflow-y: auto;
   padding: 16px;
   padding-left: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
-  padding-bottom: 200px;
   display: flex;
   flex-direction: column;
+
+  /* モバイル時は伸縮して入力欄を下部に押し出す */
+  @media (max-width: 767px) {
+    flex: 1;
+    min-height: 0;
+    overflow-y: auto;
+  }
 }
 
 /* ==========================================
@@ -142,6 +152,7 @@
 .ai-chat__msg {
   display: flex;
   gap: 10px;
+  align-items: flex-start;
   animation: fadeInUp 0.2s ease-out;
 }
 
@@ -160,6 +171,20 @@
 .ai-chat__msg--assistant {
   align-self: flex-start;
   max-width: 100%;
+
+  /* モバイル時：アイコンは表示、スポットカード・採用ボタンは中央寄せ */
+  @media (max-width: 767px) {
+    .ai-chat__spots,
+    .ai-plan-card__actions,
+    .ai-chat__related-spots {
+      margin-left: -38px; /* アイコン幅 + gap分を相殺 */
+      width: calc(100% + 38px);
+    }
+
+    .ai-chat__bubble--closing {
+      margin-left: -38px;
+    }
+  }
 }
 
 /* ユーザー側メッセージ（右寄せ） */
@@ -201,6 +226,7 @@
   min-width: 0;
 }
 
+
 /* ==========================================
    吹き出し
 ========================================== */
@@ -216,7 +242,7 @@
 .ai-chat__msg--assistant .ai-chat__bubble {
   background-color: transparent;
   color: #1c1c1e;
-  padding: 4px 0;
+  padding: 0;
 
   /* マークダウン要素の余白管理 */
   > *:first-child { margin-top: 0; }
@@ -448,15 +474,30 @@
 }
 
 /* ==========================================
-   入力フォームエリア
+   入力フォームエリア（ナビバー下部に固定）
 ========================================== */
 .ai-chat__composer {
-  flex-shrink: 0;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: var(--navibar-width, 360px);
+  z-index: 20;
   padding: 12px 16px;
   padding-left: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   background-color: #fff;
   border-top: 1px solid #e5e5ea;
+  box-sizing: border-box;
+
+  /* モバイル時は固定ではなく通常フロー（ボトムシートと一緒に収納） */
+  @media (max-width: 767px) {
+    position: static;
+    width: 100%;
+    padding-left: 16px;
+    padding-right: 16px;
+    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
+    flex-shrink: 0; /* 縮まない */
+  }
 }
 
 .ai-chat__form {
@@ -587,12 +628,14 @@
 }
 
 /* ==========================================
-   レスポンシブ対応
+   AIタブのレイアウト
 ========================================== */
-.tab-content.tab-ai.active {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
+.tab-content.tab-ai {
+  display: none;
+
+  &.active {
+    display: block;
+  }
 }
 
 /* ==========================================
@@ -625,6 +668,23 @@
 .ai-chat__bubble--closing {
   margin-top: 24px;
   color: #8e8e93;
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+
+  &::before {
+    content: "\f589"; /* Bootstrap Icons: bi-stars */
+    font-family: "bootstrap-icons";
+    font-size: 22px;
+    line-height: 1;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    flex-shrink: 0;
+    width: 28px;
+    text-align: center;
+  }
 }
 
 .ai-spot-card {

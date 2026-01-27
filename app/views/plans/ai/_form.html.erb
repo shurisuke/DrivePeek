@@ -6,10 +6,9 @@
         <textarea
           name="message"
           class="ai-chat__input"
-          placeholder="どこらへんで何したい？（例: 那須で自然を満喫したい）"
+          placeholder="例: 那須で自然を満喫したい"
           rows="1"
           data-ai-chat-target="input"
-          data-action="input->ai-chat#autoResize keydown->ai-chat#handleKeydown"
         ></textarea>
       </div>
       <button type="submit" class="ai-chat__send-btn" data-ai-chat-target="sendBtn">
@@ -27,7 +26,7 @@
           <%= link_to destroy_all_api_ai_chats_path(plan_id: plan.id),
                 id: "ai-chat-clear-btn",
                 class: "ai-chat__menu-item ai-chat__menu-item--danger #{'ai-chat__menu-item--disabled' unless plan.ai_chat_messages.exists?}",
-                data: { turbo_method: :delete, action: "click->dropdown#close turbo:submit-end->ai-chat#clearConversation" } do %>
+                data: { turbo_method: :delete, action: "click->dropdown#close" } do %>
             <i class="bi bi-trash"></i>
             <span>会話をクリア</span>
           <% end %>

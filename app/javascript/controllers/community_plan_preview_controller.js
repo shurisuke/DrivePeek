@@ -188,7 +188,16 @@ export default class extends Controller {
 
     if (pointCount === 0) return
 
-    const padding = { top: 120, bottom: 100, left: 50, right: 50 }
+    // モバイル時はボトムシートの高さを考慮
+    const isMobile = window.innerWidth < 768
+    const bottomSheetHeight = isMobile
+      ? (document.querySelector(".navibar")?.offsetHeight || 0)
+      : 0
+
+    const padding = isMobile
+      ? { top: 60, bottom: bottomSheetHeight + 20, left: 20, right: 20 }
+      : { top: 120, bottom: 100, left: 50, right: 50 }
+
     map.fitBounds(bounds, padding)
 
     if (pointCount <= 2) {

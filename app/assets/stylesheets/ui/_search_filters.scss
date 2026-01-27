@@ -19,7 +19,7 @@
 .search-tabs {
   display: flex;
   position: relative;
-  margin-bottom: 16px;
+  margin-bottom: 0;
   padding: 3px;
   background-color: #e8e8e8;
   border-radius: 9px;
@@ -89,8 +89,8 @@
 .search-filters {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-bottom: 10px;
+  gap: 0;
+  margin-bottom: 0;
 }
 
 /* お気に入りフィルター（トグルスイッチ） */
@@ -99,14 +99,15 @@
   align-items: center;
   gap: 8px;
   padding: 10px 14px;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   background: #fff;
-  border-radius: 10px;
+  border: none;
+  border-radius: 0;
   cursor: pointer;
   font-size: 14px;
   font-weight: 400;
   color: #888;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
   transition: all 0.2s ease;
 
   input[type="checkbox"] {
@@ -120,9 +121,6 @@
     order: 2;
   }
 
-  &:hover {
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08);
-  }
 }
 
 /* トグルスイッチ本体 */
@@ -164,16 +162,17 @@
   width: 100%;
   padding: 10px 14px;
   border: none;
-  border-radius: 10px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  border-radius: 0;
   font-size: 14px;
   outline: none;
-  margin-bottom: 10px;
+  margin-bottom: 0;
   background: #fff;
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.06), 0 2px 6px rgba(0, 0, 0, 0.04);
+  box-shadow: none;
   transition: box-shadow 0.2s ease;
 
   &:focus {
-    box-shadow: 0 0 0 3px rgba(0, 0, 0, 0.1);
+    box-shadow: none;
   }
 
   &::placeholder {
@@ -184,7 +183,7 @@
 /* 検索ボタン */
 .search-button {
   width: 100%;
-  margin-top: 8px;
+  margin-top: 5px;
   padding: 11px 16px;
   background: linear-gradient(135deg, #506d53, #45604a);
   border: none;
@@ -211,6 +210,16 @@
 
   i {
     font-size: 14px;
+  }
+
+  /* 青色バリエーション（共通クラス） */
+  &--blue {
+    background: linear-gradient(135deg, #007AFF, #0056CC);
+    box-shadow: 0 2px 6px rgba(0, 122, 255, 0.3);
+
+    &:hover {
+      box-shadow: 0 4px 12px rgba(0, 122, 255, 0.35);
+    }
   }
 }
 
