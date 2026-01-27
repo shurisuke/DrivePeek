@@ -2,13 +2,16 @@
 //
 // ================================================================
 // Spot Reorder Handler（単一責務）
-// 用途: SortableJS でスポットブロックの並び替えを可能にし、
-//       並び替え完了時にサーバーへ position を保存する
+// 用途: スポットブロックの並び替え
+//   - デスクトップ: SortableJS によるドラッグ&ドロップ
+//   - モバイル: 上下ボタンによる入れ替え（イベント委譲）
 //
 // ✅ 安定化ポイント
 // - navibar差し替え直前(navibar:will-update)に destroy してリーク/多重を防ぐ
 // - navibar差し替え直後(navibar:updated)に init（差し替え後DOMにだけ付ける）
 // - Sortable.get(container) で「既に付いているか」を判定して多重生成を防ぐ
+// - モバイル（768px未満）では SortableJS を初期化せず、
+//   .spot-reorder-btn[data-reorder-direction] のクリックをイベント委譲で処理
 // ================================================================
 
 import Sortable from "sortablejs"
@@ -67,6 +70,9 @@ const destroySortable = () => {
 }
 
 const initSortable = () => {
+  // モバイル時はドラッグ無効（上下ボタンで並び替え）
+  if (window.innerWidth < 768) return
+
   const container = getContainer()
   const planId = getPlanId()
 
@@ -111,6 +117,51 @@ const initSortable = () => {
   })
 }
 
+// ================================================================
+// モバイル用: 上下ボタンによる並び替え（イベント委譲）
+// ================================================================
+
+const saveOrder = async () => {
+  const container = getContainer()
+  const planId = getPlanId()
+  if (!container || !planId) return
+
+  const orderedIds = getOrderedPlanSpotIds(container)
+
+  try {
+    await patchTurboStream(`/api/plans/${planId}/plan_spots/reorder`, {
+      ordered_plan_spot_ids: orderedIds,
+    })
+    document.dispatchEvent(new CustomEvent("map:route-updated"))
+  } catch (err) {
+    console.error("並び替え保存エラー:", err)
+    alert(err.message)
+  }
+}
+
+const handleReorderClick = async (e) => {
+  const btn = e.target.closest(".spot-reorder-btn")
+  if (!btn) return
+
+  const block = btn.closest(".spot-block")
+  if (!block) return
+
+  const direction = btn.dataset.reorderDirection
+  if (direction === "up") {
+    const prev = block.previousElementSibling
+    if (prev?.classList.contains("spot-block")) {
+      block.parentNode.insertBefore(block, prev)
+      await saveOrder()
+    }
+  } else if (direction === "down") {
+    const next = block.nextElementSibling
+    if (next?.classList.contains("spot-block")) {
+      block.parentNode.insertBefore(next, block)
+      await saveOrder()
+    }
+  }
+}
+
 export const bindSpotReorderHandler = () => {
   if (bound) return
   bound = true
@@ -124,4 +175,7 @@ export const bindSpotReorderHandler = () => {
 
   // キャッシュ時
   document.addEventListener("turbo:before-cache", destroySortable)
+
+  // モバイル用: 上下ボタン（イベント委譲）
+  document.addEventListener("click", handleReorderClick)
 }
