@@ -14,6 +14,7 @@ import { setupSearchBox } from "map/search_box"
 import { setupPoiClick } from "map/poi_click"
 import { addCurrentLocationMarker } from "map/current_location"
 import { getPlanDataFromPage } from "plans/plan_data"
+import { fitMapToSpots } from "plans/route_renderer_show"
 import { waitForGoogleMaps, isEditPage } from "map/utils"
 import { bindPlanMapSync } from "plans/plan_map_sync"
 import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
@@ -62,4 +63,5 @@ document.addEventListener("turbo:load", async () => {
 
   const { renderPlanMarkers } = await import("plans/render_plan_markers")
   renderPlanMarkers(planData)
+  fitMapToSpots(planData)
 })

@@ -9,6 +9,7 @@
 
 import { getMapInstance } from "map/state"
 import { COMMUNITY_ROUTE_STYLE } from "map/constants"
+import { fitBoundsWithPadding } from "map/visual_center"
 
 /**
  * スポット間の経路線を描画する（詳細画面用）
@@ -70,7 +71,7 @@ export const fitMapToSpots = (planData) => {
     }
   })
 
-  map.fitBounds(bounds, { padding: 50 })
+  fitBoundsWithPadding(bounds)
 
   // スポットが1つの場合、fitBoundsだとズームしすぎるので調整
   if (spots.length === 1) {

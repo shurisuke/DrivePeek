@@ -18,6 +18,9 @@
      data-navibar-resize-storage-key-value="drive_peek:navibar_spot_width"
      data-navibar-resize-collapsed-key-value="drive_peek:navibar_spot_collapsed"
      data-navibar-resize-slide-key-value="drive_peek:navibar_spot_slide">
+  <%# InfoWindowスケルトンテンプレート（JSから参照） %>
+  <%= render "map/infowindow_skeleton" %>
+
   <!-- 地図 -->
   <div id="map" class="map" data-map-mode="spot_show" data-spot-id="<%= @spot.id %>" data-navibar-resize-target="map"></div>
 
@@ -29,7 +32,17 @@
   </div>
 
   <!-- ナビバー（スポット詳細用） -->
-  <aside class="navibar navibar--show">
+  <aside class="navibar navibar--show"
+         data-controller="bottom-sheet"
+         data-bottom-sheet-min-value="8"
+         data-bottom-sheet-mid-value="45"
+         data-bottom-sheet-max-value="85"
+         data-bottom-sheet-state-value="mid">
+    <%# モバイル用ドラッグハンドル %>
+    <div class="navibar__handle" data-bottom-sheet-target="handle">
+      <div class="navibar__handle-bar"></div>
+    </div>
+
     <div class="navibar__content">
       <div class="navibar__content-scroll">
         <!-- ヘッダー -->
@@ -37,18 +50,15 @@
           <%= link_to :back, class: "spot-detail__back-link" do %>
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           <% end %>
+          <h1 class="navibar__title"><%= @spot.name %></h1>
+          <div class="spot-detail__header-like">
+            <%= render "like_spots/button", spot: @spot, like_spot: @like_spot %>
+          </div>
         </div>
 
         <!-- コンテンツ -->
         <div class="navibar__blocks">
           <div class="spot-detail__main">
-            <div class="spot-detail__name">
-              <h1><%= @spot.name %></h1>
-              <div class="spot-detail__name-actions">
-                <%= render "like_spots/button", spot: @spot, like_spot: @like_spot %>
-              </div>
-            </div>
-
             <% if @spot.address.present? %>
               <div class="spot-detail__address"><%= @spot.address %></div>
             <% end %>
@@ -62,13 +72,32 @@
             <% end %>
           </div>
 
-          <% if @spot.photo_url.present? %>
-            <div class="spot-detail__photo">
-              <%= image_tag @spot.photo_url, alt: @spot.name, loading: "lazy" %>
-            </div>
-          <% end %>
         </div>
       </div>
     </div>
   </aside>
+
+  <%# モバイル用InfoWindowボトムシート %>
+  <div id="mobile-infowindow"
+       class="mobile-infowindow"
+       data-controller="mobile-infowindow"
+       hidden>
+    <div class="mobile-infowindow__backdrop" data-action="click->mobile-infowindow#close"></div>
+    <div class="mobile-infowindow__sheet" data-mobile-infowindow-target="sheet">
+      <div class="mobile-infowindow__handle" data-mobile-infowindow-target="handle">
+        <div class="mobile-infowindow__handle-bar"></div>
+      </div>
+      <button type="button"
+              class="mobile-infowindow__close-btn"
+              data-action="click->mobile-infowindow#close">
+        <i class="bi bi-x-lg"></i>
+      </button>
+      <div class="mobile-infowindow__content" id="mobile-infowindow-content">
+        <%# InfoWindow コンテンツがここに挿入される %>
+      </div>
+      <div class="mobile-infowindow__footer" id="mobile-infowindow-footer" hidden>
+        <%# コメントフッターがJSで移動される %>
+      </div>
+    </div>
+  </div>
 </div>

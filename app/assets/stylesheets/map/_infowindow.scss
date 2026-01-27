@@ -790,6 +790,20 @@ $iw-font-xl: 18;
       filter: brightness(0.9);
     }
   }
+
+  /* ✅ プラン作成ボタン（青グラデーション） */
+  &--create {
+    display: block;
+    text-align: center;
+    text-decoration: none;
+    background: linear-gradient(135deg, #4A90D9, #2C5FA0);
+
+    &:hover {
+      filter: brightness(0.95);
+      color: #fff;
+      text-decoration: none;
+    }
+  }
 }
 
 @keyframes dp-btn-spin {

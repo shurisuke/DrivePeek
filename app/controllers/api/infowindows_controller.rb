@@ -26,6 +26,7 @@ module Api
       @photo_urls = fetch_photo_urls
       @show_button = params[:show_button].to_s != "false"
       @button_label = params[:button_label]
+      @map_mode = params[:map_mode]
       @plan_spot_id = find_plan_spot_id
 
       render partial: "map/infowindow_spot", locals: infowindow_locals
@@ -39,6 +40,7 @@ module Api
       @photo_urls = params[:photo_urls] || []
       @show_button = params[:show_button].to_s != "false"
       @button_label = params[:button_label]
+      @map_mode = params[:map_mode]
       @plan_spot_id = find_plan_spot_id
       @edit_buttons = parse_edit_buttons
 
@@ -167,6 +169,7 @@ module Api
         photo_urls: @photo_urls,
         show_button: @show_button,
         button_label: @button_label,
+        map_mode: @map_mode,
         plan_id: params[:plan_id],
         plan_spot_id: @plan_spot_id,
         edit_mode: @edit_mode,

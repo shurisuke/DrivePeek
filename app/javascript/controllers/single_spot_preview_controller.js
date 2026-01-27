@@ -20,7 +20,13 @@ const SPOT_PIN_COLOR = COLORS.COMMUNITY
 const createSpotPinSvg = () => {
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
-      <circle cx="18" cy="18" r="17" fill="${SPOT_PIN_COLOR}"/>
+      <defs>
+        <linearGradient id="communityGrad" x1="0%" y1="0%" x2="100%" y2="100%">
+          <stop offset="0%" style="stop-color:#4A90D9"/>
+          <stop offset="100%" style="stop-color:#2C5FA0"/>
+        </linearGradient>
+      </defs>
+      <circle cx="18" cy="18" r="17" fill="url(#communityGrad)"/>
       <circle cx="18" cy="18" r="6" fill="white"/>
     </svg>
   `.trim()
