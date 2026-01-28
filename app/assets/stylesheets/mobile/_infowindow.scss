@@ -315,6 +315,15 @@
   padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
 }
 
+.mobile-infowindow__footer .dp-infowindow__comment-footer {
+  border-top: none;
+}
+
+/* コメントフッターはシート直下に移動されるため、元の位置の空divを非表示 */
+.mobile-infowindow__content .dp-infowindow__comment-footer {
+  display: none;
+}
+
 /* ボディスクロール防止 */
 body.mobile-infowindow-open {
   overflow: hidden;
