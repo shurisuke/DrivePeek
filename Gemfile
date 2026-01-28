@@ -3,7 +3,7 @@ source "https://rubygems.org"
 ruby "3.2.2"
 
 # Rails本体
-gem "rails", "~> 8.1.1"
+gem "rails", "~> 8.1.2"
 
 # アセットパイプライン
 gem "propshaft"
