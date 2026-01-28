@@ -102,7 +102,7 @@ group :test do
   gem "selenium-webdriver"
 
   # RSpec support
-  gem "shoulda-matchers", "~> 6.0"
+  gem "shoulda-matchers", "~> 7.0"
   gem "webmock"
   gem "vcr"
   gem "database_cleaner-active_record"
