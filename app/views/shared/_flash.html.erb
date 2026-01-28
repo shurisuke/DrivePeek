@@ -1,11 +1,11 @@
 <%= turbo_frame_tag "flash" do %>
   <% if notice.present? %>
-    <div class="alert" data-controller="flash">
+    <div class="dp-flash" data-controller="flash">
       <%= notice %>
     </div>
   <% end %>
   <% if alert.present? %>
-    <div class="alert alert-danger" data-controller="flash">
+    <div class="dp-flash dp-flash--danger" data-controller="flash">
       <%= alert %>
     </div>
   <% end %>

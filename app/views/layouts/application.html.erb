@@ -31,9 +31,9 @@
 
   <body class="<%= content_for?(:body_class) ? yield(:body_class) : '' %>">
     <%= render 'shared/header' unless content_for?(:hide_header) %>
+    <%= render "shared/flash" %>
 
     <main class="main-content">
-      <%= render "shared/flash" %>
       <%= yield %>
     </main>
 

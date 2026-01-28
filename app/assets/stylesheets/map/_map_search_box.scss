@@ -2,7 +2,7 @@
      地図上の検索ボックス
 ========================================== */
 .map-search-box {
-    position: absolute;
+    position: fixed;
     top: 10px;
     /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
     left: calc(
