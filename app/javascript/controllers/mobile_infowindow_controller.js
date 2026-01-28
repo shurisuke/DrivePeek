@@ -56,6 +56,13 @@ export default class extends Controller {
     const { html } = event.detail || {}
     if (!html) return
 
+    // 前回の残りをクリア（Turboキャッシュ復元対策）
+    const footerEl = document.getElementById("mobile-infowindow-footer")
+    if (footerEl) {
+      footerEl.innerHTML = ""
+      footerEl.hidden = true
+    }
+
     // コンテンツを挿入
     const contentEl = document.getElementById("mobile-infowindow-content")
     if (contentEl) {
