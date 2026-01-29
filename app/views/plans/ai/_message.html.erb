@@ -1,4 +1,4 @@
-<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false %>
+<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false, area_data: {}, condition_data: {} %>
 <%# プラン内スポットのplace_idを一度だけ取得（N+1回避） %>
 <% existing_place_ids = plan&.spots&.pluck(:place_id) || [] %>
 <div class="ai-chat__message-wrapper">
@@ -58,6 +58,11 @@
         </div>
       <% end %>
 
+      <%# アクションボタン %>
+      <% area_data = local_assigns.fetch(:area_data, {}) %>
+      <% condition_data = local_assigns.fetch(:condition_data, {}) %>
+      <%= render "plans/ai/action_buttons", mode: "plan", area_data: area_data, condition_data: condition_data %>
+
     <% elsif response_type == "spots" %>
       <%# スポット提案モード: 導入文 → カード（説明含む） → 締め %>
       <%# auto_show: 新規応答時のみtrue、履歴表示時はfalse %>
@@ -80,6 +85,11 @@
           <%= closing %>
         </div>
       <% end %>
+
+      <%# アクションボタン %>
+      <% area_data = local_assigns.fetch(:area_data, {}) %>
+      <% condition_data = local_assigns.fetch(:condition_data, {}) %>
+      <%= render "plans/ai/action_buttons", mode: "spots", area_data: area_data, condition_data: condition_data %>
 
     <% elsif response_type == "answer" %>
       <%# 詳細説明モード: 回答 → 関連スポット（参考表示） → 締め %>

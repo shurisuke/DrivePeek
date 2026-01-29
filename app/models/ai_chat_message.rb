@@ -86,6 +86,20 @@ class AiChatMessage < ApplicationRecord
     } : nil)
   end
 
+  # エリア情報を取得（アクションボタン用）
+  def area_data
+    return {} unless assistant?
+
+    parsed_content[:area_data] || {}
+  end
+
+  # 条件情報を取得（アクションボタン用）
+  def condition_data
+    return {} unless assistant?
+
+    parsed_content[:condition_data] || {}
+  end
+
   def assistant?
     role == "assistant"
   end

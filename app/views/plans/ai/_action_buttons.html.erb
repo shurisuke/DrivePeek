@@ -1,0 +1,20 @@
+<%# AI提案 応答後アクションボタン %>
+<%# locals: mode:, area_data: {}, condition_data: {} %>
+<div class="ai-action-buttons"
+     data-controller="ai-action-buttons"
+     data-ai-action-buttons-mode-value="<%= mode %>"
+     data-ai-action-buttons-area-value="<%= area_data.to_json %>"
+     data-ai-action-buttons-condition-value="<%= condition_data.to_json %>">
+  <button type="button"
+          class="ai-action-buttons__btn"
+          data-action="click->ai-action-buttons#reselectArea">
+    <i class="bi bi-map"></i>
+    エリアを選び直す
+  </button>
+  <button type="button"
+          class="ai-action-buttons__btn"
+          data-action="click->ai-action-buttons#changeCondition">
+    <i class="bi bi-sliders"></i>
+    条件を変更
+  </button>
+</div>

@@ -1,15 +1,15 @@
 <%# メッセージエリアを初期状態に戻す %>
 <%= turbo_stream.update "ai-chat-messages" do %>
-  <%# AI側: 案内文（初期表示） %>
+  <%# AI側: 案内文 + モード選択（初期表示） %>
   <div class="ai-chat__msg ai-chat__msg--assistant">
     <div class="ai-chat__icon">
       <i class="bi bi-stars"></i>
     </div>
     <div class="ai-chat__content">
       <div class="ai-chat__bubble">
-        こんにちは！ドライブプランのAIアシスタントです。<br>
-        出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
+        こんにちは！ドライブプランのAIアシスタントです。
       </div>
+      <%= render "plans/ai/mode_select" %>
     </div>
   </div>
 
