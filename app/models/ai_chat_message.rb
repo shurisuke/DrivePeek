@@ -24,16 +24,17 @@ class AiChatMessage < ApplicationRecord
   scope :recent, -> { order(created_at: :desc) }
   scope :chronological, -> { order(created_at: :asc) }
 
-  # AIとチャットし、メッセージを保存して結果を返す
+  # スポットに関する質問に回答し、メッセージを保存して結果を返す
   # @param plan [Plan] 現在編集中のプラン
   # @param user [User] ユーザー
-  # @param message [String] ユーザーからのメッセージ（希望内容 + 場所）
+  # @param message [String] ユーザーからの質問
   # @return [Hash] { result: Hash, message: AiChatMessage }
   def self.chat(plan:, user:, message:)
     # ユーザーメッセージを保存
     plan.ai_chat_messages.create!(user: user, role: "user", content: message)
 
-    result = AiChatService.chat(message, plan: plan)
+    # スポットに関する質問に回答（answerモード）
+    result = AiChatService.answer(message, plan: plan)
 
     ai_message = plan.ai_chat_messages.create!(user: user, role: "assistant", content: result.to_json)
     { result: result, message: ai_message }
