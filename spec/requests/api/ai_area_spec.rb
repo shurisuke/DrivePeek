@@ -162,6 +162,59 @@ RSpec.describe "Api::AiArea", type: :request do
         expect(response).to have_http_status(:ok)
       end
     end
+
+    context "入力検証" do
+      before { sign_in user }
+
+      it "center_latが範囲外の場合422を返す" do
+        post suggest_api_ai_area_path, params: area_params.merge(center_lat: 100.0)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(/center_lat/)
+      end
+
+      it "center_lngが範囲外の場合422を返す" do
+        post suggest_api_ai_area_path, params: area_params.merge(center_lng: 200.0)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(/center_lng/)
+      end
+
+      it "radius_kmが範囲外（大きすぎ）の場合422を返す" do
+        post suggest_api_ai_area_path, params: area_params.merge(radius_km: 100.0)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(/radius_km/)
+      end
+
+      it "radius_kmが範囲外（小さすぎ）の場合422を返す" do
+        post suggest_api_ai_area_path, params: area_params.merge(radius_km: 0.5)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(/radius_km/)
+      end
+
+      it "countが範囲外の場合422を返す" do
+        post suggest_api_ai_area_path, params: area_params.merge(mode: "spots", genre_id: 1, count: 100)
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["errors"]).to include(/count/)
+      end
+
+      it "countが未指定の場合は検証をスキップする" do
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
+        stub_openai_chat(response_content: { intro: "test", closing: "test" }.to_json)
+
+        genre = create(:genre)
+        create(:spot, lat: 35.6770, lng: 139.6510).tap { |s| s.genres << genre }
+
+        post suggest_api_ai_area_path, params: area_params.merge(mode: "spots", genre_id: genre.id),
+             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+
+        expect(response).to have_http_status(:ok)
+      end
+    end
   end
 
   describe "POST /api/ai_area/finish" do

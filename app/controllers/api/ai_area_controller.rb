@@ -2,6 +2,13 @@ module Api
   class AiAreaController < ApplicationController
     before_action :authenticate_user!
     before_action :set_plan
+    before_action :validate_area_params, only: :suggest
+
+    # 入力値の許容範囲
+    LAT_RANGE = (-90.0..90.0).freeze
+    LNG_RANGE = (-180.0..180.0).freeze
+    RADIUS_RANGE = (1.0..50.0).freeze
+    COUNT_RANGE = (1..10).freeze
 
     # おまかせ時の優先ジャンルキュー
     PRIORITY_GENRE_IDS = [
@@ -78,6 +85,18 @@ module Api
 
     def set_plan
       @plan = current_user.plans.find(params[:plan_id])
+    end
+
+    def validate_area_params
+      errors = []
+      errors << "center_lat must be between -90 and 90" unless LAT_RANGE.cover?(params[:center_lat].to_f)
+      errors << "center_lng must be between -180 and 180" unless LNG_RANGE.cover?(params[:center_lng].to_f)
+      errors << "radius_km must be between 1 and 50" unless RADIUS_RANGE.cover?(params[:radius_km].to_f)
+      errors << "count must be between 1 and 10" if params[:count].present? && !COUNT_RANGE.cover?(params[:count].to_i)
+
+      return if errors.empty?
+
+      render json: { errors: errors }, status: :unprocessable_entity
     end
   end
 end

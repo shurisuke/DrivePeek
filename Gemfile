@@ -78,6 +78,9 @@ gem "resend"
 # Ruby の SSL 接続を安定化させる
 gem "openssl"
 
+# レート制限
+gem "rack-attack"
+
 group :development, :test do
   gem "debug", platforms: %i[ mri windows ], require: "debug/prelude"
   gem "bundler-audit", require: false
