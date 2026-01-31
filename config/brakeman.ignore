@@ -5,10 +5,10 @@
       "note": "False positive: avatar_color_for returns a safe CSS class name"
     },
     {
-      "fingerprint": "6917fbf0dee1e02d070fcd614a2cb7f2f15f864fb89e18d4b3c097aebbf0cb4e",
-      "note": "False positive: start_lat.to_f and start_lng.to_f sanitize input"
+      "fingerprint": "715ee6d743a8af33c7b930d728708ce19c765fb40e2ad9d2b974db04d92dc7d1",
+      "note": "Ruby 3.2.2 EOL warning - will upgrade Ruby separately"
     }
   ],
-  "updated": "2026-01-26",
+  "updated": "2026-01-31",
   "brakeman_version": "7.1.1"
 }
