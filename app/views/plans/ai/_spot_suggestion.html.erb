@@ -17,6 +17,10 @@
 
   <div class="ai-spot-card__address"><i class="bi bi-geo-alt"></i><%= spot[:address] %></div>
 
+  <% if spot[:description].present? %>
+    <div class="ai-spot-card__description"><%= spot[:description] %></div>
+  <% end %>
+
   <% unless compact %>
     <% already_added = existing_place_ids.include?(spot[:place_id]) %>
     <div class="ai-spot-card__actions">

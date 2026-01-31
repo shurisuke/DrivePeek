@@ -123,11 +123,16 @@ class AiAreaService
         genre = Genre.find_by(id: genre_id)
         next unless genre
 
-        spots = spots_in_circle(center_lat, center_lng, radius_km)
-        spots = spots.filter_by_genres([genre_id])
+        # まず円内+ジャンルでスポットIDを取得（DISTINCTを回避）
+        candidate_ids = spots_in_circle(center_lat, center_lng, radius_km)
+          .filter_by_genres([genre_id])
+          .pluck(:id)
+
+        next if candidate_ids.empty?
 
         # お気に入り数上位10件を候補として取得
-        top_spot_ids = spots
+        top_spot_ids = Spot
+          .where(id: candidate_ids)
           .left_joins(:like_spots)
           .group(:id)
           .order("COUNT(like_spots.id) DESC")
@@ -201,13 +206,22 @@ class AiAreaService
     end
 
     # プランモード: AIレスポンスからスポットを選出
-    # @param ai_response [Hash] { picks: [...], theme:, intro:, closing: }
+    # @param ai_response [Hash] { picks: [{n:, d:}, ...], intro:, closing: }
     # @param all_spots [Array<Hash>] 全候補スポット（通し番号順）
     # @param slot_sizes [Array<Integer>] 各スロットの候補数
-    # @return [Array<Hash>] 選出されたスポット
+    # @return [Array<Hash>] 選出されたスポット（descriptionを含む）
     def select_plan_spots(ai_response, all_spots, slot_sizes)
       picks = ai_response[:picks] || []
-      selected = picks.map { |n| all_spots[n - 1] }.compact
+
+      selected = picks.filter_map do |pick|
+        # picks が [{n:, d:}, ...] 形式
+        number = pick[:n]
+        description = pick[:d]
+        spot = all_spots[number - 1]
+        next unless spot
+
+        spot.merge(description: description)
+      end
 
       # フォールバック: 選出がない場合は各スロットの人気1位を採用
       return selected if selected.any?
@@ -249,10 +263,15 @@ class AiAreaService
         #{slots_info}
 
         ■ タスク
-        各ジャンルから季節・ドライブに最適な1件を選び、テーマと紹介文を作成。
+        各ジャンルから季節に合った1件を必ず選出（同じジャンルから複数選ばない）。
+        ※自然・公園系は花や紅葉の見頃を考慮（例: コキアは秋、桜は春）
+
+        ■ 文章ルール（すべて敬語）
+        - intro: 地域の特徴や魅力（季節に言及しない）
+        - d: スポット固有の魅力（スポット名は含めない、季節は本当に関係する場合のみ）
 
         ■ JSON
-        {"picks":[番号,番号,...],"theme":"テーマ","intro":"紹介文","closing":"ドライブへの期待を高める一言"}
+        {"picks":[{"n":番号,"d":"1文"},...], "intro":"1文", "closing":"1文"}
       PROMPT
     end
 
@@ -279,15 +298,7 @@ class AiAreaService
 
     # 提案レスポンスを構築
     def build_suggest_response(ai_result, selected_spots, mode = "plan")
-      # 導入文を構築（モードで分岐）
-      intro = case mode
-              when "plan"
-                theme = ai_result[:theme] || "おすすめドライブプラン"
-                intro_text = ai_result[:intro] || ""
-                "#{theme}\n#{intro_text}"
-              when "spots"
-                ai_result[:intro] || ""
-              end
+      intro = ai_result[:intro] || ""
 
       # spotsを既存形式で構築
       spots_for_response = selected_spots.map do |spot|
@@ -297,8 +308,9 @@ class AiAreaService
           address: spot[:address],
           lat: spot[:lat],
           lng: spot[:lng],
-          place_id: spot[:place_id]
-        }
+          place_id: spot[:place_id],
+          description: spot[:description]
+        }.compact
       end
 
       {

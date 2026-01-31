@@ -1,4 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
+import { clearAiSuggestionMarkers } from "map/state"
 
 // ================================================================
 // SuggestModeController
@@ -35,6 +36,7 @@ export default class extends Controller {
 
   // エリアを選び直す（既存条件保持）
   reselectArea() {
+    clearAiSuggestionMarkers()
     this.#dispatchAreaDraw(this.modeValue, {
       condition: this.conditionValue
     })
@@ -42,6 +44,7 @@ export default class extends Controller {
 
   // 条件を変更（同じエリアで再度モーダルを開く）
   changeCondition() {
+    clearAiSuggestionMarkers()
     const area = this.areaValue || {}
     document.dispatchEvent(new CustomEvent("ai:areaSelected", {
       detail: {
