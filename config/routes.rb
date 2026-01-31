@@ -55,11 +55,17 @@ Rails.application.routes.draw do
 
   # API エンドポイント
   namespace :api do
-    # AI提案チャット
-    resources :ai_chats, only: %i[create] do
+    # AI提案チャット（履歴クリアのみ）
+    resources :ai_chats, only: [] do
       collection do
         delete :destroy_all
       end
+    end
+
+    # AIエリア選択（プランモード/スポットモード両対応）
+    resource :ai_area, only: [], controller: "ai_area" do
+      post :suggest
+      post :finish
     end
 
     # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）

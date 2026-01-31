@@ -3,7 +3,6 @@ import {
   getMapInstance,
   addAiSuggestionMarker,
   addAiSuggestionOverlay,
-  clearAiSuggestionMarkers,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createAiSuggestionPinSvg } from "map/constants"
@@ -58,9 +57,6 @@ export default class extends Controller {
     this._isConnected = true
     // autoShow が true の場合のみ自動でピン表示
     if (this.autoShowValue) {
-      // 既存のAI提案マーカーをクリア（オーバーレイも含む）
-      clearAiSuggestionMarkers()
-
       // 少し遅延してから処理開始（DOM安定化のため）
       setTimeout(() => this.#processAllSpots(), 100)
     }

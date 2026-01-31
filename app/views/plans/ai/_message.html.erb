@@ -1,47 +1,53 @@
-<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false %>
+<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false, area_data: {}, condition_data: {} %>
 <%# プラン内スポットのplace_idを一度だけ取得（N+1回避） %>
 <% existing_place_ids = plan&.spots&.pluck(:place_id) || [] %>
-<div class="ai-chat__message-wrapper">
-  <div class="ai-chat__divider"></div>
-  <div class="ai-chat__msg ai-chat__msg--<%= role %>">
-  <% if role == "assistant" %>
-    <div class="ai-chat__icon">
-      <i class="bi bi-stars"></i>
-    </div>
-  <% end %>
-  <div class="ai-chat__content">
-    <% spots = local_assigns.fetch(:spots, []) %>
-    <% plan_data = local_assigns.fetch(:plan_data, nil) %>
-    <% intro = local_assigns.fetch(:intro, "") %>
-    <% closing = local_assigns.fetch(:closing, "") %>
-    <% response_type = local_assigns.fetch(:response_type, nil) %>
+<% spots = local_assigns.fetch(:spots, []) %>
+<% plan_data = local_assigns.fetch(:plan_data, nil) %>
+<% intro = local_assigns.fetch(:intro, "") %>
+<% closing = local_assigns.fetch(:closing, "") %>
+<% response_type = local_assigns.fetch(:response_type, nil) %>
+<% auto_show_value = local_assigns.fetch(:auto_show, false) %>
+<% area_data = local_assigns.fetch(:area_data, {}) %>
+<% condition_data = local_assigns.fetch(:condition_data, {}) %>
 
-    <% if response_type == "plan" || plan_data.present? %>
-      <%# プランモード: 導入文 → カード（説明含む）→ 移動時間 → 採用ボタン → 締め %>
-      <%# auto_show: 新規応答時のみtrue、履歴表示時はfalse %>
-      <% auto_show_value = local_assigns.fetch(:auto_show, false) %>
-      <div data-controller="ai-plan-adopt"
+<% is_plan_mode = response_type == "plan" && spots.present? %>
+<% is_spot_mode = response_type == "spots" && spots.present? %>
+
+<% if is_plan_mode || is_spot_mode %>
+  <%# ========== 提案モード共通レイアウト ========== %>
+  <%# モードに応じた変数設定 %>
+  <% mode = is_plan_mode ? "plan" : "spots" %>
+  <% intro_text = intro %>
+  <% spot_list = spots %>
+
+  <div class="ai-chat__message-wrapper ai-chat__message-wrapper--spots">
+    <div class="ai-chat__divider"></div>
+
+    <%# イントロ（アイコン + テキスト） %>
+    <% if intro_text.present? %>
+      <div class="ai-chat__msg ai-chat__msg--assistant">
+        <div class="ai-chat__icon">
+          <i class="bi bi-stars"></i>
+        </div>
+        <div class="ai-chat__content">
+          <div class="ai-chat__bubble ai-chat__bubble--intro">
+            <%= simple_format(intro_text, {}, wrapper_tag: nil) %>
+          </div>
+        </div>
+      </div>
+    <% end %>
+
+    <%# スポットカード（全幅・中央寄せ） %>
+    <% if is_plan_mode %>
+      <div class="ai-chat__spots-fullwidth"
+           data-controller="ai-plan-adopt"
            data-ai-plan-adopt-plan-id-value="<%= plan&.id %>"
            data-ai-plan-adopt-auto-show-value="<%= auto_show_value %>">
-
-        <%# 導入文（テーマ + 説明） %>
-        <% if plan_data[:theme].present? || plan_data[:description].present? %>
-          <div class="ai-chat__bubble ai-chat__bubble--intro">
-            <% if plan_data[:theme].present? %>
-              <strong><%= plan_data[:theme] %></strong><br>
-            <% end %>
-            <%= plan_data[:description] %>
-          </div>
-        <% end %>
-
-        <%# スポットカード %>
-        <div class="ai-chat__spots" data-ai-plan-adopt-target="spots">
-          <% plan_data[:spots].each_with_index do |spot, index| %>
-            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true, existing_place_ids: existing_place_ids %>
+        <div class="ai-chat__spots-inner" data-ai-plan-adopt-target="spots">
+          <% spot_list.each_with_index do |spot, index| %>
+            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
           <% end %>
         </div>
-
-        <%# プラン採用ボタン %>
         <div class="ai-plan-card__actions">
           <button type="button"
                   class="ai-plan-card__adopt-btn"
@@ -51,78 +57,100 @@
           </button>
         </div>
       </div>
-
-      <% if closing.present? %>
-        <div class="ai-chat__bubble ai-chat__bubble--closing">
-          <%= closing %>
-        </div>
-      <% end %>
-
-    <% elsif response_type == "spots" %>
-      <%# スポット提案モード: 導入文 → カード（説明含む） → 締め %>
-      <%# auto_show: 新規応答時のみtrue、履歴表示時はfalse %>
-      <% auto_show_value = local_assigns.fetch(:auto_show, false) %>
-      <% if intro.present? %>
-        <div class="ai-chat__bubble ai-chat__bubble--intro">
-          <%= intro %>
-        </div>
-      <% end %>
-      <div class="ai-chat__spots"
+    <% else %>
+      <div class="ai-chat__spots-fullwidth"
            data-ai-chat-target="spotSuggestions"
            data-controller="ai-spots-batch"
            data-ai-spots-batch-auto-show-value="<%= auto_show_value %>">
-        <% spots.each_with_index do |spot, index| %>
-          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: true, existing_place_ids: existing_place_ids %>
+        <% spot_list.each_with_index do |spot, index| %>
+          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
         <% end %>
       </div>
-      <% if closing.present? %>
-        <div class="ai-chat__bubble ai-chat__bubble--closing">
-          <%= closing %>
-        </div>
-      <% end %>
-
-    <% elsif response_type == "answer" %>
-      <%# 詳細説明モード: 回答 → 関連スポット（参考表示） → 締め %>
-      <% if content.present? %>
-        <div class="ai-chat__bubble">
-          <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
-        </div>
-      <% end %>
-      <% if spots.present? %>
-        <div class="ai-chat__related-spots">
-          <small class="ai-chat__related-label">関連スポット</small>
-          <% spots.each_with_index do |spot, index| %>
-            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, show_description: false, compact: true, existing_place_ids: existing_place_ids %>
-          <% end %>
-        </div>
-      <% end %>
-      <% if closing.present? %>
-        <div class="ai-chat__bubble ai-chat__bubble--closing">
-          <%= closing %>
-        </div>
-      <% end %>
-
-    <% else %>
-      <%# 会話/質問回答モード: メッセージのみ %>
-      <% if content.present? %>
-        <div class="ai-chat__bubble">
-          <% if role == "assistant" %>
-            <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
-          <% else %>
-            <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
-          <% end %>
-        </div>
-      <% end %>
     <% end %>
 
-    <div class="ai-chat__meta">
-      <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
-      <% if role == "assistant" %>
-        <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
-          <i class="bi bi-clipboard"></i>
-        </button>
-      <% end %>
+    <%# 締め + アクションボタン（アイコン + テキスト） %>
+    <div class="ai-chat__msg ai-chat__msg--assistant">
+      <div class="ai-chat__icon">
+        <i class="bi bi-stars"></i>
+      </div>
+      <div class="ai-chat__content">
+        <% if closing.present? %>
+          <div class="ai-chat__bubble ai-chat__bubble--closing">
+            <%= closing %>
+          </div>
+        <% end %>
+        <%= render "plans/ai/action_buttons", mode: mode, area_data: area_data, condition_data: condition_data, plan: plan %>
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+        </div>
+      </div>
     </div>
   </div>
+
+<% else %>
+  <%# ========== 通常レイアウト（2カラム） ========== %>
+  <div class="ai-chat__message-wrapper">
+    <div class="ai-chat__divider"></div>
+    <div class="ai-chat__msg ai-chat__msg--<%= role %>">
+      <% if role == "assistant" %>
+        <div class="ai-chat__icon">
+          <i class="bi bi-stars"></i>
+        </div>
+      <% end %>
+      <div class="ai-chat__content">
+
+        <% if response_type == "answer" %>
+          <%# 詳細説明モード %>
+          <% if content.present? %>
+            <div class="ai-chat__bubble">
+              <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
+            </div>
+          <% end %>
+          <% if spots.present? %>
+            <div class="ai-chat__related-spots">
+              <small class="ai-chat__related-label">関連スポット</small>
+              <% spots.each_with_index do |spot, index| %>
+                <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids %>
+              <% end %>
+            </div>
+          <% end %>
+          <% if closing.present? %>
+            <div class="ai-chat__bubble ai-chat__bubble--closing">
+              <%= closing %>
+            </div>
+          <% end %>
+
+        <% elsif response_type == "mode_select" %>
+          <%# モード選択UI %>
+          <% if content.present? %>
+            <div class="ai-chat__bubble">
+              <%= content %>
+            </div>
+          <% end %>
+          <%= render "plans/ai/mode_select" %>
+
+        <% else %>
+          <%# 会話モード %>
+          <% if content.present? %>
+            <div class="ai-chat__bubble">
+              <% if role == "assistant" %>
+                <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
+              <% else %>
+                <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
+              <% end %>
+            </div>
+          <% end %>
+        <% end %>
+
+        <div class="ai-chat__meta">
+          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+          <% if role == "assistant" %>
+            <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+              <i class="bi bi-clipboard"></i>
+            </button>
+          <% end %>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
+<% end %>

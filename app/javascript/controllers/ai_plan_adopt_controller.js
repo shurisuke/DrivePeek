@@ -136,7 +136,6 @@ export default class extends Controller {
     const map = getMapInstance()
     if (!map) return
 
-    clearAiSuggestionMarkers()
     const bounds = new google.maps.LatLngBounds()
 
     this._resolvedSpots.forEach((spot, index) => {

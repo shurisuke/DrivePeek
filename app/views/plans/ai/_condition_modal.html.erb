@@ -1,0 +1,103 @@
+<%# AI提案条件設定モーダル（プランモード/スポットモード対応） %>
+<% genre_options = [["おまかせ", ""]] + Genre.where(parent_id: nil).order(:id).map { |g| [g.name, g.id] } %>
+<% genre_options_required = Genre.where(parent_id: nil).order(:id).map { |g| [g.name, g.id] } %>
+
+<div class="ai-condition-modal"
+     hidden
+     data-controller="ai-condition-modal"
+     data-ai-condition-modal-plan-id-value="<%= plan.id %>"
+     data-ai-condition-modal-mode-value=""
+     data-action="ai:areaSelected@document->ai-condition-modal#open keydown.esc->ai-condition-modal#cancel">
+  <div class="ai-condition-modal__overlay"></div>
+  <div class="ai-condition-modal__dialog">
+    <%# ヘッダー %>
+    <div class="ai-condition-modal__header">
+      <h3 class="ai-condition-modal__title" data-ai-condition-modal-target="title">条件を設定</h3>
+      <button type="button"
+              class="ai-condition-modal__close-btn"
+              data-action="click->ai-condition-modal#cancel">
+        <i class="bi bi-x-lg"></i>
+      </button>
+    </div>
+
+    <%# エリア情報（両モード共通） %>
+    <div class="ai-condition-modal__area-info">
+      <i class="bi bi-geo-alt"></i>
+      <span data-ai-condition-modal-target="areaInfo">選択エリア</span>
+    </div>
+
+    <%# ========== プランモード ========== %>
+    <div data-ai-condition-modal-target="planContent" hidden>
+      <%# スポット数選択 %>
+      <div class="ai-condition-modal__section">
+        <label class="ai-condition-modal__label">立ち寄りスポット数</label>
+        <select class="ai-condition-modal__select"
+                data-ai-condition-modal-target="spotCount"
+                data-action="change->ai-condition-modal#updateSlots">
+          <% (2..5).each do |n| %>
+            <option value="<%= n %>" <%= 'selected' if n == 3 %>><%= n %>箇所</option>
+          <% end %>
+        </select>
+      </div>
+
+      <%# スロット一覧（5つ事前描画、表示/非表示で制御） %>
+      <div class="ai-condition-modal__slots">
+        <% 5.times do |i| %>
+          <div class="ai-condition-modal__slot"
+               data-ai-condition-modal-target="slot"
+               <%= 'hidden' if i >= 3 %>>
+            <span class="ai-condition-modal__slot-label">スポット <%= i + 1 %></span>
+            <%= select_tag "slots[][genre_id]",
+                  options_for_select(genre_options),
+                  class: "ai-condition-modal__slot-select" %>
+          </div>
+        <% end %>
+      </div>
+    </div>
+
+    <%# ========== スポットモード ========== %>
+    <div data-ai-condition-modal-target="spotContent" hidden>
+      <%# ジャンル選択 %>
+      <div class="ai-condition-modal__section">
+        <label class="ai-condition-modal__label">ジャンル</label>
+        <%= select_tag "genre_id",
+              options_for_select(genre_options_required),
+              class: "ai-condition-modal__select",
+              data: { ai_condition_modal_target: "spotGenre" } %>
+      </div>
+
+      <%# 件数選択 %>
+      <div class="ai-condition-modal__section">
+        <label class="ai-condition-modal__label">提案件数</label>
+        <select class="ai-condition-modal__select"
+                data-ai-condition-modal-target="spotResultCount">
+          <% [3, 5, 10].each do |n| %>
+            <option value="<%= n %>" <%= 'selected' if n == 5 %>><%= n %>件</option>
+          <% end %>
+        </select>
+      </div>
+    </div>
+
+    <%# 送信ボタン %>
+    <div class="ai-condition-modal__actions">
+      <button type="button"
+              class="ai-condition-modal__btn ai-condition-modal__btn--cancel"
+              data-action="click->ai-condition-modal#cancel">
+        キャンセル
+      </button>
+      <button type="button"
+              class="ai-condition-modal__btn ai-condition-modal__btn--submit"
+              data-ai-condition-modal-target="submitBtn"
+              data-action="click->ai-condition-modal#submit">
+        <i class="bi bi-stars"></i>
+        決定
+      </button>
+    </div>
+
+    <%# ローディング表示 %>
+    <div class="ai-condition-modal__loading" hidden data-ai-condition-modal-target="loading">
+      <div class="ai-condition-modal__spinner"></div>
+      <span>考え中...</span>
+    </div>
+  </div>
+</div>

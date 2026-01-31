@@ -1,7 +1,7 @@
 <% content_for :body_class, "no-footer" %>
 
 <div class="main-content plan-form"
-     data-controller="navibar-resize"
+     data-controller="navibar-resize ai-area-draw"
      data-navibar-resize-min-value="300"
      data-navibar-resize-max-percent-value="80"
      data-navibar-resize-default-value="350">
@@ -62,12 +62,18 @@
     <%= render "plans/navibar", plan: plan %>
   <% end %>
 
-  <!-- リサイズハンドル -->
+  <!-- ナビバーリサイズハンドル -->
   <div class="navibar-resize-handle"
        data-navibar-resize-target="handle"
        data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
     <div class="navibar-resize-handle__grip"></div>
   </div>
+
+  <%# 提案エリア描画モーダル %>
+  <%= render "plans/ai/area_draw_modal" %>
+
+  <%# 提案条件設定モーダル %>
+  <%= render "plans/ai/condition_modal", plan: plan %>
 
   <!-- アクションボタン（保存・共有） -->
   <div class="plan-actions"

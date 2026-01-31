@@ -46,8 +46,8 @@
     <%= render "plans/navibar_footer", plan: plan %>
   </div>
 
-  <%# AI提案タブ用フッター（入力欄） %>
-  <div class="ai-chat__composer"
+  <%# AI提案タブ用フッター（入力欄）: 現在は非表示 %>
+  <div class="ai-chat__composer ai-chat__composer--disabled"
        data-navibar-target="footer"
        data-tab="ai">
     <%= render "plans/ai/form", plan: plan %>

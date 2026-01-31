@@ -29,6 +29,7 @@ let spotPinMarker = null;           // 単一スポットピン（単体）
 // --- AI提案マーカー ---
 let aiSuggestionMarkers = [];       // AI提案スポット（配列）
 let aiSuggestionOverlays = [];      // AI提案パルスオーバーレイ（配列）
+let aiAreaCircle = null;            // AI提案エリア円（単体）
 
 // --- map instance ---
 export const getMapInstance = () => map;
@@ -145,6 +146,7 @@ export const setCommunityPreviewPolylines = (polylines) => {
 export const clearCommunityPreview = () => {
   clearCommunityPreviewMarkers();
   clearCommunityPreviewPolylines();
+  clearSpotPinMarker();
 };
 
 // --- 単一スポットピン ---
@@ -161,12 +163,24 @@ export const setSpotPinMarker = (marker) => {
 };
 
 // --- AI提案マーカー ---
+// 全クリア（マーカー + パルス + 円）
 export const clearAiSuggestionMarkers = () => {
   aiSuggestionMarkers.forEach((m) => m.setMap(null));
   aiSuggestionMarkers = [];
-  // パルスオーバーレイもクリア
   aiSuggestionOverlays.forEach((o) => o.setMap(null));
   aiSuggestionOverlays = [];
+  if (aiAreaCircle) {
+    aiAreaCircle.setMap(null);
+    aiAreaCircle = null;
+  }
+};
+
+// エリア円を設定
+export const setAiAreaCircle = (circle) => {
+  if (aiAreaCircle) {
+    aiAreaCircle.setMap(null);
+  }
+  aiAreaCircle = circle;
 };
 
 export const setAiSuggestionMarkers = (markers) => {

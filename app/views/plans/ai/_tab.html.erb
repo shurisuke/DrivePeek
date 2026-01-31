@@ -18,16 +18,16 @@
 <div class="ai-chat" data-controller="ai-chat">
   <%# メッセージ一覧エリア %>
   <div class="ai-chat__messages" id="ai-chat-messages" data-ai-chat-target="messages">
-    <%# AI側: 案内文（初期表示） %>
+    <%# AI側: 案内文 + モード選択（初期表示） %>
     <div class="ai-chat__msg ai-chat__msg--assistant">
       <div class="ai-chat__icon">
         <i class="bi bi-stars"></i>
       </div>
       <div class="ai-chat__content">
         <div class="ai-chat__bubble">
-          こんにちは！ドライブプランのAIアシスタントです。<br>
-          出発地・行きたいエリア・所要時間などを教えてください。おすすめのルートをご提案します。
+          こんにちは！ドライブプランのAIアシスタントです。
         </div>
+        <%= render "plans/ai/mode_select" %>
       </div>
     </div>
 
@@ -41,11 +41,9 @@
                  plan: plan,
                  intro: msg.display_intro,
                  closing: msg.display_closing,
-                 response_type: msg.response_type %>
+                 response_type: msg.response_type,
+                 area_data: msg.area_data %>
     <% end %>
-
-    <%# タイピングインジケーター %>
-    <%= render "plans/ai/typing" %>
   </div>
 
 </div>

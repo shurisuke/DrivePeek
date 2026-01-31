@@ -1,0 +1,14 @@
+<%# エリア選択によるAI提案結果を追加 %>
+<%= turbo_stream.append "ai-chat-messages" do %>
+  <%= render "plans/ai/message",
+             content: @result[:message],
+             spots: @result[:spots],
+             plan_data: @result[:plan],
+             intro: @result[:intro],
+             closing: @result[:closing],
+             response_type: @result[:type],
+             role: "assistant",
+             plan: @plan,
+             auto_show: true,
+             area_data: @area_data %>
+<% end %>

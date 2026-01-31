@@ -4,12 +4,13 @@
 #   - user: プレーンテキスト（ユーザーの入力）
 #   - assistant: JSON形式
 #     {
-#       type: "plan" | "spots" | "answer" | "conversation",
+#       type: "plan" | "spots" | "answer" | "mode_select",
 #       theme: "テーマ名",           # planモードのみ
-#       description: "説明",         # planモードのみ
-#       intro: "導入文",             # spotsモードのみ
-#       spots: [{ spot_id, name, address, description, lat, lng, place_id }],
-#       closing: "締めの言葉"
+#       intro: "導入文",
+#       spots: [{ spot_id, name, address, lat, lng, place_id }],
+#       closing: "締めの言葉",
+#       area_data: { center_lat, center_lng, radius_km },
+#       mode: "plan" | "spots"
 #     }
 #
 class AiChatMessage < ApplicationRecord
@@ -23,21 +24,6 @@ class AiChatMessage < ApplicationRecord
   # 使用例: recent.limit(10) → 最新10件を古い順に並べて返す
   scope :recent, -> { order(created_at: :desc) }
   scope :chronological, -> { order(created_at: :asc) }
-
-  # AIとチャットし、メッセージを保存して結果を返す
-  # @param plan [Plan] 現在編集中のプラン
-  # @param user [User] ユーザー
-  # @param message [String] ユーザーからのメッセージ（希望内容 + 場所）
-  # @return [Hash] { result: Hash, message: AiChatMessage }
-  def self.chat(plan:, user:, message:)
-    # ユーザーメッセージを保存
-    plan.ai_chat_messages.create!(user: user, role: "user", content: message)
-
-    result = AiChatService.chat(message, plan: plan)
-
-    ai_message = plan.ai_chat_messages.create!(user: user, role: "assistant", content: result.to_json)
-    { result: result, message: ai_message }
-  end
 
   # AI応答のメッセージ部分を取得
   def display_message
@@ -83,6 +69,27 @@ class AiChatMessage < ApplicationRecord
       description: parsed_content[:description],
       spots: parsed_content[:spots] || []
     } : nil)
+  end
+
+  # エリア情報を取得（アクションボタン用）
+  def area_data
+    return {} unless assistant?
+
+    parsed_content[:area_data] || {}
+  end
+
+  # 条件情報を取得（アクションボタン用）
+  def condition_data
+    return {} unless assistant?
+
+    parsed_content[:condition_data] || {}
+  end
+
+  # モードを取得（plan / spots）
+  def display_mode
+    return "plan" unless assistant?
+
+    parsed_content[:mode] || "plan"
   end
 
   def assistant?
