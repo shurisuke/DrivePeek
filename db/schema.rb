@@ -15,7 +15,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_20_140724) do
   enable_extension "pg_catalog.plpgsql"
 
   create_table "ai_chat_messages", force: :cascade do |t|
-    t.text "content", null: false
+    t.text "content", default: "{}", null: false
     t.datetime "created_at", null: false
     t.bigint "plan_id", null: false
     t.string "role", null: false
