@@ -92,7 +92,7 @@ class GenreDetector
       return slugs unless slugs.include?("sightseeing")
       return slugs unless (slugs & EXCLUDE_SIGHTSEEING_WITH).any?
 
-      slugs - ["sightseeing"]
+      slugs - [ "sightseeing" ]
     end
   end
 end
