@@ -16,13 +16,15 @@ export default class extends Controller {
   }
   static targets = [
     "title",
-    "planContent", "areaInfo", "spotCount", "slot",
-    "spotContent", "spotGenre", "spotResultCount",
+    "mainView", "genreView", "omakaseBtn",
+    "planContent", "areaInfo", "spotCount", "slot", "slotBtn", "slotInput",
+    "spotContent", "spotGenreBtn", "spotGenreInput", "spotResultCount",
     "submitBtn", "loading"
   ]
 
   connect() {
     this.areaData = null
+    this.editingSlotIndex = null  // 編集中のスロットインデックス（null = スポットモード）
   }
 
   // ============================================
@@ -78,6 +80,42 @@ export default class extends Controller {
   }
 
   // ============================================
+  // ジャンル選択モード
+  // ============================================
+
+  openGenreSelect(event) {
+    const slot = event.currentTarget.closest("[data-slot-index]")
+    this.editingSlotIndex = slot ? parseInt(slot.dataset.slotIndex, 10) : null
+
+    // おまかせボタンはプランモードのみ表示
+    this.omakaseBtnTarget.hidden = this.editingSlotIndex === null
+
+    this.mainViewTarget.hidden = true
+    this.genreViewTarget.hidden = false
+  }
+
+  closeGenreSelect() {
+    this.mainViewTarget.hidden = false
+    this.genreViewTarget.hidden = true
+  }
+
+  selectGenre(event) {
+    const { genreId, genreName } = event.currentTarget.dataset
+
+    if (this.editingSlotIndex !== null) {
+      // プランモード: スロットを更新
+      this.slotBtnTargets[this.editingSlotIndex].querySelector("span").textContent = genreName
+      this.slotInputTargets[this.editingSlotIndex].value = genreId
+    } else {
+      // スポットモード
+      this.spotGenreBtnTarget.querySelector("span").textContent = genreName
+      this.spotGenreInputTarget.value = genreId
+    }
+
+    this.closeGenreSelect()
+  }
+
+  // ============================================
   // AI提案実行
   // ============================================
 
@@ -101,11 +139,10 @@ export default class extends Controller {
   async #submitPlanMode() {
     if (!this.areaData) return
 
-    const slots = this.slotTargets
-      .filter(slot => !slot.hidden)
-      .map(slot => {
-        const select = slot.querySelector("select")
-        const value = select?.value
+    const slots = this.slotInputTargets
+      .filter((_, i) => !this.slotTargets[i].hidden)
+      .map(input => {
+        const value = input.value
         return { genre_id: value === "" ? null : parseInt(value, 10) }
       })
 
@@ -115,10 +152,16 @@ export default class extends Controller {
   async #submitSpotMode() {
     if (!this.areaData) return
 
+    const genreId = this.spotGenreInputTarget.value
+    if (!genreId) {
+      alert("ジャンルを選択してください")
+      return
+    }
+
     await this.#submitWithLoading({
       ...this.areaData,
       mode: "spots",
-      genre_id: parseInt(this.spotGenreTarget.value, 10),
+      genre_id: parseInt(genreId, 10),
       count: parseInt(this.spotResultCountTarget.value, 10)
     })
   }

@@ -115,13 +115,13 @@ GENRES = [
   { name: "BBQ場", slug: "bbq_site", category: "遊ぶ", visible: true },
   { name: "漫画喫茶", slug: "manga_cafe", category: "遊ぶ", visible: true },
   { name: "ジム", slug: "gym", category: "遊ぶ", visible: false },
-  { name: "ボウリング場", slug: "bowling", category: "遊ぶ", visible: false },
   # 運動場（親ジャンル）
   { name: "運動場", slug: "sports_ground", category: "遊ぶ", visible: true },
   { name: "ゴルフ場", slug: "golf_course", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
   { name: "スキー場", slug: "ski_resort", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
   { name: "スケート場", slug: "skating_rink", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
   { name: "フットサル場", slug: "futsal_court", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
+  { name: "ボウリング場", slug: "bowling", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
 
   # 買う
   { name: "道の駅・SA/PA", slug: "roadside_station", category: "買う", visible: true },

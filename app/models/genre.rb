@@ -1,5 +1,8 @@
 # app/models/genre.rb
 class Genre < ApplicationRecord
+  # AI提案で非表示にするジャンル
+  AI_HIDDEN_SLUGS = %w[manga_cafe sports_ground farm cat_cafe dog_cafe].freeze
+
   # 親子関係
   belongs_to :parent, class_name: "Genre", optional: true
   has_many :children, class_name: "Genre", foreign_key: :parent_id, dependent: :nullify
@@ -40,5 +43,12 @@ class Genre < ApplicationRecord
         }
       end
     end
+  end
+
+  # AI提案用: 不要なジャンルを除外したカテゴリ別リスト
+  def self.for_ai_suggestion
+    grouped_by_category.except("その他").transform_values do |groups|
+      groups.reject { |g| AI_HIDDEN_SLUGS.include?(g[:genre].slug) }
+    end.reject { |_, v| v.empty? }
   end
 end
