@@ -45,12 +45,20 @@ class GenreDetector
       )
     end
 
+    # スポットに紐付けない親ジャンル（分類用のみ）
+    PARENT_SLUGS = %w[gourmet cafe shopping museum_category].freeze
+
+    # 観光名所と同時選択された場合、観光名所を外すジャンル
+    EXCLUDE_SIGHTSEEING_WITH = %w[park shrine_temple mountain].freeze
+
     def build_prompt(spot, count:)
-      # gourmetは汎用的すぎるので除外（ramen, cafe等の具体的なジャンルを選ばせる）
-      genres_list = Genre.ordered.where.not(slug: "gourmet").pluck(:slug, :name).map { |slug, name| "#{slug}: #{name}" }.join("\n")
+      # 親ジャンルは汎用的すぎるので除外（子ジャンルを選ばせる）
+      genres_list = Genre.ordered.where.not(slug: PARENT_SLUGS).pluck(:slug, :name).map { |slug, name| "#{slug}: #{name}" }.join("\n")
 
       <<~PROMPT
-        以下のスポット情報から、最も適切なジャンルを#{count}個選んでください。
+        以下のスポット情報から、最も適切なジャンルを選んでください。
+        ・1個目は必ず選んでください
+        ・2個目は本当に当てはまる場合のみ選んでください（無理に選ばない）
 
         【スポット情報】
         名前: #{spot.name}
@@ -61,7 +69,7 @@ class GenreDetector
 
         【回答形式】
         ジャンルのslug（英語）をカンマ区切りで回答してください。
-        例: ramen,night_view
+        例: ramen,night_view または ramen
 
         回答:
       PROMPT
@@ -74,7 +82,17 @@ class GenreDetector
       return [] if content.blank?
 
       slugs = content.to_s.strip.downcase.split(/[,\s]+/).map(&:strip).reject(&:blank?)
+      slugs = slugs.reject { |s| s == "none" } # 「none」は除外
+      slugs = exclude_sightseeing_if_needed(slugs)
       Genre.where(slug: slugs).pluck(:id).take(count)
+    end
+
+    # 特定ジャンルと観光名所が同時に選ばれた場合、観光名所を外す
+    def exclude_sightseeing_if_needed(slugs)
+      return slugs unless slugs.include?("sightseeing")
+      return slugs unless (slugs & EXCLUDE_SIGHTSEEING_WITH).any?
+
+      slugs - ["sightseeing"]
     end
   end
 end
