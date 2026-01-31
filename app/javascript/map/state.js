@@ -146,6 +146,7 @@ export const setCommunityPreviewPolylines = (polylines) => {
 export const clearCommunityPreview = () => {
   clearCommunityPreviewMarkers();
   clearCommunityPreviewPolylines();
+  clearSpotPinMarker();
 };
 
 // --- 単一スポットピン ---

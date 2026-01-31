@@ -37,7 +37,7 @@ class AiAreaService
     # @param genre_id [Integer] スポットモード用ジャンルID
     # @param count [Integer] スポットモード用件数
     # @return [Hash] { type:, message:, spots:, closing: }
-    def suggest(plan:, center_lat:, center_lng:, radius_km:, slots: [], mode: "plan", genre_id: nil, count: nil)
+    def generate(plan:, center_lat:, center_lng:, radius_km:, slots: [], mode: "plan", genre_id: nil, count: nil)
       return error_response("API設定エラー", mode: mode) unless api_key_configured?
 
       # モードに応じて候補スポットを取得
@@ -257,22 +257,20 @@ class AiAreaService
     end
 
     def build_spot_mode_prompt(radius, genre, candidates)
-      month = Time.current.month
-      season = SEASON_GUIDE[month]
       area_name = candidates.first&.dig(:city) || "選択エリア"
       spots_list = candidates.map { |s| s[:name] }.join("、")
 
       <<~PROMPT
         あなたはドライブスポット紹介AIです。
 
-        ■ #{month}月・#{season} / #{area_name}周辺（半径#{radius.round(1)}km）
+        ■ #{area_name}周辺（半径#{radius.round(1)}km）
         ■ ジャンル: #{genre.name}
 
         ■ 人気スポット
         #{spots_list}
 
         ■ タスク
-        上記の人気スポットを紹介する文章を作成。
+        上記の人気スポットをシンプルに紹介。
 
         ■ JSON
         {"intro":"紹介文（1〜2文）","closing":"気になるスポットの追加を促す一言"}
