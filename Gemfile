@@ -109,4 +109,7 @@ group :test do
   gem "webmock"
   gem "vcr"
   gem "database_cleaner-active_record"
+
+  # テストカバレッジ測定
+  gem "simplecov", require: false
 end
