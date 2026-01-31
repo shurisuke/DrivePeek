@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearAiSuggestionMarkers } from "map/state"
+import { getMapInstance, clearAiSuggestionMarkers, setAiAreaCircle } from "map/state"
 
 // ================================================================
 // SuggestModeController
@@ -46,6 +46,10 @@ export default class extends Controller {
   changeCondition() {
     clearAiSuggestionMarkers()
     const area = this.areaValue || {}
+
+    // 同じエリアで円を再描画してズーム
+    this.#drawAreaCircle(area)
+
     document.dispatchEvent(new CustomEvent("ai:areaSelected", {
       detail: {
         mode: this.modeValue,
@@ -54,6 +58,26 @@ export default class extends Controller {
         radius_km: area.radius_km
       }
     }))
+  }
+
+  // エリア円を描画してズーム
+  #drawAreaCircle(area) {
+    const map = getMapInstance()
+    if (!map || !area.center_lat || !area.center_lng || !area.radius_km) return
+
+    const circle = new google.maps.Circle({
+      map: map,
+      center: { lat: area.center_lat, lng: area.center_lng },
+      radius: area.radius_km * 1000,
+      strokeColor: "#667eea",
+      strokeWeight: 2,
+      fillColor: "#667eea",
+      fillOpacity: 0.03,
+      clickable: false
+    })
+
+    setAiAreaCircle(circle)
+    map.fitBounds(circle.getBounds())
   }
 
   // 終了（モード選択UIを再表示）
