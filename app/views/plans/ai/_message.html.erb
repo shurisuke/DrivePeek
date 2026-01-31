@@ -10,15 +10,15 @@
 <% area_data = local_assigns.fetch(:area_data, {}) %>
 <% condition_data = local_assigns.fetch(:condition_data, {}) %>
 
-<% is_plan_mode = response_type == "plan" || plan_data.present? %>
-<% is_spot_mode = response_type == "spots" %>
+<% is_plan_mode = response_type == "plan" && spots.present? %>
+<% is_spot_mode = response_type == "spots" && spots.present? %>
 
 <% if is_plan_mode || is_spot_mode %>
   <%# ========== 提案モード共通レイアウト ========== %>
   <%# モードに応じた変数設定 %>
   <% mode = is_plan_mode ? "plan" : "spots" %>
-  <% intro_text = is_plan_mode ? [plan_data[:theme], plan_data[:description]].compact.join("\n") : intro %>
-  <% spot_list = is_plan_mode ? plan_data[:spots] : spots %>
+  <% intro_text = intro %>
+  <% spot_list = spots %>
 
   <div class="ai-chat__message-wrapper ai-chat__message-wrapper--spots">
     <div class="ai-chat__divider"></div>
@@ -31,12 +31,7 @@
         </div>
         <div class="ai-chat__content">
           <div class="ai-chat__bubble ai-chat__bubble--intro">
-            <% if is_plan_mode && plan_data[:theme].present? %>
-              <strong><%= plan_data[:theme] %></strong>
-              <% if plan_data[:description].present? %><br><%= plan_data[:description] %><% end %>
-            <% else %>
-              <%= intro_text %>
-            <% end %>
+            <%= simple_format(intro_text, {}, wrapper_tag: nil) %>
           </div>
         </div>
       </div>

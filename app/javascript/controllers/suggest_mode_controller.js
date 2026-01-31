@@ -3,7 +3,7 @@ import { Controller } from "@hotwired/stimulus"
 // ================================================================
 // SuggestModeController
 // 用途: 提案モード選択・アクションボタン制御
-// - 初期モード選択（プラン提案/スポット提案）
+// - 初期モード選択（まるっとプラン提案/かこんでスポット検索）
 // - 応答後アクション（エリア選び直し/条件変更/終了）
 // ================================================================
 
@@ -24,7 +24,7 @@ export default class extends Controller {
     this.#dispatchAreaDraw("plan")
   }
 
-  // エリアからスポットを提案
+  // かこんでスポット検索
   startSpotMode() {
     this.#dispatchAreaDraw("spots")
   }
