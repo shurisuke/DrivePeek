@@ -65,18 +65,18 @@ RSpec.describe "Favorites", type: :request do
         let!(:like_spot) { create(:like_spot, user: user, spot: spot) }
 
         it "都市でフィルタできる" do
-          get favorites_path, params: { search_type: "spot", cities: [spot.city] }
+          get favorites_path, params: { search_type: "spot", cities: [ spot.city ] }
           expect(response).to have_http_status(:ok)
         end
       end
 
       context "ジャンルフィルタ" do
         let(:genre) { create(:genre) }
-        let(:spot_with_genre) { create(:spot, genres: [genre]) }
+        let(:spot_with_genre) { create(:spot, genres: [ genre ]) }
         let!(:like_spot) { create(:like_spot, user: user, spot: spot_with_genre) }
 
         it "ジャンルでフィルタできる" do
-          get favorites_path, params: { search_type: "spot", genre_ids: [genre.id] }
+          get favorites_path, params: { search_type: "spot", genre_ids: [ genre.id ] }
           expect(response).to have_http_status(:ok)
         end
       end
