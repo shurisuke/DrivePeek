@@ -1,0 +1,256 @@
+/* ==========================================
+   AI提案条件設定モーダル
+========================================== */
+
+.ai-condition-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.ai-condition-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.ai-condition-modal__dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  max-height: 90vh;
+  overflow-y: auto;
+}
+
+// ヘッダー
+.ai-condition-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.ai-condition-modal__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.ai-condition-modal__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: #666;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+// エリア情報
+.ai-condition-modal__area-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 14px;
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.ai-condition-modal__spot-count {
+  margin-left: auto;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+// セクション
+.ai-condition-modal__section {
+  padding: 16px 20px;
+}
+
+.ai-condition-modal__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.ai-condition-modal__select {
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 15px;
+  border: 1px solid #ddd;
+  border-radius: 8px;
+  background: #fff;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
+  }
+}
+
+// スロット一覧
+.ai-condition-modal__slots {
+  padding: 0 20px 12px;
+}
+
+.ai-condition-modal__slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.ai-condition-modal__slot-label {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 70px;
+}
+
+.ai-condition-modal__slot-select {
+  flex: 1;
+  padding: 8px 12px;
+  font-size: 14px;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+}
+
+// アクション
+.ai-condition-modal__actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+}
+
+.ai-condition-modal__btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &--cancel {
+    background: #f0f0f0;
+    color: #666;
+
+    &:hover {
+      background: #e5e5e5;
+    }
+  }
+
+  &--submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// ローディング
+.ai-condition-modal__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  color: #667eea;
+  font-weight: 600;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.ai-condition-modal__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: ai-modal-spin 0.8s linear infinite;
+}
+
+@keyframes ai-modal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// モバイル対応
+@media (max-width: 480px) {
+  .ai-condition-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .ai-condition-modal__dialog {
+    max-width: 100%;
+    max-height: 85vh;
+    border-radius: 16px 16px 0 0;
+  }
+}
