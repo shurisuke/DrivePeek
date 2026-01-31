@@ -1,20 +1,27 @@
-<%# AI提案 応答後アクションボタン %>
-<%# locals: mode:, area_data: {}, condition_data: {} %>
-<div class="ai-action-buttons"
-     data-controller="ai-action-buttons"
-     data-ai-action-buttons-mode-value="<%= mode %>"
-     data-ai-action-buttons-area-value="<%= area_data.to_json %>"
-     data-ai-action-buttons-condition-value="<%= condition_data.to_json %>">
+<%# 提案モード 応答後アクションボタン %>
+<%# locals: mode:, area_data: {}, condition_data: {}, plan: nil %>
+<div class="suggest-mode-actions"
+     data-controller="suggest-mode"
+     data-suggest-mode-mode-value="<%= mode %>"
+     data-suggest-mode-area-value="<%= area_data.to_json %>"
+     data-suggest-mode-condition-value="<%= condition_data.to_json %>"
+     data-suggest-mode-plan-id-value="<%= plan&.id %>">
   <button type="button"
-          class="ai-action-buttons__btn"
-          data-action="click->ai-action-buttons#reselectArea">
+          class="suggest-mode-actions__btn"
+          data-action="click->suggest-mode#reselectArea">
     <i class="bi bi-map"></i>
     エリアを選び直す
   </button>
   <button type="button"
-          class="ai-action-buttons__btn"
-          data-action="click->ai-action-buttons#changeCondition">
+          class="suggest-mode-actions__btn"
+          data-action="click->suggest-mode#changeCondition">
     <i class="bi bi-sliders"></i>
     条件を変更
+  </button>
+  <button type="button"
+          class="suggest-mode-actions__btn"
+          data-action="click->suggest-mode#finish">
+    <i class="bi bi-check-circle"></i>
+    終了
   </button>
 </div>

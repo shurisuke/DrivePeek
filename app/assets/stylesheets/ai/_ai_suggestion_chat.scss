@@ -131,6 +131,13 @@
     min-height: 0;
     overflow-y: auto;
   }
+
+  /* 最下部に余白を追加 */
+  &::after {
+    content: "";
+    display: block;
+    height: 300px;
+  }
 }
 
 /* ==========================================
@@ -139,6 +146,11 @@
 .ai-chat__message-wrapper {
   display: flex;
   flex-direction: column;
+  margin-top: 20px;
+
+  &:first-child {
+    margin-top: 0;
+  }
 
   /* ユーザーメッセージは右寄せ */
   &:has(.ai-chat__msg--user) {
@@ -179,10 +191,6 @@
     .ai-chat__related-spots {
       margin-left: -38px; /* アイコン幅 + gap分を相殺 */
       width: calc(100% + 38px);
-    }
-
-    .ai-chat__bubble--closing {
-      margin-left: -38px;
     }
   }
 }
@@ -534,10 +542,50 @@
 }
 
 .ai-chat__input-row-wrapper {
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: center;
+  margin: 8px 0;
+}
+
+.ai-chat__suggest-btns {
+  grid-column: 2;
+  display: flex;
+  gap: 8px;
+}
+
+.ai-chat__input-row-wrapper .ai-chat__menu {
+  grid-column: 3;
+  justify-self: end;
+}
+
+.ai-chat__suggest-btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  margin: 8px 0;
+  gap: 5px;
+  padding: 7px 12px;
+  font-size: 13px;
+  font-weight: 400;
+  color: #007AFF;
+  background-color: transparent;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.1s ease;
+  white-space: nowrap;
+
+  i {
+    font-size: 13px;
+  }
+
+  &:hover {
+    background-color: rgba(0, 122, 255, 0.08);
+  }
+
+  &:active {
+    background-color: rgba(0, 122, 255, 0.15);
+    transform: scale(0.97);
+  }
 }
 
 .ai-chat__input-row {
@@ -659,6 +707,33 @@
   margin-top: 15px;
 }
 
+/* 提案モード共通: スポットカード全幅・中央寄せ */
+.ai-chat__spots-fullwidth {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  margin: 16px 0 24px;
+  padding: 0 16px;
+
+  .ai-spot-card {
+    width: 100%;
+    max-width: 600px;
+  }
+
+  .ai-plan-card__actions {
+    width: 100%;
+    max-width: 600px;
+    margin-top: 12px;
+  }
+}
+
+.ai-chat__spots-inner {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  max-width: 600px;
+}
+
 /* スポットモード用のバブルスタイル */
 .ai-chat__bubble--intro {
   margin-bottom: 5px;
@@ -678,33 +753,16 @@
 }
 
 .ai-chat__bubble--closing {
-  margin-top: 24px;
   color: #8e8e93;
-  display: flex;
-  align-items: flex-start;
-  gap: 10px;
-
-  &::before {
-    content: "\f589"; /* Bootstrap Icons: bi-stars */
-    font-family: "bootstrap-icons";
-    font-size: 22px;
-    line-height: 1;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    flex-shrink: 0;
-    width: 28px;
-    text-align: center;
-  }
 }
 
 .ai-spot-card {
   background: #fff;
   border-radius: 16px;
   padding: 16px;
-  margin-top: 25px;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12), 0 1px 3px rgba(0, 0, 0, 0.08);
+  margin-top: 20px;
+  border: 1px solid rgba(0, 0, 0, 0.06);
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
   transition: all 0.2s ease;
 
   &:first-child {
@@ -712,7 +770,7 @@
   }
 
   &:hover {
-    box-shadow: 0 8px 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.1);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
   }
 }
 
@@ -975,26 +1033,26 @@
 .ai-mode-select {
   display: flex;
   flex-direction: column;
-  gap: 10px;
-  margin-top: 16px;
+  gap: 8px;
+  margin-top: 12px;
 }
 
 .ai-mode-select__btn {
   display: flex;
   align-items: center;
-  gap: 10px;
-  padding: 14px 18px;
+  gap: 8px;
+  padding: 10px 14px;
   border: none;
-  border-radius: 14px;
+  border-radius: 10px;
   background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
   color: #fff;
-  font-size: 15px;
+  font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
 
   i {
-    font-size: 18px;
+    font-size: 15px;
     color: #fff;
   }
 
@@ -1009,9 +1067,9 @@
 }
 
 /* ==========================================
-   アクションボタン（応答後）
+   提案モード アクションボタン（応答後）
 ========================================== */
-.ai-action-buttons {
+.suggest-mode-actions {
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
@@ -1020,7 +1078,7 @@
   border-top: 1px solid #e5e5ea;
 }
 
-.ai-action-buttons__btn {
+.suggest-mode-actions__btn {
   display: inline-flex;
   align-items: center;
   gap: 6px;
@@ -1060,24 +1118,28 @@
   pointer-events: none;
 }
 
-/* ナビバー暗転（エリア描画中） */
-.navibar--area-draw-dimmed {
-  position: relative;
-
-  &::after {
-    content: "";
-    position: absolute;
-    inset: 0;
-    background: rgba(0, 0, 0, 0.4);
-    z-index: 1000;
-    pointer-events: auto; /* クリック防止 */
-    border-radius: inherit;
+/* エリア描画モード（body クラスで一括制御） */
+body.area-draw-active {
+  .map-search-box,
+  .plan-actions,
+  .hamburger,
+  .map-floating-buttons {
+    display: none !important;
   }
-}
 
-/* エリア描画時の要素非表示 */
-.area-draw-hidden {
-  display: none !important;
+  .navibar {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      pointer-events: auto; /* クリック防止 */
+      border-radius: inherit;
+    }
+  }
 }
 
 /* ガイドカード */

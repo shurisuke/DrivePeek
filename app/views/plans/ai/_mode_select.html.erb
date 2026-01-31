@@ -1,14 +1,14 @@
-<%# AI提案 初期モード選択UI %>
-<div class="ai-mode-select" data-controller="ai-action-buttons">
+<%# 提案モード選択UI %>
+<div class="ai-mode-select" data-controller="suggest-mode">
   <button type="button"
           class="ai-mode-select__btn"
-          data-action="click->ai-action-buttons#startPlanMode">
+          data-action="click->suggest-mode#startPlanMode">
     <i class="bi bi-map"></i>
-    エリアからプランを提案
+    まるっとプラン提案
   </button>
   <button type="button"
           class="ai-mode-select__btn"
-          data-action="click->ai-action-buttons#startSpotMode">
+          data-action="click->suggest-mode#startSpotMode">
     <i class="bi bi-geo-alt"></i>
     エリアからスポットを提案
   </button>
