@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance } from "map/state"
+import { getMapInstance, setAiAreaCircle, clearAiSuggestionMarkers } from "map/state"
+import { closeInfoWindow } from "map/infowindow"
 
 // ================================================================
 // AiAreaDrawController
@@ -10,6 +11,8 @@ import { getMapInstance } from "map/state"
 // ================================================================
 
 export default class extends Controller {
+  static targets = ["modal", "moveMode", "drawMode", "confirmMode", "radiusDisplay"]
+
   // ============================================
   // 状態（thisで保持）
   // ============================================
@@ -20,7 +23,6 @@ export default class extends Controller {
   // this.polyline    - Google Maps Polyline
   // this.circle      - Google Maps Circle
   // this.circleData  - { center: {lat, lng}, radius_km }
-  // this.overlayEl   - オーバーレイDOM要素
   // this.map         - Google Maps インスタンス
 
   connect() {
@@ -47,10 +49,14 @@ export default class extends Controller {
     this.map = getMapInstance()
     if (!this.map) return
 
-    // 1. オーバーレイ + ガイド表示（地図移動は可能）
-    this.showOverlay()
+    // 既存のAI提案（円+ピン）をクリア
+    clearAiSuggestionMarkers()
+    closeInfoWindow()
+    const clearBtn = document.getElementById("ai-pin-clear")
+    if (clearBtn) clearBtn.hidden = true
 
-    // 2. 描画イベントはまだ設定しない（「描き始める」ボタンで開始）
+    // 1. モーダル表示（移動モード）
+    this.showModal()
   }
 
   // ============================================
@@ -98,7 +104,7 @@ export default class extends Controller {
   startDraw(e) {
     // 既存の円があれば削除
     this.circle?.setMap(null)
-    this.hideConfirmPanel()
+    this.switchToDrawMode()
 
     // 描画開始時に地図操作を無効化
     this.map.setOptions({
@@ -154,7 +160,7 @@ export default class extends Controller {
     this.showCircle()
 
     // 確定パネル表示
-    this.showConfirmPanel()
+    this.switchToConfirmMode()
   }
 
   addPoint(e) {
@@ -240,89 +246,36 @@ export default class extends Controller {
   }
 
   // ============================================
-  // UI（JSで動的生成）
+  // UI状態切り替え
   // ============================================
 
-  showOverlay() {
-    // 既存のオーバーレイがあれば削除
-    this.hideOverlay()
+  showModal() {
+    // エリア描画モード開始（CSS一括制御 + 他コントローラーへ通知）
+    document.body.classList.add("area-draw-active")
+    document.dispatchEvent(new CustomEvent("ai:areaDrawStart"))
 
-    // モバイル時: ボトムシートを最小化
-    const navibar = document.querySelector(".navibar")
-    if (navibar) {
-      const bottomSheetController = this.application.getControllerForElementAndIdentifier(navibar, "bottom-sheet")
-      bottomSheetController?.collapse()
-    }
-
-    // ナビバーを暗転
-    navibar?.classList.add("navibar--area-draw-dimmed")
-
-    // 不要な要素を非表示
-    document.querySelector(".map-search-box")?.classList.add("area-draw-hidden")
-    document.querySelector(".plan-actions")?.classList.add("area-draw-hidden")
-    document.querySelector(".hamburger")?.classList.add("area-draw-hidden")
-    document.querySelector(".map-floating-buttons")?.classList.add("area-draw-hidden")
-
-    this.overlayEl = document.createElement("div")
-    this.overlayEl.className = "area-draw-overlay"
-    this.overlayEl.innerHTML = `
-      <div class="area-draw-guide">
-        <div class="area-draw-guide__header">
-          <div class="area-draw-guide__icon">
-            <i class="bi bi-geo-alt"></i>
-          </div>
-          <div class="area-draw-guide__text">
-            選択したいエリアまで<br>地図を移動してください
-          </div>
-        </div>
-        <div class="area-draw-guide__actions">
-          <button type="button" class="area-draw-guide__cancel-btn">
-            キャンセル
-          </button>
-          <button type="button" class="area-draw-guide__start-btn">
-            描き始める
-          </button>
-        </div>
-      </div>
-    `
-    document.body.appendChild(this.overlayEl)
-
-    // ボタンイベント
-    const cancelBtn = this.overlayEl.querySelector(".area-draw-guide__cancel-btn")
-    const startBtn = this.overlayEl.querySelector(".area-draw-guide__start-btn")
-    cancelBtn.addEventListener("click", () => this.cancel())
-    startBtn.addEventListener("click", () => this.startDrawingMode())
+    // モーダル表示（移動モード）
+    this.modalTarget.hidden = false
+    this.moveModeTarget.hidden = false
+    this.drawModeTarget.hidden = true
+    this.confirmModeTarget.hidden = true
   }
 
-  startDrawingMode() {
-    // ガイドを描画モード用に変更
-    const guide = this.overlayEl?.querySelector(".area-draw-guide")
-    if (guide) {
-      guide.innerHTML = `
-        <div class="area-draw-guide__header">
-          <div class="area-draw-guide__icon">
-            <i class="bi bi-hand-index"></i>
-          </div>
-          <div class="area-draw-guide__text">
-            地図上で円を描くように<br>エリアをなぞってください
-          </div>
-        </div>
-        <div class="area-draw-guide__actions">
-          <button type="button" class="area-draw-guide__cancel-btn">
-            戻る
-          </button>
-        </div>
-      `
-      const cancelBtn = guide.querySelector(".area-draw-guide__cancel-btn")
-      cancelBtn.addEventListener("click", () => this.backToMoveMode())
-    }
+  hideModal() {
+    document.body.classList.remove("area-draw-active")
+    this.modalTarget.hidden = true
+  }
 
-    // 描画イベント設定
+  // 描き始めるボタン → 描画モードへ
+  startDrawingMode() {
+    this.moveModeTarget.hidden = true
+    this.drawModeTarget.hidden = false
+    this.confirmModeTarget.hidden = true
     this.setupDrawEvents()
   }
 
+  // 戻るボタン → 移動モードへ
   backToMoveMode() {
-    // 描画イベント解除
     this.removeDrawEvents()
 
     // 描画途中のポリラインを消去
@@ -331,45 +284,25 @@ export default class extends Controller {
     this.isDrawing = false
     this.drawPath = []
 
-    // ガイドを地図移動モードに戻す
-    const guide = this.overlayEl?.querySelector(".area-draw-guide")
-    if (guide) {
-      guide.innerHTML = `
-        <div class="area-draw-guide__header">
-          <div class="area-draw-guide__icon">
-            <i class="bi bi-geo-alt"></i>
-          </div>
-          <div class="area-draw-guide__text">
-            選択したいエリアまで<br>地図を移動してください
-          </div>
-        </div>
-        <div class="area-draw-guide__actions">
-          <button type="button" class="area-draw-guide__cancel-btn">
-            キャンセル
-          </button>
-          <button type="button" class="area-draw-guide__start-btn">
-            描き始める
-          </button>
-        </div>
-      `
-      const cancelBtn = guide.querySelector(".area-draw-guide__cancel-btn")
-      const startBtn = guide.querySelector(".area-draw-guide__start-btn")
-      cancelBtn.addEventListener("click", () => this.cancel())
-      startBtn.addEventListener("click", () => this.startDrawingMode())
-    }
+    this.moveModeTarget.hidden = false
+    this.drawModeTarget.hidden = true
+    this.confirmModeTarget.hidden = true
   }
 
-  hideOverlay() {
-    this.overlayEl?.remove()
-    this.overlayEl = null
+  // 描画中の状態維持（描き直し時）
+  switchToDrawMode() {
+    this.moveModeTarget.hidden = true
+    this.drawModeTarget.hidden = false
+    this.confirmModeTarget.hidden = true
+  }
 
-    // ナビバーの暗転を解除
-    document.querySelector(".navibar")?.classList.remove("navibar--area-draw-dimmed")
-
-    // 非表示にした要素を再表示
-    document.querySelectorAll(".area-draw-hidden").forEach(el => {
-      el.classList.remove("area-draw-hidden")
-    })
+  // 確定パネル表示
+  switchToConfirmMode() {
+    this.removeDrawEvents()
+    this.moveModeTarget.hidden = true
+    this.drawModeTarget.hidden = true
+    this.confirmModeTarget.hidden = false
+    this.radiusDisplayTarget.textContent = `半径: ${this.circleData.radius_km.toFixed(1)} km`
   }
 
   showCircle() {
@@ -380,7 +313,7 @@ export default class extends Controller {
       strokeColor: "#667eea",
       strokeWeight: 2,
       fillColor: "#667eea",
-      fillOpacity: 0.15,
+      fillOpacity: 0.03,
       clickable: false
     })
 
@@ -388,65 +321,17 @@ export default class extends Controller {
     this.map.fitBounds(this.circle.getBounds())
   }
 
-  showConfirmPanel() {
-    // ガイドを確定パネルに置き換え
-    const guide = this.overlayEl?.querySelector(".area-draw-guide")
-    if (guide) {
-      guide.innerHTML = `
-        <div class="area-draw-confirm__info">
-          <span class="area-draw-confirm__radius">
-            半径: ${this.circleData.radius_km.toFixed(1)} km
-          </span>
-        </div>
-        <div class="area-draw-confirm__actions">
-          <button type="button" class="area-draw-btn area-draw-btn--secondary">
-            描き直す
-          </button>
-          <button type="button" class="area-draw-btn area-draw-btn--primary">
-            決定
-          </button>
-        </div>
-      `
-      guide.className = "area-draw-confirm"
-
-      // ボタンイベント
-      const redrawBtn = guide.querySelector(".area-draw-btn--secondary")
-      const confirmBtn = guide.querySelector(".area-draw-btn--primary")
-      redrawBtn.addEventListener("click", () => this.redraw())
-      confirmBtn.addEventListener("click", () => this.confirmArea())
-    }
-  }
-
-  hideConfirmPanel() {
-    const confirm = this.overlayEl?.querySelector(".area-draw-confirm")
-    if (confirm) {
-      confirm.innerHTML = `
-        <div class="area-draw-guide__header">
-          <div class="area-draw-guide__icon">
-            <i class="bi bi-hand-index"></i>
-          </div>
-          <div class="area-draw-guide__text">
-            地図上で円を描くように<br>エリアをなぞってください
-          </div>
-        </div>
-        <div class="area-draw-guide__actions">
-          <button type="button" class="area-draw-guide__cancel-btn">
-            戻る
-          </button>
-        </div>
-      `
-      confirm.className = "area-draw-guide"
-
-      const cancelBtn = confirm.querySelector(".area-draw-guide__cancel-btn")
-      cancelBtn.addEventListener("click", () => this.backToMoveMode())
-    }
-  }
-
   // ============================================
   // アクション
   // ============================================
 
   confirmArea() {
+    // 円を専用変数に設定（クリアボタンで一緒に消える）
+    if (this.circle) {
+      setAiAreaCircle(this.circle)
+      this.circle = null // cleanup で消されないように参照を外す
+    }
+
     document.dispatchEvent(new CustomEvent("ai:areaSelected", {
       detail: {
         mode: this.mode,
@@ -463,15 +348,15 @@ export default class extends Controller {
     this.circle?.setMap(null)
     this.circle = null
     this.circleData = null
-    // 確定パネルをガイドに戻す
-    const confirm = this.overlayEl?.querySelector(".area-draw-confirm")
-    if (confirm) {
-      confirm.className = "area-draw-guide"
-    }
     this.backToMoveMode()
   }
 
   cancel() {
+    // 円+ピンをクリア（enterDrawModeで既にクリア済みだが、念のため）
+    clearAiSuggestionMarkers()
+    const clearBtn = document.getElementById("ai-pin-clear")
+    if (clearBtn) clearBtn.hidden = true
+
     this.exitDrawMode()
   }
 
@@ -486,7 +371,7 @@ export default class extends Controller {
     }
     this.removeDrawEvents()
     this.cleanup()
-    this.hideOverlay()
+    this.hideModal()
   }
 
   cleanup() {
