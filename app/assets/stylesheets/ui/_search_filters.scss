@@ -13,6 +13,10 @@
   border-radius: 14px;
   padding: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+
+  > form {
+    display: contents;
+  }
 }
 
 /* 検索タイプ切り替えタブ（セグメントコントロール） */
@@ -223,34 +227,6 @@
   }
 }
 
-/* フィルターセレクト */
-.filter-select {
-  flex: 1;
-  padding: 8px 12px;
-  border: 1px solid #e5e5e5;
-  border-radius: 8px;
-  font-size: 14px;
-  outline: none;
-  background-color: #fff;
-  color: #333;
-  cursor: pointer;
-  appearance: none;
-  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E");
-  background-repeat: no-repeat;
-  background-position: right 12px center;
-  padding-right: 32px;
-
-  &:focus {
-    border-color: #999;
-  }
-
-  /* 未選択時（デフォルト値）のスタイル */
-  &:invalid,
-  option[value=""] {
-    color: #999;
-  }
-}
-
 /* 検索結果ディバイダー */
 .results-divider {
   margin-top: 24px;
@@ -268,3 +244,206 @@
   border-radius: 20px;
   letter-spacing: 0.5px;
 }
+
+/* ==========================================
+   選択モード（エリア/ジャンル）
+========================================== */
+
+/* 選択ボタン（通常モード） */
+.search-filters__select-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 14px;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.08);
+  font-size: 14px;
+  color: #888;
+  cursor: pointer;
+  text-align: left;
+
+  span {
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+  }
+
+  i {
+    color: #999;
+    font-size: 20px;
+    flex-shrink: 0;
+    line-height: 1;
+    margin: -3px 0;
+  }
+}
+
+/* 選択リスト（iOS/Mac風） */
+$ios-blue: #007AFF;
+$ios-separator: rgba(60, 60, 67, 0.12);
+$ios-label: rgba(60, 60, 67, 0.6);
+$ios-gray-bg: #F2F2F7;
+
+.selection-list {
+  max-height: 250px;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+  background: #fff;
+}
+
+.selection-list__region {
+  &:not(:last-child) {
+    border-bottom: 1px solid $ios-separator;
+  }
+}
+
+.selection-list__region-label {
+  padding: 4px 14px 3px;
+  font-size: 12px;
+  font-weight: 400;
+  color: $ios-label;
+  background: $ios-gray-bg;
+  letter-spacing: 0.02em;
+}
+
+/* 親グループ */
+.selection-list__group {
+  background: #fff;
+}
+
+.selection-list__parent {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px;
+  cursor: pointer;
+  border-bottom: 1px solid $ios-separator;
+  user-select: none;
+
+  span {
+    flex: 1;
+    font-size: 14px;
+    font-weight: 400;
+    color: $ios-blue;
+  }
+}
+
+.selection-list__toggle {
+  color: #C7C7CC;
+  font-size: 14px;
+  transition: transform 0.25s ease;
+  cursor: pointer;
+  padding: 4px;
+  margin: -4px;
+}
+
+/* 子要素（折りたたみ） */
+.selection-list__children {
+  display: none;
+  background: #fff;
+}
+
+.selection-list__group.is-expanded .selection-list__children {
+  display: block;
+}
+
+.selection-list__group.is-expanded .selection-list__toggle {
+  transform: rotate(180deg);
+  color: $ios-blue;
+}
+
+.selection-list__item {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 14px 8px 32px;
+  cursor: pointer;
+  border-bottom: 1px solid $ios-separator;
+
+  &:last-child {
+    border-bottom: none;
+  }
+
+  span {
+    flex: 1;
+    font-size: 14px;
+    color: $ios-blue;
+  }
+}
+
+/* iOS風丸チェックボックス */
+.selection-list__parent,
+.selection-list__item {
+  input[type="checkbox"] {
+    -webkit-appearance: none;
+    appearance: none;
+    width: 22px;
+    height: 22px;
+    border: 2px solid #C7C7CC;
+    border-radius: 50%;
+    background: #fff;
+    cursor: pointer;
+    position: relative;
+    flex-shrink: 0;
+    transition: all 0.2s ease;
+
+    &:checked {
+      background: $ios-blue;
+      border-color: $ios-blue;
+    }
+
+    &:checked::after {
+      content: '';
+      position: absolute;
+      left: 6px;
+      top: 3px;
+      width: 5px;
+      height: 10px;
+      border: solid #fff;
+      border-width: 0 2px 2px 0;
+      transform: rotate(45deg);
+    }
+
+    &:indeterminate {
+      background: $ios-blue;
+      border-color: $ios-blue;
+    }
+
+    &:indeterminate::after {
+      content: '';
+      position: absolute;
+      left: 4px;
+      top: 8px;
+      width: 10px;
+      height: 2px;
+      background: #fff;
+      border-radius: 1px;
+    }
+  }
+}
+
+/* 親グループに属さない項目 */
+.selection-list__region > .selection-list__item {
+  padding-left: 14px;
+}
+
+/* 決定ボタン（検索ボタンと同じ高さ） */
+.selection-done-btn {
+  width: 100%;
+  padding: 11px 16px;
+  background: #007AFF;
+  border: none;
+  border-radius: 0 0 10px 10px;
+  color: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  flex-shrink: 0;
+
+  &:active {
+    background: #0066DD;
+  }
+}
+

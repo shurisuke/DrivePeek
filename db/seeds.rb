@@ -107,20 +107,21 @@ GENRES = [
   # 遊ぶ
   { name: "テーマパーク", slug: "theme_park", category: "遊ぶ", visible: true },
   { name: "アクティビティ施設", slug: "activity", category: "遊ぶ", visible: true },
-  { name: "スキー場", slug: "ski_resort", category: "遊ぶ", visible: true },
   { name: "プール", slug: "water_park", category: "遊ぶ", visible: true },
-  { name: "ゴルフ場", slug: "golf_course", category: "遊ぶ", visible: true },
-  { name: "スケート場", slug: "skating_rink", category: "遊ぶ", visible: true },
-  { name: "運動場", slug: "sports_ground", category: "遊ぶ", visible: true },
   { name: "カラオケ", slug: "karaoke", category: "遊ぶ", visible: true },
   { name: "ゲームセンター", slug: "game_center", category: "遊ぶ", visible: true },
   { name: "釣り堀", slug: "fishing_pond", category: "遊ぶ", visible: true },
   { name: "キャンプ場", slug: "campsite", category: "遊ぶ", visible: true },
   { name: "BBQ場", slug: "bbq_site", category: "遊ぶ", visible: true },
-  { name: "フットサル場", slug: "futsal_court", category: "遊ぶ", visible: true },
   { name: "漫画喫茶", slug: "manga_cafe", category: "遊ぶ", visible: true },
   { name: "ジム", slug: "gym", category: "遊ぶ", visible: false },
   { name: "ボウリング場", slug: "bowling", category: "遊ぶ", visible: false },
+  # 運動場（親ジャンル）
+  { name: "運動場", slug: "sports_ground", category: "遊ぶ", visible: true },
+  { name: "ゴルフ場", slug: "golf_course", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
+  { name: "スキー場", slug: "ski_resort", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
+  { name: "スケート場", slug: "skating_rink", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
+  { name: "フットサル場", slug: "futsal_court", category: "遊ぶ", visible: true, parent_slug: "sports_ground" },
 
   # 買う
   { name: "道の駅・SA/PA", slug: "roadside_station", category: "買う", visible: true },

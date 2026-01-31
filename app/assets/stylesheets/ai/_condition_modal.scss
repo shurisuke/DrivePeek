@@ -103,19 +103,19 @@
   color: #555;
 }
 
-.ai-condition-modal__select {
+.ai-condition-modal__select,
+.ai-condition-modal__slot-select {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 15px;
+  padding: 8px 12px;
+  font-size: 14px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
   cursor: pointer;
 
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
   }
 }
 
@@ -141,17 +141,6 @@
 
 .ai-condition-modal__slot-select {
   flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-  }
 }
 
 // アクション
