@@ -65,18 +65,18 @@ class AiAreaService
 
       # プロンプト生成 → API呼び出し → 選出
       prompt = case mode
-               when "plan"
+      when "plan"
                  build_plan_mode_prompt(radius_km, slot_data)
-               when "spots"
+      when "spots"
                  build_spot_mode_prompt(radius_km, genre, all_spots)
-               end
+      end
       ai_response = call_openai_api(prompt)
       selected_spots = case mode
-                       when "plan"
+      when "plan"
                          select_plan_spots(ai_response, all_spots, slot_sizes)
-                       when "spots"
+      when "spots"
                          all_spots
-                       end
+      end
 
       build_suggest_response(ai_response, selected_spots, mode)
 
@@ -125,7 +125,7 @@ class AiAreaService
 
         # まず円内+ジャンルでスポットIDを取得（DISTINCTを回避）
         candidate_ids = spots_in_circle(center_lat, center_lng, radius_km)
-          .filter_by_genres([genre_id])
+          .filter_by_genres([ genre_id ])
           .pluck(:id)
 
         next if candidate_ids.empty?
@@ -155,7 +155,7 @@ class AiAreaService
     def fetch_genre_candidates(center_lat, center_lng, radius_km, genre, count)
       # まず円内+ジャンルでスポットIDを取得（DISTINCTを回避）
       candidate_ids = spots_in_circle(center_lat, center_lng, radius_km)
-        .filter_by_genres([genre.id])
+        .filter_by_genres([ genre.id ])
         .pluck(:id)
 
       return [] if candidate_ids.empty?
@@ -195,7 +195,7 @@ class AiAreaService
           model: MODEL,
           max_tokens: MAX_TOKENS,
           response_format: { type: "json_object" },
-          messages: [{ role: "system", content: prompt }]
+          messages: [ { role: "system", content: prompt } ]
         }
       )
 
