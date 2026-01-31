@@ -6,9 +6,17 @@ class PlanSpot < ApplicationRecord
   # 順序管理（plan スコープで position を自動採番）
   acts_as_list scope: :plan
 
+  # 滞在時間の上限（20時間 = 1200分）※ホテル滞在を考慮
+  MAX_STAY_DURATION = 1200
+
   # Validations
   validates :spot_id, uniqueness: { scope: :plan_id, message: "は既にこのプランに追加されています" }
   validates :move_time, :move_distance, :move_cost, numericality: { greater_than_or_equal_to: 0 }
+  validates :stay_duration, numericality: {
+    greater_than_or_equal_to: 0,
+    less_than_or_equal_to: MAX_STAY_DURATION,
+    allow_nil: true
+  }
 
   # 経路計算に影響する属性
   ROUTE_AFFECTING_ATTRIBUTES = %w[toll_used].freeze
