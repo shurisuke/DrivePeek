@@ -63,4 +63,56 @@ module PlansHelper
     end
     "#{spot_lines.join("\n")}\n\n"
   end
+
+  # 選択されたエリアをフォーマット
+  # 全市区町村選択時は県名のみ表示
+  def format_selected_cities(cities, cities_by_prefecture = {})
+    return "エリア" if cities.blank?
+
+    # 都道府県ごとにグループ化
+    grouped = cities.group_by { |c| c.split("/").first }
+
+    parts = grouped.map do |pref, city_list|
+      all_cities = cities_by_prefecture[pref] || []
+      selected_city_names = city_list.map { |c| c.split("/").last }
+
+      # 全選択なら県名のみ
+      if all_cities.any? && selected_city_names.sort == all_cities.sort
+        pref
+      else
+        selected_city_names.join(", ")
+      end
+    end
+
+    parts.join(", ")
+  end
+
+  # 選択されたジャンルをフォーマット
+  # 親の全子ジャンル選択時は親名のみ表示
+  def format_selected_genres(genre_ids, genres_by_category = {})
+    return "ジャンル" if genre_ids.blank?
+
+    selected_ids = genre_ids.map(&:to_i).to_set
+    parent_names = []
+
+    # カテゴリ内の親子関係をチェック
+    genres_by_category.each_value do |groups|
+      groups.each do |group|
+        children = group[:children]
+        if children.present?
+          child_ids = children.map(&:id).to_set
+          if child_ids.subset?(selected_ids)
+            # 全子選択 → 親名を追加
+            parent_names << group[:genre].name
+            selected_ids -= child_ids
+          end
+        end
+      end
+    end
+
+    # 残りの個別選択ジャンル
+    remaining = Genre.where(id: selected_ids.to_a).pluck(:name)
+
+    (parent_names + remaining).join(", ")
+  end
 end

@@ -128,7 +128,7 @@ class Spot < ApplicationRecord
   # AIでジャンルを判定して割り当てる（遅延ロード用）
   # @return [Boolean] 判定が行われたか
   def detect_genres!
-    return false if genres.count >= 2
+    return false if genres.exists?
 
     detected_ids = GenreDetector.detect(self, count: 2)
 

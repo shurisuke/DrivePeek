@@ -29,8 +29,11 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
-  max-height: 90vh;
-  overflow-y: auto;
+  height: 70vh;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
 }
 
 // ヘッダー
@@ -103,19 +106,19 @@
   color: #555;
 }
 
-.ai-condition-modal__select {
+.ai-condition-modal__select,
+.ai-condition-modal__slot-select {
   width: 100%;
-  padding: 10px 12px;
-  font-size: 15px;
+  padding: 8px 12px;
+  font-size: 14px;
   border: 1px solid #ddd;
-  border-radius: 8px;
+  border-radius: 6px;
   background: #fff;
   cursor: pointer;
 
   &:focus {
     outline: none;
     border-color: #667eea;
-    box-shadow: 0 0 0 2px rgba(102, 126, 234, 0.2);
   }
 }
 
@@ -141,17 +144,6 @@
 
 .ai-condition-modal__slot-select {
   flex: 1;
-  padding: 8px 12px;
-  font-size: 14px;
-  border: 1px solid #ddd;
-  border-radius: 6px;
-  background: #fff;
-  cursor: pointer;
-
-  &:focus {
-    outline: none;
-    border-color: #667eea;
-  }
 }
 
 // アクション
@@ -241,6 +233,103 @@
   }
 }
 
+// メインビュー / ジャンル選択ビュー共通
+[data-ai-condition-modal-target="mainView"],
+[data-ai-condition-modal-target="genreView"] {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// プランモード / スポットモードのコンテンツ
+[data-ai-condition-modal-target="planContent"],
+[data-ai-condition-modal-target="spotContent"] {
+  flex: 1;
+  overflow-y: auto;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// ジャンル選択ボタン
+.ai-condition-modal__genre-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #667eea;
+  }
+
+  i {
+    color: #999;
+    font-size: 18px;
+  }
+
+  &--full {
+    margin-top: 0;
+  }
+}
+
+// ジャンル選択リスト
+.ai-condition-modal__genre-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.ai-condition-modal__genre-category {
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(102, 126, 234, 0.8);
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.ai-condition-modal__genre-item {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+
+  &:active {
+    background: #f0f0f0;
+  }
+
+  &--omakase {
+    color: #667eea;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+  }
+}
+
 // モバイル対応
 @media (max-width: 480px) {
   .ai-condition-modal {
@@ -250,7 +339,8 @@
 
   .ai-condition-modal__dialog {
     max-width: 100%;
-    max-height: 85vh;
+    height: 75vh;
+    max-height: none;
     border-radius: 16px 16px 0 0;
   }
 }
