@@ -39,6 +39,9 @@
 
 /node_modules
 
+# Ignore SimpleCov coverage reports
+/coverage
+
 # Ignore Claude Code settings
 /.claude
 
