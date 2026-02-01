@@ -1,38 +1,42 @@
 Rails.application.routes.draw do
-  # 開発環境のみ：メール確認用UI
+  # ========================================
+  # 開発環境専用
+  # ========================================
   mount LetterOpenerWeb::Engine, at: "/letter_opener" if Rails.env.development?
 
-  # Devise関連
+  # ========================================
+  # Devise（認証）
+  # ========================================
   devise_for :users, controllers: {
-    registrations: "users/registrations",        # 新規登録画面
-    sessions: "users/sessions",                  # ログイン画面
-    passwords: "users/passwords",                # パスワード再設定リクエスト画面
-    confirmations: "users/confirmations",        # メール確認
-    omniauth_callbacks: "users/omniauth_callbacks" # SNS認証コールバック
+    registrations: "users/registrations",
+    sessions: "users/sessions",
+    passwords: "users/passwords",
+    confirmations: "users/confirmations",
+    omniauth_callbacks: "users/omniauth_callbacks"
   }
 
-  # ユーザー関連
   scope :users, as: :users do
-    # SNS連携解除
     delete "auth/unlink/:provider", to: "users/omniauth_registrations#unlink", as: :omniauth_unlink
   end
 
-  # ログイン時のルート
+  devise_scope :user do
+    get "/users/sign_out", to: "devise/sessions#destroy"
+  end
+
+  # ========================================
+  # ルート
+  # ========================================
   authenticated :user do
     root to: "plans#new", as: :authenticated_root
   end
 
-  # 非ログイン時のルート
   unauthenticated do
     root to: "static_pages#top", as: :unauthenticated_root
   end
 
-  # ログアウト時のアクション
-  devise_scope :user do
-    get "/users/sign_out" => "devise/sessions#destroy"
-  end
-
+  # ========================================
   # 設定
+  # ========================================
   resource :settings, only: %i[show update] do
     get :profile
     patch :profile, action: :update_profile
@@ -43,20 +47,20 @@ Rails.application.routes.draw do
     get :visibility
   end
 
-  # コミュニティ（みんなの旅）
-  get "community" => "community#index"
-
-  # プラン
+  # ========================================
+  # プラン関連
+  # ========================================
   namespace :plans do
     resources :mine, only: %i[index]
   end
 
   resources :plans, only: %i[show new create edit update destroy] do
-    # Turbo Stream用（destroyのみ残す）
     resources :plan_spots, only: %i[destroy]
   end
 
+  # ========================================
   # 提案機能（AIアシスタント）
+  # ========================================
   resources :suggestion_logs, only: [] do
     collection do
       delete :destroy_all
@@ -68,58 +72,73 @@ Rails.application.routes.draw do
     post :finish
   end
 
-  # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
+  # ========================================
+  # スポット関連
+  # ========================================
+  resources :spots, only: %i[show] do
+    resources :comments, only: %i[create destroy], controller: "spot_comments"
+  end
+
+  # ========================================
+  # コミュニティ・お気に入り
+  # ========================================
+  get "community", to: "community#index"
+  get "favorites", to: "favorites#index"
+
+  resources :favorite_spots, only: %i[create destroy]
+  resources :favorite_plans, only: %i[create destroy]
+
+  # ========================================
+  # InfoWindow
+  # ========================================
   resource :infowindow, only: %i[show create]
 
-  # API エンドポイント
+  # ========================================
+  # API（JSON）
+  # ========================================
   namespace :api do
-    # スポット関連
     resources :spots, only: [] do
-      resource :genres, only: [ :show ], controller: "spots/genres"
+      scope module: :spots do
+        resource :genres, only: %i[show]
+      end
     end
 
     resources :plans, only: [] do
-      resource :preview, only: %i[show], controller: "plans/previews"
-      resource :start_point, only: %i[update], controller: "plans/start_points"
-      resource :goal_point, only: %i[update], controller: "plans/goal_points"
+      scope module: :plans do
+        resource :preview, only: %i[show]
+        resource :start_point, only: %i[update]
+        resource :goal_point, only: %i[update]
 
-      resources :plan_spots, only: %i[create], controller: "plans/plan_spots" do
-        collection do
-          patch :reorder, to: "plans/plan_spots/reorders#update"
-          post :adopt, to: "plans/plan_spots/adoptions#create"
-        end
+        resources :plan_spots, only: %i[create] do
+          collection do
+            patch :reorder, to: "plan_spots/reorders#update"
+            post :adopt, to: "plan_spots/adoptions#create"
+          end
 
-        member do
-          patch :toll_used, to: "plans/plan_spots/toll_used#update"
-          patch :memo, to: "plans/plan_spots/memos#update"
-          patch :stay_duration, to: "plans/plan_spots/stay_durations#update"
+          member do
+            patch :toll_used, to: "plan_spots/toll_used#update"
+            patch :memo, to: "plan_spots/memos#update"
+            patch :stay_duration, to: "plan_spots/stay_durations#update"
+          end
         end
       end
     end
   end
 
-  # スポット
-  resources :spots, only: %i[show] do
-    resources :comments, only: %i[create destroy], controller: "spot_comments"
-  end
-
-  # お気に入り一覧
-  get "favorites" => "favorites#index"
-
-  # お気に入りスポット
-  resources :favorite_spots, only: %i[create destroy]
-
-  # お気に入りプラン
-  resources :favorite_plans, only: %i[create destroy]
-
-  # ヘルスチェック
-  get "up" => "rails/health#show", as: :rails_health_check
-
+  # ========================================
   # 静的ページ
-  get "guide" => "static_pages#guide", as: :guide
-  get "terms" => "static_pages#terms", as: :terms
-  get "privacy" => "static_pages#privacy", as: :privacy
+  # ========================================
+  get "guide", to: "static_pages#guide", as: :guide
+  get "terms", to: "static_pages#terms", as: :terms
+  get "privacy", to: "static_pages#privacy", as: :privacy
 
+  # ========================================
   # お問い合わせ
+  # ========================================
   resources :contacts, only: %i[new create]
+
+  # ========================================
+  # ヘルスチェック
+  # ========================================
+  get "up", to: "rails/health#show", as: :rails_health_check
 end
