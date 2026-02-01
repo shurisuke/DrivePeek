@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearAiSuggestionMarkers } from "map/state"
+import { clearSuggestionMarkers } from "map/state"
 import { postTurboStream } from "services/api_client"
 
 // ================================================================
-// AiConditionModalController
-// 用途: AI提案条件設定モーダルの制御（プランモード/スポットモード対応）
+// SuggestionConditionModalController
+// 用途: 提案条件設定モーダルの制御（プランモード/スポットモード対応）
 // - プランモード: エリア選択 → スロットごとにジャンル指定
 // - スポットモード: エリア選択 → 単一ジャンル + 件数指定
 // ================================================================
@@ -64,7 +64,7 @@ export default class extends Controller {
 
   // キャンセル時は円も消去
   cancel() {
-    clearAiSuggestionMarkers()
+    clearSuggestionMarkers()
     this.close()
   }
 
@@ -171,10 +171,10 @@ export default class extends Controller {
     this.loadingTarget.hidden = false
 
     try {
-      await postTurboStream(`/api/ai_area/suggest?plan_id=${this.planIdValue}`, body)
+      await postTurboStream(`/suggestions/suggest?plan_id=${this.planIdValue}`, body)
       this.close()
     } catch (error) {
-      console.error("[AiConditionModal] submit error:", error)
+      console.error("[SuggestionConditionModal] submit error:", error)
       alert("エラーが発生しました。もう一度お試しください。")
     } finally {
       this.submitBtnTarget.disabled = false

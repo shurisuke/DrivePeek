@@ -10,21 +10,9 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_100159) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_110543) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
-
-  create_table "ai_chat_messages", force: :cascade do |t|
-    t.text "content", null: false
-    t.datetime "created_at", null: false
-    t.bigint "plan_id", null: false
-    t.string "role", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["plan_id", "created_at"], name: "index_ai_chat_messages_on_plan_id_and_created_at"
-    t.index ["plan_id"], name: "index_ai_chat_messages_on_plan_id"
-    t.index ["user_id"], name: "index_ai_chat_messages_on_user_id"
-  end
 
   create_table "favorite_plans", force: :cascade do |t|
     t.datetime "created_at", null: false
@@ -284,6 +272,18 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_100159) do
     t.index ["prefecture"], name: "index_start_points_on_prefecture"
   end
 
+  create_table "suggestion_logs", force: :cascade do |t|
+    t.text "content", null: false
+    t.datetime "created_at", null: false
+    t.bigint "plan_id", null: false
+    t.string "role", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["plan_id", "created_at"], name: "index_suggestion_logs_on_plan_id_and_created_at"
+    t.index ["plan_id"], name: "index_suggestion_logs_on_plan_id"
+    t.index ["user_id"], name: "index_suggestion_logs_on_user_id"
+  end
+
   create_table "users", force: :cascade do |t|
     t.integer "age_group"
     t.datetime "confirmation_sent_at"
@@ -306,8 +306,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_100159) do
     t.index ["status"], name: "index_users_on_status"
   end
 
-  add_foreign_key "ai_chat_messages", "plans"
-  add_foreign_key "ai_chat_messages", "users"
   add_foreign_key "favorite_plans", "plans"
   add_foreign_key "favorite_plans", "users"
   add_foreign_key "favorite_spots", "spots"
@@ -329,4 +327,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_100159) do
   add_foreign_key "spot_genres", "genres"
   add_foreign_key "spot_genres", "spots"
   add_foreign_key "start_points", "plans"
+  add_foreign_key "suggestion_logs", "plans"
+  add_foreign_key "suggestion_logs", "users"
 end

@@ -1,39 +1,39 @@
-<%# AI提案タブ: ChatGPT風チャットUI %>
+<%# 提案タブ: ChatGPT風チャットUI %>
 
 <%# ユーザーメッセージ用テンプレート（JS即時表示用） %>
 <template id="user-message-template">
-  <div class="ai-chat__message-wrapper">
-    <div class="ai-chat__divider"></div>
-    <div class="ai-chat__msg ai-chat__msg--user">
-      <div class="ai-chat__content">
-        <div class="ai-chat__bubble"></div>
-        <div class="ai-chat__meta">
-          <span class="ai-chat__time"></span>
+  <div class="suggestion__message-wrapper">
+    <div class="suggestion__divider"></div>
+    <div class="suggestion__msg suggestion__msg--user">
+      <div class="suggestion__content">
+        <div class="suggestion__bubble"></div>
+        <div class="suggestion__meta">
+          <span class="suggestion__time"></span>
         </div>
       </div>
     </div>
   </div>
 </template>
 
-<div class="ai-chat" data-controller="ai-chat">
+<div class="suggestion" data-controller="suggestion">
   <%# メッセージ一覧エリア %>
-  <div class="ai-chat__messages" id="ai-chat-messages" data-ai-chat-target="messages">
+  <div class="suggestion__messages" id="suggestion-messages" data-suggestion-target="messages">
     <%# AI側: 案内文 + モード選択（初期表示） %>
-    <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__icon">
+    <div class="suggestion__msg suggestion__msg--assistant">
+      <div class="suggestion__icon">
         <i class="bi bi-stars"></i>
       </div>
-      <div class="ai-chat__content">
-        <div class="ai-chat__bubble">
+      <div class="suggestion__content">
+        <div class="suggestion__bubble">
           こんにちは！ドライブプランのAIアシスタントです。
         </div>
-        <%= render "plans/ai/mode_select" %>
+        <%= render "suggestions/mode_select" %>
       </div>
     </div>
 
     <%# 保存済み会話履歴を表示（時系列順：古い→新しい） %>
-    <% plan.ai_chat_messages.chronological.each do |msg| %>
-      <%= render "plans/ai/message",
+    <% plan.suggestion_logs.chronological.each do |msg| %>
+      <%= render "suggestions/message",
                  content: msg.display_message,
                  role: msg.role,
                  spots: msg.display_spots,

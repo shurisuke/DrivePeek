@@ -1,12 +1,12 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, addAiSuggestionMarker } from "map/state"
+import { getMapInstance, addSuggestionMarker } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
-import { createAiSuggestionPinSvg } from "map/constants"
+import { createSuggestionPinSvg } from "map/constants"
 import { panToVisualCenter } from "map/visual_center"
 
 // ================================================================
-// AiSpotActionController
-// 用途: AI提案スポットカードの「地図で見る」「プランに追加」ボタン
+// SuggestionSpotActionController
+// 用途: 提案スポットカードの「地図で見る」「プランに追加」ボタン
 // フロー: DB検証済みスポットをマーカー表示 + InfoWindow
 // ================================================================
 
@@ -54,7 +54,7 @@ export default class extends Controller {
         document.dispatchEvent(new CustomEvent("navibar:updated"))
 
         button.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
-        button.classList.add("ai-spot-card__btn--added")
+        button.classList.add("suggestion-spot-card__btn--added")
 
         // 追加成功後に地図で表示
         this.#showSpotOnMap()
@@ -62,7 +62,7 @@ export default class extends Controller {
         throw new Error("追加に失敗しました")
       }
     } catch (error) {
-      console.error("[ai_spot_action] addToPlan error:", error)
+      console.error("[suggestion_spot_action] addToPlan error:", error)
       alert(error.message || "追加に失敗しました")
       button.disabled = false
       button.innerHTML = 'プランに追加<i class="bi bi-chevron-right"></i>'
@@ -98,7 +98,7 @@ export default class extends Controller {
       title: this.nameValue,
       zIndex: 1000 - this.numberValue,
       icon: {
-        url: createAiSuggestionPinSvg(this.numberValue),
+        url: createSuggestionPinSvg(this.numberValue),
         scaledSize: new google.maps.Size(36, 36),
         anchor: new google.maps.Point(18, 18),
       },
@@ -108,7 +108,7 @@ export default class extends Controller {
       this.#showInfoWindow(marker, spotData)
     })
 
-    addAiSuggestionMarker(marker)
+    addSuggestionMarker(marker)
     this.#showClearButton()
     panToVisualCenter(position)
     this.#showInfoWindow(marker, spotData)
@@ -117,9 +117,9 @@ export default class extends Controller {
     this._spotData = spotData
   }
 
-  // AI提案ピンクリアボタンを表示
+  // 提案ピンクリアボタンを表示
   #showClearButton() {
-    const clearBtn = document.getElementById("ai-pin-clear")
+    const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = false
   }
 

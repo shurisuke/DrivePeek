@@ -24,11 +24,11 @@
       プラン
     </button>
 
-    <button class="tab-btn tab-ai"
-            data-tab="ai"
+    <button class="tab-btn tab-suggestion"
+            data-tab="suggestion"
             data-navibar-target="button"
             data-action="click->navibar#switch">
-      AI提案
+      提案
     </button>
   </div>
 
@@ -46,11 +46,11 @@
     <%= render "plans/navibar_footer", plan: plan %>
   </div>
 
-  <%# AI提案タブ用フッター（入力欄）: 現在は非表示 %>
-  <div class="ai-chat__composer ai-chat__composer--disabled"
+  <%# 提案タブ用フッター（入力欄）: 現在は非表示 %>
+  <div class="suggestion__composer suggestion__composer--disabled"
        data-navibar-target="footer"
-       data-tab="ai">
-    <%= render "plans/ai/form", plan: plan %>
+       data-tab="suggestion">
+    <%= render "suggestions/form", plan: plan %>
   </div>
 
   <%# モバイル用アクションボタン（ナビバー内に配置） %>

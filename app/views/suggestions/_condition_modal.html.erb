@@ -1,0 +1,154 @@
+<%# 提案条件設定モーダル（プランモード/スポットモード対応） %>
+<% genre_by_category = Genre.for_ai_suggestion %>
+
+<div class="suggestion-condition-modal"
+     hidden
+     data-controller="suggestion-condition-modal"
+     data-suggestion-condition-modal-plan-id-value="<%= plan.id %>"
+     data-suggestion-condition-modal-mode-value=""
+     data-action="suggestion:areaSelected@document->suggestion-condition-modal#open keydown.esc->suggestion-condition-modal#cancel">
+  <div class="suggestion-condition-modal__overlay"></div>
+  <div class="suggestion-condition-modal__dialog">
+
+    <%# ========== メインビュー ========== %>
+    <div data-suggestion-condition-modal-target="mainView">
+      <%# ヘッダー %>
+      <div class="suggestion-condition-modal__header">
+        <h3 class="suggestion-condition-modal__title" data-suggestion-condition-modal-target="title">条件を設定</h3>
+        <button type="button"
+                class="suggestion-condition-modal__close-btn"
+                data-action="click->suggestion-condition-modal#cancel">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <%# エリア情報（両モード共通） %>
+      <div class="suggestion-condition-modal__area-info">
+        <i class="bi bi-geo-alt"></i>
+        <span data-suggestion-condition-modal-target="areaInfo">選択エリア</span>
+      </div>
+
+      <%# ========== プランモード ========== %>
+      <div data-suggestion-condition-modal-target="planContent" hidden>
+        <%# スポット数選択 %>
+        <div class="suggestion-condition-modal__section">
+          <label class="suggestion-condition-modal__label">立ち寄りスポット数</label>
+          <select class="suggestion-condition-modal__select"
+                  data-suggestion-condition-modal-target="spotCount"
+                  data-action="change->suggestion-condition-modal#updateSlots">
+            <% (2..5).each do |n| %>
+              <option value="<%= n %>" <%= 'selected' if n == 3 %>><%= n %>箇所</option>
+            <% end %>
+          </select>
+        </div>
+
+        <%# スロット一覧 %>
+        <div class="suggestion-condition-modal__slots">
+          <% 5.times do |i| %>
+            <div class="suggestion-condition-modal__slot"
+                 data-suggestion-condition-modal-target="slot"
+                 data-slot-index="<%= i %>"
+                 <%= 'hidden' if i >= 3 %>>
+              <span class="suggestion-condition-modal__slot-label">スポット <%= i + 1 %></span>
+              <button type="button"
+                      class="suggestion-condition-modal__genre-btn"
+                      data-action="click->suggestion-condition-modal#openGenreSelect"
+                      data-suggestion-condition-modal-target="slotBtn">
+                <span>おまかせ</span>
+                <i class="bi bi-plus"></i>
+              </button>
+              <input type="hidden" name="slots[][genre_id]" value="" data-suggestion-condition-modal-target="slotInput">
+            </div>
+          <% end %>
+        </div>
+      </div>
+
+      <%# ========== スポットモード ========== %>
+      <div data-suggestion-condition-modal-target="spotContent" hidden>
+        <%# ジャンル選択 %>
+        <div class="suggestion-condition-modal__section">
+          <label class="suggestion-condition-modal__label">ジャンル</label>
+          <button type="button"
+                  class="suggestion-condition-modal__genre-btn suggestion-condition-modal__genre-btn--full"
+                  data-action="click->suggestion-condition-modal#openGenreSelect"
+                  data-suggestion-condition-modal-target="spotGenreBtn">
+            <span>選択してください</span>
+            <i class="bi bi-plus"></i>
+          </button>
+          <input type="hidden" name="genre_id" value="" data-suggestion-condition-modal-target="spotGenreInput">
+        </div>
+
+        <%# 件数選択 %>
+        <div class="suggestion-condition-modal__section">
+          <label class="suggestion-condition-modal__label">提案件数</label>
+          <select class="suggestion-condition-modal__select"
+                  data-suggestion-condition-modal-target="spotResultCount">
+            <% [3, 5, 10].each do |n| %>
+              <option value="<%= n %>" <%= 'selected' if n == 5 %>><%= n %>件</option>
+            <% end %>
+          </select>
+        </div>
+      </div>
+
+      <%# 送信ボタン %>
+      <div class="suggestion-condition-modal__actions">
+        <button type="button"
+                class="suggestion-condition-modal__btn suggestion-condition-modal__btn--cancel"
+                data-action="click->suggestion-condition-modal#cancel">
+          キャンセル
+        </button>
+        <button type="button"
+                class="suggestion-condition-modal__btn suggestion-condition-modal__btn--submit"
+                data-suggestion-condition-modal-target="submitBtn"
+                data-action="click->suggestion-condition-modal#submit">
+          <i class="bi bi-stars"></i>
+          決定
+        </button>
+      </div>
+
+      <%# ローディング表示 %>
+      <div class="suggestion-condition-modal__loading" hidden data-suggestion-condition-modal-target="loading">
+        <div class="suggestion-condition-modal__spinner"></div>
+        <span>考え中...</span>
+      </div>
+    </div>
+
+    <%# ========== ジャンル選択ビュー ========== %>
+    <div data-suggestion-condition-modal-target="genreView" hidden>
+      <div class="suggestion-condition-modal__header">
+        <h3 class="suggestion-condition-modal__title">ジャンルを選択</h3>
+        <button type="button"
+                class="suggestion-condition-modal__close-btn"
+                data-action="click->suggestion-condition-modal#closeGenreSelect">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="suggestion-condition-modal__genre-list">
+        <%# おまかせ（プランモード用） %>
+        <button type="button"
+                class="suggestion-condition-modal__genre-item suggestion-condition-modal__genre-item--omakase"
+                data-action="click->suggestion-condition-modal#selectGenre"
+                data-genre-id=""
+                data-genre-name="おまかせ"
+                data-suggestion-condition-modal-target="omakaseBtn">
+          おまかせ
+        </button>
+
+        <% genre_by_category.each do |category, groups| %>
+          <div class="suggestion-condition-modal__genre-category"><%= category %></div>
+          <% groups.each do |group| %>
+            <button type="button"
+                    class="suggestion-condition-modal__genre-item"
+                    data-action="click->suggestion-condition-modal#selectGenre"
+                    data-genre-id="<%= group[:genre].id %>"
+                    data-genre-name="<%= group[:genre].name %>">
+              <%= group[:genre].name %>
+            </button>
+          <% end %>
+        <% end %>
+      </div>
+    </div>
+
+  </div>
+</div>

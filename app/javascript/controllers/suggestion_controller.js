@@ -1,10 +1,10 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearAiSuggestionMarkers } from "map/state"
+import { clearSuggestionMarkers } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 
 // ================================================================
-// AiChatController
-// 用途: AI提案チャットのUI制御
+// SuggestionController
+// 用途: 提案チャットのUI制御
 // - メッセージ送受信（Turboイベント連携）
 // - テキストエリア自動リサイズ / Enter送信
 // - タイピングインジケーター表示
@@ -25,8 +25,8 @@ export default class extends Controller {
     this.boundHandleSubmitEnd = this.handleSubmitEnd.bind(this)
 
     // 入力欄がスコープ外（ナビバーフッター）にある場合に対応
-    this.externalInput = document.querySelector(".ai-chat__composer [data-ai-chat-target='input']")
-    this.externalSendBtn = document.querySelector(".ai-chat__composer [data-ai-chat-target='sendBtn']")
+    this.externalInput = document.querySelector(".suggestion__composer [data-suggestion-target='input']")
+    this.externalSendBtn = document.querySelector(".suggestion__composer [data-suggestion-target='sendBtn']")
 
     // 外部入力欄のイベントを設定
     if (this.externalInput) {
@@ -35,7 +35,7 @@ export default class extends Controller {
     }
 
     // 会話クリアボタンのイベント設定（外部にあるため手動で設定）
-    this.clearBtn = document.getElementById("ai-chat-clear-btn")
+    this.clearBtn = document.getElementById("suggestion-clear-btn")
     if (this.clearBtn) {
       this.boundClearConversation = this.clearConversation.bind(this)
       this.clearBtn.addEventListener("turbo:submit-end", this.boundClearConversation)
@@ -63,12 +63,12 @@ export default class extends Controller {
     }
   }
 
-  // 会話クリア時にAI提案マーカーもクリア
+  // 会話クリア時に提案マーカーもクリア
   clearConversation() {
-    clearAiSuggestionMarkers()
+    clearSuggestionMarkers()
     closeInfoWindow()
-    // AI提案ピンクリアボタンを非表示に
-    const pinClearBtn = document.getElementById("ai-pin-clear")
+    // 提案ピンクリアボタンを非表示に
+    const pinClearBtn = document.getElementById("suggestion-pin-clear")
     if (pinClearBtn) pinClearBtn.hidden = true
     // 会話クリアボタンを無効化
     this.setClearButtonEnabled(false)
@@ -76,7 +76,7 @@ export default class extends Controller {
 
   // 会話クリアボタンの有効/無効を切り替え
   setClearButtonEnabled(enabled) {
-    const btn = document.getElementById("ai-chat-clear-btn")
+    const btn = document.getElementById("suggestion-clear-btn")
     if (btn) btn.disabled = !enabled
   }
 
@@ -121,7 +121,7 @@ export default class extends Controller {
       const hasText = input && input.value.trim().length > 0
       if (hasText) {
         // フォームはナビバー側にあるので、外部フォームを取得
-        const form = document.querySelector(".ai-chat__composer .ai-chat__form")
+        const form = document.querySelector(".suggestion__composer .suggestion__form")
         if (form) form.requestSubmit()
       }
     }
@@ -146,8 +146,8 @@ export default class extends Controller {
     if (!template) return
 
     const clone = template.content.cloneNode(true)
-    clone.querySelector(".ai-chat__bubble").innerHTML = content.replace(/\n/g, "<br>")
-    clone.querySelector(".ai-chat__time").textContent = this.getCurrentTime()
+    clone.querySelector(".suggestion__bubble").innerHTML = content.replace(/\n/g, "<br>")
+    clone.querySelector(".suggestion__time").textContent = this.getCurrentTime()
 
     if (this.hasTypingTarget) {
       this.messagesTarget.insertBefore(clone, this.typingTarget)
@@ -185,10 +185,10 @@ export default class extends Controller {
     if (sendBtn) {
       sendBtn.disabled = isSending
       if (isSending) {
-        sendBtn.classList.add("ai-chat__send-btn--sending")
-        sendBtn.innerHTML = '<span class="ai-chat__send-spinner"></span>'
+        sendBtn.classList.add("suggestion__send-btn--sending")
+        sendBtn.innerHTML = '<span class="suggestion__send-spinner"></span>'
       } else {
-        sendBtn.classList.remove("ai-chat__send-btn--sending")
+        sendBtn.classList.remove("suggestion__send-btn--sending")
         sendBtn.innerHTML = '<i class="bi bi-arrow-up"></i>'
       }
     }
@@ -208,19 +208,19 @@ export default class extends Controller {
   // メッセージをコピー
   copyMessage(event) {
     const btn = event.currentTarget
-    const bubble = btn.closest(".ai-chat__msg").querySelector(".ai-chat__bubble")
+    const bubble = btn.closest(".suggestion__msg").querySelector(".suggestion__bubble")
     const text = bubble.textContent || bubble.innerText
 
     navigator.clipboard.writeText(text).then(() => {
       const icon = btn.querySelector("i")
       icon.classList.remove("bi-clipboard")
       icon.classList.add("bi-check")
-      btn.classList.add("ai-chat__action-btn--copied")
+      btn.classList.add("suggestion__action-btn--copied")
 
       setTimeout(() => {
         icon.classList.remove("bi-check")
         icon.classList.add("bi-clipboard")
-        btn.classList.remove("ai-chat__action-btn--copied")
+        btn.classList.remove("suggestion__action-btn--copied")
       }, 2000)
     })
   }

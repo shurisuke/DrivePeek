@@ -1,4 +1,4 @@
-# AIチャットメッセージ
+# 提案ログ（AIチャットの会話履歴）
 #
 # content の形式:
 #   - user: プレーンテキスト（ユーザーの入力）
@@ -13,7 +13,7 @@
 #       mode: "plan" | "spots"
 #     }
 #
-class AiChatMessage < ApplicationRecord
+class SuggestionLog < ApplicationRecord
   belongs_to :user
   belongs_to :plan
 

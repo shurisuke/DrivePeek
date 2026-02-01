@@ -1,15 +1,15 @@
 import { Controller } from "@hotwired/stimulus"
 import {
   getMapInstance,
-  clearAiSuggestionMarkers,
-  addAiSuggestionMarker,
+  clearSuggestionMarkers,
+  addSuggestionMarker,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
-import { createAiSuggestionPinSvg } from "map/constants"
+import { createSuggestionPinSvg } from "map/constants"
 
 // ================================================================
-// AiPlanAdoptController
-// 用途: AI提案プランテーマカードの自動ピン表示・採用
+// SuggestionPlanAdoptController
+// 用途: 提案プランテーマカードの自動ピン表示・採用
 // フロー:
 //   1. connect時に自動でピン表示
 //   2. 採用APIでplan_spotsを一括作成
@@ -54,12 +54,12 @@ export default class extends Controller {
       await this.#callAdoptApi(spots)
 
       btn.innerHTML = '<i class="bi bi-check-lg"></i> 採用済み'
-      btn.classList.add("ai-plan-card__adopt-btn--adopted")
+      btn.classList.add("suggestion-plan-card__adopt-btn--adopted")
 
       // スポットカードの「プランに追加」ボタンを「追加済み」に更新
       this.#markSpotCardsAsAdded()
     } catch (error) {
-      console.error("[ai_plan_adopt] Error:", error)
+      console.error("[suggestion_plan_adopt] Error:", error)
       alert(error.message || "プランの採用に失敗しました")
       btn.disabled = false
       btn.innerHTML = '<i class="bi bi-check-circle"></i> このプランを採用'
@@ -68,13 +68,13 @@ export default class extends Controller {
 
   // スポット情報を取得（DBから検証済みデータを読み取り）
   #resolveSpots() {
-    const spotElements = this.spotsTarget.querySelectorAll(".ai-spot-card")
+    const spotElements = this.spotsTarget.querySelectorAll(".suggestion-spot-card")
     return Array.from(spotElements).map((el, index) => ({
       index,
-      spot_id: parseInt(el.dataset.aiSpotActionSpotIdValue, 10),
-      lat: parseFloat(el.dataset.aiSpotActionLatValue),
-      lng: parseFloat(el.dataset.aiSpotActionLngValue),
-      place_id: el.dataset.aiSpotActionPlaceIdValue,
+      spot_id: parseInt(el.dataset.suggestionSpotActionSpotIdValue, 10),
+      lat: parseFloat(el.dataset.suggestionSpotActionLatValue),
+      lng: parseFloat(el.dataset.suggestionSpotActionLngValue),
+      place_id: el.dataset.suggestionSpotActionPlaceIdValue,
     }))
   }
 
@@ -101,10 +101,10 @@ export default class extends Controller {
       const html = await response.text()
       Turbo.renderStreamMessage(html)
 
-      // AIピンをクリア
-      clearAiSuggestionMarkers()
+      // 提案ピンをクリア
+      clearSuggestionMarkers()
       closeInfoWindow()
-      const clearBtn = document.getElementById("ai-pin-clear")
+      const clearBtn = document.getElementById("suggestion-pin-clear")
       if (clearBtn) clearBtn.hidden = true
 
       // DOM更新を待ってからマーカー再描画（Turbo Streamの処理完了を待つ）
@@ -121,11 +121,11 @@ export default class extends Controller {
 
   // スポットカードの「プランに追加」ボタンを「追加済み」に更新
   #markSpotCardsAsAdded() {
-    const buttons = this.spotsTarget.querySelectorAll(".ai-spot-card__link--primary")
+    const buttons = this.spotsTarget.querySelectorAll(".suggestion-spot-card__link--primary")
     buttons.forEach((btn) => {
       btn.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
-      btn.classList.remove("ai-spot-card__link--primary")
-      btn.classList.add("ai-spot-card__btn--added")
+      btn.classList.remove("suggestion-spot-card__link--primary")
+      btn.classList.add("suggestion-spot-card__btn--added")
       btn.disabled = true
       btn.removeAttribute("data-action")
     })
@@ -148,7 +148,7 @@ export default class extends Controller {
         title: spot.name,
         zIndex: 1000 - (index + 1),  // 番号が小さいほど前面に表示
         icon: {
-          url: createAiSuggestionPinSvg(index + 1),
+          url: createSuggestionPinSvg(index + 1),
           scaledSize: new google.maps.Size(36, 36),
           anchor: new google.maps.Point(18, 18),
         },
@@ -167,7 +167,7 @@ export default class extends Controller {
         })
       })
 
-      addAiSuggestionMarker(marker)
+      addSuggestionMarker(marker)
     })
 
     // モバイル時: ボトムシートで隠れる領域を考慮
@@ -184,8 +184,8 @@ export default class extends Controller {
       map.fitBounds(bounds, { padding: 50 })
     }
 
-    // AI提案ピンクリアボタンを表示
-    const clearBtn = document.getElementById("ai-pin-clear")
+    // 提案ピンクリアボタンを表示
+    const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = false
   }
 }

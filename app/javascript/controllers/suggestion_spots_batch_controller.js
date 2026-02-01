@@ -1,23 +1,23 @@
 import { Controller } from "@hotwired/stimulus"
 import {
   getMapInstance,
-  addAiSuggestionMarker,
-  addAiSuggestionOverlay,
+  addSuggestionMarker,
+  addSuggestionOverlay,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
-import { createAiSuggestionPinSvg } from "map/constants"
+import { createSuggestionPinSvg } from "map/constants"
 import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
-// AiSpotsBatchController
-// 用途: AI提案スポットカードを一括処理してマップにピン表示
+// SuggestionSpotsBatchController
+// 用途: 提案スポットカードを一括処理してマップにピン表示
 // - DB検証済みスポットをマーカー表示
 // - 全マーカーが収まるようにマップをパン
 //
 // パルスアニメーション設計:
 //   google.maps.Circle はメートル単位のため、ズームレベルで見え方が変わる。
 //   ピクセル単位で一貫した表示を実現するため、OverlayView + CSS を採用。
-//   → アニメーション定義: app/assets/stylesheets/ai/_ai_suggestion_chat.scss
+//   → アニメーション定義: app/assets/stylesheets/suggestions/_suggestion_chat.scss
 // ================================================================
 
 // パルスオーバーレイを作成（Google Maps API読み込み後に呼び出す）
@@ -26,8 +26,8 @@ const createPulseOverlay = (position) => {
 
   overlay.onAdd = function () {
     this.div = document.createElement("div")
-    this.div.className = "ai-pulse-overlay"
-    this.div.innerHTML = '<div class="ai-pulse-ring"></div>'
+    this.div.className = "suggestion-pulse-overlay"
+    this.div.innerHTML = '<div class="suggestion-pulse-ring"></div>'
     this.getPanes().overlayLayer.appendChild(this.div)
   }
 
@@ -71,19 +71,19 @@ export default class extends Controller {
     if (!map) return
 
     // 子要素からスポットカードを取得
-    const cards = this.element.querySelectorAll("[data-controller*='ai-spot-action']")
+    const cards = this.element.querySelectorAll("[data-controller*='suggestion-spot-action']")
     if (cards.length === 0) return
 
     // 各カードからDB検証済み情報を抽出
     const spotInfos = Array.from(cards).map((card, index) => ({
       card,
-      name: card.dataset.aiSpotActionNameValue,
-      planId: card.dataset.aiSpotActionPlanIdValue,
+      name: card.dataset.suggestionSpotActionNameValue,
+      planId: card.dataset.suggestionSpotActionPlanIdValue,
       number: index + 1,
-      spotId: parseInt(card.dataset.aiSpotActionSpotIdValue, 10),
-      lat: parseFloat(card.dataset.aiSpotActionLatValue),
-      lng: parseFloat(card.dataset.aiSpotActionLngValue),
-      placeId: card.dataset.aiSpotActionPlaceIdValue,
+      spotId: parseInt(card.dataset.suggestionSpotActionSpotIdValue, 10),
+      lat: parseFloat(card.dataset.suggestionSpotActionLatValue),
+      lng: parseFloat(card.dataset.suggestionSpotActionLngValue),
+      placeId: card.dataset.suggestionSpotActionPlaceIdValue,
     }))
 
     // 有効なスポット（座標あり）のみ処理
@@ -104,7 +104,7 @@ export default class extends Controller {
         title: info.name,
         zIndex: 1000 - info.number,  // 番号が小さいほど前面に表示
         icon: {
-          url: createAiSuggestionPinSvg(info.number),
+          url: createSuggestionPinSvg(info.number),
           scaledSize: new google.maps.Size(36, 36),
           anchor: new google.maps.Point(18, 18),
         },
@@ -114,19 +114,19 @@ export default class extends Controller {
       const latLng = new google.maps.LatLng(position.lat, position.lng)
       const pulse = createPulseOverlay(latLng)
       pulse.setMap(map)
-      addAiSuggestionOverlay(pulse)
+      addSuggestionOverlay(pulse)
 
       const spotData = { spot_id: info.spotId, lat: info.lat, lng: info.lng, place_id: info.placeId }
       marker.addListener("click", () => {
         this.#showInfoWindow(marker, spotData, info.planId)
       })
 
-      addAiSuggestionMarker(marker)
+      addSuggestionMarker(marker)
 
       // 子コントローラーにマーカーとspotDataを保存
       const controller = this.application.getControllerForElementAndIdentifier(
         info.card,
-        "ai-spot-action"
+        "suggestion-spot-action"
       )
       if (controller) {
         controller._marker = marker
@@ -155,8 +155,8 @@ export default class extends Controller {
       map.fitBounds(bounds, padding)
     }
 
-    // AI提案ピンクリアボタンを表示
-    const clearBtn = document.getElementById("ai-pin-clear")
+    // 提案ピンクリアボタンを表示
+    const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = false
   }
 

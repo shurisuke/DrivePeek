@@ -9,8 +9,8 @@
   display: block;
 }
 
-/* AI提案タブ: 入力エリアを下部固定 */
-.tab-content.tab-ai.active {
+/* 提案タブ: 入力エリアを下部固定 */
+.tab-content.tab-suggestion.active {
   display: flex;
   flex-direction: column;
   height: calc(100vh - 60px); /* タブナビの高さを除いた全高 */
@@ -21,8 +21,8 @@
   }
 }
 
-/* AI提案タブ選択時: 親スクロールを無効化 */
-.navibar__content-scroll:has(.tab-ai.active) {
+/* 提案タブ選択時: 親スクロールを無効化 */
+.navibar__content-scroll:has(.tab-suggestion.active) {
   overflow-y: hidden;
 
   /* モバイル時も同様 */

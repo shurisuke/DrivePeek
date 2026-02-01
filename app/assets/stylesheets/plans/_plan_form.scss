@@ -125,8 +125,8 @@ body.no-footer {
           }
         }
 
-        /* AI提案タブ */
-        .tab-ai {
+        /* 提案タブ */
+        .tab-suggestion {
           font-size: 16px;
 
           &.active {
@@ -573,7 +573,7 @@ body.navibar-resizing .plan-form .plan-actions {
 ========================================== */
 .navibar__footer.is-hidden,
 .navibar__actions.is-hidden,
-.ai-chat__composer.is-hidden {
+.suggestion__composer.is-hidden {
   display: none !important;
 }
 

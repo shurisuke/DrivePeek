@@ -1,8 +1,8 @@
 /* ==========================================
-   AI提案条件設定モーダル
+   提案条件設定モーダル
 ========================================== */
 
-.ai-condition-modal {
+.suggestion-condition-modal {
   position: fixed;
   inset: 0;
   z-index: 1100;
@@ -16,13 +16,13 @@
   }
 }
 
-.ai-condition-modal__overlay {
+.suggestion-condition-modal__overlay {
   position: absolute;
   inset: 0;
   background: rgba(0, 0, 0, 0.5);
 }
 
-.ai-condition-modal__dialog {
+.suggestion-condition-modal__dialog {
   position: relative;
   background: #fff;
   border-radius: 16px;
@@ -37,7 +37,7 @@
 }
 
 // ヘッダー
-.ai-condition-modal__header {
+.suggestion-condition-modal__header {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -45,14 +45,14 @@
   border-bottom: 1px solid #eee;
 }
 
-.ai-condition-modal__title {
+.suggestion-condition-modal__title {
   margin: 0;
   font-size: 18px;
   font-weight: 600;
   color: #333;
 }
 
-.ai-condition-modal__close-btn {
+.suggestion-condition-modal__close-btn {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -71,7 +71,7 @@
 }
 
 // エリア情報
-.ai-condition-modal__area-info {
+.suggestion-condition-modal__area-info {
   display: flex;
   align-items: center;
   gap: 8px;
@@ -85,7 +85,7 @@
   }
 }
 
-.ai-condition-modal__spot-count {
+.suggestion-condition-modal__spot-count {
   margin-left: auto;
   font-weight: 600;
   background: rgba(255, 255, 255, 0.2);
@@ -94,11 +94,11 @@
 }
 
 // セクション
-.ai-condition-modal__section {
+.suggestion-condition-modal__section {
   padding: 16px 20px;
 }
 
-.ai-condition-modal__label {
+.suggestion-condition-modal__label {
   display: block;
   margin-bottom: 8px;
   font-size: 14px;
@@ -106,8 +106,8 @@
   color: #555;
 }
 
-.ai-condition-modal__select,
-.ai-condition-modal__slot-select {
+.suggestion-condition-modal__select,
+.suggestion-condition-modal__slot-select {
   width: 100%;
   padding: 8px 12px;
   font-size: 16px; // iOS zoom防止
@@ -124,18 +124,18 @@
 }
 
 // スロット一覧
-.ai-condition-modal__slots {
+.suggestion-condition-modal__slots {
   padding: 0 20px 12px;
 }
 
-.ai-condition-modal__slot {
+.suggestion-condition-modal__slot {
   display: flex;
   align-items: center;
   gap: 12px;
   padding: 8px 0;
 }
 
-.ai-condition-modal__slot-label {
+.suggestion-condition-modal__slot-label {
   flex-shrink: 0;
   font-size: 14px;
   font-weight: 600;
@@ -143,19 +143,19 @@
   min-width: 70px;
 }
 
-.ai-condition-modal__slot-select {
+.suggestion-condition-modal__slot-select {
   flex: 1;
 }
 
 // アクション
-.ai-condition-modal__actions {
+.suggestion-condition-modal__actions {
   display: flex;
   gap: 12px;
   padding: 16px 20px;
   border-top: 1px solid #eee;
 }
 
-.ai-condition-modal__btn {
+.suggestion-condition-modal__btn {
   flex: 1;
   padding: 12px 16px;
   font-size: 15px;
@@ -201,7 +201,7 @@
 }
 
 // ローディング
-.ai-condition-modal__loading {
+.suggestion-condition-modal__loading {
   position: absolute;
   inset: 0;
   display: flex;
@@ -219,24 +219,24 @@
   }
 }
 
-.ai-condition-modal__spinner {
+.suggestion-condition-modal__spinner {
   width: 40px;
   height: 40px;
   border: 3px solid #f0f0f0;
   border-top-color: #667eea;
   border-radius: 50%;
-  animation: ai-modal-spin 0.8s linear infinite;
+  animation: suggestion-modal-spin 0.8s linear infinite;
 }
 
-@keyframes ai-modal-spin {
+@keyframes suggestion-modal-spin {
   to {
     transform: rotate(360deg);
   }
 }
 
 // メインビュー / ジャンル選択ビュー共通
-[data-ai-condition-modal-target="mainView"],
-[data-ai-condition-modal-target="genreView"] {
+[data-suggestion-condition-modal-target="mainView"],
+[data-suggestion-condition-modal-target="genreView"] {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -248,8 +248,8 @@
 }
 
 // プランモード / スポットモードのコンテンツ
-[data-ai-condition-modal-target="planContent"],
-[data-ai-condition-modal-target="spotContent"] {
+[data-suggestion-condition-modal-target="planContent"],
+[data-suggestion-condition-modal-target="spotContent"] {
   flex: 1;
   overflow-y: auto;
 
@@ -259,7 +259,7 @@
 }
 
 // ジャンル選択ボタン
-.ai-condition-modal__genre-btn {
+.suggestion-condition-modal__genre-btn {
   display: flex;
   align-items: center;
   justify-content: space-between;
@@ -288,13 +288,13 @@
 }
 
 // ジャンル選択リスト
-.ai-condition-modal__genre-list {
+.suggestion-condition-modal__genre-list {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
 }
 
-.ai-condition-modal__genre-category {
+.suggestion-condition-modal__genre-category {
   padding: 8px 20px;
   font-size: 12px;
   font-weight: 600;
@@ -303,7 +303,7 @@
   border-bottom: 1px solid #eee;
 }
 
-.ai-condition-modal__genre-item {
+.suggestion-condition-modal__genre-item {
   display: block;
   width: 100%;
   padding: 12px 20px;
@@ -333,12 +333,12 @@
 
 // モバイル対応
 @media (max-width: 480px) {
-  .ai-condition-modal {
+  .suggestion-condition-modal {
     padding: 0;
     align-items: flex-end;
   }
 
-  .ai-condition-modal__dialog {
+  .suggestion-condition-modal__dialog {
     max-width: 100%;
     height: 75vh;
     max-height: none;

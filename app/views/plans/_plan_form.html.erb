@@ -1,7 +1,7 @@
 <% content_for :body_class, "no-footer" %>
 
 <div class="main-content plan-form"
-     data-controller="navibar-resize ai-area-draw"
+     data-controller="navibar-resize suggestion-area-draw"
      data-navibar-resize-min-value="300"
      data-navibar-resize-max-percent-value="80"
      data-navibar-resize-default-value="350">
@@ -44,14 +44,14 @@
       <i class="bi bi-search" aria-hidden="true"></i>
     </button>
 
-    <!-- AI提案ピンクリアボタン -->
+    <!-- 提案ピンクリアボタン -->
     <button type="button"
-            id="ai-pin-clear"
+            id="suggestion-pin-clear"
             class="map-floating-btn map-floating-btn--purple"
             hidden
-            title="AI提案ピンをクリア"
-            data-controller="ai-pin-clear"
-            data-action="click->ai-pin-clear#clear">
+            title="提案ピンをクリア"
+            data-controller="suggestion-pin-clear"
+            data-action="click->suggestion-pin-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-stars" aria-hidden="true"></i>
     </button>
@@ -70,10 +70,10 @@
   </div>
 
   <%# 提案エリア描画モーダル %>
-  <%= render "plans/ai/area_draw_modal" %>
+  <%= render "suggestions/area_draw_modal" %>
 
   <%# 提案条件設定モーダル %>
-  <%= render "plans/ai/condition_modal", plan: plan %>
+  <%= render "suggestions/condition_modal", plan: plan %>
 
   <!-- アクションボタン（保存・共有） -->
   <div class="plan-actions"

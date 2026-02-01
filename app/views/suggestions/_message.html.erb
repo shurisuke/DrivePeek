@@ -20,17 +20,17 @@
   <% intro_text = intro %>
   <% spot_list = spots %>
 
-  <div class="ai-chat__message-wrapper ai-chat__message-wrapper--spots">
-    <div class="ai-chat__divider"></div>
+  <div class="suggestion__message-wrapper suggestion__message-wrapper--spots">
+    <div class="suggestion__divider"></div>
 
     <%# イントロ（アイコン + テキスト） %>
     <% if intro_text.present? %>
-      <div class="ai-chat__msg ai-chat__msg--assistant">
-        <div class="ai-chat__icon">
+      <div class="suggestion__msg suggestion__msg--assistant">
+        <div class="suggestion__icon">
           <i class="bi bi-stars"></i>
         </div>
-        <div class="ai-chat__content">
-          <div class="ai-chat__bubble ai-chat__bubble--intro">
+        <div class="suggestion__content">
+          <div class="suggestion__bubble suggestion__bubble--intro">
             <%= simple_format(intro_text, {}, wrapper_tag: nil) %>
           </div>
         </div>
@@ -39,49 +39,49 @@
 
     <%# スポットカード（全幅・中央寄せ） %>
     <% if is_plan_mode %>
-      <div class="ai-chat__spots-fullwidth"
-           data-controller="ai-plan-adopt"
-           data-ai-plan-adopt-plan-id-value="<%= plan&.id %>"
-           data-ai-plan-adopt-auto-show-value="<%= auto_show_value %>">
-        <div class="ai-chat__spots-inner" data-ai-plan-adopt-target="spots">
+      <div class="suggestion__spots-fullwidth"
+           data-controller="suggestion-plan-adopt"
+           data-suggestion-plan-adopt-plan-id-value="<%= plan&.id %>"
+           data-suggestion-plan-adopt-auto-show-value="<%= auto_show_value %>">
+        <div class="suggestion__spots-inner" data-suggestion-plan-adopt-target="spots">
           <% spot_list.each_with_index do |spot, index| %>
-            <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
+            <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
           <% end %>
         </div>
-        <div class="ai-plan-card__actions">
+        <div class="suggestion-plan-card__actions">
           <button type="button"
-                  class="ai-plan-card__adopt-btn"
-                  data-action="click->ai-plan-adopt#adoptPlan"
-                  data-ai-plan-adopt-target="adoptBtn">
+                  class="suggestion-plan-card__adopt-btn"
+                  data-action="click->suggestion-plan-adopt#adoptPlan"
+                  data-suggestion-plan-adopt-target="adoptBtn">
             <i class="bi bi-check-circle"></i> このプランを採用
           </button>
         </div>
       </div>
     <% else %>
-      <div class="ai-chat__spots-fullwidth"
-           data-ai-chat-target="spotSuggestions"
-           data-controller="ai-spots-batch"
-           data-ai-spots-batch-auto-show-value="<%= auto_show_value %>">
+      <div class="suggestion__spots-fullwidth"
+           data-suggestion-target="spotSuggestions"
+           data-controller="suggestion-spots-batch"
+           data-suggestion-spots-batch-auto-show-value="<%= auto_show_value %>">
         <% spot_list.each_with_index do |spot, index| %>
-          <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
+          <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
         <% end %>
       </div>
     <% end %>
 
     <%# 締め + アクションボタン（アイコン + テキスト） %>
-    <div class="ai-chat__msg ai-chat__msg--assistant">
-      <div class="ai-chat__icon">
+    <div class="suggestion__msg suggestion__msg--assistant">
+      <div class="suggestion__icon">
         <i class="bi bi-stars"></i>
       </div>
-      <div class="ai-chat__content">
+      <div class="suggestion__content">
         <% if closing.present? %>
-          <div class="ai-chat__bubble ai-chat__bubble--closing">
+          <div class="suggestion__bubble suggestion__bubble--closing">
             <%= closing %>
           </div>
         <% end %>
-        <%= render "plans/ai/action_buttons", mode: mode, area_data: area_data, condition_data: condition_data, plan: plan %>
-        <div class="ai-chat__meta">
-          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+        <%= render "suggestions/action_buttons", mode: mode, area_data: area_data, condition_data: condition_data, plan: plan %>
+        <div class="suggestion__meta">
+          <span class="suggestion__time"><%= Time.current.strftime("%H:%M") %></span>
         </div>
       </div>
     </div>
@@ -89,33 +89,33 @@
 
 <% else %>
   <%# ========== 通常レイアウト（2カラム） ========== %>
-  <div class="ai-chat__message-wrapper">
-    <div class="ai-chat__divider"></div>
-    <div class="ai-chat__msg ai-chat__msg--<%= role %>">
+  <div class="suggestion__message-wrapper">
+    <div class="suggestion__divider"></div>
+    <div class="suggestion__msg suggestion__msg--<%= role %>">
       <% if role == "assistant" %>
-        <div class="ai-chat__icon">
+        <div class="suggestion__icon">
           <i class="bi bi-stars"></i>
         </div>
       <% end %>
-      <div class="ai-chat__content">
+      <div class="suggestion__content">
 
         <% if response_type == "answer" %>
           <%# 詳細説明モード %>
           <% if content.present? %>
-            <div class="ai-chat__bubble">
+            <div class="suggestion__bubble">
               <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
             </div>
           <% end %>
           <% if spots.present? %>
-            <div class="ai-chat__related-spots">
-              <small class="ai-chat__related-label">関連スポット</small>
+            <div class="suggestion__related-spots">
+              <small class="suggestion__related-label">関連スポット</small>
               <% spots.each_with_index do |spot, index| %>
-                <%= render "plans/ai/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids %>
+                <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids %>
               <% end %>
             </div>
           <% end %>
           <% if closing.present? %>
-            <div class="ai-chat__bubble ai-chat__bubble--closing">
+            <div class="suggestion__bubble suggestion__bubble--closing">
               <%= closing %>
             </div>
           <% end %>
@@ -123,16 +123,16 @@
         <% elsif response_type == "mode_select" %>
           <%# モード選択UI %>
           <% if content.present? %>
-            <div class="ai-chat__bubble">
+            <div class="suggestion__bubble">
               <%= content %>
             </div>
           <% end %>
-          <%= render "plans/ai/mode_select" %>
+          <%= render "suggestions/mode_select" %>
 
         <% else %>
           <%# 会話モード %>
           <% if content.present? %>
-            <div class="ai-chat__bubble">
+            <div class="suggestion__bubble">
               <% if role == "assistant" %>
                 <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
               <% else %>
@@ -142,10 +142,10 @@
           <% end %>
         <% end %>
 
-        <div class="ai-chat__meta">
-          <span class="ai-chat__time"><%= Time.current.strftime("%H:%M") %></span>
+        <div class="suggestion__meta">
+          <span class="suggestion__time"><%= Time.current.strftime("%H:%M") %></span>
           <% if role == "assistant" %>
-            <button type="button" class="ai-chat__action-btn" data-action="click->ai-chat#copyMessage" title="コピー">
+            <button type="button" class="suggestion__action-btn" data-action="click->suggestion#copyMessage" title="コピー">
               <i class="bi bi-clipboard"></i>
             </button>
           <% end %>

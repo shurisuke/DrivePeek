@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "Api::AiArea", type: :request do
+RSpec.describe "Suggestions", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
@@ -21,7 +21,7 @@ RSpec.describe "Api::AiArea", type: :request do
     stub_google_directions_api
   end
 
-  describe "POST /api/ai_area/suggest" do
+  describe "POST /suggestions/suggest" do
     context "プランモード" do
       let!(:genre_gourmet) { create(:genre, name: "グルメ", slug: "gourmet") }
       let!(:genre_onsen) { create(:genre, name: "温泉", slug: "onsen") }
@@ -46,7 +46,7 @@ RSpec.describe "Api::AiArea", type: :request do
         before { sign_in user }
 
         it "ジャンル指定でAI提案を取得する" do
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
             slots: [ { genre_id: genre_gourmet.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
@@ -58,7 +58,7 @@ RSpec.describe "Api::AiArea", type: :request do
           spot_onsen = create(:spot, lat: 35.6780, lng: 139.6520)
           spot_onsen.genres << genre_onsen
 
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
             slots: [ { genre_id: genre_gourmet.id }, { genre_id: genre_onsen.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
@@ -67,7 +67,7 @@ RSpec.describe "Api::AiArea", type: :request do
         end
 
         it "おまかせスロット（genre_id: nil）でも動作する" do
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
             slots: [ { genre_id: nil }, { genre_id: genre_gourmet.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
@@ -75,17 +75,17 @@ RSpec.describe "Api::AiArea", type: :request do
           expect(response).to have_http_status(:ok)
         end
 
-        it "AIチャットメッセージが保存される" do
+        it "提案ログが保存される" do
           expect {
-            post suggest_api_ai_area_path, params: area_params.merge(
+            post suggest_suggestions_path, params: area_params.merge(
               mode: "plan",
               slots: [ { genre_id: genre_gourmet.id } ]
             ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-          }.to change { plan.ai_chat_messages.count }.by(1)
+          }.to change { plan.suggestion_logs.count }.by(1)
         end
 
         it "Turbo Stream形式でレスポンスを返す" do
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
             slots: [ { genre_id: genre_gourmet.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
@@ -99,7 +99,7 @@ RSpec.describe "Api::AiArea", type: :request do
         before { sign_in user }
 
         it "404エラーを返す" do
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             plan_id: other_plan.id,
             mode: "plan",
             slots: [ { genre_id: genre_gourmet.id } ]
@@ -111,7 +111,7 @@ RSpec.describe "Api::AiArea", type: :request do
 
       context "未ログインの場合" do
         it "ログイン画面にリダイレクトする" do
-          post suggest_api_ai_area_path, params: area_params.merge(
+          post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
             slots: [ { genre_id: genre_gourmet.id } ]
           )
@@ -142,7 +142,7 @@ RSpec.describe "Api::AiArea", type: :request do
       end
 
       it "ジャンル・件数指定でスポット提案を取得する" do
-        post suggest_api_ai_area_path, params: area_params.merge(
+        post suggest_suggestions_path, params: area_params.merge(
           mode: "spots",
           genre_id: genre.id,
           count: 3
@@ -152,7 +152,7 @@ RSpec.describe "Api::AiArea", type: :request do
       end
 
       it "存在しないジャンルでもエラーにならない" do
-        post suggest_api_ai_area_path, params: area_params.merge(
+        post suggest_suggestions_path, params: area_params.merge(
           mode: "spots",
           genre_id: 99999,
           count: 3
@@ -167,35 +167,35 @@ RSpec.describe "Api::AiArea", type: :request do
       before { sign_in user }
 
       it "center_latが範囲外の場合422を返す" do
-        post suggest_api_ai_area_path, params: area_params.merge(center_lat: 100.0)
+        post suggest_suggestions_path, params: area_params.merge(center_lat: 100.0)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/center_lat/)
       end
 
       it "center_lngが範囲外の場合422を返す" do
-        post suggest_api_ai_area_path, params: area_params.merge(center_lng: 200.0)
+        post suggest_suggestions_path, params: area_params.merge(center_lng: 200.0)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/center_lng/)
       end
 
       it "radius_kmが範囲外（大きすぎ）の場合422を返す" do
-        post suggest_api_ai_area_path, params: area_params.merge(radius_km: 100.0)
+        post suggest_suggestions_path, params: area_params.merge(radius_km: 100.0)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/radius_km/)
       end
 
       it "radius_kmが範囲外（小さすぎ）の場合422を返す" do
-        post suggest_api_ai_area_path, params: area_params.merge(radius_km: 0.5)
+        post suggest_suggestions_path, params: area_params.merge(radius_km: 0.5)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/radius_km/)
       end
 
       it "countが範囲外の場合422を返す" do
-        post suggest_api_ai_area_path, params: area_params.merge(mode: "spots", genre_id: 1, count: 100)
+        post suggest_suggestions_path, params: area_params.merge(mode: "spots", genre_id: 1, count: 100)
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/count/)
@@ -209,7 +209,7 @@ RSpec.describe "Api::AiArea", type: :request do
         genre = create(:genre)
         create(:spot, lat: 35.6770, lng: 139.6510).tap { |s| s.genres << genre }
 
-        post suggest_api_ai_area_path, params: area_params.merge(mode: "spots", genre_id: genre.id),
+        post suggest_suggestions_path, params: area_params.merge(mode: "spots", genre_id: genre.id),
              headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
         expect(response).to have_http_status(:ok)
@@ -217,19 +217,19 @@ RSpec.describe "Api::AiArea", type: :request do
     end
   end
 
-  describe "POST /api/ai_area/finish" do
+  describe "POST /suggestions/finish" do
     before { sign_in user }
 
     context "最後のメッセージがmode_selectでない場合" do
       before do
-        create(:ai_chat_message, :assistant_conversation, user: user, plan: plan)
+        create(:suggestion_log, :assistant_conversation, user: user, plan: plan)
       end
 
       it "mode_selectメッセージを追加する" do
         expect {
-          post finish_api_ai_area_path, params: { plan_id: plan.id },
+          post finish_suggestions_path, params: { plan_id: plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.to change { plan.ai_chat_messages.count }.by(1)
+        }.to change { plan.suggestion_logs.count }.by(1)
 
         expect(response).to have_http_status(:ok)
       end
@@ -237,15 +237,15 @@ RSpec.describe "Api::AiArea", type: :request do
 
     context "最後のメッセージがmode_selectの場合" do
       before do
-        create(:ai_chat_message, user: user, plan: plan, role: "assistant",
+        create(:suggestion_log, user: user, plan: plan, role: "assistant",
                content: { type: "mode_select", message: "test" }.to_json)
       end
 
       it "何も追加しない" do
         expect {
-          post finish_api_ai_area_path, params: { plan_id: plan.id },
+          post finish_suggestions_path, params: { plan_id: plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.not_to change { plan.ai_chat_messages.count }
+        }.not_to change { plan.suggestion_logs.count }
 
         expect(response).to have_http_status(:no_content)
       end

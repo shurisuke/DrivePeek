@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, clearAiSuggestionMarkers, setAiAreaCircle } from "map/state"
+import { getMapInstance, clearSuggestionMarkers, setSuggestionAreaCircle } from "map/state"
 
 // ================================================================
 // SuggestModeController
@@ -36,7 +36,7 @@ export default class extends Controller {
 
   // エリアを選び直す（既存条件保持）
   reselectArea() {
-    clearAiSuggestionMarkers()
+    clearSuggestionMarkers()
     this.#dispatchAreaDraw(this.modeValue, {
       condition: this.conditionValue
     })
@@ -44,13 +44,13 @@ export default class extends Controller {
 
   // 条件を変更（同じエリアで再度モーダルを開く）
   changeCondition() {
-    clearAiSuggestionMarkers()
+    clearSuggestionMarkers()
     const area = this.areaValue || {}
 
     // 同じエリアで円を再描画してズーム
     this.#drawAreaCircle(area)
 
-    document.dispatchEvent(new CustomEvent("ai:areaSelected", {
+    document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
       detail: {
         mode: this.modeValue,
         center_lat: area.center_lat,
@@ -76,14 +76,14 @@ export default class extends Controller {
       clickable: false
     })
 
-    setAiAreaCircle(circle)
+    setSuggestionAreaCircle(circle)
     map.fitBounds(circle.getBounds())
   }
 
   // 終了（モード選択UIを再表示）
   async finish() {
     try {
-      const response = await fetch(`/api/ai_area/finish?plan_id=${this.planIdValue}`, {
+      const response = await fetch(`/suggestions/finish?plan_id=${this.planIdValue}`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -110,7 +110,7 @@ export default class extends Controller {
   }
 
   #dispatchAreaDraw(mode, options = {}) {
-    document.dispatchEvent(new CustomEvent("ai:startAreaDraw", {
+    document.dispatchEvent(new CustomEvent("suggestion:startAreaDraw", {
       detail: { mode, ...options }
     }))
   }

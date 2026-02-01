@@ -1,13 +1,13 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, setAiAreaCircle, clearAiSuggestionMarkers } from "map/state"
+import { getMapInstance, setSuggestionAreaCircle, clearSuggestionMarkers } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 
 // ================================================================
-// AiAreaDrawController
+// SuggestionAreaDrawController
 // 用途: 地図上でフリーハンド描画 → 円変換してエリア選択
-// - ai:startAreaDraw イベントで描画モード開始
+// - suggestion:startAreaDraw イベントで描画モード開始
 // - フリーハンド描画 → 円に変換
-// - ai:areaSelected イベントで結果を通知
+// - suggestion:areaSelected イベントで結果を通知
 // ================================================================
 
 export default class extends Controller {
@@ -27,11 +27,11 @@ export default class extends Controller {
 
   connect() {
     this.handleStart = this.handleStart.bind(this)
-    document.addEventListener("ai:startAreaDraw", this.handleStart)
+    document.addEventListener("suggestion:startAreaDraw", this.handleStart)
   }
 
   disconnect() {
-    document.removeEventListener("ai:startAreaDraw", this.handleStart)
+    document.removeEventListener("suggestion:startAreaDraw", this.handleStart)
     this.cleanup()
   }
 
@@ -49,10 +49,10 @@ export default class extends Controller {
     this.map = getMapInstance()
     if (!this.map) return
 
-    // 既存のAI提案（円+ピン）をクリア
-    clearAiSuggestionMarkers()
+    // 既存の提案（円+ピン）をクリア
+    clearSuggestionMarkers()
     closeInfoWindow()
-    const clearBtn = document.getElementById("ai-pin-clear")
+    const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = true
 
     // 1. モーダル表示（移動モード）
@@ -251,8 +251,8 @@ export default class extends Controller {
 
   showModal() {
     // エリア描画モード開始（CSS一括制御 + 他コントローラーへ通知）
-    document.body.classList.add("area-draw-active")
-    document.dispatchEvent(new CustomEvent("ai:areaDrawStart"))
+    document.body.classList.add("suggestion-area-draw-active")
+    document.dispatchEvent(new CustomEvent("suggestion:areaDrawStart"))
 
     // モーダル表示（移動モード）
     this.modalTarget.hidden = false
@@ -262,7 +262,7 @@ export default class extends Controller {
   }
 
   hideModal() {
-    document.body.classList.remove("area-draw-active")
+    document.body.classList.remove("suggestion-area-draw-active")
     this.modalTarget.hidden = true
   }
 
@@ -328,11 +328,11 @@ export default class extends Controller {
   confirmArea() {
     // 円を専用変数に設定（クリアボタンで一緒に消える）
     if (this.circle) {
-      setAiAreaCircle(this.circle)
+      setSuggestionAreaCircle(this.circle)
       this.circle = null // cleanup で消されないように参照を外す
     }
 
-    document.dispatchEvent(new CustomEvent("ai:areaSelected", {
+    document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
       detail: {
         mode: this.mode,
         center_lat: this.circleData.center.lat,
@@ -353,8 +353,8 @@ export default class extends Controller {
 
   cancel() {
     // 円+ピンをクリア（enterDrawModeで既にクリア済みだが、念のため）
-    clearAiSuggestionMarkers()
-    const clearBtn = document.getElementById("ai-pin-clear")
+    clearSuggestionMarkers()
+    const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = true
 
     this.exitDrawMode()

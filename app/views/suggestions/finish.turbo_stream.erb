@@ -1,6 +1,6 @@
 <%# 終了時にモード選択UIを再表示 %>
-<%= turbo_stream.append "ai-chat-messages" do %>
-  <%= render "plans/ai/message",
+<%= turbo_stream.append "suggestion-messages" do %>
+  <%= render "suggestions/message",
              content: @result[:message],
              response_type: @result[:type],
              role: "assistant",

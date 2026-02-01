@@ -26,10 +26,10 @@ let communityPreviewPolylines = []; // コミュニティプランの経路（�
 // --- 単一スポットピン（カード・スポット詳細から地図表示用） ---
 let spotPinMarker = null;           // 単一スポットピン（単体）
 
-// --- AI提案マーカー ---
-let aiSuggestionMarkers = [];       // AI提案スポット（配列）
-let aiSuggestionOverlays = [];      // AI提案パルスオーバーレイ（配列）
-let aiAreaCircle = null;            // AI提案エリア円（単体）
+// --- 提案マーカー ---
+let suggestionMarkers = [];         // 提案スポット（配列）
+let suggestionOverlays = [];        // 提案パルスオーバーレイ（配列）
+let suggestionAreaCircle = null;    // 提案エリア円（単体）
 
 // --- map instance ---
 export const getMapInstance = () => map;
@@ -162,38 +162,38 @@ export const setSpotPinMarker = (marker) => {
   spotPinMarker = marker;
 };
 
-// --- AI提案マーカー ---
+// --- 提案マーカー ---
 // 全クリア（マーカー + パルス + 円）
-export const clearAiSuggestionMarkers = () => {
-  aiSuggestionMarkers.forEach((m) => m.setMap(null));
-  aiSuggestionMarkers = [];
-  aiSuggestionOverlays.forEach((o) => o.setMap(null));
-  aiSuggestionOverlays = [];
-  if (aiAreaCircle) {
-    aiAreaCircle.setMap(null);
-    aiAreaCircle = null;
+export const clearSuggestionMarkers = () => {
+  suggestionMarkers.forEach((m) => m.setMap(null));
+  suggestionMarkers = [];
+  suggestionOverlays.forEach((o) => o.setMap(null));
+  suggestionOverlays = [];
+  if (suggestionAreaCircle) {
+    suggestionAreaCircle.setMap(null);
+    suggestionAreaCircle = null;
   }
 };
 
 // エリア円を設定
-export const setAiAreaCircle = (circle) => {
-  if (aiAreaCircle) {
-    aiAreaCircle.setMap(null);
+export const setSuggestionAreaCircle = (circle) => {
+  if (suggestionAreaCircle) {
+    suggestionAreaCircle.setMap(null);
   }
-  aiAreaCircle = circle;
+  suggestionAreaCircle = circle;
 };
 
-export const setAiSuggestionMarkers = (markers) => {
-  clearAiSuggestionMarkers();
-  aiSuggestionMarkers = markers;
+export const setSuggestionMarkers = (markers) => {
+  clearSuggestionMarkers();
+  suggestionMarkers = markers;
 };
 
-export const addAiSuggestionMarker = (marker) => {
-  aiSuggestionMarkers.push(marker);
+export const addSuggestionMarker = (marker) => {
+  suggestionMarkers.push(marker);
 };
 
-export const addAiSuggestionOverlay = (overlay) => {
-  aiSuggestionOverlays.push(overlay);
+export const addSuggestionOverlay = (overlay) => {
+  suggestionOverlays.push(overlay);
 };
 
-export const getAiSuggestionMarkers = () => aiSuggestionMarkers;
+export const getSuggestionMarkers = () => suggestionMarkers;

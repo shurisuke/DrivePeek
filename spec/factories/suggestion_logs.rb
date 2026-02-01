@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :ai_chat_message do
+  factory :suggestion_log do
     association :user
     association :plan
     role { "user" }
