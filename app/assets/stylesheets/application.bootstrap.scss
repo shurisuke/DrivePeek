@@ -42,8 +42,8 @@
 
 @use "mobile/infowindow" as mobile-infowindow;
 
-@use "ai/ai_suggestion_chat";
-@use "ai/condition_modal";
+@use "suggestions/suggestion_chat";
+@use "suggestions/condition_modal";
 
 @use "plans/plan_form";
 @use "plans/plan_detail";

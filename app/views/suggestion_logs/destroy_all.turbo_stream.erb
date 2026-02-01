@@ -1,0 +1,15 @@
+<%# メッセージエリアを初期状態に戻す %>
+<%= turbo_stream.update "suggestion-messages" do %>
+  <%# AI側: 案内文 + モード選択（初期表示） %>
+  <div class="suggestion__msg suggestion__msg--assistant">
+    <div class="suggestion__icon">
+      <i class="bi bi-stars"></i>
+    </div>
+    <div class="suggestion__content">
+      <div class="suggestion__bubble">
+        こんにちは！ドライブプランのAIアシスタントです。
+      </div>
+      <%= render "suggestions/mode_select" %>
+    </div>
+  </div>
+<% end %>

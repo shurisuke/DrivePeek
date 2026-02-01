@@ -1,0 +1,38 @@
+<div class="suggestion__composer-area" id="suggestion-form" data-controller="suggest-mode">
+  <div class="suggestion__input-row-wrapper">
+    <%# 提案ボタン（中央配置） %>
+    <div class="suggestion__suggest-btns">
+      <button type="button"
+              class="suggestion__suggest-btn"
+              data-action="click->suggest-mode#startPlanMode">
+        <i class="bi bi-share"></i>
+        プラン提案
+      </button>
+      <button type="button"
+              class="suggestion__suggest-btn"
+              data-action="click->suggest-mode#startSpotMode">
+        <i class="bi bi-search"></i>
+        スポット検索
+      </button>
+    </div>
+
+    <%# 三点メニュー %>
+    <div class="suggestion__menu" data-controller="dropdown">
+      <button type="button"
+              class="suggestion__menu-btn suggestion__menu-btn--large"
+              data-action="click->dropdown#toggle"
+              aria-label="メニュー">
+        <i class="bi bi-three-dots"></i>
+      </button>
+      <div class="suggestion__menu-dropdown" data-dropdown-target="menu" hidden>
+        <%= link_to destroy_all_suggestion_logs_path(plan_id: plan.id),
+              id: "suggestion-clear-btn",
+              class: "suggestion__menu-item suggestion__menu-item--danger #{'suggestion__menu-item--disabled' unless plan.suggestion_logs.exists?}",
+              data: { turbo_method: :delete, action: "click->dropdown#close" } do %>
+          <i class="bi bi-trash"></i>
+          <span>会話をクリア</span>
+        <% end %>
+      </div>
+    </div>
+  </div>
+</div>

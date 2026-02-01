@@ -1,0 +1,347 @@
+/* ==========================================
+   提案条件設定モーダル
+========================================== */
+
+.suggestion-condition-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.suggestion-condition-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.5);
+}
+
+.suggestion-condition-modal__dialog {
+  position: relative;
+  background: #fff;
+  border-radius: 16px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  width: 100%;
+  max-width: 400px;
+  height: 70vh;
+  max-height: 500px;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+// ヘッダー
+.suggestion-condition-modal__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 20px;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-condition-modal__title {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 600;
+  color: #333;
+}
+
+.suggestion-condition-modal__close-btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: none;
+  color: #666;
+  cursor: pointer;
+  border-radius: 50%;
+  transition: background 0.2s;
+
+  &:hover {
+    background: #f0f0f0;
+  }
+}
+
+// エリア情報
+.suggestion-condition-modal__area-info {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 12px 20px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 14px;
+
+  i {
+    font-size: 16px;
+  }
+}
+
+.suggestion-condition-modal__spot-count {
+  margin-left: auto;
+  font-weight: 600;
+  background: rgba(255, 255, 255, 0.2);
+  padding: 3px 8px;
+  border-radius: 4px;
+}
+
+// セクション
+.suggestion-condition-modal__section {
+  padding: 16px 20px;
+}
+
+.suggestion-condition-modal__label {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 14px;
+  font-weight: 600;
+  color: #555;
+}
+
+.suggestion-condition-modal__select,
+.suggestion-condition-modal__slot-select {
+  width: 100%;
+  padding: 8px 12px;
+  font-size: 16px; // iOS zoom防止
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  background: #fff url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='12' viewBox='0 0 12 12'%3E%3Cpath fill='%23666' d='M6 8L1 3h10z'/%3E%3C/svg%3E") no-repeat right 12px center;
+  appearance: none;
+  cursor: pointer;
+
+  &:focus {
+    outline: none;
+    border-color: #667eea;
+  }
+}
+
+// スロット一覧
+.suggestion-condition-modal__slots {
+  padding: 0 20px 12px;
+}
+
+.suggestion-condition-modal__slot {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 8px 0;
+}
+
+.suggestion-condition-modal__slot-label {
+  flex-shrink: 0;
+  font-size: 14px;
+  font-weight: 600;
+  color: #667eea;
+  min-width: 70px;
+}
+
+.suggestion-condition-modal__slot-select {
+  flex: 1;
+}
+
+// アクション
+.suggestion-condition-modal__actions {
+  display: flex;
+  gap: 12px;
+  padding: 16px 20px;
+  border-top: 1px solid #eee;
+}
+
+.suggestion-condition-modal__btn {
+  flex: 1;
+  padding: 12px 16px;
+  font-size: 15px;
+  font-weight: 600;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.2s;
+
+  &--cancel {
+    background: #f0f0f0;
+    color: #666;
+
+    &:hover {
+      background: #e5e5e5;
+    }
+  }
+
+  &--submit {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+
+    &:hover {
+      transform: translateY(-1px);
+      box-shadow: 0 4px 12px rgba(102, 126, 234, 0.4);
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+      transform: none;
+      box-shadow: none;
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// ローディング
+.suggestion-condition-modal__loading {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 16px;
+  background: rgba(255, 255, 255, 0.95);
+  border-radius: 16px;
+  color: #667eea;
+  font-weight: 600;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.suggestion-condition-modal__spinner {
+  width: 40px;
+  height: 40px;
+  border: 3px solid #f0f0f0;
+  border-top-color: #667eea;
+  border-radius: 50%;
+  animation: suggestion-modal-spin 0.8s linear infinite;
+}
+
+@keyframes suggestion-modal-spin {
+  to {
+    transform: rotate(360deg);
+  }
+}
+
+// メインビュー / ジャンル選択ビュー共通
+[data-suggestion-condition-modal-target="mainView"],
+[data-suggestion-condition-modal-target="genreView"] {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  overflow: hidden;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// プランモード / スポットモードのコンテンツ
+[data-suggestion-condition-modal-target="planContent"],
+[data-suggestion-condition-modal-target="spotContent"] {
+  flex: 1;
+  overflow-y: auto;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// ジャンル選択ボタン
+.suggestion-condition-modal__genre-btn {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+  padding: 10px 12px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  border: 1px solid #ddd;
+  border-radius: 6px;
+  cursor: pointer;
+  transition: border-color 0.2s;
+
+  &:hover {
+    border-color: #667eea;
+  }
+
+  i {
+    color: #999;
+    font-size: 18px;
+  }
+
+  &--full {
+    margin-top: 0;
+  }
+}
+
+// ジャンル選択リスト
+.suggestion-condition-modal__genre-list {
+  flex: 1;
+  overflow-y: auto;
+  -webkit-overflow-scrolling: touch;
+}
+
+.suggestion-condition-modal__genre-category {
+  padding: 8px 20px;
+  font-size: 12px;
+  font-weight: 600;
+  color: rgba(102, 126, 234, 0.8);
+  background: #f8f9fa;
+  border-bottom: 1px solid #eee;
+}
+
+.suggestion-condition-modal__genre-item {
+  display: block;
+  width: 100%;
+  padding: 12px 20px;
+  font-size: 14px;
+  color: #333;
+  background: #fff;
+  border: none;
+  border-bottom: 1px solid #f0f0f0;
+  text-align: left;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: #f8f9fa;
+  }
+
+  &:active {
+    background: #f0f0f0;
+  }
+
+  &--omakase {
+    color: #667eea;
+    font-weight: 600;
+    border-bottom: 1px solid #eee;
+  }
+}
+
+// モバイル対応
+@media (max-width: 480px) {
+  .suggestion-condition-modal {
+    padding: 0;
+    align-items: flex-end;
+  }
+
+  .suggestion-condition-modal__dialog {
+    max-width: 100%;
+    height: 75vh;
+    max-height: none;
+    border-radius: 16px 16px 0 0;
+  }
+}
