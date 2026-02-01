@@ -19,7 +19,7 @@ class SuggestionsController < ApplicationController
   ].freeze
 
   def suggest
-    @result = AiAreaService.generate(**build_suggest_params)
+    @result = SuggestionService.generate(**build_suggest_params)
     @result.merge!(area_data: area_data, mode: mode)
     save_and_respond
   end

@@ -1,11 +1,11 @@
 # 円内スポット検索を担当
 #
 # 使い方:
-#   finder = AiArea::SpotFinder.new(35.6, 139.7, 10.0)
+#   finder = Suggestion::SpotFinder.new(35.6, 139.7, 10.0)
 #   slot_data = finder.fetch_for_slots(slots)
 #   candidates = finder.fetch_for_genre(genre, 5)
 #
-module AiArea
+module Suggestion
   class SpotFinder
     # 緯度1度 ≈ 111km、経度1度 ≈ 91km（日本の緯度で概算）
     LAT_KM = 111.0

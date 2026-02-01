@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe AiAreaService, type: :service do
+RSpec.describe SuggestionService, type: :service do
   let(:plan) { create(:plan) }
   let(:center_lat) { 35.6762 }
   let(:center_lng) { 139.6503 }

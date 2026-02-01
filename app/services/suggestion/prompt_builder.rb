@@ -1,10 +1,10 @@
-# AI提案用プロンプト生成を担当
+# 提案用プロンプト生成を担当
 #
 # 使い方:
-#   prompt = AiArea::PromptBuilder.plan_mode(slot_data, 10.0)
-#   prompt = AiArea::PromptBuilder.spot_mode(candidates, genre, 10.0)
+#   prompt = Suggestion::PromptBuilder.plan_mode(slot_data, 10.0)
+#   prompt = Suggestion::PromptBuilder.spot_mode(candidates, genre, 10.0)
 #
-module AiArea
+module Suggestion
   class PromptBuilder
     # 季節ガイド（ドライブの雰囲気づくり + 避けるべきもの）
     SEASON_GUIDE = {

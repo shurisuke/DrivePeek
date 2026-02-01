@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe AiArea::PromptBuilder, type: :service do
+RSpec.describe Suggestion::PromptBuilder, type: :service do
   describe ".plan_mode" do
     let(:slot_data) do
       [

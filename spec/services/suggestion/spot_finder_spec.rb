@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe AiArea::SpotFinder, type: :service do
+RSpec.describe Suggestion::SpotFinder, type: :service do
   describe "#fetch_for_slots" do
     let(:center_lat) { 35.6762 }
     let(:center_lng) { 139.6503 }

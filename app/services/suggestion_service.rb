@@ -1,14 +1,14 @@
-# エリア選択によるAI提案機能
+# エリア選択による提案機能
 #
-# 円内スポット検索と、ジャンル指定によるAI提案を行う
-# スポット検索は AiArea::SpotFinder、プロンプト生成は AiArea::PromptBuilder に委譲
+# 円内スポット検索と、ジャンル指定による提案を行う
+# スポット検索は Suggestion::SpotFinder、プロンプト生成は Suggestion::PromptBuilder に委譲
 #
-class AiAreaService
+class SuggestionService
   MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 1024
 
   class << self
-    # AI提案を生成
+    # 提案を生成
     # @param plan [Plan] 対象プラン
     # @param center_lat [Float] 中心緯度
     # @param center_lng [Float] 中心経度
@@ -21,7 +21,7 @@ class AiAreaService
     def generate(plan:, center_lat:, center_lng:, radius_km:, slots: [], mode: "plan", genre_id: nil, count: nil)
       return error_response("API設定エラー", mode: mode) unless api_key_configured?
 
-      finder = AiArea::SpotFinder.new(center_lat, center_lng, radius_km)
+      finder = Suggestion::SpotFinder.new(center_lat, center_lng, radius_km)
 
       # モードに応じて候補スポットを取得
       case mode
@@ -29,12 +29,12 @@ class AiAreaService
         slot_data = finder.fetch_for_slots(slots)
         all_spots = slot_data.flat_map { |slot| slot[:candidates] }
         slot_sizes = slot_data.map { |slot| slot[:candidates].size }
-        prompt = AiArea::PromptBuilder.plan_mode(slot_data, radius_km)
+        prompt = Suggestion::PromptBuilder.plan_mode(slot_data, radius_km)
       when "spots"
         genre = Genre.find_by(id: genre_id)
         return error_response("ジャンルが見つかりません", mode: mode) unless genre
         all_spots = finder.fetch_for_genre(genre, count)
-        prompt = AiArea::PromptBuilder.spot_mode(all_spots, genre, radius_km)
+        prompt = Suggestion::PromptBuilder.spot_mode(all_spots, genre, radius_km)
       else
         return error_response("不正なモードです", mode: nil)
       end
@@ -60,13 +60,13 @@ class AiAreaService
       build_suggest_response(ai_response, selected_spots, mode)
 
     rescue Faraday::Error => e
-      Rails.logger.error("[AiAreaService] Faraday error: #{e.class} - #{e.message}")
+      Rails.logger.error("[SuggestionService] Faraday error: #{e.class} - #{e.message}")
       error_response("通信エラーが発生しました", mode: mode)
     rescue JSON::ParserError => e
-      Rails.logger.error("[AiAreaService] JSON parse error: #{e.message}")
+      Rails.logger.error("[SuggestionService] JSON parse error: #{e.message}")
       error_response("応答の解析に失敗しました", mode: mode)
     rescue StandardError => e
-      Rails.logger.error("[AiAreaService] Unexpected error: #{e.class} - #{e.message}")
+      Rails.logger.error("[SuggestionService] Unexpected error: #{e.class} - #{e.message}")
       Rails.logger.error(e.backtrace.first(5).join("\n"))
       error_response("エラーが発生しました", mode: mode)
     end
@@ -95,7 +95,7 @@ class AiAreaService
       JSON.parse(content, symbolize_names: true)
     end
 
-    # プランモード: AIレスポンスからスポットを選出
+    # プランモード: レスポンスからスポットを選出
     # @param ai_response [Hash] { picks: [{n:, d:}, ...], intro:, closing: }
     # @param all_spots [Array<Hash>] 全候補スポット（通し番号順）
     # @param slot_sizes [Array<Integer>] 各スロットの候補数
