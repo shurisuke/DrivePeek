@@ -43,12 +43,15 @@ Rails.application.routes.draw do
     get :visibility
   end
 
+  # コミュニティ（みんなの旅）
+  get "community" => "community#index"
+
   # プラン
   namespace :plans do
     resources :mine, only: %i[index]
   end
 
-  resources :plans, only: %i[index show new create edit update destroy] do
+  resources :plans, only: %i[show new create edit update destroy] do
     # Turbo Stream用（destroyのみ残す）
     resources :plan_spots, only: %i[destroy]
   end
@@ -65,11 +68,11 @@ Rails.application.routes.draw do
     post :finish
   end
 
+  # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
+  resource :infowindow, only: %i[show create]
+
   # API エンドポイント
   namespace :api do
-    # InfoWindow（POST: JS fetch用、GET: Turbo Frame用）
-    resource :infowindow, only: %i[show create]
-
     # スポット関連
     resources :spots, only: [] do
       resource :genres, only: [ :show ], controller: "spots/genres"
@@ -77,19 +80,19 @@ Rails.application.routes.draw do
 
     resources :plans, only: [] do
       resource :preview, only: %i[show], controller: "plans/previews"
-      resource :start_point, only: %i[update]
-      resource :goal_point, only: %i[update]
+      resource :start_point, only: %i[update], controller: "plans/start_points"
+      resource :goal_point, only: %i[update], controller: "plans/goal_points"
 
-      resources :plan_spots, only: %i[create] do
+      resources :plan_spots, only: %i[create], controller: "plans/plan_spots" do
         collection do
-          patch :reorder, to: "plan_spots/reorders#update"
-          post :adopt
+          patch :reorder, to: "plans/plan_spots/reorders#update"
+          post :adopt, to: "plans/plan_spots/adoptions#create"
         end
 
         member do
-          patch :toll_used, to: "plan_spots/toll_used#update"
-          patch :memo, to: "plan_spots/memos#update"
-          patch :stay_duration, to: "plan_spots/stay_durations#update"
+          patch :toll_used, to: "plans/plan_spots/toll_used#update"
+          patch :memo, to: "plans/plan_spots/memos#update"
+          patch :stay_duration, to: "plans/plan_spots/stay_durations#update"
         end
       end
     end

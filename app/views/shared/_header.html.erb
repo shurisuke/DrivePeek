@@ -17,7 +17,7 @@
         <ul id="menu__hamburger__nav" class="sp__menu__ul">
           <% if current_user.present? %>
             <li><%= link_to new_plan_path do %><i class="fa-solid fa-pen"></i><span>プランを作る</span><% end %></li>
-            <li><%= link_to plans_path do %><i class="fa-solid fa-earth-asia"></i><span>みんなの旅</span><% end %></li>
+            <li><%= link_to community_path do %><i class="fa-solid fa-earth-asia"></i><span>みんなの旅</span><% end %></li>
             <li><%= link_to favorites_path do %><i class="fa-solid fa-bookmark"></i><span>お気に入り</span><% end %></li>
             <li><%= link_to plans_mine_index_path do %><i class="fa-solid fa-route"></i><span>作ったプラン</span><% end %></li>
             <li>

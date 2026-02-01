@@ -11,25 +11,6 @@ RSpec.describe "Plans", type: :request do
     stub_google_directions_api
   end
 
-  describe "GET /plans" do
-    # for_communityスコープは2スポット以上のプランのみ表示
-    let!(:public_plan) { create(:plan, :with_spots, user: other_user, title: "公開プラン") }
-    let!(:no_spots_plan) { create(:plan, user: other_user, title: "スポットなしプラン") }
-
-    it "公開プラン一覧を表示する" do
-      get plans_path
-
-      expect(response).to have_http_status(:ok)
-      expect(response.body).to include("公開プラン")
-      expect(response.body).not_to include("スポットなしプラン")
-    end
-
-    it "未ログインでもアクセス可能" do
-      get plans_path
-      expect(response).to have_http_status(:ok)
-    end
-  end
-
   describe "GET /plans/:id" do
     context "公開プランの場合" do
       let(:plan) { create(:plan, user: other_user) }
