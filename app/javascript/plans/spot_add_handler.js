@@ -69,8 +69,8 @@ const handleSpotAdd = async (event) => {
   document.addEventListener("navibar:updated", onMarkersReady)
 
   try {
-    const url = `/api/plans/${planId}/plan_spots`
-    const body = { spot_id: detail.spot_id }
+    const url = `/api/plan_spots`
+    const body = { plan_id: planId, spot_id: detail.spot_id }
 
     await postTurboStream(url, body)
 

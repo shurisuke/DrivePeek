@@ -136,7 +136,8 @@ const handleChange = async (e) => {
     const tollUsed = el.checked
 
     try {
-      const data = await patch(`/api/plans/${planId}/start_point`, {
+      const data = await patch(`/api/start_point`, {
+        plan_id: planId,
         start_point: { toll_used: tollUsed },
       })
 
@@ -162,7 +163,7 @@ const handleChange = async (e) => {
     const tollUsed = el.checked
 
     try {
-      const data = await patch(`/api/plans/${planId}/plan_spots/${planSpotId}/toll_used`, {
+      const data = await patch(`/api/plan_spots/${planSpotId}`, {
         toll_used: tollUsed,
       })
 

@@ -247,7 +247,8 @@ export default class extends Controller {
       this.addressTarget.textContent = displayAddress
 
       // ✅ サーバへ保存（turbo_stream で navibar が自動更新される）
-      await patchTurboStream(`/api/plans/${planId}/goal_point`, {
+      await patchTurboStream(`/api/goal_point`, {
+        plan_id: planId,
         goal_point: {
           address: displayAddress,
           lat,

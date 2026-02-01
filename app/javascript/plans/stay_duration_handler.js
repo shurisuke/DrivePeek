@@ -24,7 +24,7 @@ const handleChange = async (e) => {
 
   try {
     await patchTurboStream(
-      `/api/plans/${planId}/plan_spots/${planSpotId}/stay_duration`,
+      `/api/plan_spots/${planSpotId}`,
       { stay_duration: stayDuration }
     )
   } catch (err) {

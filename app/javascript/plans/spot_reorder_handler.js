@@ -105,7 +105,8 @@ const initSortable = () => {
       const orderedIds = getOrderedPlanSpotIds(container)
 
       try {
-        await patchTurboStream(`/api/plans/${planId}/plan_spots/reorder`, {
+        await patchTurboStream(`/api/plan_spots/reorder`, {
+          plan_id: planId,
           ordered_plan_spot_ids: orderedIds,
         })
         document.dispatchEvent(new CustomEvent("map:route-updated"))
@@ -129,7 +130,8 @@ const saveOrder = async () => {
   const orderedIds = getOrderedPlanSpotIds(container)
 
   try {
-    await patchTurboStream(`/api/plans/${planId}/plan_spots/reorder`, {
+    await patchTurboStream(`/api/plan_spots/reorder`, {
+      plan_id: planId,
       ordered_plan_spot_ids: orderedIds,
     })
     document.dispatchEvent(new CustomEvent("map:route-updated"))

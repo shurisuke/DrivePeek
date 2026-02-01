@@ -139,11 +139,11 @@ export default class extends Controller {
   // private
   // ============================
   async _save(minutes) {
-    if (!this.planIdValue || !this.planSpotIdValue) return
+    if (!this.planSpotIdValue) return
 
     try {
       await patchTurboStream(
-        `/api/plans/${this.planIdValue}/plan_spots/${this.planSpotIdValue}/stay_duration`,
+        `/api/plan_spots/${this.planSpotIdValue}`,
         { stay_duration: minutes }
       )
       // 保存成功 → turbo_stream で navibar が自動更新される

@@ -6,7 +6,8 @@ export default class extends Controller {
   static values = {
     url: String,
     method: { type: String, default: "POST" },
-    spotId: Number
+    spotId: Number,
+    planId: Number
   }
 
   async submit(event) {
@@ -54,10 +55,10 @@ export default class extends Controller {
       }
     }
 
-    // POSTの場合はbodyにspot_idを含める
+    // POSTの場合はbodyにplan_idとspot_idを含める
     if (this.methodValue === "POST" && this.hasSpotIdValue) {
       options.headers["Content-Type"] = "application/json"
-      options.body = JSON.stringify({ spot_id: this.spotIdValue })
+      options.body = JSON.stringify({ plan_id: this.planIdValue, spot_id: this.spotIdValue })
     }
 
     return fetch(this.urlValue, options)

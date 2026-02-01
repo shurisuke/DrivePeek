@@ -63,7 +63,7 @@ export default class extends Controller {
     clearCommunityPreview()
 
     try {
-      const data = await get(`/api/plans/${this.planIdValue}/preview`)
+      const data = await get(`/api/preview?plan_id=${this.planIdValue}`)
 
       if (!data.spots || data.spots.length === 0) {
         console.warn("[community-plan-preview] No spots in plan")

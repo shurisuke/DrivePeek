@@ -143,12 +143,10 @@ export default class extends Controller {
 
   async persist({ planId, lat, lng, address }) {
     const isStartPoint = this.editModeValue === "start_point"
-    const url = isStartPoint
-      ? `/api/plans/${planId}/start_point`
-      : `/api/plans/${planId}/goal_point`
+    const url = isStartPoint ? `/api/start_point` : `/api/goal_point`
     const key = isStartPoint ? "start_point" : "goal_point"
 
-    await patchTurboStream(url, { [key]: { lat, lng, address } })
+    await patchTurboStream(url, { plan_id: planId, [key]: { lat, lng, address } })
   }
 
   detectPlanId() {
