@@ -22,7 +22,7 @@ module Api
           end
 
           # ✅ その他の更新は Turbo Stream で全体を再描画
-          @start_point_detail_open = true
+          @start_point_detail_open = false
 
           respond_to do |format|
             format.turbo_stream { render "plans/refresh_plan_tab" }
