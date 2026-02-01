@@ -21,10 +21,10 @@
   <% if @search_type == "spot" %>
       <%# スポット一覧 %>
       <% if @spots.present? %>
-        <% like_spots_map = LikeSpot.index_by_spot_id(user: current_user, spot_ids: @spots.map(&:id)) %>
+        <% favorite_spots_map = FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: @spots.map(&:id)) %>
         <div class="list-page__cards">
           <% @spots.each do |spot| %>
-            <%= render "plans/spot_card", spot: spot, like_spot: like_spots_map[spot.id] %>
+            <%= render "plans/spot_card", spot: spot, favorite_spot: favorite_spots_map[spot.id] %>
           <% end %>
         </div>
 
@@ -45,7 +45,7 @@
     <% else %>
       <%# プラン一覧 %>
       <% if @plans.present? %>
-        <% like_plans_map = LikePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
+        <% favorite_plans_map = FavoritePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
         <div class="list-page__cards">
           <% @plans.each do |plan| %>
             <%
@@ -67,7 +67,7 @@
                        total_duration: format_move_time(plan.spots_only_move_time),
                        total_distance: format_distance(plan.spots_only_distance),
                        plan: plan,
-                       like_plan: like_plans_map[plan.id] %>
+                       favorite_plan: favorite_plans_map[plan.id] %>
           <% end %>
         </div>
 

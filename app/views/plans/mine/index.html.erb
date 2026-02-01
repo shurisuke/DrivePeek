@@ -1,4 +1,4 @@
-<%# 作ったプラン一覧（plans/my_plans#index） %>
+<%# 作ったプラン一覧（plans/mine#index） %>
 
 <div class="list-page list-page--two-column">
   <h1 class="list-page__title">作ったプラン</h1>
@@ -7,7 +7,7 @@
   <%# 左サイドバー: 検索フォーム %>
   <div class="list-page__sidebar">
     <%= render "shared/search_form",
-               form_url: plans_my_plans_path,
+               form_url: plans_mine_index_path,
                show_tabs: false,
                selected_cities: @selected_cities,
                cities_by_prefecture: @cities_by_prefecture,

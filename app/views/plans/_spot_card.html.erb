@@ -1,5 +1,5 @@
 <%# スポットカード（検索結果表示用の共通部品） %>
-<%# locals: spot:, like_spot: nil, preview_mode: false %>
+<%# locals: spot:, favorite_spot: nil, preview_mode: false %>
 
 <%
   _preview_mode = local_assigns.fetch(:preview_mode, false)
@@ -11,7 +11,7 @@
   <div class="spot-card__header">
     <h3 class="spot-card__name"><%= spot.name %></h3>
     <div class="spot-card__actions">
-      <%= render "like_spots/button", spot: spot, like_spot: like_spot %>
+      <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
     </div>
   </div>
 

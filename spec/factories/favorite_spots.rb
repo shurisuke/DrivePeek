@@ -1,7 +1,7 @@
 # frozen_string_literal: true
 
 FactoryBot.define do
-  factory :like_spot do
+  factory :favorite_spot do
     association :user
     association :spot
   end

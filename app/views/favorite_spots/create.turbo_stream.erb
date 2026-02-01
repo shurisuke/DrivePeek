@@ -1,0 +1,8 @@
+<%= turbo_stream.replace dom_id(@spot, :favorite_button) do %>
+  <%= render "favorite_spots/button", spot: @spot, favorite_spot: @favorite_spot %>
+<% end %>
+
+<%# InfoWindow用（開いている場合のみ更新される） %>
+<%= turbo_stream.replace dom_id(@spot, :infowindow_favorite) do %>
+  <%= render "favorite_spots/infowindow_button", spot: @spot, favorite_spot: @favorite_spot %>
+<% end %>

@@ -1,21 +1,21 @@
-<%# app/views/like_plans/_button.html.erb %>
-<%# locals: plan:, like_plan: nil %>
+<%# app/views/favorite_plans/_button.html.erb %>
+<%# locals: plan:, favorite_plan: nil %>
 
-<%= turbo_frame_tag dom_id(plan, :like_button) do %>
-  <% if like_plan.present? %>
-    <%= button_to like_plan_path(like_plan),
+<%= turbo_frame_tag dom_id(plan, :favorite_button) do %>
+  <% if favorite_plan.present? %>
+    <%= button_to favorite_plan_path(favorite_plan),
                   method: :delete,
                   class: "fav-button fav-button--star fav-button--sm fav-button--active",
                   "aria-label": "お気に入り解除",
-                  data: { turbo_frame: dom_id(plan, :like_button) } do %>
+                  data: { turbo_frame: dom_id(plan, :favorite_button) } do %>
       <i class="bi bi-star-fill" aria-hidden="true"></i>
     <% end %>
   <% else %>
-    <%= button_to like_plans_path(plan_id: plan.id),
+    <%= button_to favorite_plans_path(plan_id: plan.id),
                   method: :post,
                   class: "fav-button fav-button--star fav-button--sm",
                   "aria-label": "お気に入り登録",
-                  data: { turbo_frame: dom_id(plan, :like_button) } do %>
+                  data: { turbo_frame: dom_id(plan, :favorite_button) } do %>
       <i class="bi bi-star" aria-hidden="true"></i>
     <% end %>
   <% end %>

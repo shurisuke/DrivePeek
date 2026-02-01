@@ -55,9 +55,9 @@ module AiArea
       # お気に入り数上位N件を候補として取得
       top_spot_ids = Spot
         .where(id: candidate_ids)
-        .left_joins(:like_spots)
+        .left_joins(:favorite_spots)
         .group(:id)
-        .order("COUNT(like_spots.id) DESC")
+        .order("COUNT(favorite_spots.id) DESC")
         .limit(limit)
         .pluck(:id)
 

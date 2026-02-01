@@ -26,7 +26,7 @@ RSpec.describe "Spots", type: :request do
       end
 
       context "お気に入り登録済みの場合" do
-        let!(:like_spot) { create(:like_spot, user: user, spot: spot) }
+        let!(:favorite_spot) { create(:favorite_spot, user: user, spot: spot) }
 
         it "正常に表示される" do
           get spot_path(spot)

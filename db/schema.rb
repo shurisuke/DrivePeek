@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_01_31_074212) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_100159) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -24,6 +24,26 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_074212) do
     t.index ["plan_id", "created_at"], name: "index_ai_chat_messages_on_plan_id_and_created_at"
     t.index ["plan_id"], name: "index_ai_chat_messages_on_plan_id"
     t.index ["user_id"], name: "index_ai_chat_messages_on_user_id"
+  end
+
+  create_table "favorite_plans", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "plan_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["plan_id"], name: "index_favorite_plans_on_plan_id"
+    t.index ["user_id", "plan_id"], name: "index_favorite_plans_on_user_id_and_plan_id", unique: true
+    t.index ["user_id"], name: "index_favorite_plans_on_user_id"
+  end
+
+  create_table "favorite_spots", force: :cascade do |t|
+    t.datetime "created_at", null: false
+    t.bigint "spot_id", null: false
+    t.datetime "updated_at", null: false
+    t.bigint "user_id", null: false
+    t.index ["spot_id"], name: "index_favorite_spots_on_spot_id"
+    t.index ["user_id", "spot_id"], name: "index_favorite_spots_on_user_id_and_spot_id", unique: true
+    t.index ["user_id"], name: "index_favorite_spots_on_user_id"
   end
 
   create_table "genres", force: :cascade do |t|
@@ -59,26 +79,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_074212) do
     t.bigint "user_id", null: false
     t.index ["provider", "uid"], name: "index_identities_on_provider_and_uid", unique: true
     t.index ["user_id"], name: "index_identities_on_user_id"
-  end
-
-  create_table "like_plans", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "plan_id", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["plan_id"], name: "index_like_plans_on_plan_id"
-    t.index ["user_id", "plan_id"], name: "index_like_plans_on_user_id_and_plan_id", unique: true
-    t.index ["user_id"], name: "index_like_plans_on_user_id"
-  end
-
-  create_table "like_spots", force: :cascade do |t|
-    t.datetime "created_at", null: false
-    t.bigint "spot_id", null: false
-    t.datetime "updated_at", null: false
-    t.bigint "user_id", null: false
-    t.index ["spot_id"], name: "index_like_spots_on_spot_id"
-    t.index ["user_id", "spot_id"], name: "index_like_spots_on_user_id_and_spot_id", unique: true
-    t.index ["user_id"], name: "index_like_spots_on_user_id"
   end
 
   create_table "plan_spots", force: :cascade do |t|
@@ -308,13 +308,13 @@ ActiveRecord::Schema[8.1].define(version: 2026_01_31_074212) do
 
   add_foreign_key "ai_chat_messages", "plans"
   add_foreign_key "ai_chat_messages", "users"
+  add_foreign_key "favorite_plans", "plans"
+  add_foreign_key "favorite_plans", "users"
+  add_foreign_key "favorite_spots", "spots"
+  add_foreign_key "favorite_spots", "users"
   add_foreign_key "genres", "genres", column: "parent_id"
   add_foreign_key "goal_points", "plans"
   add_foreign_key "identities", "users"
-  add_foreign_key "like_plans", "plans"
-  add_foreign_key "like_plans", "users"
-  add_foreign_key "like_spots", "spots"
-  add_foreign_key "like_spots", "users"
   add_foreign_key "plan_spots", "plans"
   add_foreign_key "plan_spots", "spots"
   add_foreign_key "plans", "users"

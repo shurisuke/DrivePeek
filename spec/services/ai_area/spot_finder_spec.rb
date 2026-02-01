@@ -125,7 +125,7 @@ RSpec.describe AiArea::SpotFinder, type: :service do
         popular_spot.genres << genre
         normal_spot.genres << genre
         # popular_spotに複数のいいねを追加
-        3.times { create(:like_spot, spot: popular_spot) }
+        3.times { create(:favorite_spot, spot: popular_spot) }
       end
 
       it "お気に入り数順で返す" do

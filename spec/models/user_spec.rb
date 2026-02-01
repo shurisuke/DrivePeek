@@ -6,8 +6,8 @@ RSpec.describe User, type: :model do
   describe "associations" do
     it { should have_many(:identities).dependent(:destroy) }
     it { should have_many(:plans).dependent(:destroy) }
-    it { should have_many(:like_spots).dependent(:destroy) }
-    it { should have_many(:like_plans).dependent(:destroy) }
+    it { should have_many(:favorite_spots).dependent(:destroy) }
+    it { should have_many(:favorite_plans).dependent(:destroy) }
     it { should have_many(:spot_comments).dependent(:destroy) }
   end
 

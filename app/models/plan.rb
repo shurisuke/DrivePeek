@@ -5,8 +5,8 @@ class Plan < ApplicationRecord
   has_many :spots, through: :plan_spots
   has_one :start_point, dependent: :destroy
   has_one :goal_point, dependent: :destroy
-  has_many :like_plans, dependent: :destroy
-  has_many :liked_by_users, through: :like_plans, source: :user
+  has_many :favorite_plans, dependent: :destroy
+  has_many :liked_by_users, through: :favorite_plans, source: :user
   has_many :ai_chat_messages, dependent: :destroy
 
   # Scopes
@@ -52,7 +52,7 @@ class Plan < ApplicationRecord
   scope :liked_by, ->(user) {
     return none unless user
 
-    joins(:like_plans).where(like_plans: { user_id: user.id })
+    joins(:favorite_plans).where(favorite_plans: { user_id: user.id })
   }
 
   # ジャンルで絞り込み（複数対応）
