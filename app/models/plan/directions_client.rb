@@ -15,7 +15,6 @@ require "json"
 # 出力:
 #   - move_time（分）
 #   - move_distance（km）
-#   - move_cost（Phase 2 では 0 固定）
 #   - polyline
 #
 class Plan::DirectionsClient
@@ -25,7 +24,6 @@ class Plan::DirectionsClient
   FALLBACK_RESULT = {
     move_time: 0,
     move_distance: 0.0,
-    move_cost: 0,
     polyline: nil
   }.freeze
 
@@ -34,7 +32,7 @@ class Plan::DirectionsClient
     # @param origin [Hash] { lat:, lng: }
     # @param destination [Hash] { lat:, lng: }
     # @param toll_used [Boolean] 有料道路を使用するか
-    # @return [Hash] { move_time:, move_distance:, move_cost:, polyline: }
+    # @return [Hash] { move_time:, move_distance:, polyline: }
     def fetch(origin:, destination:, toll_used: false)
       return FALLBACK_RESULT.dup unless valid_coordinates?(origin, destination)
 
@@ -103,7 +101,6 @@ class Plan::DirectionsClient
       {
         move_time: parse_duration(leg["duration"]),
         move_distance: parse_distance(leg["distance"]),
-        move_cost: 0, # Phase 2 では 0 固定
         polyline: route.dig("overview_polyline", "points")
       }
     end

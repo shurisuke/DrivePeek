@@ -82,7 +82,6 @@ RSpec.describe Plan::Route, type: :model do
       expect(described_class::FALLBACK_ROUTE_DATA).to eq({
         move_time: 0,
         move_distance: 0.0,
-        move_cost: 0,
         polyline: nil
       })
     end
