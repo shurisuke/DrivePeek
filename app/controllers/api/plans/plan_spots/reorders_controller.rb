@@ -5,7 +5,7 @@ module Api
       class ReordersController < BaseController
         before_action :set_plan
 
-        # PATCH /api/plans/:plan_id/plan_spots/reorder
+        # PATCH /api/plan_spots/reorder
         def update
           ordered_ids = params[:ordered_plan_spot_ids]
 
@@ -26,6 +26,7 @@ module Api
         private
 
         def set_plan
+          # plan_id は body から取得
           @plan = current_user.plans
             .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
             .find(params[:plan_id])

@@ -41,9 +41,11 @@ module Api
       private
 
       def set_plan
+        # plan_id は body または query から取得
+        plan_id = params[:plan_id] || params.dig(:start_point, :plan_id)
         @plan = current_user.plans
           .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
-          .find(params[:plan_id])
+          .find(plan_id)
       end
 
       def set_start_point

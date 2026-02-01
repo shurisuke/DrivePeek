@@ -2,7 +2,7 @@
 module Api
   module Plans
     class PreviewsController < Api::BaseController
-      # GET /api/plans/:plan_id/preview
+      # GET /api/preview?plan_id=:id
       def show
         plan = Plan.publicly_visible
                    .includes(plan_spots: { spot: :genres })
