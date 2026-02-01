@@ -11,7 +11,7 @@ class PlanSpot < ApplicationRecord
 
   # Validations
   validates :spot_id, uniqueness: { scope: :plan_id, message: "は既にこのプランに追加されています" }
-  validates :move_time, :move_distance, :move_cost, numericality: { greater_than_or_equal_to: 0 }
+  validates :move_time, :move_distance, numericality: { greater_than_or_equal_to: 0 }
   validates :stay_duration, numericality: {
     greater_than_or_equal_to: 0,
     less_than_or_equal_to: MAX_STAY_DURATION,

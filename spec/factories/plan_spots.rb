@@ -7,7 +7,6 @@ FactoryBot.define do
     sequence(:position) { |n| n }
     move_time { 30 }
     move_distance { 10.5 }
-    move_cost { 0 }
     toll_used { false }
     stay_duration { 45 }
     arrival_time { nil }
@@ -15,7 +14,6 @@ FactoryBot.define do
 
     trait :with_toll do
       toll_used { true }
-      move_cost { 500 }
     end
 
     trait :with_memo do

@@ -12,11 +12,9 @@ FactoryBot.define do
     toll_used { false }
     move_time { 30 }
     move_distance { 10.5 }
-    move_cost { 0 }
 
     trait :with_toll do
       toll_used { true }
-      move_cost { 500 }
     end
 
     trait :no_departure_time do

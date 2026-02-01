@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_01_110543) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_01_230444) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -74,7 +74,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_110543) do
     t.datetime "created_at", null: false
     t.time "departure_time"
     t.text "memo"
-    t.integer "move_cost", default: 0, null: false
     t.float "move_distance", default: 0.0, null: false
     t.integer "move_time", default: 0, null: false
     t.bigint "plan_id", null: false
@@ -93,7 +92,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_110543) do
   create_table "plans", force: :cascade do |t|
     t.datetime "created_at", null: false
     t.string "title"
-    t.integer "total_cost", default: 0, null: false
     t.float "total_distance", default: 0.0, null: false
     t.integer "total_time", default: 0, null: false
     t.datetime "updated_at", null: false
@@ -259,7 +257,6 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_01_110543) do
     t.time "departure_time"
     t.float "lat"
     t.float "lng"
-    t.integer "move_cost"
     t.float "move_distance"
     t.integer "move_time"
     t.bigint "plan_id", null: false

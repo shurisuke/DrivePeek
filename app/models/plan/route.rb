@@ -1,7 +1,7 @@
 # app/models/plan/route.rb
 # frozen_string_literal: true
 
-# 責務: 経路情報（move_time / move_distance / move_cost / polyline）を計算・保存
+# 責務: 経路情報（move_time / move_distance / polyline）を計算・保存
 #
 # 保存先ルール（不変）:
 #   - 「次の区間までの情報は出発側に保存する」
@@ -24,7 +24,6 @@ class Plan::Route
   FALLBACK_ROUTE_DATA = {
     move_time: 0,
     move_distance: 0.0,
-    move_cost: 0,
     polyline: nil
   }.freeze
 
@@ -165,7 +164,7 @@ class Plan::Route
 
   # 経路を計算（Google Directions API を呼び出し）
   # @param segment [Hash]
-  # @return [Hash] { move_time:, move_distance:, move_cost:, polyline: }
+  # @return [Hash] { move_time:, move_distance:, polyline: }
   def calculate_route(segment)
     @api_call_count += 1
 
@@ -183,7 +182,6 @@ class Plan::Route
     from_record.update!(
       move_time: route_data[:move_time],
       move_distance: route_data[:move_distance],
-      move_cost: route_data[:move_cost],
       polyline: route_data[:polyline]
     )
   end
