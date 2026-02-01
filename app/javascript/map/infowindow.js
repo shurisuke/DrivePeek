@@ -184,7 +184,7 @@ const showMobileInfoWindow = async ({
 
   try {
     // APIからHTMLを取得
-    const response = await fetch(`/api/infowindow?${params.toString()}`, {
+    const response = await fetch(`/infowindow?${params.toString()}`, {
       headers: { "Accept": "text/html" }
     })
     if (!response.ok) throw new Error("Failed to fetch infowindow")
@@ -256,7 +256,7 @@ export const showInfoWindowWithFrame = ({
   // editMode の場合はスケルトン不要（データは揃っている）
   if (editMode) {
     iw.setContent(`
-      <turbo-frame id="infowindow-content" src="/api/infowindow?${params.toString()}">
+      <turbo-frame id="infowindow-content" src="/infowindow?${params.toString()}">
         <div class="dp-infowindow dp-infowindow--${zoomScale} dp-infowindow--point dp-infowindow--loading"></div>
       </turbo-frame>
     `)
@@ -275,7 +275,7 @@ export const showInfoWindowWithFrame = ({
 
   // スポット用: スケルトン + Turbo Frame で即時表示
   const skeletonContent = buildSkeletonContent({
-    src: `/api/infowindow?${params.toString()}`,
+    src: `/infowindow?${params.toString()}`,
     zoomScale,
     name,
     address,

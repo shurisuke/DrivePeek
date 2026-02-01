@@ -1,0 +1,24 @@
+<%# みんなの旅 一覧ページ %>
+
+<div class="list-page list-page--two-column">
+  <h1 class="list-page__title">みんなの旅</h1>
+
+  <div class="list-page__content">
+    <%# 左サイドバー: 検索フォーム %>
+    <div class="list-page__sidebar">
+      <%= render "shared/search_form",
+                 form_url: community_path,
+                 search_type: @search_type,
+                 selected_cities: @selected_cities,
+                 cities_by_prefecture: @cities_by_prefecture,
+                 genres_by_category: @genres_by_category,
+                 selected_genre_ids: @selected_genre_ids,
+                 search_query: @search_query %>
+    </div>
+
+    <%# 右メイン: カード一覧 + ページネーション %>
+    <div class="list-page__main">
+      <%= render "community/results", turbo_frame: false %>
+    </div>
+  </div>
+</div>
