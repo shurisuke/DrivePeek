@@ -5,18 +5,18 @@
 </script>
 
 <div class="main-content plan-detail"
-     data-controller="navibar-resize"
-     data-navibar-resize-min-value="300"
-     data-navibar-resize-max-percent-value="80"
-     data-navibar-resize-default-value="350"
-     data-navibar-resize-storage-key-value="drive_peek:navibar_detail_width"
-     data-navibar-resize-collapsed-key-value="drive_peek:navibar_detail_collapsed"
-     data-navibar-resize-slide-key-value="drive_peek:navibar_detail_slide">
+     data-controller="ui--navibar-resize"
+     data-ui--navibar-resize-min-value="300"
+     data-ui--navibar-resize-max-percent-value="80"
+     data-ui--navibar-resize-default-value="350"
+     data-ui--navibar-resize-storage-key-value="drive_peek:navibar_detail_width"
+     data-ui--navibar-resize-collapsed-key-value="drive_peek:navibar_detail_collapsed"
+     data-ui--navibar-resize-slide-key-value="drive_peek:navibar_detail_slide">
   <%# InfoWindowスケルトンテンプレート（JSから参照） %>
   <%= render "map/infowindow_skeleton" %>
 
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-navibar-resize-target="map"></div>
+  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-ui--navibar-resize-target="map"></div>
 
   <!-- 検索バー（地図上部に重ねる用） -->
   <div class="map-search-box">
@@ -35,8 +35,8 @@
             class="map-floating-btn map-floating-btn--red"
             hidden
             title="検索結果をクリア"
-            data-controller="search-hit-clear"
-            data-action="click->search-hit-clear#clear">
+            data-controller="ui--search-hit-clear"
+            data-action="click->ui--search-hit-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-search" aria-hidden="true"></i>
     </button>
@@ -44,20 +44,20 @@
 
   <!-- リサイズハンドル -->
   <div class="navibar-resize-handle"
-       data-navibar-resize-target="handle"
-       data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
+       data-ui--navibar-resize-target="handle"
+       data-action="mousedown->ui--navibar-resize#startResize touchstart->ui--navibar-resize#startResize click->ui--navibar-resize#handleClick">
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
   <!-- ナビバー（詳細用・1タブ） -->
   <aside class="navibar navibar--show"
-         data-controller="bottom-sheet"
-         data-bottom-sheet-min-value="8"
-         data-bottom-sheet-mid-value="45"
-         data-bottom-sheet-max-value="85"
-         data-bottom-sheet-state-value="mid">
+         data-controller="ui--bottom-sheet"
+         data-ui--bottom-sheet-min-value="8"
+         data-ui--bottom-sheet-mid-value="45"
+         data-ui--bottom-sheet-max-value="85"
+         data-ui--bottom-sheet-state-value="mid">
     <%# モバイル用ドラッグハンドル %>
-    <div class="navibar__handle" data-bottom-sheet-target="handle">
+    <div class="navibar__handle" data-ui--bottom-sheet-target="handle">
       <div class="navibar__handle-bar"></div>
     </div>
 
@@ -70,10 +70,10 @@
           <h1 class="navibar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
           <button type="button"
                   class="plan-detail__share-btn"
-                  data-controller="share-modal"
-                  data-share-modal-url-value="<%= plan_url(@plan) %>"
-                  data-share-modal-text-value="<%= share_text_for_plan(@plan) %>"
-                  data-action="click->share-modal#open">
+                  data-controller="ui--share-modal"
+                  data-ui--share-modal-url-value="<%= plan_url(@plan) %>"
+                  data-ui--share-modal-text-value="<%= share_text_for_plan(@plan) %>"
+                  data-action="click->ui--share-modal#open">
             <i class="bi bi-box-arrow-up" aria-hidden="true"></i>
           </button>
         </div>
@@ -103,16 +103,16 @@
   <%# モバイル用InfoWindowボトムシート %>
   <div id="mobile-infowindow"
        class="mobile-infowindow"
-       data-controller="mobile-infowindow"
+       data-controller="infowindow--mobile"
        hidden>
-    <div class="mobile-infowindow__backdrop" data-action="click->mobile-infowindow#close"></div>
-    <div class="mobile-infowindow__sheet" data-mobile-infowindow-target="sheet">
-      <div class="mobile-infowindow__handle" data-mobile-infowindow-target="handle">
+    <div class="mobile-infowindow__backdrop" data-action="click->infowindow--mobile#close"></div>
+    <div class="mobile-infowindow__sheet" data-infowindow--mobile-target="sheet">
+      <div class="mobile-infowindow__handle" data-infowindow--mobile-target="handle">
         <div class="mobile-infowindow__handle-bar"></div>
       </div>
       <button type="button"
               class="mobile-infowindow__close-btn"
-              data-action="click->mobile-infowindow#close">
+              data-action="click->infowindow--mobile#close">
         <i class="bi bi-x-lg"></i>
       </button>
       <div class="mobile-infowindow__content" id="mobile-infowindow-content">

@@ -8,22 +8,22 @@
 
 <%= turbo_frame_tag "infowindow-content" do %>
 <div class="dp-infowindow dp-infowindow--guest dp-infowindow--guest-standalone dp-infowindow--<%= zoom_scale %>"
-     data-controller="infowindow-ui"
-     data-infowindow-ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
-     data-infowindow-ui-zoom-index-value="<%= zoom_index %>">
+     data-controller="infowindow--ui"
+     data-infowindow--ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
+     data-infowindow--ui-zoom-index-value="<%= zoom_index %>">
 
   <%# ズームコントロール %>
   <div class="dp-infowindow__zoom-controls">
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow-ui#zoomOut"
-            data-infowindow-ui-target="zoomOutBtn">
+            data-action="click->infowindow--ui#zoomOut"
+            data-infowindow--ui-target="zoomOutBtn">
       <i class="bi bi-dash"></i>
     </button>
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow-ui#zoomIn"
-            data-infowindow-ui-target="zoomInBtn">
+            data-action="click->infowindow--ui#zoomIn"
+            data-infowindow--ui-target="zoomInBtn">
       <i class="bi bi-plus"></i>
     </button>
   </div>

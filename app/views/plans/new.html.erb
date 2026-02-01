@@ -1,7 +1,7 @@
-<div class="plan-entry" data-controller="plan-entry" data-plan-entry-has-plan-value="<%= @latest_plan.present? %>">
+<div class="plan-entry" data-controller="plan--entry" data-plan--entry-has-plan-value="<%= @latest_plan.present? %>">
   <%# 既存プランがある場合: モーダル表示 %>
   <% if @latest_plan %>
-    <div class="plan-entry-modal" data-plan-entry-target="modal">
+    <div class="plan-entry-modal" data-plan--entry-target="modal">
       <div class="plan-entry-modal__overlay"></div>
       <div class="plan-entry-modal__dialog">
         <h2 class="plan-entry-modal__title">プランを作成しますか？</h2>
@@ -20,8 +20,8 @@
         <div class="plan-entry-modal__actions">
           <button type="button"
                   class="btn plan-entry-modal__btn plan-entry-modal__btn--new"
-                  data-controller="create-plan-trigger"
-                  data-action="click->create-plan-trigger#create">
+                  data-controller="community--create-plan-trigger"
+                  data-action="click->community--create-plan-trigger#create">
             <i class="fa-solid fa-plus me-2"></i>新規作成
           </button>
           <%= link_to edit_plan_path(@latest_plan), class: "btn plan-entry-modal__btn plan-entry-modal__btn--continue" do %>
@@ -33,7 +33,7 @@
   <% end %>
 
   <%# 既存プランがない場合: 自動でプラン作成を開始（非表示ボタンを自動クリック） %>
-  <div class="plan-entry-loading" data-plan-entry-target="loading">
+  <div class="plan-entry-loading" data-plan--entry-target="loading">
     <div class="plan-entry-loading__spinner">
       <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
     </div>
@@ -43,8 +43,8 @@
   <%# 自動発火用の非表示ボタン %>
   <button type="button"
           class="d-none"
-          data-plan-entry-target="autoTrigger"
-          data-controller="create-plan-trigger"
-          data-action="click->create-plan-trigger#create">
+          data-plan--entry-target="autoTrigger"
+          data-controller="community--create-plan-trigger"
+          data-action="click->community--create-plan-trigger#create">
   </button>
 </div>

@@ -1,33 +1,33 @@
 <aside class="navibar"
-       data-controller="navibar bottom-sheet"
-       data-bottom-sheet-min-value="8"
-       data-bottom-sheet-mid-value="45"
-       data-bottom-sheet-max-value="85"
-       data-bottom-sheet-state-value="mid">
+       data-controller="ui--navibar bottom-sheet"
+       data-ui--bottom-sheet-min-value="8"
+       data-ui--bottom-sheet-mid-value="45"
+       data-ui--bottom-sheet-max-value="85"
+       data-ui--bottom-sheet-state-value="mid">
   <%# モバイル用ドラッグハンドル %>
-  <div class="navibar__handle" data-bottom-sheet-target="handle">
+  <div class="navibar__handle" data-ui--bottom-sheet-target="handle">
     <div class="navibar__handle-bar"></div>
   </div>
 
   <div class="plan-tab-nav">
     <button class="tab-btn tab-community"
             data-tab="community"
-            data-navibar-target="button"
-            data-action="click->navibar#switch">
+            data-ui--navibar-target="button"
+            data-action="click->ui--navibar#switch">
       みんなの旅
     </button>
 
     <button class="tab-btn active"
             data-tab="plan"
-            data-navibar-target="button"
-            data-action="click->navibar#switch">
+            data-ui--navibar-target="button"
+            data-action="click->ui--navibar#switch">
       プラン
     </button>
 
     <button class="tab-btn tab-suggestion"
             data-tab="suggestion"
-            data-navibar-target="button"
-            data-action="click->navibar#switch">
+            data-ui--navibar-target="button"
+            data-action="click->ui--navibar#switch">
       提案
     </button>
   </div>
@@ -48,30 +48,30 @@
 
   <%# 提案タブ用フッター（入力欄）: 現在は非表示 %>
   <div class="suggestion__composer suggestion__composer--disabled"
-       data-navibar-target="footer"
+       data-ui--navibar-target="footer"
        data-tab="suggestion">
     <%= render "suggestions/form", plan: plan %>
   </div>
 
   <%# モバイル用アクションボタン（ナビバー内に配置） %>
   <div class="navibar__actions"
-       data-navibar-target="footer"
+       data-ui--navibar-target="footer"
        data-tab="plan"
-       data-controller="plan-save-modal"
-       data-plan-save-modal-plan-id-value="<%= plan.id %>"
-       data-plan-save-modal-title-value="<%= plan.title %>">
+       data-controller="plan--save-modal"
+       data-plan--save-modal-plan-id-value="<%= plan.id %>"
+       data-plan--save-modal-title-value="<%= plan.title %>">
     <button type="button"
             class="navibar__action-btn navibar__action-btn--share"
-            data-controller="share-modal"
-            data-share-modal-url-value="<%= plan_url(plan) %>"
-            data-share-modal-plan-id-value="<%= plan.id %>"
-            data-action="click->share-modal#open">
+            data-controller="ui--share-modal"
+            data-ui--share-modal-url-value="<%= plan_url(plan) %>"
+            data-ui--share-modal-plan-id-value="<%= plan.id %>"
+            data-action="click->ui--share-modal#open">
       <i class="bi bi-box-arrow-up"></i>
       共有
     </button>
     <button type="button"
             class="navibar__action-btn navibar__action-btn--save"
-            data-action="click->plan-save-modal#open">
+            data-action="click->plan--save-modal#open">
       <i class="bi bi-bookmark"></i>
       保存
     </button>

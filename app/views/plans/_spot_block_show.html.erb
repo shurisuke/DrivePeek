@@ -23,8 +23,8 @@
       <div class="spot-header navibar-padding">
         <div class="spot-order-column">
           <div class="spot-order-icon"
-               data-controller="navibar-marker-button"
-               data-action="click->navibar-marker-button#spot"
+               data-controller="ui--navibar-marker-button"
+               data-action="click->ui--navibar-marker-button#spot"
                role="button"
                tabindex="0"
                aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
@@ -32,8 +32,8 @@
 
         <% if spot.name.present? %>
           <div class="spot-name spot-name--clickable"
-               data-controller="navibar-marker-button"
-               data-action="click->navibar-marker-button#spot"
+               data-controller="ui--navibar-marker-button"
+               data-action="click->ui--navibar-marker-button#spot"
                role="button"
                tabindex="0"><%= spot.name %></div>
         <% end %>

@@ -1,26 +1,26 @@
 <%# 提案モード 応答後アクションボタン %>
 <%# locals: mode:, area_data: {}, condition_data: {}, plan: nil %>
 <div class="suggest-mode-actions"
-     data-controller="suggest-mode"
-     data-suggest-mode-mode-value="<%= mode %>"
-     data-suggest-mode-area-value="<%= area_data.to_json %>"
-     data-suggest-mode-condition-value="<%= condition_data.to_json %>"
-     data-suggest-mode-plan-id-value="<%= plan&.id %>">
+     data-controller="suggestion--mode"
+     data-suggestion--mode-mode-value="<%= mode %>"
+     data-suggestion--mode-area-value="<%= area_data.to_json %>"
+     data-suggestion--mode-condition-value="<%= condition_data.to_json %>"
+     data-suggestion--mode-plan-id-value="<%= plan&.id %>">
   <button type="button"
           class="suggest-mode-actions__btn"
-          data-action="click->suggest-mode#reselectArea">
+          data-action="click->suggestion--mode#reselectArea">
     <i class="bi bi-map"></i>
     エリアを選び直す
   </button>
   <button type="button"
           class="suggest-mode-actions__btn"
-          data-action="click->suggest-mode#changeCondition">
+          data-action="click->suggestion--mode#changeCondition">
     <i class="bi bi-sliders"></i>
     条件を変更
   </button>
   <button type="button"
           class="suggest-mode-actions__btn"
-          data-action="click->suggest-mode#finish">
+          data-action="click->suggestion--mode#finish">
     <i class="bi bi-check-circle"></i>
     終了
   </button>

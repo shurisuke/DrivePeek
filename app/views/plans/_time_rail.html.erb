@@ -8,7 +8,7 @@
 <%# ✅ 出発地点の時刻パネル %>
 <div class="time-rail-block time-rail-block--start"
        data-time-rail-for="start-point"
-       data-time-rail-sync-target="rail">
+       data-ui--time-rail-sync-target="rail">
   <div class="time-rail-block__main">
     <%
       departure_time_value =
@@ -20,25 +20,25 @@
     %>
     <div
       class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %><%= ' start-departure-time--no-spots' unless plan.plan_spots.exists? %>"
-      data-controller="start-departure-time"
-      data-start-departure-time-plan-id-value="<%= plan.id %>"
-      data-start-departure-time-current-value="<%= departure_time_value %>"
+      data-controller="plan--departure-time"
+      data-plan--departure-time-plan-id-value="<%= plan.id %>"
+      data-plan--departure-time-current-value="<%= departure_time_value %>"
     >
       <button
         type="button"
         class="start-departure-time__help-btn"
-        data-controller="help-dialog"
-        data-help-dialog-title-value="時間の変更"
-        data-help-dialog-body-value="時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
-        data-action="click->help-dialog#show"
+        data-controller="ui--help-dialog"
+        data-ui--help-dialog-title-value="時間の変更"
+        data-ui--help-dialog-body-value="時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
+        data-action="click->ui--help-dialog#show"
         aria-label="ヘルプ"
       >?</button>
 
       <button
         type="button"
         class="start-departure-time__main"
-        data-action="click->start-departure-time#openPicker"
-        data-start-departure-time-target="trigger"
+        data-action="click->plan--departure-time#openPicker"
+        data-plan--departure-time-target="trigger"
       >
         <span class="time-display__label">出発</span>
         <span class="time-display__value">
@@ -63,7 +63,7 @@
   <div class="time-rail-block time-rail-block--spot"
        data-time-rail-for="<%= dom_id(plan_spot) %>"
        data-plan-spot-id="<%= plan_spot.id %>"
-       data-time-rail-sync-target="rail">
+       data-ui--time-rail-sync-target="rail">
     <div class="time-rail-block__main">
       <div class="time-display">
         <span class="time-display__label">到着</span>
@@ -79,12 +79,12 @@
       <button
         type="button"
         class="spot-stay-duration<%= ' spot-stay-duration--set' if stay_minutes > 0 %>"
-        data-controller="spot-stay-duration"
-        data-spot-stay-duration-plan-id-value="<%= plan_spot.plan_id %>"
-        data-spot-stay-duration-plan-spot-id-value="<%= plan_spot.id %>"
-        data-spot-stay-duration-current-value="<%= stay_minutes %>"
-        data-action="click->spot-stay-duration#openPicker"
-        data-spot-stay-duration-target="trigger"
+        data-controller="plan--stay-duration"
+        data-plan--stay-duration-plan-id-value="<%= plan_spot.plan_id %>"
+        data-plan--stay-duration-plan-spot-id-value="<%= plan_spot.id %>"
+        data-plan--stay-duration-current-value="<%= stay_minutes %>"
+        data-action="click->plan--stay-duration#openPicker"
+        data-plan--stay-duration-target="trigger"
       >
         <span class="spot-stay-duration__label">滞在</span>
         <span class="spot-stay-duration__value">
@@ -114,7 +114,7 @@
 <% goal_point = plan.goal_point %>
 <div class="time-rail-block time-rail-block--goal"
        data-time-rail-for="goal-point"
-       data-time-rail-sync-target="rail">
+       data-ui--time-rail-sync-target="rail">
   <div class="time-rail-block__main">
     <div class="time-display">
       <span class="time-display__label">到着</span>

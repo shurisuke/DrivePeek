@@ -71,19 +71,19 @@ export default class extends Controller {
     if (!map) return
 
     // 子要素からスポットカードを取得
-    const cards = this.element.querySelectorAll("[data-controller*='suggestion-spot-action']")
+    const cards = this.element.querySelectorAll("[data-controller*='suggestion--spot-action']")
     if (cards.length === 0) return
 
     // 各カードからDB検証済み情報を抽出
     const spotInfos = Array.from(cards).map((card, index) => ({
       card,
-      name: card.dataset.suggestionSpotActionNameValue,
-      planId: card.dataset.suggestionSpotActionPlanIdValue,
+      name: card.dataset["suggestion-SpotActionNameValue"],
+      planId: card.dataset["suggestion-SpotActionPlanIdValue"],
       number: index + 1,
-      spotId: parseInt(card.dataset.suggestionSpotActionSpotIdValue, 10),
-      lat: parseFloat(card.dataset.suggestionSpotActionLatValue),
-      lng: parseFloat(card.dataset.suggestionSpotActionLngValue),
-      placeId: card.dataset.suggestionSpotActionPlaceIdValue,
+      spotId: parseInt(card.dataset["suggestion-SpotActionSpotIdValue"], 10),
+      lat: parseFloat(card.dataset["suggestion-SpotActionLatValue"]),
+      lng: parseFloat(card.dataset["suggestion-SpotActionLngValue"]),
+      placeId: card.dataset["suggestion-SpotActionPlaceIdValue"],
     }))
 
     // 有効なスポット（座標あり）のみ処理
@@ -126,7 +126,7 @@ export default class extends Controller {
       // 子コントローラーにマーカーとspotDataを保存
       const controller = this.application.getControllerForElementAndIdentifier(
         info.card,
-        "suggestion-spot-action"
+        "suggestion--spot-action"
       )
       if (controller) {
         controller._marker = marker

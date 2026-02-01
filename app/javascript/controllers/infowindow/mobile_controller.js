@@ -140,10 +140,10 @@ export default class extends Controller {
    * ナビバーを最小化
    */
   collapseNavibar() {
-    const navibar = document.querySelector("[data-controller~='bottom-sheet']")
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
     if (!navibar) return
 
-    const controller = this.application.getControllerForElementAndIdentifier(navibar, "bottom-sheet")
+    const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
     if (controller) {
       controller.collapse()
     }

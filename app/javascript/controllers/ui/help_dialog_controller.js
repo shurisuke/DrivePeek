@@ -1,13 +1,13 @@
-// app/javascript/controllers/help_dialog_controller.js
+// app/javascript/controllers/ui/help_dialog_controller.js
 // ================================================================
 // Help Dialog Controller
 // 用途: iOS風ヘルプダイアログを汎用的に表示
 //
 // 使い方:
-//   <button data-controller="help-dialog"
-//           data-help-dialog-title-value="タイトル"
-//           data-help-dialog-body-value="<p>本文HTML</p>"
-//           data-action="click->help-dialog#show">?</button>
+//   <button data-controller="ui--help-dialog"
+//           data-ui--help-dialog-title-value="タイトル"
+//           data-ui--help-dialog-body-value="<p>本文HTML</p>"
+//           data-action="click->ui--help-dialog#show">?</button>
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"

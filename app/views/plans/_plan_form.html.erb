@@ -1,12 +1,12 @@
 <% content_for :body_class, "no-footer" %>
 
 <div class="main-content plan-form"
-     data-controller="navibar-resize suggestion-area-draw"
-     data-navibar-resize-min-value="300"
-     data-navibar-resize-max-percent-value="80"
-     data-navibar-resize-default-value="350">
+     data-controller="ui--navibar-resize suggestion-area-draw"
+     data-ui--navibar-resize-min-value="300"
+     data-ui--navibar-resize-max-percent-value="80"
+     data-ui--navibar-resize-default-value="350">
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="edit" data-plan-id="<%= plan.id %>" data-navibar-resize-target="map"></div>
+  <div id="map" class="map" data-map-mode="edit" data-plan-id="<%= plan.id %>" data-ui--navibar-resize-target="map"></div>
 
   <!-- 🔍 検索バー（地図上部に重ねる用） -->
   <div class="map-search-box">
@@ -26,8 +26,8 @@
             class="map-floating-btn map-floating-btn--blue"
             hidden
             title="プレビューを閉じる"
-            data-controller="community-plan-preview"
-            data-action="click->community-plan-preview#hide">
+            data-controller="community--plan-preview"
+            data-action="click->community--plan-preview#hide">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-share" aria-hidden="true"></i>
     </button>
@@ -38,8 +38,8 @@
             class="map-floating-btn map-floating-btn--red"
             hidden
             title="検索結果をクリア"
-            data-controller="search-hit-clear"
-            data-action="click->search-hit-clear#clear">
+            data-controller="ui--search-hit-clear"
+            data-action="click->ui--search-hit-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-search" aria-hidden="true"></i>
     </button>
@@ -50,8 +50,8 @@
             class="map-floating-btn map-floating-btn--purple"
             hidden
             title="提案ピンをクリア"
-            data-controller="suggestion-pin-clear"
-            data-action="click->suggestion-pin-clear#clear">
+            data-controller="suggestion--pin-clear"
+            data-action="click->suggestion--pin-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-stars" aria-hidden="true"></i>
     </button>
@@ -64,8 +64,8 @@
 
   <!-- ナビバーリサイズハンドル -->
   <div class="navibar-resize-handle"
-       data-navibar-resize-target="handle"
-       data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
+       data-ui--navibar-resize-target="handle"
+       data-action="mousedown->ui--navibar-resize#startResize touchstart->ui--navibar-resize#startResize click->ui--navibar-resize#handleClick">
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
@@ -77,21 +77,21 @@
 
   <!-- アクションボタン（保存・共有） -->
   <div class="plan-actions"
-       data-controller="plan-save-modal"
-       data-plan-save-modal-plan-id-value="<%= plan.id %>"
-       data-plan-save-modal-title-value="<%= plan.title %>">
+       data-controller="plan--save-modal"
+       data-plan--save-modal-plan-id-value="<%= plan.id %>"
+       data-plan--save-modal-title-value="<%= plan.title %>">
     <div class="plan-actions__buttons">
       <button type="button"
               class="btn btn-action btn-action--share"
-              data-controller="share-modal"
-              data-share-modal-url-value="<%= plan_url(plan) %>"
-              data-share-modal-plan-id-value="<%= plan.id %>"
-              data-action="click->share-modal#open">
+              data-controller="ui--share-modal"
+              data-ui--share-modal-url-value="<%= plan_url(plan) %>"
+              data-ui--share-modal-plan-id-value="<%= plan.id %>"
+              data-action="click->ui--share-modal#open">
         共有
       </button>
       <button type="button"
               class="btn btn-action btn-action--save"
-              data-action="click->plan-save-modal#open">
+              data-action="click->plan--save-modal#open">
         保存
       </button>
     </div>
@@ -105,16 +105,16 @@
 <%# モバイル用InfoWindowボトムシート %>
 <div id="mobile-infowindow"
      class="mobile-infowindow"
-     data-controller="mobile-infowindow"
+     data-controller="infowindow--mobile"
      hidden>
-  <div class="mobile-infowindow__backdrop" data-action="click->mobile-infowindow#close"></div>
-  <div class="mobile-infowindow__sheet" data-mobile-infowindow-target="sheet">
-    <div class="mobile-infowindow__handle" data-mobile-infowindow-target="handle">
+  <div class="mobile-infowindow__backdrop" data-action="click->infowindow--mobile#close"></div>
+  <div class="mobile-infowindow__sheet" data-infowindow--mobile-target="sheet">
+    <div class="mobile-infowindow__handle" data-infowindow--mobile-target="handle">
       <div class="mobile-infowindow__handle-bar"></div>
     </div>
     <button type="button"
             class="mobile-infowindow__close-btn"
-            data-action="click->mobile-infowindow#close">
+            data-action="click->infowindow--mobile#close">
       <i class="bi bi-x-lg"></i>
     </button>
     <div class="mobile-infowindow__content" id="mobile-infowindow-content">
