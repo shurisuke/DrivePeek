@@ -1,7 +1,7 @@
 class Spot < ApplicationRecord
   # Associations
-  has_many :like_spots, dependent: :destroy
-  has_many :liked_by_users, through: :like_spots, source: :user
+  has_many :favorite_spots, dependent: :destroy
+  has_many :liked_by_users, through: :favorite_spots, source: :user
   has_many :plan_spots, dependent: :destroy
   has_many :plans, through: :plan_spots
   has_many :spot_genres, dependent: :destroy
@@ -85,7 +85,7 @@ class Spot < ApplicationRecord
   scope :liked_by, ->(user) {
     return none unless user
 
-    joins(:like_spots).where(like_spots: { user_id: user.id })
+    joins(:favorite_spots).where(favorite_spots: { user_id: user.id })
   }
 
   # ジャンルで絞り込み（複数対応）

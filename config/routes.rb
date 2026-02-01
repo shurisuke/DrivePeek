@@ -45,7 +45,7 @@ Rails.application.routes.draw do
 
   # プラン
   namespace :plans do
-    resources :my_plans, only: %i[index]
+    resources :mine, only: %i[index]
   end
 
   resources :plans, only: %i[index show new create edit update destroy] do
@@ -105,10 +105,10 @@ Rails.application.routes.draw do
   get "favorites" => "favorites#index"
 
   # お気に入りスポット
-  resources :like_spots, only: %i[create destroy]
+  resources :favorite_spots, only: %i[create destroy]
 
   # お気に入りプラン
-  resources :like_plans, only: %i[create destroy]
+  resources :favorite_plans, only: %i[create destroy]
 
   # ヘルスチェック
   get "up" => "rails/health#show", as: :rails_health_check

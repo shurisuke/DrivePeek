@@ -18,7 +18,7 @@ RSpec.describe "Favorites", type: :request do
       before { sign_in user }
 
       context "スポット検索（search_type=spot）" do
-        let!(:like_spot) { create(:like_spot, user: user, spot: spot) }
+        let!(:favorite_spot) { create(:favorite_spot, user: user, spot: spot) }
 
         it "正常に表示される" do
           get favorites_path, params: { search_type: "spot" }
@@ -32,7 +32,7 @@ RSpec.describe "Favorites", type: :request do
       end
 
       context "プラン検索（search_type=plan）" do
-        let!(:like_plan) { create(:like_plan, user: user, plan: plan) }
+        let!(:favorite_plan) { create(:favorite_plan, user: user, plan: plan) }
 
         it "正常に表示される" do
           get favorites_path, params: { search_type: "plan" }
@@ -53,7 +53,7 @@ RSpec.describe "Favorites", type: :request do
       end
 
       context "キーワード検索" do
-        let!(:like_spot) { create(:like_spot, user: user, spot: spot) }
+        let!(:favorite_spot) { create(:favorite_spot, user: user, spot: spot) }
 
         it "キーワードでフィルタできる" do
           get favorites_path, params: { search_type: "spot", q: spot.name }
@@ -62,7 +62,7 @@ RSpec.describe "Favorites", type: :request do
       end
 
       context "都市フィルタ" do
-        let!(:like_spot) { create(:like_spot, user: user, spot: spot) }
+        let!(:favorite_spot) { create(:favorite_spot, user: user, spot: spot) }
 
         it "都市でフィルタできる" do
           get favorites_path, params: { search_type: "spot", cities: [ spot.city ] }
@@ -73,7 +73,7 @@ RSpec.describe "Favorites", type: :request do
       context "ジャンルフィルタ" do
         let(:genre) { create(:genre) }
         let(:spot_with_genre) { create(:spot, genres: [ genre ]) }
-        let!(:like_spot) { create(:like_spot, user: user, spot: spot_with_genre) }
+        let!(:favorite_spot) { create(:favorite_spot, user: user, spot: spot_with_genre) }
 
         it "ジャンルでフィルタできる" do
           get favorites_path, params: { search_type: "spot", genre_ids: [ genre.id ] }

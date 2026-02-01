@@ -11,8 +11,8 @@ RSpec.describe Plan, type: :model do
     it { should have_many(:spots).through(:plan_spots) }
     it { should have_one(:start_point).dependent(:destroy) }
     it { should have_one(:goal_point).dependent(:destroy) }
-    it { should have_many(:like_plans).dependent(:destroy) }
-    it { should have_many(:liked_by_users).through(:like_plans).source(:user) }
+    it { should have_many(:favorite_plans).dependent(:destroy) }
+    it { should have_many(:liked_by_users).through(:favorite_plans).source(:user) }
     it { should have_many(:ai_chat_messages).dependent(:destroy) }
   end
 
@@ -70,7 +70,7 @@ RSpec.describe Plan, type: :model do
       let!(:liked_plan) { create(:plan, user: user) }
       let!(:unliked_plan) { create(:plan, user: user) }
 
-      before { create(:like_plan, user: other_user, plan: liked_plan) }
+      before { create(:favorite_plan, user: other_user, plan: liked_plan) }
 
       it "指定ユーザーがお気に入りしたプランのみ返す" do
         result = Plan.liked_by(other_user)

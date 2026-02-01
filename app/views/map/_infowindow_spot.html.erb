@@ -19,7 +19,7 @@
   has_multiple_photos = urls.size > 1
   comments = spot.spot_comments.chronological.includes(:user)
   comment_count = comments.size
-  like_spot = current_user.like_spots.find_by(spot: spot)
+  favorite_spot = current_user.favorite_spots.find_by(spot: spot)
 %>
 
 <%= turbo_frame_tag "infowindow-content" do %>
@@ -42,7 +42,7 @@
       <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
     </div>
     <div class="dp-infowindow__stats">
-      <%= render "like_spots/infowindow_button", spot: spot, like_spot: like_spot %>
+      <%= render "favorite_spots/infowindow_button", spot: spot, favorite_spot: favorite_spot %>
       <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
         <i class="bi bi-chat"></i>
         <span id="comment-count"><%= comment_count %></span>

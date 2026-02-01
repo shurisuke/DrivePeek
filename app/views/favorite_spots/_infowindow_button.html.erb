@@ -1,0 +1,26 @@
+<%# app/views/favorite_spots/_infowindow_button.html.erb %>
+<%# locals: spot:, favorite_spot: nil %>
+<%
+  is_liked = favorite_spot.present?
+  favorite_count = spot.favorite_spots.count
+%>
+
+<%= turbo_frame_tag dom_id(spot, :infowindow_favorite) do %>
+  <% if is_liked %>
+    <%= button_to favorite_spot_path(favorite_spot),
+                  method: :delete,
+                  class: "dp-infowindow__stat dp-infowindow__stat--like dp-infowindow__stat--liked",
+                  data: { turbo_frame: dom_id(spot, :infowindow_favorite) } do %>
+      <i class="bi bi-heart-fill"></i>
+      <span><%= favorite_count %></span>
+    <% end %>
+  <% else %>
+    <%= button_to favorite_spots_path(spot_id: spot.id),
+                  method: :post,
+                  class: "dp-infowindow__stat dp-infowindow__stat--like",
+                  data: { turbo_frame: dom_id(spot, :infowindow_favorite) } do %>
+      <i class="bi bi-heart"></i>
+      <span><%= favorite_count %></span>
+    <% end %>
+  <% end %>
+<% end %>

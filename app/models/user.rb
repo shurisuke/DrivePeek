@@ -37,10 +37,10 @@ class User < ApplicationRecord
   # Associations
   has_many :identities, dependent: :destroy
   has_many :plans, dependent: :destroy
-  has_many :like_spots, dependent: :destroy
-  has_many :liked_spots, through: :like_spots, source: :spot
-  has_many :like_plans, dependent: :destroy
-  has_many :liked_plans, through: :like_plans, source: :plan
+  has_many :favorite_spots, dependent: :destroy
+  has_many :liked_spots, through: :favorite_spots, source: :spot
+  has_many :favorite_plans, dependent: :destroy
+  has_many :liked_plans, through: :favorite_plans, source: :plan
   has_many :spot_comments, dependent: :destroy
 
   # Validations

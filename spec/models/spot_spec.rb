@@ -4,8 +4,8 @@ require "rails_helper"
 
 RSpec.describe Spot, type: :model do
   describe "associations" do
-    it { should have_many(:like_spots).dependent(:destroy) }
-    it { should have_many(:liked_by_users).through(:like_spots).source(:user) }
+    it { should have_many(:favorite_spots).dependent(:destroy) }
+    it { should have_many(:liked_by_users).through(:favorite_spots).source(:user) }
     it { should have_many(:plan_spots).dependent(:destroy) }
     it { should have_many(:plans).through(:plan_spots) }
     it { should have_many(:spot_genres).dependent(:destroy) }
@@ -75,7 +75,7 @@ RSpec.describe Spot, type: :model do
       let!(:liked_spot) { create(:spot) }
       let!(:unliked_spot) { create(:spot) }
 
-      before { create(:like_spot, user: user, spot: liked_spot) }
+      before { create(:favorite_spot, user: user, spot: liked_spot) }
 
       it "指定ユーザーがお気に入りしたスポットのみ返す" do
         result = Spot.liked_by(user)

@@ -1,8 +1,0 @@
-<%= turbo_stream.replace dom_id(@spot, :like_button) do %>
-  <%= render "like_spots/button", spot: @spot, like_spot: @like_spot %>
-<% end %>
-
-<%# InfoWindow用（開いている場合のみ更新される） %>
-<%= turbo_stream.replace dom_id(@spot, :infowindow_like) do %>
-  <%= render "like_spots/infowindow_button", spot: @spot, like_spot: @like_spot %>
-<% end %>

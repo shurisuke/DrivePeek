@@ -1,4 +1,4 @@
-class Plans::MyPlansController < ApplicationController
+class Plans::MineController < ApplicationController
   before_action :authenticate_user!
 
   def index

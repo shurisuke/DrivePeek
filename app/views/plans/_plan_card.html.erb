@@ -1,11 +1,11 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, plan: nil, like_plan: nil, can_delete: false, can_edit: false, genres: [], preview_mode: false %>
+<%# locals: plan_title:, spots: [], total_duration: nil, total_distance: nil, plan: nil, favorite_plan: nil, can_delete: false, can_edit: false, genres: [], preview_mode: false %>
 
 <%
   _can_edit = local_assigns.fetch(:can_edit, false)
   _can_delete = local_assigns.fetch(:can_delete, false)
   _plan = local_assigns.fetch(:plan, nil)
-  _like_plan = local_assigns.fetch(:like_plan, nil)
+  _favorite_plan = local_assigns.fetch(:favorite_plan, nil)
   _preview_mode = local_assigns.fetch(:preview_mode, false)
 %>
 
@@ -46,7 +46,7 @@
         </button>
       <% end %>
       <% if _plan %>
-        <%= render "like_plans/button", plan: _plan, like_plan: _like_plan %>
+        <%= render "favorite_plans/button", plan: _plan, favorite_plan: _favorite_plan %>
       <% end %>
     </div>
   </div>

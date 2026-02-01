@@ -1,4 +1,4 @@
-class LikeSpot < ApplicationRecord
+class FavoriteSpot < ApplicationRecord
   # Associations
   belongs_to :user
   belongs_to :spot

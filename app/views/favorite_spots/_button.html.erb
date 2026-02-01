@@ -1,21 +1,21 @@
-<%# app/views/like_spots/_button.html.erb %>
-<%# locals: spot:, like_spot: nil %>
+<%# app/views/favorite_spots/_button.html.erb %>
+<%# locals: spot:, favorite_spot: nil %>
 
-<%= turbo_frame_tag dom_id(spot, :like_button) do %>
-  <% if like_spot.present? %>
-    <%= button_to like_spot_path(like_spot),
+<%= turbo_frame_tag dom_id(spot, :favorite_button) do %>
+  <% if favorite_spot.present? %>
+    <%= button_to favorite_spot_path(favorite_spot),
                   method: :delete,
                   class: "fav-button fav-button--heart fav-button--sm fav-button--active",
                   "aria-label": "お気に入り解除",
-                  data: { turbo_frame: dom_id(spot, :like_button) } do %>
+                  data: { turbo_frame: dom_id(spot, :favorite_button) } do %>
       <i class="bi bi-heart-fill" aria-hidden="true"></i>
     <% end %>
   <% else %>
-    <%= button_to like_spots_path(spot_id: spot.id),
+    <%= button_to favorite_spots_path(spot_id: spot.id),
                   method: :post,
                   class: "fav-button fav-button--heart fav-button--sm",
                   "aria-label": "お気に入り登録",
-                  data: { turbo_frame: dom_id(spot, :like_button) } do %>
+                  data: { turbo_frame: dom_id(spot, :favorite_button) } do %>
       <i class="bi bi-heart" aria-hidden="true"></i>
     <% end %>
   <% end %>
