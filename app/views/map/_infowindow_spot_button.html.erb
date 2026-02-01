@@ -23,9 +23,10 @@
     <button type="button"
             class="dp-infowindow__btn"
             data-controller="infowindow-spot-action"
-            data-infowindow-spot-action-url-value="<%= api_plan_plan_spots_path(plan_id) %>"
+            data-infowindow-spot-action-url-value="<%= api_plan_spots_path %>"
             data-infowindow-spot-action-method-value="POST"
             data-infowindow-spot-action-spot-id-value="<%= spot.id %>"
+            data-infowindow-spot-action-plan-id-value="<%= plan_id %>"
             data-action="click->infowindow-spot-action#submit">
       <%= btn_label %>
     </button>
