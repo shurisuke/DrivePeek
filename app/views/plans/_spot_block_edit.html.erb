@@ -6,10 +6,10 @@
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
-  data-controller="plan-spot-memo plan-spot-delete"
-  data-plan-spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
-  data-plan-spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
-  data-plan-spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
+  data-controller="plan--spot-memo plan-spot-delete"
+  data-plan--spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
+  data-plan--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
+  data-plan--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
   data-spot-id="<%= spot.id %>"
   data-plan-spot-id="<%= plan_spot.id %>"
   data-position="<%= plan_spot.position %>"
@@ -17,7 +17,7 @@
   data-lng="<%= spot.lng %>"
   data-polyline="<%= plan_spot.polyline %>"
   data-place-id="<%= spot.place_id %>"
-  data-time-rail-sync-target="content"
+  data-ui--time-rail-sync-target="content"
   data-time-rail-sync="<%= dom_id(plan_spot) %>"
 >
   <% is_open = defined?(@open_spot_ids) && @open_spot_ids&.include?(plan_spot.id) %>
@@ -30,8 +30,8 @@
         <div class="spot-header">
           <div class="spot-order-column">
             <div class="spot-order-icon"
-                 data-controller="navibar-marker-button"
-                 data-action="click->navibar-marker-button#spot"
+                 data-controller="ui--navibar-marker-button"
+                 data-action="click->ui--navibar-marker-button#spot"
                  role="button"
                  tabindex="0"
                  aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
@@ -52,8 +52,8 @@
 
           <% if spot.name.present? %>
             <div class="spot-name spot-name--clickable"
-                 data-controller="navibar-marker-button"
-                 data-action="click->navibar-marker-button#spot"
+                 data-controller="ui--navibar-marker-button"
+                 data-action="click->ui--navibar-marker-button#spot"
                  role="button"
                  tabindex="0"><%= spot.name %></div>
           <% end %>
@@ -71,8 +71,8 @@
 
         <%# メモ表示 %>
         <div class="spot-memo spot-memo--pin navibar-padding <%= "d-none" if plan_spot.memo.blank? %>"
-             data-plan-spot-memo-target="memoDisplay">
-          <div class="spot-memo__content" data-plan-spot-memo-target="memoContent">
+             data-plan--spot-memo-target="memoDisplay">
+          <div class="spot-memo__content" data-plan--spot-memo-target="memoContent">
             <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
             <%= simple_format(h(plan_spot.memo.to_s)) %>
           </div>
@@ -80,7 +80,7 @@
           <button type="button"
                   class="spot-memo__delete"
                   aria-label="メモを削除"
-                  data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#clear">
+                  data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#clear">
             ×
           </button>
         </div>
@@ -105,7 +105,7 @@
       <%# ✅ 下部：トグル詳細コンテンツ %>
       <div class="collapse spot-detail<%= ' show' if is_open %>"
            id="spotDetail-<%= plan_spot.id %>"
-           data-plan-spot-memo-target="detail">
+           data-plan--spot-memo-target="detail">
 
           <%# 有料道路設定行 %>
           <div class="spot-toll-row">
@@ -124,25 +124,25 @@
 
           <%# メモ編集エリア %>
           <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
-               data-plan-spot-memo-target="editor"
-               data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#stopPropagation">
-            <form data-action="submit->plan-spot-memo#submit">
+               data-plan--spot-memo-target="editor"
+               data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#stopPropagation">
+            <form data-action="submit->plan--spot-memo#submit">
               <textarea class="form-control"
                         rows="2"
                         placeholder="メモを入力"
-                        data-plan-spot-memo-target="textarea"
-                        data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
+                        data-plan--spot-memo-target="textarea"
+                        data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
 
               <div class="spot-memo__editor-actions">
                 <button type="button"
                         class="btn btn-outline-secondary"
-                        data-action="pointerdown->plan-spot-memo#stopPropagation click->plan-spot-memo#close">
+                        data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#close">
                   閉じる
                 </button>
 
                 <button type="submit"
                         class="btn btn-personal"
-                        data-action="pointerdown->plan-spot-memo#stopPropagation">
+                        data-action="pointerdown->plan--spot-memo#stopPropagation">
                   追加
                 </button>
               </div>
@@ -155,7 +155,7 @@
 
               <button type="button"
                       class="btn btn-outline-secondary btn-sm w-100"
-                      data-action="click->plan-spot-memo#open"
+                      data-action="click->plan--spot-memo#open"
                       aria-label="メモを編集">
                 <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
               </button>
@@ -165,7 +165,7 @@
                     method: :delete,
                     class: "d-inline w-100",
                     data: {
-                      action: "turbo:submit-end->plan-spot-delete#afterSubmit pointerdown->plan-spot-memo#stopPropagation"
+                      action: "turbo:submit-end->plan--spot-delete#afterSubmit pointerdown->plan--spot-memo#stopPropagation"
                     }
                   ) do %>
                 <button type="submit"

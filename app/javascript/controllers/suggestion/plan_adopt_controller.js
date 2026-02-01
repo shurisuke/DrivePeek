@@ -71,10 +71,10 @@ export default class extends Controller {
     const spotElements = this.spotsTarget.querySelectorAll(".suggestion-spot-card")
     return Array.from(spotElements).map((el, index) => ({
       index,
-      spot_id: parseInt(el.dataset.suggestionSpotActionSpotIdValue, 10),
-      lat: parseFloat(el.dataset.suggestionSpotActionLatValue),
-      lng: parseFloat(el.dataset.suggestionSpotActionLngValue),
-      place_id: el.dataset.suggestionSpotActionPlaceIdValue,
+      spot_id: parseInt(el.dataset["suggestion-SpotActionSpotIdValue"], 10),
+      lat: parseFloat(el.dataset["suggestion-SpotActionLatValue"]),
+      lng: parseFloat(el.dataset["suggestion-SpotActionLngValue"]),
+      place_id: el.dataset["suggestion-SpotActionPlaceIdValue"],
     }))
   }
 

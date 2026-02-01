@@ -38,10 +38,10 @@
         <button type="button"
                 class="plan-card__action plan-card__action--share"
                 aria-label="シェア"
-                data-controller="share-modal"
-                data-share-modal-url-value="<%= plan_url(_plan) %>"
-                data-share-modal-text-value="<%= share_text_for_plan(_plan) %>"
-                data-action="click->share-modal#open">
+                data-controller="ui--share-modal"
+                data-ui--share-modal-url-value="<%= plan_url(_plan) %>"
+                data-ui--share-modal-text-value="<%= share_text_for_plan(_plan) %>"
+                data-action="click->ui--share-modal#open">
           <i class="bi bi-three-dots" aria-hidden="true"></i>
         </button>
       <% end %>
@@ -72,14 +72,14 @@
         %>
         <% if _preview_mode && spot[:lat].present? && spot[:lng].present? %>
           <div class="plan-card__spot plan-card__spot--clickable"
-               data-controller="single-spot-preview"
-               data-single-spot-preview-lat-value="<%= spot[:lat] %>"
-               data-single-spot-preview-lng-value="<%= spot[:lng] %>"
-               data-single-spot-preview-name-value="<%= spot[:name] %>"
-               data-single-spot-preview-address-value="<%= spot[:address] %>"
-               data-single-spot-preview-place-id-value="<%= spot[:place_id] %>"
-               data-single-spot-preview-genres-value="<%= (spot[:genres] || []).to_json %>"
-               data-action="click->single-spot-preview#show"
+               data-controller="community--single-spot-preview"
+               data-community--single-spot-preview-lat-value="<%= spot[:lat] %>"
+               data-community--single-spot-preview-lng-value="<%= spot[:lng] %>"
+               data-community--single-spot-preview-name-value="<%= spot[:name] %>"
+               data-community--single-spot-preview-address-value="<%= spot[:address] %>"
+               data-community--single-spot-preview-place-id-value="<%= spot[:place_id] %>"
+               data-community--single-spot-preview-genres-value="<%= (spot[:genres] || []).to_json %>"
+               data-action="click->community--single-spot-preview#show"
                role="button"
                tabindex="0">
             <span class="plan-card__spot-number"><%= index + 1 %></span>
@@ -130,9 +130,9 @@
         <button type="button"
                 class="plan-card__detail-link plan-card__detail-link--preview"
                 aria-label="ルートをプレビュー"
-                data-controller="community-plan-preview"
-                data-community-plan-preview-plan-id-value="<%= _plan.id %>"
-                data-action="click->community-plan-preview#show">
+                data-controller="community--plan-preview"
+                data-community--plan-preview-plan-id-value="<%= _plan.id %>"
+                data-action="click->community--plan-preview#show">
           <i class="bi bi-share" aria-hidden="true"></i>
           ルート
         </button>

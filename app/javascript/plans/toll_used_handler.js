@@ -43,10 +43,14 @@ const formatFooterTime = (minutes) => {
 
 /**
  * 距離を「X.Xkm」形式にフォーマット
+ * - 10km以上: 整数のみ表示
+ * - 10km未満: 小数点以下1桁まで表示
  */
 const formatDistance = (km) => {
   if (km == null) return "—"
-  return `${km}<span class="km-unit">km</span>`
+  const value = parseFloat(km)
+  const formatted = value >= 10 ? Math.floor(value) : value.toFixed(1).replace(/\.0$/, '')
+  return `${formatted}<span class="km-unit">km</span>`
 }
 
 /**

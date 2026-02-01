@@ -8,11 +8,11 @@
 <% minutes = move_minutes % 60 %>
 
 <div class="start-point-block"
-     data-controller="start-point-editor"
+     data-controller="plan--start-point-editor"
      data-polyline="<%= plan.start_point&.polyline %>"
      data-lat="<%= plan.start_point&.lat %>"
      data-lng="<%= plan.start_point&.lng %>"
-     data-time-rail-sync-target="content"
+     data-ui--time-rail-sync-target="content"
      data-time-rail-sync="start-point">
   <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
 
@@ -23,17 +23,17 @@
     <%# 3層構造: アイコン | タイトル | スペーサー %>
     <div class="start-header">
       <span class="start-icon"
-            data-controller="navibar-marker-button"
+            data-controller="ui--navibar-marker-button"
             data-point-type="start"
-            data-action="click->navibar-marker-button#point"
+            data-action="click->ui--navibar-marker-button#point"
             role="button"
             tabindex="0"
             aria-label="出発地点を地図で表示"></span>
 
       <span class="start-title start-title--clickable"
-            data-controller="navibar-marker-button"
+            data-controller="ui--navibar-marker-button"
             data-point-type="start"
-            data-action="click->navibar-marker-button#point"
+            data-action="click->ui--navibar-marker-button#point"
             role="button"
             tabindex="0">出発</span>
 
@@ -41,7 +41,7 @@
     </div>
 
     <%# 住所 %>
-    <div class="start-address navibar-padding" data-start-point-editor-target="address">
+    <div class="start-address navibar-padding" data-plan--start-point-editor-target="address">
       <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
     </div>
 
@@ -92,7 +92,7 @@
           id="start-point-edit-<%= plan.id %>"
           class="start-edit"
           hidden
-          data-start-point-editor-target="editArea"
+          data-plan--start-point-editor-target="editArea"
         >
           <div class="start-edit__inner">
             <label for="start-point-address-<%= plan.id %>" class="start-edit__label">
@@ -105,8 +105,8 @@
               class="form-control start-edit__input"
               placeholder="（例: 〇〇市〇〇町〇〇-〇）"
               autocomplete="off"
-              data-start-point-editor-target="input"
-              data-action="keydown->start-point-editor#search compositionstart->start-point-editor#compositionStart compositionend->start-point-editor#compositionEnd"
+              data-plan--start-point-editor-target="input"
+              data-action="keydown->plan--start-point-editor#search compositionstart->plan--start-point-editor#compositionStart compositionend->plan--start-point-editor#compositionEnd"
             >
 
             <div class="point-edit__actions">

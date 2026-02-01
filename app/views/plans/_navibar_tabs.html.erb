@@ -1,13 +1,13 @@
-<div class="tab-content tab-community" data-navibar-target="content">
+<div class="tab-content tab-community" data-ui--navibar-target="content">
   <%= render "plans/community_tab" %>
 </div>
 
 <div class="tab-content tab-plan active"
-     data-navibar-target="content"
+     data-ui--navibar-target="content"
      id="plan_tab_content">
   <%= render "plans/plan_tab", plan: plan %>
 </div>
 
-<div class="tab-content tab-suggestion" data-navibar-target="content">
+<div class="tab-content tab-suggestion" data-ui--navibar-target="content">
   <%= render "suggestions/tab", plan: plan %>
 </div>

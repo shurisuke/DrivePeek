@@ -11,35 +11,35 @@
 </script>
 
 <div class="main-content spot-detail"
-     data-controller="navibar-resize"
-     data-navibar-resize-min-value="300"
-     data-navibar-resize-max-percent-value="80"
-     data-navibar-resize-default-value="350"
-     data-navibar-resize-storage-key-value="drive_peek:navibar_spot_width"
-     data-navibar-resize-collapsed-key-value="drive_peek:navibar_spot_collapsed"
-     data-navibar-resize-slide-key-value="drive_peek:navibar_spot_slide">
+     data-controller="ui--navibar-resize"
+     data-ui--navibar-resize-min-value="300"
+     data-ui--navibar-resize-max-percent-value="80"
+     data-ui--navibar-resize-default-value="350"
+     data-ui--navibar-resize-storage-key-value="drive_peek:navibar_spot_width"
+     data-ui--navibar-resize-collapsed-key-value="drive_peek:navibar_spot_collapsed"
+     data-ui--navibar-resize-slide-key-value="drive_peek:navibar_spot_slide">
   <%# InfoWindowスケルトンテンプレート（JSから参照） %>
   <%= render "map/infowindow_skeleton" %>
 
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="spot_show" data-spot-id="<%= @spot.id %>" data-navibar-resize-target="map"></div>
+  <div id="map" class="map" data-map-mode="spot_show" data-spot-id="<%= @spot.id %>" data-ui--navibar-resize-target="map"></div>
 
   <!-- リサイズハンドル -->
   <div class="navibar-resize-handle"
-       data-navibar-resize-target="handle"
-       data-action="mousedown->navibar-resize#startResize touchstart->navibar-resize#startResize click->navibar-resize#handleClick">
+       data-ui--navibar-resize-target="handle"
+       data-action="mousedown->ui--navibar-resize#startResize touchstart->ui--navibar-resize#startResize click->ui--navibar-resize#handleClick">
     <div class="navibar-resize-handle__grip"></div>
   </div>
 
   <!-- ナビバー（スポット詳細用） -->
   <aside class="navibar navibar--show"
-         data-controller="bottom-sheet"
-         data-bottom-sheet-min-value="8"
-         data-bottom-sheet-mid-value="45"
-         data-bottom-sheet-max-value="85"
-         data-bottom-sheet-state-value="mid">
+         data-controller="ui--bottom-sheet"
+         data-ui--bottom-sheet-min-value="8"
+         data-ui--bottom-sheet-mid-value="45"
+         data-ui--bottom-sheet-max-value="85"
+         data-ui--bottom-sheet-state-value="mid">
     <%# モバイル用ドラッグハンドル %>
-    <div class="navibar__handle" data-bottom-sheet-target="handle">
+    <div class="navibar__handle" data-ui--bottom-sheet-target="handle">
       <div class="navibar__handle-bar"></div>
     </div>
 
@@ -80,16 +80,16 @@
   <%# モバイル用InfoWindowボトムシート %>
   <div id="mobile-infowindow"
        class="mobile-infowindow"
-       data-controller="mobile-infowindow"
+       data-controller="infowindow--mobile"
        hidden>
-    <div class="mobile-infowindow__backdrop" data-action="click->mobile-infowindow#close"></div>
-    <div class="mobile-infowindow__sheet" data-mobile-infowindow-target="sheet">
-      <div class="mobile-infowindow__handle" data-mobile-infowindow-target="handle">
+    <div class="mobile-infowindow__backdrop" data-action="click->infowindow--mobile#close"></div>
+    <div class="mobile-infowindow__sheet" data-infowindow--mobile-target="sheet">
+      <div class="mobile-infowindow__handle" data-infowindow--mobile-target="handle">
         <div class="mobile-infowindow__handle-bar"></div>
       </div>
       <button type="button"
               class="mobile-infowindow__close-btn"
-              data-action="click->mobile-infowindow#close">
+              data-action="click->infowindow--mobile#close">
         <i class="bi bi-x-lg"></i>
       </button>
       <div class="mobile-infowindow__content" id="mobile-infowindow-content">

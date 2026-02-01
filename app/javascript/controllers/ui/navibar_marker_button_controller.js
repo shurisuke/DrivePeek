@@ -1,4 +1,4 @@
-// app/javascript/controllers/navibar_marker_button_controller.js
+// app/javascript/controllers/ui/navibar_marker_button_controller.js
 //
 // ================================================================
 // プランバー内マーカーボタン
@@ -35,7 +35,7 @@ export default class extends Controller {
     // DOMからスポット情報を取得
     const spotId = spotBlock.dataset.spotId
     const placeId = spotBlock.dataset.placeId
-    const planId = spotBlock.dataset.planSpotDeletePlanIdValue
+    const planId = spotBlock.dataset["plan-SpotDeletePlanIdValue"]
     const planSpotId = spotBlock.dataset.planSpotId
     const nameEl = spotBlock.querySelector(".spot-name")
     const addressEl = spotBlock.querySelector(".spot-address")

@@ -12,9 +12,9 @@
 
 <%= turbo_frame_tag "infowindow-content" do %>
 <div class="dp-infowindow dp-infowindow--<%= zoom_scale %> dp-infowindow--point"
-     data-controller="infowindow-point-editor"
-     data-infowindow-point-editor-edit-mode-value="<%= edit_mode %>"
-     data-infowindow-point-editor-plan-id-value="<%= plan_id %>">
+     data-controller="infowindow--point-editor"
+     data-infowindow--point-editor-edit-mode-value="<%= edit_mode %>"
+     data-infowindow--point-editor-plan-id-value="<%= plan_id %>">
 
   <div class="dp-infowindow__header">
     <div class="dp-infowindow__title"><%= name %></div>
@@ -31,21 +31,21 @@
     <%# 表示モード: ボタン %>
     <button type="button"
             class="dp-infowindow__edit-btn"
-            data-infowindow-point-editor-target="displayMode"
-            data-action="click->infowindow-point-editor#showEditMode">
+            data-infowindow--point-editor-target="displayMode"
+            data-action="click->infowindow--point-editor#showEditMode">
       <%= edit_mode == "start_point" ? "出発地点を変更" : "帰宅地点を変更" %>
     </button>
 
     <%# 編集モード: 入力フォーム（ボタンと同じ位置に表示） %>
-    <div class="dp-infowindow__edit-row" hidden data-infowindow-point-editor-target="editMode">
+    <div class="dp-infowindow__edit-row" hidden data-infowindow--point-editor-target="editMode">
       <input type="text"
              class="dp-infowindow__edit-input"
              placeholder="住所を入力..."
-             data-infowindow-point-editor-target="input"
-             data-action="keydown->infowindow-point-editor#onKeydown">
+             data-infowindow--point-editor-target="input"
+             data-action="keydown->infowindow--point-editor#onKeydown">
       <button type="button"
               class="dp-infowindow__edit-submit"
-              data-action="click->infowindow-point-editor#search">
+              data-action="click->infowindow--point-editor#search">
         変更
       </button>
     </div>

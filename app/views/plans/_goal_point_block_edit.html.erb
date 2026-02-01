@@ -4,32 +4,32 @@
 
 <div
   class="goal-point-section"
-  data-controller="goal-point-visibility"
-  data-goal-point-visibility-plan-id-value="<%= plan.id %>"
+  data-controller="plan--goal-point-visibility"
+  data-plan--goal-point-visibility-plan-id-value="<%= plan.id %>"
 >
-  <div data-goal-point-visibility-target="blockArea" hidden>
+  <div data-plan--goal-point-visibility-target="blockArea" hidden>
     <div class="goal-point-block"
-         data-controller="goal-point-editor"
+         data-controller="plan--goal-point-editor"
          data-lat="<%= goal_point&.lat %>"
          data-lng="<%= goal_point&.lng %>"
-         data-time-rail-sync-target="content"
+         data-ui--time-rail-sync-target="content"
          data-time-rail-sync="goal-point">
       <%# ✅ 上部：帰宅コンテンツ %>
       <div class="goal-content">
           <%# 3層構造: アイコン | タイトル | スペーサー %>
           <div class="goal-header">
             <span class="goal-icon"
-                  data-controller="navibar-marker-button"
+                  data-controller="ui--navibar-marker-button"
                   data-point-type="goal"
-                  data-action="click->navibar-marker-button#point"
+                  data-action="click->ui--navibar-marker-button#point"
                   role="button"
                   tabindex="0"
                   aria-label="帰宅地点を地図で表示"></span>
 
             <span class="goal-title goal-title--clickable"
-                  data-controller="navibar-marker-button"
+                  data-controller="ui--navibar-marker-button"
                   data-point-type="goal"
-                  data-action="click->navibar-marker-button#point"
+                  data-action="click->ui--navibar-marker-button#point"
                   role="button"
                   tabindex="0">帰宅</span>
 
@@ -37,7 +37,7 @@
           </div>
 
           <%# 住所 %>
-          <div class="goal-address navibar-padding" data-goal-point-editor-target="address">
+          <div class="goal-address navibar-padding" data-plan--goal-point-editor-target="address">
             <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
           </div>
         </div>
@@ -48,7 +48,7 @@
           id="goal-point-edit-<%= plan.id %>"
           class="goal-edit"
           hidden
-          data-goal-point-editor-target="editArea"
+          data-plan--goal-point-editor-target="editArea"
         >
           <div class="goal-edit__inner">
             <label for="goal-point-address-<%= plan.id %>" class="goal-edit__label">帰宅地点を変更</label>
@@ -59,8 +59,8 @@
               class="form-control goal-edit__input"
               placeholder="（例: 〇〇市〇〇町〇〇-〇）"
               autocomplete="off"
-              data-goal-point-editor-target="input"
-              data-action="keydown->goal-point-editor#search compositionstart->goal-point-editor#compositionStart compositionend->goal-point-editor#compositionEnd"
+              data-plan--goal-point-editor-target="input"
+              data-action="keydown->plan--goal-point-editor#search compositionstart->plan--goal-point-editor#compositionStart compositionend->plan--goal-point-editor#compositionEnd"
             >
 
             <div class="point-edit__actions">
@@ -86,8 +86,8 @@
         role="switch"
         id="goal-point-visibility-switch-<%= plan.id %>"
         aria-label="帰宅地点の表示を切り替える"
-        data-goal-point-visibility-target="switch"
-        data-action="change->goal-point-visibility#toggle"
+        data-plan--goal-point-visibility-target="switch"
+        data-action="change->plan--goal-point-visibility#toggle"
       >
     </div>
   <% end %>

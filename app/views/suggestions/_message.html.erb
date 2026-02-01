@@ -40,10 +40,10 @@
     <%# スポットカード（全幅・中央寄せ） %>
     <% if is_plan_mode %>
       <div class="suggestion__spots-fullwidth"
-           data-controller="suggestion-plan-adopt"
-           data-suggestion-plan-adopt-plan-id-value="<%= plan&.id %>"
-           data-suggestion-plan-adopt-auto-show-value="<%= auto_show_value %>">
-        <div class="suggestion__spots-inner" data-suggestion-plan-adopt-target="spots">
+           data-controller="suggestion--plan-adopt"
+           data-suggestion--plan-adopt-plan-id-value="<%= plan&.id %>"
+           data-suggestion--plan-adopt-auto-show-value="<%= auto_show_value %>">
+        <div class="suggestion__spots-inner" data-suggestion--plan-adopt-target="spots">
           <% spot_list.each_with_index do |spot, index| %>
             <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
           <% end %>
@@ -51,8 +51,8 @@
         <div class="suggestion-plan-card__actions">
           <button type="button"
                   class="suggestion-plan-card__adopt-btn"
-                  data-action="click->suggestion-plan-adopt#adoptPlan"
-                  data-suggestion-plan-adopt-target="adoptBtn">
+                  data-action="click->suggestion--plan-adopt#adoptPlan"
+                  data-suggestion--plan-adopt-target="adoptBtn">
             <i class="bi bi-check-circle"></i> このプランを採用
           </button>
         </div>
@@ -60,8 +60,8 @@
     <% else %>
       <div class="suggestion__spots-fullwidth"
            data-suggestion-target="spotSuggestions"
-           data-controller="suggestion-spots-batch"
-           data-suggestion-spots-batch-auto-show-value="<%= auto_show_value %>">
+           data-controller="suggestion--spots-batch"
+           data-suggestion--spots-batch-auto-show-value="<%= auto_show_value %>">
         <% spot_list.each_with_index do |spot, index| %>
           <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
         <% end %>

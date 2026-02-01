@@ -5,12 +5,12 @@ import { Controller } from "@hotwired/stimulus"
  * Google Maps風のスワイプ可能なボトムシートUI
  *
  * 使用例:
- * <div data-controller="bottom-sheet"
- *      data-bottom-sheet-min-value="80"
- *      data-bottom-sheet-mid-value="50"
- *      data-bottom-sheet-max-value="90">
- *   <div data-bottom-sheet-target="handle">ドラッグハンドル</div>
- *   <div data-bottom-sheet-target="content">コンテンツ</div>
+ * <div data-controller="ui--bottom-sheet"
+ *      data-ui--bottom-sheet-min-value="80"
+ *      data-ui--bottom-sheet-mid-value="50"
+ *      data-ui--bottom-sheet-max-value="90">
+ *   <div data-ui--bottom-sheet-target="handle">ドラッグハンドル</div>
+ *   <div data-ui--bottom-sheet-target="content">コンテンツ</div>
  * </div>
  */
 export default class extends Controller {

@@ -24,12 +24,12 @@
 
 <%= turbo_frame_tag "infowindow-content" do %>
 <div class="dp-infowindow dp-infowindow--<%= zoom_scale %>"
-     data-controller="infowindow-ui"
-     data-infowindow-ui-spot-id-value="<%= spot.id %>"
-     data-infowindow-ui-place-id-value="<%= spot.place_id %>"
-     data-infowindow-ui-photo-count-value="<%= urls.size %>"
-     data-infowindow-ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
-     data-infowindow-ui-zoom-index-value="<%= zoom_index %>">
+     data-controller="infowindow--ui"
+     data-infowindow--ui-spot-id-value="<%= spot.id %>"
+     data-infowindow--ui-place-id-value="<%= spot.place_id %>"
+     data-infowindow--ui-photo-count-value="<%= urls.size %>"
+     data-infowindow--ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
+     data-infowindow--ui-zoom-index-value="<%= zoom_index %>">
 
   <%# タブ切り替え用ラジオボタン %>
   <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
@@ -59,14 +59,14 @@
   <div class="dp-infowindow__zoom-controls">
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow-ui#zoomOut"
-            data-infowindow-ui-target="zoomOutBtn">
+            data-action="click->infowindow--ui#zoomOut"
+            data-infowindow--ui-target="zoomOutBtn">
       <i class="bi bi-dash"></i>
     </button>
     <button type="button"
             class="dp-infowindow__zoom-btn"
-            data-action="click->infowindow-ui#zoomIn"
-            data-infowindow-ui-target="zoomInBtn">
+            data-action="click->infowindow--ui#zoomIn"
+            data-infowindow--ui-target="zoomInBtn">
       <i class="bi bi-plus"></i>
     </button>
   </div>
@@ -76,7 +76,7 @@
     <%# 写真エリア %>
     <% if urls.any? %>
       <div class="dp-infowindow__photo">
-        <div class="dp-infowindow__slider" data-infowindow-ui-target="slider">
+        <div class="dp-infowindow__slider" data-infowindow--ui-target="slider">
           <% urls.each_with_index do |url, i| %>
             <div class="dp-infowindow__slide<%= ' dp-infowindow__slide--active' if i == 0 %>"
                  data-index="<%= i %>">
@@ -88,12 +88,12 @@
         <% if has_multiple_photos %>
           <button type="button"
                   class="dp-infowindow__arrow dp-infowindow__arrow--prev"
-                  data-action="click->infowindow-ui#prevSlide">
+                  data-action="click->infowindow--ui#prevSlide">
             <i class="bi bi-chevron-left"></i>
           </button>
           <button type="button"
                   class="dp-infowindow__arrow dp-infowindow__arrow--next"
-                  data-action="click->infowindow-ui#nextSlide">
+                  data-action="click->infowindow--ui#nextSlide">
             <i class="bi bi-chevron-right"></i>
           </button>
         <% end %>
@@ -101,17 +101,17 @@
         <% if spot.place_id.present? %>
           <button type="button"
                   class="dp-infowindow__expand-btn"
-                  data-action="click->infowindow-ui#openGallery">
+                  data-action="click->infowindow--ui#openGallery">
             <i class="bi bi-arrows-fullscreen"></i>
           </button>
         <% end %>
 
         <% if has_multiple_photos %>
-          <div class="dp-infowindow__indicator" data-infowindow-ui-target="indicator">
+          <div class="dp-infowindow__indicator" data-infowindow--ui-target="indicator">
             <% urls.each_with_index do |_, i| %>
               <span class="dp-infowindow__dot<%= ' dp-infowindow__dot--active' if i == 0 %>"
                     data-index="<%= i %>"
-                    data-action="click->infowindow-ui#goToSlide"></span>
+                    data-action="click->infowindow--ui#goToSlide"></span>
             <% end %>
           </div>
         <% end %>
@@ -142,7 +142,7 @@
       <% if edit_mode == "start_point" %>
         <button type="button"
                 class="dp-infowindow__edit-btn"
-                data-action="click->infowindow-ui#handleEditButton"
+                data-action="click->infowindow--ui#handleEditButton"
                 data-edit-action="start_point"
                 onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
           出発地点を変更
@@ -150,7 +150,7 @@
       <% elsif edit_mode == "goal_point" %>
         <button type="button"
                 class="dp-infowindow__edit-btn"
-                data-action="click->infowindow-ui#handleEditButton"
+                data-action="click->infowindow--ui#handleEditButton"
                 data-edit-action="goal_point"
                 onclick="this.closest('.gm-style-iw-a')?.querySelector('button.gm-ui-hover-effect')?.click()">
           帰宅地点を変更
