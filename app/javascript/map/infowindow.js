@@ -128,9 +128,10 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
         buttonSlot.innerHTML = `<button type="button"
           class="dp-infowindow__btn"
           data-controller="infowindow-spot-action"
-          data-infowindow-spot-action-url-value="/api/plans/${planId}/plan_spots"
+          data-infowindow-spot-action-url-value="/api/plan_spots"
           data-infowindow-spot-action-method-value="POST"
           data-infowindow-spot-action-spot-id-value="${spotId}"
+          data-infowindow-spot-action-plan-id-value="${planId}"
           data-action="click->infowindow-spot-action#submit">
           プランに追加
         </button>`

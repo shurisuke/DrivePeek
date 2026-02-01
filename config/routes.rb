@@ -62,12 +62,10 @@ Rails.application.routes.draw do
   # 提案機能（AIアシスタント）
   # ========================================
   resources :suggestion_logs, only: [] do
-    collection do
-      delete :destroy_all
-    end
+    delete :destroy_all, on: :collection
   end
 
-  resource :suggestions, only: [], controller: "suggestions" do
+  resource :suggestions, only: [] do
     post :suggest
     post :finish
   end
@@ -97,30 +95,19 @@ Rails.application.routes.draw do
   # API（JSON）
   # ========================================
   namespace :api do
+    resource :preview, only: %i[show], controller: "plans/previews"
+
     resources :spots, only: [] do
-      scope module: :spots do
-        resource :genres, only: %i[show]
-      end
+      resource :genres, only: %i[show], controller: "spots/genres"
     end
 
-    resources :plans, only: [] do
-      scope module: :plans do
-        resource :preview, only: %i[show]
-        resource :start_point, only: %i[update]
-        resource :goal_point, only: %i[update]
+    resource :start_point, only: %i[update], controller: "plans/start_points"
+    resource :goal_point, only: %i[update], controller: "plans/goal_points"
 
-        resources :plan_spots, only: %i[create] do
-          collection do
-            patch :reorder, to: "plan_spots/reorders#update"
-            post :adopt, to: "plan_spots/adoptions#create"
-          end
-
-          member do
-            patch :toll_used, to: "plan_spots/toll_used#update"
-            patch :memo, to: "plan_spots/memos#update"
-            patch :stay_duration, to: "plan_spots/stay_durations#update"
-          end
-        end
+    resources :plan_spots, only: %i[create update], controller: "plans/plan_spots" do
+      collection do
+        patch :reorder, to: "plans/plan_spots/reorders#update"
+        post :adopt, to: "plans/plan_spots/adoptions#create"
       end
     end
   end

@@ -39,14 +39,14 @@ export default class extends Controller {
 
     try {
       const planId = this.planIdValue || document.getElementById("map")?.dataset.planId
-      const response = await fetch(`/api/plans/${planId}/plan_spots`, {
+      const response = await fetch(`/api/plan_spots`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
           "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
           Accept: "text/vnd.turbo-stream.html",
         },
-        body: JSON.stringify({ spot_id: this.spotIdValue }),
+        body: JSON.stringify({ plan_id: planId, spot_id: this.spotIdValue }),
       })
 
       if (response.ok) {

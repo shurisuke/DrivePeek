@@ -6,7 +6,7 @@ module Api
         before_action :set_plan
 
         # プランを一括採用（AI提案 / コミュニティプラン共通）
-        # POST /api/plans/:plan_id/plan_spots/adopt
+        # POST /api/plan_spots/adopt
         def create
           spot_ids = Array(params[:spots]).map { |s| s["spot_id"] || s[:spot_id] }.compact.map(&:to_i)
           return head :unprocessable_entity if spot_ids.empty?
@@ -27,6 +27,7 @@ module Api
         private
 
         def set_plan
+          # plan_id は body から取得
           @plan = current_user.plans
             .includes(:start_point, :goal_point, plan_spots: { spot: :genres })
             .find(params[:plan_id])

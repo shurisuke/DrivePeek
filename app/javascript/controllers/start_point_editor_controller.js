@@ -253,9 +253,9 @@ export default class extends Controller {
   }
 
   async persistStartPoint({ planId, lat, lng, address }) {
-    const url = `/api/plans/${planId}/start_point`
+    const url = `/api/start_point`
     // turbo_stream で navibar が自動更新される（エラー時は例外が投げられる）
-    await patchTurboStream(url, { start_point: { lat, lng, address } })
+    await patchTurboStream(url, { plan_id: planId, start_point: { lat, lng, address } })
   }
 
   detectPlanId() {

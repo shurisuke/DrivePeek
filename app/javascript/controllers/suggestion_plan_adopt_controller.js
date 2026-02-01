@@ -82,7 +82,7 @@ export default class extends Controller {
   async #callAdoptApi(spots) {
     const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
     const response = await fetch(
-      `/api/plans/${this.planIdValue}/plan_spots/adopt`,
+      `/api/plan_spots/adopt`,
       {
         method: "POST",
         headers: {
@@ -91,6 +91,7 @@ export default class extends Controller {
           Accept: "text/vnd.turbo-stream.html",
         },
         body: JSON.stringify({
+          plan_id: this.planIdValue,
           spots: spots.map((s) => ({ spot_id: s.spot_id })),
         }),
       }

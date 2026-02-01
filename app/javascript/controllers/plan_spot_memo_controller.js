@@ -119,7 +119,7 @@ export default class extends Controller {
 
   async _patchMemo(memo) {
     try {
-      return await patch(this.urlValue, { plan_spot: { memo } })
+      return await patch(this.urlValue, { memo })
     } catch (error) {
       alert(error.message || "メモの保存に失敗しました")
       return null

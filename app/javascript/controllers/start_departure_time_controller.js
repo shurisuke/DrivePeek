@@ -147,7 +147,8 @@ export default class extends Controller {
     if (!timeStr || !this.planIdValue) return
 
     try {
-      await patchTurboStream(`/api/plans/${this.planIdValue}/start_point`, {
+      await patchTurboStream(`/api/start_point`, {
+        plan_id: this.planIdValue,
         start_point: { departure_time: timeStr },
       })
       // 保存成功 → turbo_stream で navibar が自動更新される
