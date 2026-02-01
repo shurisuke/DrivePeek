@@ -13,14 +13,14 @@ RSpec.describe "Api::Plans::Previews", type: :request do
     sign_in user
   end
 
-  describe "GET /api/plans/:plan_id/preview" do
+  describe "GET /api/preview" do
     it "公開プランのプレビューデータを取得する" do
-      get api_plan_preview_path(plan)
+      get api_preview_path(plan_id: plan.id)
       expect(response).to have_http_status(:ok)
     end
 
     it "JSONを返す" do
-      get api_plan_preview_path(plan)
+      get api_preview_path(plan_id: plan.id)
       expect(response.content_type).to include("application/json")
     end
 
@@ -29,14 +29,14 @@ RSpec.describe "Api::Plans::Previews", type: :request do
       let(:hidden_plan) { create(:plan, user: hidden_user) }
 
       it "404を返す" do
-        get api_plan_preview_path(hidden_plan)
+        get api_preview_path(plan_id: hidden_plan.id)
         expect(response).to have_http_status(:not_found)
       end
     end
 
     context "存在しないプランの場合" do
       it "404を返す" do
-        get api_plan_preview_path(plan_id: 0)
+        get api_preview_path(plan_id: 0)
         expect(response).to have_http_status(:not_found)
       end
     end
@@ -45,7 +45,7 @@ RSpec.describe "Api::Plans::Previews", type: :request do
       before { sign_out user }
 
       it "401エラーを返す" do
-        get api_plan_preview_path(plan), as: :json
+        get api_preview_path(plan_id: plan.id), as: :json
         expect(response).to have_http_status(:unauthorized)
       end
     end
