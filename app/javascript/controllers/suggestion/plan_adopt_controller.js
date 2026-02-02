@@ -132,16 +132,13 @@ export default class extends Controller {
     })
   }
 
-  // マップにマーカーを表示
+  // マップにマーカーを表示（円は既にパン済みなのでfitBoundsは不要）
   #showMarkersOnMap() {
     const map = getMapInstance()
     if (!map) return
 
-    const bounds = new google.maps.LatLngBounds()
-
     this._resolvedSpots.forEach((spot, index) => {
       const position = { lat: spot.lat, lng: spot.lng }
-      bounds.extend(position)
 
       const marker = new google.maps.Marker({
         map,
@@ -170,20 +167,6 @@ export default class extends Controller {
 
       addSuggestionMarker(marker)
     })
-
-    // モバイル時: ボトムシートで隠れる領域を考慮
-    const isMobile = window.innerWidth < 768
-    if (isMobile) {
-      const bottomSheetHeight = document.querySelector(".navibar")?.offsetHeight || 0
-      map.fitBounds(bounds, {
-        top: 60,
-        right: 16,
-        bottom: bottomSheetHeight + 16,
-        left: 16,
-      })
-    } else {
-      map.fitBounds(bounds, { padding: 50 })
-    }
 
     // 提案ピンクリアボタンを表示
     const clearBtn = document.getElementById("suggestion-pin-clear")

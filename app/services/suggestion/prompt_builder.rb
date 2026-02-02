@@ -70,12 +70,13 @@ module Suggestion
       def spot_mode(candidates, genre, radius_km)
         area_name = candidates.first&.dig(:city) || "選択エリア"
         spots_list = candidates.map { |s| s[:name] }.join("、")
+        genre_name = genre&.name || "おまかせ（全ジャンル）"
 
         <<~PROMPT
           あなたはドライブスポット紹介AIです。
 
           ■ #{area_name}周辺（半径#{radius_km.round(1)}km）
-          ■ ジャンル: #{genre.name}
+          ■ ジャンル: #{genre_name}
 
           ■ 人気スポット
           #{spots_list}

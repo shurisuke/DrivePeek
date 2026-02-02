@@ -26,7 +26,7 @@ module Suggestion
         genre = Genre.find_by(id: genre_id)
         next unless genre
 
-        candidates = fetch_candidates_by_genre(genre.id, 10)
+        candidates = fetch_candidates(genre.id, 10)
         next if candidates.empty?
 
         { genre_name: genre.name, candidates: candidates }
@@ -34,22 +34,22 @@ module Suggestion
     end
 
     # スポットモード用: 人気スポットを取得（人気順N件）
-    # @param genre [Genre] 対象ジャンル
+    # @param genre [Genre, nil] 対象ジャンル（nilの場合は全ジャンル）
     # @param count [Integer] 取得件数
     # @return [Array<Hash>] [spot_hash, ...]
     def fetch_for_genre(genre, count)
-      fetch_candidates_by_genre(genre.id, count)
+      fetch_candidates(genre&.id, count)
     end
 
     private
 
-    # 指定ジャンルの候補スポットを人気順で取得
-    def fetch_candidates_by_genre(genre_id, limit)
-      # まず円内+ジャンルでスポットIDを取得（DISTINCTを回避）
-      candidate_ids = spots_in_circle
-        .filter_by_genres([ genre_id ])
-        .pluck(:id)
+    # 候補スポットを人気順で取得
+    # @param genre_id [Integer, nil] ジャンルID（nilの場合は全ジャンル）
+    def fetch_candidates(genre_id, limit)
+      scope = spots_in_circle
+      scope = scope.filter_by_genres([genre_id]) if genre_id
 
+      candidate_ids = scope.pluck(:id)
       return [] if candidate_ids.empty?
 
       # お気に入り数上位N件を候補として取得

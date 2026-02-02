@@ -31,8 +31,8 @@ class SuggestionService
         slot_sizes = slot_data.map { |slot| slot[:candidates].size }
         prompt = Suggestion::PromptBuilder.plan_mode(slot_data, radius_km)
       when "spots"
-        genre = Genre.find_by(id: genre_id)
-        return error_response("ジャンルが見つかりません", mode: mode) unless genre
+        genre = genre_id.present? ? Genre.find_by(id: genre_id) : nil
+        return error_response("ジャンルが見つかりません", mode: mode) if genre_id.present? && genre.nil?
         all_spots = finder.fetch_for_genre(genre, count)
         prompt = Suggestion::PromptBuilder.spot_mode(all_spots, genre, radius_km)
       else

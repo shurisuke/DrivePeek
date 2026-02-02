@@ -78,7 +78,9 @@ export const panToVisualCenter = (position) => {
 }
 
 /**
- * fitBounds用のパディングを取得（モバイルのみボトムシート考慮）
+ * fitBounds用のパディングを取得
+ * モバイル: ボトムシート考慮
+ * デスクトップ: ナビバー幅、検索ボックス、アクションバー、ピン削除ボタン考慮
  * @returns {google.maps.Padding}
  */
 export const getMapPadding = () => {
@@ -91,8 +93,29 @@ export const getMapPadding = () => {
       left: 16
     }
   }
-  // デスクトップは通常のパディング
-  return { top: 50, right: 50, bottom: 50, left: 50 }
+
+  // デスクトップ: 各UI要素を考慮
+  // 上部: 検索ボックス + ピン削除ボタンエリア
+  const searchBox = document.querySelector(".map-search-box")
+  const topPadding = (searchBox?.offsetHeight || 50) + 20
+
+  // 下部: アクションバー（共有・保存ボタン）
+  const actionBar = document.querySelector(".plan-actions")
+  const bottomPadding = (actionBar?.offsetHeight || 50) + 20
+
+  // 左側: ナビバー幅
+  const navibar = document.querySelector(".navibar")
+  const leftPadding = (navibar?.offsetWidth || 360) + 20
+
+  // 右側: 余白
+  const rightPadding = 50
+
+  return {
+    top: topPadding,
+    right: rightPadding,
+    bottom: bottomPadding,
+    left: leftPadding
+  }
 }
 
 /**

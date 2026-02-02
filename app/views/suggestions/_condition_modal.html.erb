@@ -72,8 +72,8 @@
                   class="suggestion-condition-modal__genre-btn suggestion-condition-modal__genre-btn--full"
                   data-action="click->suggestion--condition-modal#openGenreSelect"
                   data-suggestion--condition-modal-target="spotGenreBtn">
-            <span>選択してください</span>
-            <i class="bi bi-plus"></i>
+            <span>おまかせ</span>
+            <i class="bi bi-chevron-right"></i>
           </button>
           <input type="hidden" name="genre_id" value="" data-suggestion--condition-modal-target="spotGenreInput">
         </div>
@@ -125,13 +125,12 @@
       </div>
 
       <div class="suggestion-condition-modal__genre-list">
-        <%# おまかせ（プランモード用） %>
+        <%# おまかせ（両モード共通） %>
         <button type="button"
                 class="suggestion-condition-modal__genre-item suggestion-condition-modal__genre-item--omakase"
                 data-action="click->suggestion--condition-modal#selectGenre"
                 data-genre-id=""
-                data-genre-name="おまかせ"
-                data-suggestion--condition-modal-target="omakaseBtn">
+                data-genre-name="おまかせ">
           おまかせ
         </button>
 

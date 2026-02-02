@@ -29,8 +29,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
-  height: 70vh;
-  max-height: 500px;
+  height: 500px;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -153,6 +153,7 @@
   gap: 12px;
   padding: 16px 20px;
   border-top: 1px solid #eee;
+  margin-top: auto;
 }
 
 .suggestion-condition-modal__btn {
@@ -235,8 +236,8 @@
 }
 
 // メインビュー / ジャンル選択ビュー共通
-[data-suggestion-condition-modal-target="mainView"],
-[data-suggestion-condition-modal-target="genreView"] {
+[data-suggestion--condition-modal-target="mainView"],
+[data-suggestion--condition-modal-target="genreView"] {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -247,11 +248,22 @@
   }
 }
 
-// プランモード / スポットモードのコンテンツ
-[data-suggestion-condition-modal-target="planContent"],
-[data-suggestion-condition-modal-target="spotContent"] {
+// プランモードのコンテンツ
+[data-suggestion--condition-modal-target="planContent"] {
   flex: 1;
   overflow-y: auto;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// スポットモードのコンテンツ（縦中央寄せ）
+[data-suggestion--condition-modal-target="spotContent"] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   &[hidden] {
     display: none;
