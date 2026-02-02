@@ -21,34 +21,45 @@ const getBottomSheetHeight = () => {
 }
 
 /**
- * InfoWindowの高さを取得（モバイル時）
+ * モバイル上部の障害物の高さを取得（検索ボックス + フローティングボタン）
  */
-const getInfoWindowHeight = () => {
+const getMobileTopHeight = () => {
   if (!isMobile()) return 0
-  // InfoWindowはまだ表示されていない場合があるので、想定高さを返す
-  const infoWindow = document.querySelector(".infowindow-mobile, .gm-style-iw")
-  return infoWindow?.offsetHeight || 280 // デフォルト想定高さ
+  const searchBox = document.querySelector(".map-search-box")
+  const floatingButtons = document.querySelector(".map-floating-buttons")
+  return (searchBox?.offsetHeight || 0) + (floatingButtons?.offsetHeight || 0)
 }
 
 /**
- * ナビバーの表示幅を取得（デスクトップ時）
+ * デスクトップ用の縦オフセットを計算
+ * 上部障害物と下部障害物の中間にInfoWindowを配置
  */
-const getNavibarWidth = () => {
-  if (isMobile()) return 0
-  const style = getComputedStyle(document.documentElement)
-  const width = parseInt(style.getPropertyValue("--navibar-width")) || 360
-  const slide = parseInt(style.getPropertyValue("--navibar-slide")) || 0
-  return width - slide
+const getDesktopOffsetY = () => {
+  // 上部: 検索バー + フローティングボタン
+  const searchBox = document.querySelector(".map-search-box")
+  const floatingButtons = document.querySelector(".map-floating-buttons")
+  const topHeight = (searchBox?.offsetHeight || 50) + (floatingButtons?.offsetHeight || 40)
+
+  // 下部: アクションバー（共有・保存ボタン）
+  const actionBar = document.querySelector(".plan-actions")
+  const bottomHeight = actionBar?.offsetHeight || 0
+
+  // マーカーからInfoWindow中心までの距離（InfoWindow半分 + ピクセルオフセット）
+  const infoWindowHalfHeight = 150
+  const pixelOffsetToMarker = 50
+  const markerToInfoWindowCenter = infoWindowHalfHeight + pixelOffsetToMarker
+
+  // 障害物の中間 - InfoWindow中心を基準に上へシフト（InfoWindowが中央に来る）
+  return (bottomHeight - topHeight) / 2 - markerToInfoWindowCenter
 }
 
 /**
- * 指定座標を見た目の中央に表示（モバイルのみ）
- * デスクトップは既存の動作が良いのでそのまま
+ * 指定座標を見た目の中央に表示
+ * モバイル: ボトムシートを考慮
+ * デスクトップ: 検索バー + フローティングボタン + InfoWindowを考慮
  * @param {google.maps.LatLng|{lat, lng}} position - 表示したい座標
- * @param {Object} options
- * @param {number} options.offsetY - 追加の縦オフセット（px、負で上方向）
  */
-export const panToVisualCenter = (position, options = {}) => {
+export const panToVisualCenter = (position) => {
   const map = getMapInstance()
   if (!map) return
 
@@ -59,35 +70,65 @@ export const panToVisualCenter = (position, options = {}) => {
   // まず通常のpanTo
   map.panTo(latLng)
 
-  // モバイルのみオフセット調整
-  if (!isMobile()) return
+  if (isMobile()) {
+    // モバイル: 上部障害物とボトムシートを考慮して、見える範囲の中央にピンを配置
+    const topHeight = getMobileTopHeight()
+    const bottomSheetHeight = getBottomSheetHeight()
+    // 上部と下部の差分を2で割って、見える領域の中央へ調整
+    // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
+    const offsetY = (bottomSheetHeight - topHeight) / 2
 
-  // ボトムシートで隠れる領域を考慮して、見える範囲の中央にピンを配置
-  // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
-  const bottomSheetHeight = getBottomSheetHeight()
-  const offsetY = bottomSheetHeight / 2
-
-  if (offsetY > 0) {
+    if (offsetY !== 0) {
+      map.panBy(0, offsetY)
+    }
+  } else {
+    // デスクトップ: 検索バー + フローティングボタン + InfoWindow高さを考慮
+    // panBy(0, 負)で地図が上にシフト → InfoWindowが見える位置に
+    const offsetY = getDesktopOffsetY()
     map.panBy(0, offsetY)
   }
 }
 
 /**
- * fitBounds用のパディングを取得（モバイルのみボトムシート考慮）
+ * fitBounds用のパディングを取得
+ * モバイル: ボトムシート考慮
+ * デスクトップ: ナビバー幅、検索ボックス、アクションバー、ピン削除ボタン考慮
  * @returns {google.maps.Padding}
  */
 export const getMapPadding = () => {
   if (isMobile()) {
+    const topHeight = getMobileTopHeight()
     const bottomSheetHeight = getBottomSheetHeight()
     return {
-      top: 60,  // 検索バー
+      top: topHeight > 0 ? topHeight + 16 : 60,
       right: 16,
       bottom: bottomSheetHeight > 0 ? bottomSheetHeight + 16 : 16,
       left: 16
     }
   }
-  // デスクトップは通常のパディング
-  return { top: 50, right: 50, bottom: 50, left: 50 }
+
+  // デスクトップ: 各UI要素を考慮
+  // ※ 地図要素自体がナビバーの右側に配置されているため、
+  //    leftPaddingにナビバー幅は含めない（二重計算防止）
+
+  // 上部: 検索ボックス + ピン削除ボタン + 余裕
+  const searchBox = document.querySelector(".map-search-box")
+  const topPadding = (searchBox?.offsetHeight || 50) + 40
+
+  // 下部: アクションバー（共有・保存ボタン）
+  const actionBar = document.querySelector(".plan-actions")
+  const bottomPadding = (actionBar?.offsetHeight || 50) + 20
+
+  // 左右: 余白のみ
+  const leftPadding = 50
+  const rightPadding = 50
+
+  return {
+    top: topPadding,
+    right: rightPadding,
+    bottom: bottomPadding,
+    left: leftPadding
+  }
 }
 
 /**

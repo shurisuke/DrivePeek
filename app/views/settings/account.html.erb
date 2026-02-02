@@ -7,23 +7,24 @@
       <h2 class="auth-title">アカウント操作</h2>
     </div>
 
-    <div class="profile-card">
-      <h3 class="profile-card-title">ログアウト</h3>
-      <div class="profile-card-content">
-        <%= link_to users_sign_out_path, class: "auth-submit auth-submit--secondary", data: { turbo_method: :delete } do %>
-          <i class="bi bi-box-arrow-right"></i> ログアウト
-        <% end %>
-      </div>
+    <%# ログアウト %>
+    <div class="account-action">
+      <%= button_to users_sign_out_path, method: :delete, class: "auth-submit auth-submit--secondary" do %>
+        <i class="bi bi-box-arrow-right"></i> ログアウト
+      <% end %>
     </div>
 
-    <div class="profile-card">
-      <h3 class="profile-card-title profile-card-title--danger">アカウント削除</h3>
-      <div class="profile-card-content">
-        <p class="settings-hint">削除すると全てのプランとデータが失われます。この操作は取り消せません。</p>
+    <%# アカウント削除 %>
+    <div class="settings-menu">
+      <div class="settings-menu-item account-delete-section">
         <%= button_to "アカウントを削除する", registration_path(:user),
                       method: :delete,
                       class: "auth-submit auth-submit--danger",
                       data: { turbo_confirm: "本当にアカウントを削除しますか？\nこの操作は取り消せません。" } %>
+        <p class="settings-hint account-delete-hint">
+          削除すると全てのプランとデータが失われます。<br>
+          この操作は取り消せません。
+        </p>
       </div>
     </div>
   </div>

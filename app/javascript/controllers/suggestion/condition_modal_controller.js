@@ -16,7 +16,7 @@ export default class extends Controller {
   }
   static targets = [
     "title",
-    "mainView", "genreView", "omakaseBtn",
+    "mainView", "genreView",
     "planContent", "areaInfo", "spotCount", "slot", "slotBtn", "slotInput",
     "spotContent", "spotGenreBtn", "spotGenreInput", "spotResultCount",
     "submitBtn", "loading"
@@ -87,9 +87,6 @@ export default class extends Controller {
     const slot = event.currentTarget.closest("[data-slot-index]")
     this.editingSlotIndex = slot ? parseInt(slot.dataset.slotIndex, 10) : null
 
-    // おまかせボタンはプランモードのみ表示
-    this.omakaseBtnTarget.hidden = this.editingSlotIndex === null
-
     this.mainViewTarget.hidden = true
     this.genreViewTarget.hidden = false
   }
@@ -97,6 +94,14 @@ export default class extends Controller {
   closeGenreSelect() {
     this.mainViewTarget.hidden = false
     this.genreViewTarget.hidden = true
+  }
+
+  toggleGroup(event) {
+    event.stopPropagation()
+    const group = event.currentTarget.closest(".selection-list__group")
+    if (group) {
+      group.classList.toggle("is-expanded")
+    }
   }
 
   selectGenre(event) {
@@ -153,15 +158,11 @@ export default class extends Controller {
     if (!this.areaData) return
 
     const genreId = this.spotGenreInputTarget.value
-    if (!genreId) {
-      alert("ジャンルを選択してください")
-      return
-    }
 
     await this.#submitWithLoading({
       ...this.areaData,
       mode: "spots",
-      genre_id: parseInt(genreId, 10),
+      genre_id: genreId ? parseInt(genreId, 10) : null,
       count: parseInt(this.spotResultCountTarget.value, 10)
     })
   }
@@ -173,6 +174,8 @@ export default class extends Controller {
     try {
       await postTurboStream(`/suggestions/suggest?plan_id=${this.planIdValue}`, body)
       this.close()
+      // UXフローを直接実行
+      this.#executeUxFlow()
     } catch (error) {
       console.error("[SuggestionConditionModal] submit error:", error)
       alert("エラーが発生しました。もう一度お試しください。")
@@ -180,5 +183,62 @@ export default class extends Controller {
       this.submitBtnTarget.disabled = false
       this.loadingTarget.hidden = true
     }
+  }
+
+  // UXフロー: ボトムシート展開・スクロール・パン
+  #executeUxFlow() {
+    // 1. モバイル: ボトムシートをmidに展開
+    const isMobile = this.#expandBottomSheet()
+
+    // 2. 新規メッセージが上部に来る位置までスクロール（DOM更新後）
+    setTimeout(() => {
+      this.#scrollToNewMessage()
+    }, 150)
+
+    // 3. モバイル: ボトムシート展開完了後にサークル中心へパン
+    if (isMobile && this.areaData) {
+      setTimeout(() => {
+        this.#panToCircle()
+      }, 350) // ボトムシートアニメーション(300ms)完了後
+    }
+  }
+
+  #expandBottomSheet() {
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return false
+
+    const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
+    if (controller && controller.isMobile) {
+      controller.setState({ params: { state: "mid" } })
+      return true
+    }
+    return false
+  }
+
+  #panToCircle() {
+    import("map/visual_center").then(({ panToVisualCenter }) => {
+      panToVisualCenter({
+        lat: this.areaData.center_lat,
+        lng: this.areaData.center_lng
+      })
+    })
+  }
+
+  #scrollToNewMessage() {
+    // メッセージコンテナ（スクロールコンテナ）を取得
+    const messages = document.getElementById("suggestion-messages")
+    if (!messages) return
+
+    // 最後のスクロール位置マーカーを取得
+    const markers = messages.querySelectorAll(".suggestion-scroll-marker")
+    const marker = markers[markers.length - 1]
+    if (!marker) return
+
+    // マーカーがスクロール領域の上部に来る位置を計算
+    const markerRect = marker.getBoundingClientRect()
+    const containerRect = messages.getBoundingClientRect()
+    const targetScroll = messages.scrollTop + (markerRect.top - containerRect.top)
+
+    messages.scrollTop = targetScroll
   }
 }

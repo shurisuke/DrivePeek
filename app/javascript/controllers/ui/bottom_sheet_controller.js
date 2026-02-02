@@ -31,6 +31,7 @@ export default class extends Controller {
 
   connect() {
     this.isDragging = false
+    this.potentialDrag = false
     this.startY = 0
     this.startHeight = 0
     this.currentHeight = 0
@@ -38,29 +39,19 @@ export default class extends Controller {
     this.lastTime = 0
     this.velocity = 0
     this.isMobile = false
+    this.dragThreshold = 10
 
     // モバイル判定
     this.checkMobile()
 
-    // イベントリスナー設定
+    // イベントリスナー設定（ドキュメントレベルで捕捉）
     this.boundTouchStart = this.handleTouchStart.bind(this)
     this.boundTouchMove = this.handleTouchMove.bind(this)
     this.boundTouchEnd = this.handleTouchEnd.bind(this)
-    this.boundMouseDown = this.handleMouseDown.bind(this)
-    this.boundMouseMove = this.handleMouseMove.bind(this)
-    this.boundMouseUp = this.handleMouseUp.bind(this)
 
-    // ハンドル部分にイベント設定
-    if (this.hasHandleTarget) {
-      this.handleTarget.addEventListener("touchstart", this.boundTouchStart, { passive: false })
-      this.handleTarget.addEventListener("mousedown", this.boundMouseDown)
-    }
-
-    // グローバルイベント（ドラッグ中のみ有効化）
+    document.addEventListener("touchstart", this.boundTouchStart, { passive: false })
     document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
     document.addEventListener("touchend", this.boundTouchEnd)
-    document.addEventListener("mousemove", this.boundMouseMove)
-    document.addEventListener("mouseup", this.boundMouseUp)
 
     // 画面リサイズ時に再計算
     this.boundResize = this.handleResize.bind(this)
@@ -93,14 +84,9 @@ export default class extends Controller {
   }
 
   disconnect() {
-    if (this.hasHandleTarget) {
-      this.handleTarget.removeEventListener("touchstart", this.boundTouchStart)
-      this.handleTarget.removeEventListener("mousedown", this.boundMouseDown)
-    }
+    document.removeEventListener("touchstart", this.boundTouchStart)
     document.removeEventListener("touchmove", this.boundTouchMove)
     document.removeEventListener("touchend", this.boundTouchEnd)
-    document.removeEventListener("mousemove", this.boundMouseMove)
-    document.removeEventListener("mouseup", this.boundMouseUp)
     window.removeEventListener("resize", this.boundResize)
     document.removeEventListener("suggestion:startAreaDraw", this.boundAreaDrawStart)
   }
@@ -108,52 +94,63 @@ export default class extends Controller {
   // タッチイベント
   handleTouchStart(e) {
     if (!this.isMobile) return
+
+    const target = e.target
+
+    // ナビバー外のタッチは無視
+    if (!target.closest(".navibar")) return
+
+    // スクロール可能なコンテンツ内からのタッチは無視
+    const scrollable = target.closest(".navibar__content-scroll")
+    if (scrollable) return
+
+    // タブボタンはドラッグ対象として許可
+    const isTabButton = target.closest(".tab-btn, .plan-tab-nav")
+    if (!isTabButton) {
+      // その他のボタンやリンクからのタッチは無視
+      const interactive = target.closest("button, a, input, textarea, select")
+      if (interactive) return
+    }
+
     const touch = e.touches[0]
-    this.startDrag(touch.clientY)
-    e.preventDefault()
-  }
-
-  handleTouchMove(e) {
-    if (!this.isMobile || !this.isDragging) return
-    const touch = e.touches[0]
-    this.updateDrag(touch.clientY)
-    e.preventDefault()
-  }
-
-  handleTouchEnd(e) {
-    if (!this.isMobile || !this.isDragging) return
-    this.endDrag()
-  }
-
-  // マウスイベント（デバッグ用）
-  handleMouseDown(e) {
-    if (!this.isMobile) return
-    this.startDrag(e.clientY)
-    e.preventDefault()
-  }
-
-  handleMouseMove(e) {
-    if (!this.isMobile || !this.isDragging) return
-    this.updateDrag(e.clientY)
-  }
-
-  handleMouseUp(e) {
-    if (!this.isMobile || !this.isDragging) return
-    this.endDrag()
-  }
-
-  // ドラッグ開始
-  startDrag(y) {
-    this.isDragging = true
-    this.startY = y
+    this.potentialDrag = true
+    this.isDragging = false
+    this.startY = touch.clientY
     this.startHeight = this.currentHeight
-    this.lastY = y
+    this.lastY = touch.clientY
     this.lastTime = Date.now()
     this.velocity = 0
 
-    // アニメーションを無効化
     this.element.style.transition = "none"
-    this.element.classList.add("bottom-sheet--dragging")
+  }
+
+  handleTouchMove(e) {
+    if (!this.isMobile || !this.potentialDrag) return
+
+    const touch = e.touches[0]
+    const deltaY = this.startY - touch.clientY
+
+    // 閾値を超えたらドラッグ開始
+    if (!this.isDragging && Math.abs(deltaY) > this.dragThreshold) {
+      this.isDragging = true
+      this.element.classList.add("bottom-sheet--dragging")
+    }
+
+    if (!this.isDragging) return
+
+    this.updateDrag(touch.clientY)
+    if (e.cancelable) e.preventDefault()
+  }
+
+  handleTouchEnd() {
+    if (!this.isMobile) return
+
+    if (this.isDragging) {
+      this.endDrag()
+    }
+
+    this.potentialDrag = false
+    this.isDragging = false
   }
 
   // ドラッグ中

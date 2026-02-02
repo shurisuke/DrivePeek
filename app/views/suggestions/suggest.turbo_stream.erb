@@ -1,5 +1,6 @@
-<%# エリア選択による提案結果を追加 %>
+<%# エリア選択による提案結果を追加（マーカー付き） %>
 <%= turbo_stream.append "suggestion-messages" do %>
+  <div class="suggestion-scroll-marker"></div>
   <%= render "suggestions/message",
              content: @result[:message],
              spots: @result[:spots],

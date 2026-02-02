@@ -6,7 +6,7 @@
 import { getMapInstance, setCurrentLocationMarker } from "map/state";
 import { COLORS } from "map/constants";
 
-export const addCurrentLocationMarker = () => {
+export const addCurrentLocationMarker = ({ panTo = false } = {}) => {
   const map = getMapInstance();
   if (!map) return;
 
@@ -41,7 +41,9 @@ export const addCurrentLocationMarker = () => {
 
       setCurrentLocationMarker(marker);
 
-      latestMap.panTo(latLng);
+      if (panTo) {
+        latestMap.panTo(latLng);
+      }
     },
     (error) => {
       console.warn("⚠️ 現在地の取得に失敗しました:", error);

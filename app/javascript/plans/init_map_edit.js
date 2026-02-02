@@ -54,11 +54,13 @@ document.addEventListener("turbo:load", async () => {
   // POIクリック（追加ボタンあり）を有効化
   setupPoiClick(true)
 
-  // 現在地マーカー
-  addCurrentLocationMarker()
-
   // プランデータがあればマーカーを描画
   const planData = getPlanDataFromPage()
+  const hasSpots = planData?.spots?.length > 0
+
+  // 現在地マーカー（プランデータがない場合のみパン）
+  addCurrentLocationMarker({ panTo: !hasSpots })
+
   if (!planData) return
 
   const { renderPlanMarkers } = await import("plans/render_plan_markers")

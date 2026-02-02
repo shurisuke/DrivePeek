@@ -3,10 +3,8 @@ import { Controller } from "@hotwired/stimulus"
 /**
  * モバイル用InfoWindowコントローラー
  * マーカークリック時に下からスライドアップするシート
- * ナビバーと同様の自由ドラッグ対応
  *
- * - コメントフッターをシート直下に移動（ナビバーフッターと同じ構造）
- * - タブ切替でフッター表示/非表示
+ * - モバイル専用パーシャル（3カラムヘッダー構造）を使用
  * - 出発/帰宅地点はコンパクト表示（25vh）
  */
 export default class extends Controller {
@@ -26,14 +24,15 @@ export default class extends Controller {
     this.startHeight = 0
     this.currentHeight = 0
 
-    // ドラッグイベント
+    // 共通高さ保存用（%）- ナビバーとInfoWindowで共有
+    this.savedHeightPercent = null
+
+    // ドラッグイベント（document で捕捉し、シート内かをチェック）
     this.boundTouchStart = this.handleTouchStart.bind(this)
     this.boundTouchMove = this.handleTouchMove.bind(this)
     this.boundTouchEnd = this.handleTouchEnd.bind(this)
 
-    if (this.hasHandleTarget) {
-      this.handleTarget.addEventListener("touchstart", this.boundTouchStart, { passive: false })
-    }
+    document.addEventListener("touchstart", this.boundTouchStart, { passive: false })
     document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
     document.addEventListener("touchend", this.boundTouchEnd)
   }
@@ -42,9 +41,7 @@ export default class extends Controller {
     document.removeEventListener("mobileInfowindow:show", this.boundShow)
     document.removeEventListener("mobileInfowindow:close", this.boundClose)
 
-    if (this.hasHandleTarget) {
-      this.handleTarget.removeEventListener("touchstart", this.boundTouchStart)
-    }
+    document.removeEventListener("touchstart", this.boundTouchStart)
     document.removeEventListener("touchmove", this.boundTouchMove)
     document.removeEventListener("touchend", this.boundTouchEnd)
   }
@@ -56,13 +53,6 @@ export default class extends Controller {
     const { html } = event.detail || {}
     if (!html) return
 
-    // 前回の残りをクリア（Turboキャッシュ復元対策）
-    const footerEl = document.getElementById("mobile-infowindow-footer")
-    if (footerEl) {
-      footerEl.innerHTML = ""
-      footerEl.hidden = true
-    }
-
     // コンテンツを挿入
     const contentEl = document.getElementById("mobile-infowindow-content")
     if (contentEl) {
@@ -73,27 +63,24 @@ export default class extends Controller {
     this.element.hidden = false
     this.element.classList.add("mobile-infowindow--visible")
 
-    // 初期高さを設定（出発/帰宅地点はコンパクトに）
+    // ナビバーの状態を保存して最小化（先に実行して高さを取得）
+    this.saveAndCollapseNavibar()
+
+    // 初期高さを設定（共通高さまたはデフォルト）
     const sheet = this.sheetTarget
     const isPoint = contentEl?.querySelector(".dp-infowindow--point")
-    const initialHeight = isPoint
-      ? window.innerHeight * 0.25
-      : window.innerHeight * 0.5
-    sheet.style.transition = "height 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
+    const defaultPercent = isPoint ? 25 : 50
+    const heightPercent = this.savedHeightPercent ?? defaultPercent
+    const initialHeight = window.innerHeight * (heightPercent / 100)
+    sheet.style.transition = "none"
     sheet.style.height = `${initialHeight}px`
     this.currentHeight = initialHeight
 
 
-    // コメントフッターをシート直下に移動（ナビバーフッターと同じ構造）
-    this.#setupCommentFooter(contentEl)
-
-    // タブ切替でフッター表示/非表示
-    this.#setupTabListeners(contentEl)
-
     // 写真ギャラリー連携（infowindow-ui → photo-gallery）
     const infoWindowEl = contentEl?.querySelector(".dp-infowindow")
     if (infoWindowEl) {
-      infoWindowEl.addEventListener("infowindow-ui:openGallery", (e) => {
+      infoWindowEl.addEventListener("infowindow--ui:openGallery", (e) => {
         document.dispatchEvent(new CustomEvent("photo-gallery:open", {
           detail: {
             photoUrls: e.detail?.photoUrls || [],
@@ -102,110 +89,117 @@ export default class extends Controller {
         }))
       })
     }
-
-    // ナビバーを最小化
-    this.collapseNavibar()
   }
 
   /**
-   * InfoWindowを閉じる
+   * InfoWindowを閉じる（アニメーションなし）
    */
   close() {
     const sheet = this.sheetTarget
-    sheet.style.transition = "height 0.3s cubic-bezier(0.4, 0, 0.2, 1)"
-    sheet.style.height = "0px"
 
+    // 即座に非表示
     this.element.classList.remove("mobile-infowindow--visible")
+    this.element.hidden = true
+    sheet.style.transition = "none"
+    sheet.style.height = ""
 
-    // アニメーション後に非表示
-    setTimeout(() => {
-      this.element.hidden = true
-      sheet.style.height = ""
-      sheet.style.transition = ""
-      const contentEl = document.getElementById("mobile-infowindow-content")
-      if (contentEl) {
-        contentEl.innerHTML = ""
-      }
-      // フッターを非表示・クリア
-      const footerEl = document.getElementById("mobile-infowindow-footer")
-      if (footerEl) {
-        footerEl.innerHTML = ""
-        footerEl.hidden = true
-      }
-    }, 300)
+    // コンテンツクリア
+    const contentEl = document.getElementById("mobile-infowindow-content")
+    if (contentEl) {
+      contentEl.innerHTML = ""
+    }
 
+    // ナビバーを共通高さで復元
+    this.restoreNavibar()
   }
 
   /**
-   * ナビバーを最小化
+   * ナビバーの高さを保存して最小化（アニメーションなし）
+   * 既に保存済みの場合は上書きしない（InfoWindow間遷移対応）
    */
-  collapseNavibar() {
+  saveAndCollapseNavibar() {
     const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
     if (!navibar) return
 
     const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
     if (controller) {
-      controller.collapse()
+      // 未保存の場合のみ保存（連続表示時に元の状態を維持）
+      if (this.savedHeightPercent === null) {
+        const percent = (controller.currentHeight / window.innerHeight) * 100
+        this.savedHeightPercent = percent
+      }
+      // アニメーションなしで即座に最小化
+      navibar.style.transition = "none"
+      controller.setHeight(controller.minValue)
     }
   }
 
-  // --- コメントフッター管理（ナビバーフッターと同じ構造） ---
-
   /**
-   * コメントフッターをシート直下に移動
-   * dp-infowindow内からsheet直下に引き上げることで、flexチェーン問題を解消
+   * ナビバーを共通高さで復元（アニメーションなし）
+   * 高さはリセットせず維持（次回InfoWindowで再利用）
    */
-  #setupCommentFooter(contentEl) {
-    const commentFooter = contentEl?.querySelector(".dp-infowindow__comment-footer")
-    const footerSlot = document.getElementById("mobile-infowindow-footer")
-    if (!commentFooter || !footerSlot) return
+  restoreNavibar() {
+    if (this.savedHeightPercent === null) return
 
-    // フッターをシート直下に移動
-    footerSlot.appendChild(commentFooter)
-    // 初期状態ではスポットタブなのでフッター非表示
-    footerSlot.hidden = true
-  }
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return
 
-  /**
-   * タブ切替でフッター表示/非表示を切り替え
-   */
-  #setupTabListeners(contentEl) {
-    const footerSlot = document.getElementById("mobile-infowindow-footer")
-    if (!footerSlot) return
-
-    const radios = contentEl?.querySelectorAll('input[name="iw-tab"]')
-    if (!radios) return
-
-    radios.forEach((radio) => {
-      radio.addEventListener("change", () => {
-        footerSlot.hidden = radio.id !== "iw-tab-comment" || !radio.checked
-      })
-    })
+    const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
+    if (controller) {
+      navibar.style.transition = "none"
+      controller.setHeight(this.savedHeightPercent)
+    }
+    // savedHeightPercentはリセットしない（次回InfoWindowで再利用）
   }
 
   // --- ドラッグ操作 ---
 
   handleTouchStart(e) {
+    const target = e.target
+
+    // シート外のタッチは無視
+    const sheet = target.closest(".mobile-infowindow__sheet")
+    if (!sheet) return
+
+    // スクロール可能なコンテンツ内からのタッチは無視
+    const scrollable = target.closest(".dp-infowindow__comments, .dp-infowindow__panel--comment")
+    if (scrollable) return
+
+    // ボタンやリンクからのタッチは無視
+    // ただし、ヘッダー行の要素（×ボタン、お気に入り、コメント）はドラッグ許可
+    const headerDraggable = target.closest(".dp-infowindow__close-btn, .dp-infowindow__stat, .dp-infowindow__stats")
+    if (!headerDraggable) {
+      const interactive = target.closest("button, a, input, textarea, select, .dp-infowindow__btn")
+      if (interactive) return
+    }
+
     const touch = e.touches[0]
-    this.isDragging = true
+    this.potentialDrag = true
+    this.isDragging = false
     this.startY = touch.clientY
     this.startHeight = this.currentHeight
+    this.dragThreshold = 10
 
-    const sheet = this.sheetTarget
-    sheet.style.transition = "none"
-
-    e.preventDefault()
+    this.sheetTarget.style.transition = "none"
+    // タップを許可するためここではpreventDefaultを呼ばない
   }
 
   handleTouchMove(e) {
-    if (!this.isDragging) return
+    if (!this.potentialDrag) return
 
     const touch = e.touches[0]
-    const deltaY = this.startY - touch.clientY // 上方向で正
+    const deltaY = this.startY - touch.clientY
+
+    // 閾値を超えたらドラッグ開始
+    if (!this.isDragging && Math.abs(deltaY) > this.dragThreshold) {
+      this.isDragging = true
+    }
+
+    if (!this.isDragging) return
+
+    // ドラッグ中の処理
     const newHeight = this.startHeight + deltaY
     const windowHeight = window.innerHeight
-
-    // 範囲制限（最小100px、最大85vh）
     const minH = 100
     const maxH = windowHeight * 0.85
     const clamped = Math.max(minH, Math.min(maxH, newHeight))
@@ -213,11 +207,15 @@ export default class extends Controller {
     this.sheetTarget.style.height = `${clamped}px`
     this.currentHeight = clamped
 
-    e.preventDefault()
+    if (e.cancelable) e.preventDefault()
   }
 
   handleTouchEnd() {
-    if (!this.isDragging) return
+    // ドラッグ後の高さを共通変数に保存（ナビバー・次のInfoWindowで再利用）
+    if (this.isDragging) {
+      this.savedHeightPercent = (this.currentHeight / window.innerHeight) * 100
+    }
+    this.potentialDrag = false
     this.isDragging = false
   }
 }

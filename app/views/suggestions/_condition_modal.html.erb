@@ -72,8 +72,8 @@
                   class="suggestion-condition-modal__genre-btn suggestion-condition-modal__genre-btn--full"
                   data-action="click->suggestion--condition-modal#openGenreSelect"
                   data-suggestion--condition-modal-target="spotGenreBtn">
-            <span>選択してください</span>
-            <i class="bi bi-plus"></i>
+            <span>おまかせ</span>
+            <i class="bi bi-chevron-right"></i>
           </button>
           <input type="hidden" name="genre_id" value="" data-suggestion--condition-modal-target="spotGenreInput">
         </div>
@@ -108,8 +108,24 @@
 
       <%# ローディング表示 %>
       <div class="suggestion-condition-modal__loading" hidden data-suggestion--condition-modal-target="loading">
-        <div class="suggestion-condition-modal__spinner"></div>
-        <span>考え中...</span>
+        <div class="suggestion-loading">
+          <div class="suggestion-loading__orb">
+            <div class="suggestion-loading__orb-inner"></div>
+            <div class="suggestion-loading__sparkles">
+              <i class="bi bi-stars"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-stars"></i>
+              <i class="bi bi-star-fill"></i>
+            </div>
+          </div>
+          <div class="suggestion-loading__text">
+            <span class="suggestion-loading__label">AIが考え中</span>
+            <span class="suggestion-loading__dots">
+              <span>.</span><span>.</span><span>.</span>
+            </span>
+          </div>
+          <div class="suggestion-loading__bar"></div>
+        </div>
       </div>
     </div>
 
@@ -124,28 +140,60 @@
         </button>
       </div>
 
-      <div class="suggestion-condition-modal__genre-list">
-        <%# おまかせ（プランモード用） %>
+      <div class="selection-list suggestion-condition-modal__genre-list">
+        <%# おまかせ（両モード共通） %>
         <button type="button"
-                class="suggestion-condition-modal__genre-item suggestion-condition-modal__genre-item--omakase"
+                class="selection-list__item selection-list__item--omakase"
                 data-action="click->suggestion--condition-modal#selectGenre"
                 data-genre-id=""
-                data-genre-name="おまかせ"
-                data-suggestion--condition-modal-target="omakaseBtn">
-          おまかせ
+                data-genre-name="おまかせ">
+          <span>おまかせ</span>
         </button>
 
         <% genre_by_category.each do |category, groups| %>
-          <div class="suggestion-condition-modal__genre-category"><%= category %></div>
-          <% groups.each do |group| %>
-            <button type="button"
-                    class="suggestion-condition-modal__genre-item"
-                    data-action="click->suggestion--condition-modal#selectGenre"
-                    data-genre-id="<%= group[:genre].id %>"
-                    data-genre-name="<%= group[:genre].name %>">
-              <%= group[:genre].name %>
-            </button>
-          <% end %>
+          <div class="selection-list__region">
+            <div class="selection-list__region-label"><%= category %></div>
+            <% groups.each do |group| %>
+              <% genre = group[:genre] %>
+              <% children = group[:children] %>
+              <% if children.present? %>
+                <%# 子ジャンルあり: 展開式 %>
+                <div class="selection-list__group">
+                  <div class="selection-list__parent">
+                    <button type="button"
+                            class="selection-list__parent-btn"
+                            data-action="click->suggestion--condition-modal#selectGenre"
+                            data-genre-id="<%= genre.id %>"
+                            data-genre-name="<%= genre.name %>">
+                      <span><%= genre.name %></span>
+                    </button>
+                    <i class="bi bi-chevron-down selection-list__toggle"
+                       data-action="click->suggestion--condition-modal#toggleGroup"></i>
+                  </div>
+                  <div class="selection-list__children">
+                    <% children.each do |child| %>
+                      <button type="button"
+                              class="selection-list__item"
+                              data-action="click->suggestion--condition-modal#selectGenre"
+                              data-genre-id="<%= child.id %>"
+                              data-genre-name="<%= child.name %>">
+                        <span><%= child.name %></span>
+                      </button>
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <%# 子ジャンルなし: 単独ボタン %>
+                <button type="button"
+                        class="selection-list__item"
+                        data-action="click->suggestion--condition-modal#selectGenre"
+                        data-genre-id="<%= genre.id %>"
+                        data-genre-name="<%= genre.name %>">
+                  <span><%= genre.name %></span>
+                </button>
+              <% end %>
+            <% end %>
+          </div>
         <% end %>
       </div>
     </div>

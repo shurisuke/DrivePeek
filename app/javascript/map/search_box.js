@@ -9,6 +9,7 @@ import {
   setSearchHitMarkers,
 } from "map/state"
 import { showInfoWindowWithFrame } from "map/infowindow"
+import { fitBoundsWithPadding } from "map/visual_center"
 
 export const setupSearchBox = () => {
   const map = getMapInstance()
@@ -74,7 +75,7 @@ export const setupSearchBox = () => {
     })
 
     setSearchHitMarkers(newMarkers)
-    map.fitBounds(bounds)
+    fitBoundsWithPadding(bounds)
 
     // ✅ 検索結果クリアボタンを表示
     const clearBtn = document.getElementById("search-hit-clear")

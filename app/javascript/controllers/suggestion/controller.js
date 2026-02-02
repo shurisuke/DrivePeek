@@ -9,6 +9,7 @@ import { closeInfoWindow } from "map/infowindow"
 // - テキストエリア自動リサイズ / Enter送信
 // - タイピングインジケーター表示
 // - 会話クリア時のマーカー削除
+// - 条件モーダルからの送信完了時UXフロー
 // ================================================================
 
 export default class extends Controller {
@@ -23,6 +24,7 @@ export default class extends Controller {
     this.boundHandleKeydown = this.handleKeydown.bind(this)
     this.boundHandleSubmitStart = this.handleSubmitStart.bind(this)
     this.boundHandleSubmitEnd = this.handleSubmitEnd.bind(this)
+    this.boundHandleSubmitComplete = this.handleSubmitComplete.bind(this)
 
     // 入力欄がスコープ外（ナビバーフッター）にある場合に対応
     this.externalInput = document.querySelector(".suggestion__composer [data-suggestion-target='input']")
@@ -46,12 +48,16 @@ export default class extends Controller {
     // Turboイベントをリッスン（ナビバー全体から）
     document.addEventListener("turbo:submit-start", this.boundHandleSubmitStart)
     document.addEventListener("turbo:submit-end", this.boundHandleSubmitEnd)
+
+    // 条件モーダルからの送信完了イベントをリッスン
+    document.addEventListener("suggestion:submitComplete", this.boundHandleSubmitComplete)
   }
 
   disconnect() {
     // イベントリスナーのクリーンアップ
     document.removeEventListener("turbo:submit-start", this.boundHandleSubmitStart)
     document.removeEventListener("turbo:submit-end", this.boundHandleSubmitEnd)
+    document.removeEventListener("suggestion:submitComplete", this.boundHandleSubmitComplete)
 
     if (this.externalInput) {
       this.externalInput.removeEventListener("input", this.boundAutoResize)
@@ -253,6 +259,33 @@ export default class extends Controller {
     const scrollParent = el.closest(".navibar__content-scroll")
     if (scrollParent) {
       scrollParent.scrollTop = scrollParent.scrollHeight
+    }
+  }
+
+  // ============================================
+  // 条件モーダルからの送信完了時UXフロー
+  // ============================================
+
+  // 提案送信完了時のUXフロー
+  handleSubmitComplete() {
+    // 1. モバイル: ボトムシートをmidに展開
+    this.expandBottomSheet()
+
+    // 2. 新規メッセージが見える位置までスクロール（DOM更新後）
+    setTimeout(() => this.scrollToBottom(), 100)
+
+    // 会話が追加されたのでクリアボタンを有効化
+    this.setClearButtonEnabled(true)
+  }
+
+  // ボトムシートをmid状態に展開（モバイルのみ）
+  expandBottomSheet() {
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return
+
+    const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
+    if (controller && controller.isMobile) {
+      controller.setState({ params: { state: "mid" } })
     }
   }
 }

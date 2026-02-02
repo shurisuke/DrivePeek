@@ -6,13 +6,12 @@ import {
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
-import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
 // SuggestionSpotsBatchController
 // 用途: 提案スポットカードを一括処理してマップにピン表示
 // - DB検証済みスポットをマーカー表示
-// - 全マーカーが収まるようにマップをパン
+// - 円は既にパン済みなのでfitBoundsは不要
 //
 // パルスアニメーション設計:
 //   google.maps.Circle はメートル単位のため、ズームレベルで見え方が変わる。
@@ -90,12 +89,9 @@ export default class extends Controller {
     const validSpots = spotInfos.filter((s) => !isNaN(s.spotId) && !isNaN(s.lat) && !isNaN(s.lng))
     if (validSpots.length === 0) return
 
-    // 全マーカーを一括作成
-    const bounds = new google.maps.LatLngBounds()
-
+    // 全マーカーを一括作成（円は既にパン済みなのでfitBoundsは不要）
     validSpots.forEach((info) => {
       const position = { lat: info.lat, lng: info.lng }
-      bounds.extend(position)
 
       // マーカー作成（zIndexで番号順に重なるよう制御）
       const marker = new google.maps.Marker({
@@ -133,27 +129,6 @@ export default class extends Controller {
         controller._spotData = spotData
       }
     })
-
-    // 全マーカーが収まるようにマップをフィット
-    // モバイル時: ボトムシートで隠れる領域を考慮してオフセット
-    const isMobile = window.innerWidth < 768
-    const bottomSheetHeight = isMobile
-      ? (document.querySelector(".navibar")?.offsetHeight || 0)
-      : 0
-
-    if (validSpots.length === 1) {
-      const firstSpot = validSpots[0]
-      map.panTo({ lat: firstSpot.lat, lng: firstSpot.lng })
-      map.setZoom(15)
-      if (bottomSheetHeight > 0) {
-        setTimeout(() => map.panBy(0, bottomSheetHeight / 2), 100)
-      }
-    } else {
-      const padding = isMobile
-        ? { top: 60, right: 16, bottom: bottomSheetHeight + 16, left: 16 }
-        : { top: 50, right: 50, bottom: 50, left: 50 }
-      map.fitBounds(bounds, padding)
-    }
 
     // 提案ピンクリアボタンを表示
     const clearBtn = document.getElementById("suggestion-pin-clear")

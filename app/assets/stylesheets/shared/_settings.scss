@@ -671,3 +671,31 @@ $settings-success: #34c759;
     box-shadow: 0 1px 3px rgba(0, 0, 0, 0.2);
   }
 }
+
+// アカウント操作ページ
+.account-action {
+  margin-top: 3rem;
+  margin-bottom: 1rem;
+  padding: 0 1rem;
+
+  .auth-submit--secondary {
+    background-color: #e8e8ed;
+  }
+}
+
+.account-delete-section {
+  flex-direction: column;
+  align-items: stretch;
+  gap: 0.75rem;
+  padding: 1rem;
+
+  .auth-submit--danger {
+    margin: 0;
+  }
+}
+
+.account-delete-hint {
+  margin: 1rem 0 0;
+  text-align: center;
+  font-size: 0.75rem;
+}

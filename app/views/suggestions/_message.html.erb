@@ -30,7 +30,7 @@
           <i class="bi bi-stars"></i>
         </div>
         <div class="suggestion__content">
-          <div class="suggestion__bubble suggestion__bubble--intro">
+          <div class="suggestion__bubble suggestion__bubble--intro<%= ' suggestion__bubble--new' if auto_show_value %>">
             <%= simple_format(intro_text, {}, wrapper_tag: nil) %>
           </div>
         </div>

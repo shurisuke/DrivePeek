@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, setSuggestionAreaCircle, clearSuggestionMarkers } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
+import { fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
 // SuggestionAreaDrawController
@@ -102,7 +103,8 @@ export default class extends Controller {
   // ============================================
 
   startDraw(e) {
-    // 既存の円があれば削除
+    // 既存の描画線・円があれば削除
+    this.polyline?.setMap(null)
     this.circle?.setMap(null)
     this.switchToDrawMode()
 
@@ -317,8 +319,8 @@ export default class extends Controller {
       clickable: false
     })
 
-    // 円に合わせてズーム
-    this.map.fitBounds(this.circle.getBounds())
+    // 円に合わせてズーム（UI要素を考慮したパディング付き）
+    fitBoundsWithPadding(this.circle.getBounds())
   }
 
   // ============================================

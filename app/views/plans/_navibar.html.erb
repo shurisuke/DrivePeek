@@ -1,5 +1,5 @@
 <aside class="navibar"
-       data-controller="ui--navibar bottom-sheet"
+       data-controller="ui--navibar ui--bottom-sheet"
        data-ui--bottom-sheet-min-value="8"
        data-ui--bottom-sheet-mid-value="45"
        data-ui--bottom-sheet-max-value="85"
@@ -39,15 +39,16 @@
       <div class="navibar__blocks" id="navibar_blocks">
         <%= render "plans/navibar_tabs", plan: plan %>
       </div>
+
+      <%# フッター（モバイル時はスクロール領域内に配置） %>
+      <div id="navibar_footer">
+        <%= render "plans/navibar_footer", plan: plan %>
+      </div>
     </div>
   </div>
 
-  <div id="navibar_footer">
-    <%= render "plans/navibar_footer", plan: plan %>
-  </div>
-
-  <%# 提案タブ用フッター（入力欄）: 現在は非表示 %>
-  <div class="suggestion__composer suggestion__composer--disabled"
+  <%# 提案タブ用フッター %>
+  <div class="suggestion__composer"
        data-ui--navibar-target="footer"
        data-tab="suggestion">
     <%= render "suggestions/form", plan: plan %>

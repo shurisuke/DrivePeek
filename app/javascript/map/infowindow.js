@@ -14,7 +14,7 @@ let infoWindow = null
 let currentZoomIndex = 1  // md（4段階: sm=0, md=1, lg=2, xl=3）
 
 // Stimulusからのズーム変更イベントをリッスン
-document.addEventListener("infowindow-ui:zoomChange", (e) => {
+document.addEventListener("infowindow--ui:zoomChange", (e) => {
   if (e.detail?.zoomIndex !== undefined) {
     currentZoomIndex = e.detail.zoomIndex
   }
@@ -118,21 +118,21 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
       if (planSpotId) {
         buttonSlot.innerHTML = `<button type="button"
           class="dp-infowindow__btn dp-infowindow__btn--delete"
-          data-controller="infowindow-spot-action"
-          data-infowindow-spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
-          data-infowindow-spot-action-method-value="DELETE"
-          data-action="click->infowindow-spot-action#submit">
+          data-controller="infowindow--spot-action"
+          data-infowindow--spot-action-url-value="/plans/${planId}/plan_spots/${planSpotId}"
+          data-infowindow--spot-action-method-value="DELETE"
+          data-action="click->infowindow--spot-action#submit">
           プランから削除
         </button>`
       } else if (spotId) {
         buttonSlot.innerHTML = `<button type="button"
           class="dp-infowindow__btn"
-          data-controller="infowindow-spot-action"
-          data-infowindow-spot-action-url-value="/api/plan_spots"
-          data-infowindow-spot-action-method-value="POST"
-          data-infowindow-spot-action-spot-id-value="${spotId}"
-          data-infowindow-spot-action-plan-id-value="${planId}"
-          data-action="click->infowindow-spot-action#submit">
+          data-controller="infowindow--spot-action"
+          data-infowindow--spot-action-url-value="/api/plan_spots"
+          data-infowindow--spot-action-method-value="POST"
+          data-infowindow--spot-action-spot-id-value="${spotId}"
+          data-infowindow--spot-action-plan-id-value="${planId}"
+          data-action="click->infowindow--spot-action#submit">
           プランに追加
         </button>`
       }
@@ -170,7 +170,7 @@ const showMobileInfoWindow = async ({
   // クエリパラメータを構築
   const params = new URLSearchParams({
     show_button: showButton,
-    zoom_index: 1  // モバイルは常にmd
+    mobile: "true"  // モバイル用パーシャルを要求
   })
   if (spotId) params.append("spot_id", spotId)
   if (placeId) params.append("place_id", placeId)
@@ -270,7 +270,7 @@ export const showInfoWindowWithFrame = ({
       iw.open(map)
     }
     // ナビバー・ボトムシートを考慮した中央表示
-    panToVisualCenter(anchorPos, { offsetY: -80 })
+    panToVisualCenter(anchorPos)
     return
   }
 
@@ -298,8 +298,8 @@ export const showInfoWindowWithFrame = ({
     iw.open(map)
   }
 
-  // ナビバー・ボトムシートを考慮した中央表示（InfoWindow高さ分上にオフセット）
-  panToVisualCenter(anchorPos, { offsetY: -120 })
+  // ナビバー・ボトムシートを考慮した中央表示
+  panToVisualCenter(anchorPos)
 
   // Turbo Frame ロード後にStimulusイベントリスナーを設定
   google.maps.event.addListenerOnce(iw, "domready", () => {
@@ -311,11 +311,11 @@ export const showInfoWindowWithFrame = ({
       if (!infoWindowEl) return
 
       // ギャラリー開くイベント
-      infoWindowEl.addEventListener("infowindow-ui:openGallery", (e) => {
+      infoWindowEl.addEventListener("infowindow--ui:openGallery", (e) => {
         document.dispatchEvent(new CustomEvent("photo-gallery:open", {
           detail: {
             photoUrls: e.detail?.photoUrls || [],
-            name: name || "名称不明"
+            name: infoWindowEl.querySelector(".dp-infowindow__name")?.textContent?.trim() || "名称不明"
           }
         }))
       })

@@ -29,8 +29,8 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
-  height: 70vh;
-  max-height: 500px;
+  height: 500px;
+  max-height: 70vh;
   display: flex;
   flex-direction: column;
   overflow: hidden;
@@ -153,6 +153,7 @@
   gap: 12px;
   padding: 16px 20px;
   border-top: 1px solid #eee;
+  margin-top: auto;
 }
 
 .suggestion-condition-modal__btn {
@@ -208,35 +209,196 @@
   flex-direction: column;
   align-items: center;
   justify-content: center;
-  gap: 16px;
-  background: rgba(255, 255, 255, 0.95);
+  background: rgba(255, 255, 255, 0.98);
   border-radius: 16px;
-  color: #667eea;
-  font-weight: 600;
 
   &[hidden] {
     display: none;
   }
 }
 
-.suggestion-condition-modal__spinner {
-  width: 40px;
-  height: 40px;
-  border: 3px solid #f0f0f0;
-  border-top-color: #667eea;
-  border-radius: 50%;
-  animation: suggestion-modal-spin 0.8s linear infinite;
+// 豪華なローディングアニメーション
+.suggestion-loading {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 12px;
 }
 
-@keyframes suggestion-modal-spin {
-  to {
-    transform: rotate(360deg);
+// パルスするオーブ
+.suggestion-loading__orb {
+  position: relative;
+  width: 32px;
+  height: 32px;
+  margin-top: -20px;
+  margin-bottom: 70px;
+}
+
+.suggestion-loading__orb-inner {
+  position: absolute;
+  inset: 0;
+  border-radius: 50%;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background-size: 200% 200%;
+  animation:
+    orbPulse 2s ease-in-out infinite,
+    orbGradient 3s ease infinite;
+  box-shadow:
+    0 0 30px rgba(102, 126, 234, 0.4),
+    0 0 60px rgba(118, 75, 162, 0.2);
+}
+
+@keyframes orbPulse {
+  0%, 100% {
+    transform: scale(1);
+    box-shadow:
+      0 0 30px rgba(102, 126, 234, 0.4),
+      0 0 60px rgba(118, 75, 162, 0.2);
+  }
+  50% {
+    transform: scale(1.1);
+    box-shadow:
+      0 0 40px rgba(102, 126, 234, 0.6),
+      0 0 80px rgba(118, 75, 162, 0.3);
   }
 }
 
+@keyframes orbGradient {
+  0%, 100% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+}
+
+// キラキラ
+.suggestion-loading__sparkles {
+  position: absolute;
+  inset: -30px;
+  pointer-events: none;
+
+  i {
+    position: absolute;
+    color: #667eea;
+    font-size: 14px;
+    opacity: 0;
+    animation: sparkle 2s ease-in-out infinite;
+
+    &:nth-child(1) {
+      top: 0;
+      left: 50%;
+      animation-delay: 0s;
+    }
+    &:nth-child(2) {
+      top: 50%;
+      right: 0;
+      animation-delay: 0.5s;
+    }
+    &:nth-child(3) {
+      bottom: 0;
+      left: 50%;
+      animation-delay: 1s;
+    }
+    &:nth-child(4) {
+      top: 50%;
+      left: 0;
+      animation-delay: 1.5s;
+    }
+  }
+}
+
+@keyframes sparkle {
+  0%, 100% {
+    opacity: 0;
+    transform: scale(0.5) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.2) rotate(180deg);
+  }
+}
+
+// テキスト
+.suggestion-loading__text {
+  display: flex;
+  align-items: center;
+  font-size: 16px;
+  font-weight: 600;
+}
+
+.suggestion-loading__label {
+  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmerText 2s linear infinite;
+}
+
+.suggestion-loading__dots {
+  display: inline-flex;
+  margin-left: 2px;
+
+  span {
+    background: linear-gradient(90deg, #667eea, #764ba2);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700;
+    animation: dotBounce 1.4s ease-in-out infinite;
+
+    &:nth-child(2) { animation-delay: 0.2s; }
+    &:nth-child(3) { animation-delay: 0.4s; }
+  }
+}
+
+@keyframes dotBounce {
+  0%, 80%, 100% {
+    transform: translateY(0);
+    opacity: 0.4;
+  }
+  40% {
+    transform: translateY(-4px);
+    opacity: 1;
+  }
+}
+
+@keyframes shimmerText {
+  0% { background-position: 100% 50%; }
+  100% { background-position: -100% 50%; }
+}
+
+// プログレスバー風
+.suggestion-loading__bar {
+  width: 120px;
+  height: 4px;
+  border-radius: 2px;
+  background: rgba(102, 126, 234, 0.15);
+  overflow: hidden;
+  position: relative;
+
+  &::after {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: -50%;
+    width: 50%;
+    height: 100%;
+    background: linear-gradient(90deg,
+      transparent,
+      rgba(102, 126, 234, 0.8),
+      rgba(118, 75, 162, 0.8),
+      transparent
+    );
+    animation: barSlide 1.5s ease-in-out infinite;
+  }
+}
+
+@keyframes barSlide {
+  0% { left: -50%; }
+  100% { left: 100%; }
+}
+
 // メインビュー / ジャンル選択ビュー共通
-[data-suggestion-condition-modal-target="mainView"],
-[data-suggestion-condition-modal-target="genreView"] {
+[data-suggestion--condition-modal-target="mainView"],
+[data-suggestion--condition-modal-target="genreView"] {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -247,11 +409,22 @@
   }
 }
 
-// プランモード / スポットモードのコンテンツ
-[data-suggestion-condition-modal-target="planContent"],
-[data-suggestion-condition-modal-target="spotContent"] {
+// プランモードのコンテンツ
+[data-suggestion--condition-modal-target="planContent"] {
   flex: 1;
   overflow-y: auto;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+// スポットモードのコンテンツ（縦中央寄せ）
+[data-suggestion--condition-modal-target="spotContent"] {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
 
   &[hidden] {
     display: none;
@@ -287,47 +460,86 @@
   }
 }
 
-// ジャンル選択リスト
+// ジャンル選択リスト（selection-list 再利用・ボタン版）
 .suggestion-condition-modal__genre-list {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
+  max-height: none; // selection-listのmax-heightを上書き
 
-.suggestion-condition-modal__genre-category {
-  padding: 8px 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(102, 126, 234, 0.8);
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-}
+  // ボタン版アイテム（チェックボックスなし）
+  button.selection-list__item {
+    width: 100%;
+    padding: 10px 14px; // チェックボックス用の32px左paddingを上書き
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+    text-align: left;
 
-.suggestion-condition-modal__genre-item {
-  display: block;
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 14px;
-  color: #333;
-  background: #fff;
-  border: none;
-  border-bottom: 1px solid #f0f0f0;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s;
+    &:hover {
+      background: #f8f9fa;
+    }
 
-  &:hover {
-    background: #f8f9fa;
+    &:active {
+      background: #f0f0f0;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
-  &:active {
-    background: #f0f0f0;
+  // おまかせボタン（特別スタイル）
+  .selection-list__item--omakase {
+    border-bottom: 1px solid #ddd;
+
+    span {
+      color: #667eea;
+      font-weight: 600;
+    }
   }
 
-  &--omakase {
-    color: #667eea;
-    font-weight: 600;
-    border-bottom: 1px solid #eee;
+  // 親行（展開トグルと並べる）
+  .selection-list__parent {
+    gap: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+  }
+
+  // 親ボタン（ジャンル名クリックで選択）
+  .selection-list__parent-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 10px 0 10px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+
+    span {
+      font-size: 14px;
+      color: #007AFF;
+    }
+
+    &:hover {
+      background: #f8f9fa;
+    }
+
+    &:active {
+      background: #f0f0f0;
+    }
+  }
+
+  // 展開トグル
+  .selection-list__toggle {
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  // 子アイテム（インデント）
+  .selection-list__children button.selection-list__item {
+    padding-left: 28px;
   }
 }
 
@@ -340,8 +552,8 @@
 
   .suggestion-condition-modal__dialog {
     max-width: 100%;
-    height: 75vh;
-    max-height: none;
+    height: 500px;
+    max-height: 85vh;
     border-radius: 16px 16px 0 0;
   }
 }

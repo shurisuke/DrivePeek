@@ -331,12 +331,13 @@ $ios-gray-bg: #F2F2F7;
 }
 
 .selection-list__toggle {
-  color: #C7C7CC;
+  color: #8E8E93;
   font-size: 14px;
   transition: transform 0.25s ease;
   cursor: pointer;
   padding: 4px;
   margin: -4px;
+  margin-right: 6px;
 }
 
 /* 子要素（折りたたみ） */
