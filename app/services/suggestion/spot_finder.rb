@@ -47,7 +47,7 @@ module Suggestion
     # @param genre_id [Integer, nil] ジャンルID（nilの場合は全ジャンル）
     def fetch_candidates(genre_id, limit)
       scope = spots_in_circle
-      scope = scope.filter_by_genres([genre_id]) if genre_id
+      scope = scope.filter_by_genres([ genre_id ]) if genre_id
 
       candidate_ids = scope.pluck(:id)
       return [] if candidate_ids.empty?
