@@ -95,19 +95,19 @@ export const getMapPadding = () => {
   }
 
   // デスクトップ: 各UI要素を考慮
-  // 上部: 検索ボックス + ピン削除ボタンエリア
+  // ※ 地図要素自体がナビバーの右側に配置されているため、
+  //    leftPaddingにナビバー幅は含めない（二重計算防止）
+
+  // 上部: 検索ボックス + ピン削除ボタン + 余裕
   const searchBox = document.querySelector(".map-search-box")
-  const topPadding = (searchBox?.offsetHeight || 50) + 20
+  const topPadding = (searchBox?.offsetHeight || 50) + 40
 
   // 下部: アクションバー（共有・保存ボタン）
   const actionBar = document.querySelector(".plan-actions")
   const bottomPadding = (actionBar?.offsetHeight || 50) + 20
 
-  // 左側: ナビバー幅
-  const navibar = document.querySelector(".navibar")
-  const leftPadding = (navibar?.offsetWidth || 360) + 20
-
-  // 右側: 余白
+  // 左右: 余白のみ
+  const leftPadding = 50
   const rightPadding = 50
 
   return {

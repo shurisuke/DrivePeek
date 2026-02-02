@@ -108,8 +108,24 @@
 
       <%# ローディング表示 %>
       <div class="suggestion-condition-modal__loading" hidden data-suggestion--condition-modal-target="loading">
-        <div class="suggestion-condition-modal__spinner"></div>
-        <span>考え中...</span>
+        <div class="suggestion-loading">
+          <div class="suggestion-loading__orb">
+            <div class="suggestion-loading__orb-inner"></div>
+            <div class="suggestion-loading__sparkles">
+              <i class="bi bi-stars"></i>
+              <i class="bi bi-star-fill"></i>
+              <i class="bi bi-stars"></i>
+              <i class="bi bi-star-fill"></i>
+            </div>
+          </div>
+          <div class="suggestion-loading__text">
+            <span class="suggestion-loading__label">AIが考え中</span>
+            <span class="suggestion-loading__dots">
+              <span>.</span><span>.</span><span>.</span>
+            </span>
+          </div>
+          <div class="suggestion-loading__bar"></div>
+        </div>
       </div>
     </div>
 

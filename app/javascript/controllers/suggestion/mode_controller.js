@@ -1,5 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, clearSuggestionMarkers, setSuggestionAreaCircle } from "map/state"
+import { fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
 // SuggestModeController
@@ -77,7 +78,7 @@ export default class extends Controller {
     })
 
     setSuggestionAreaCircle(circle)
-    map.fitBounds(circle.getBounds())
+    fitBoundsWithPadding(circle.getBounds())
   }
 
   // 終了（モード選択UIを再表示）
