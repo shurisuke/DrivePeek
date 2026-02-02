@@ -60,9 +60,9 @@ class User < ApplicationRecord
     !sns_only_user?
   end
 
-  # SNS認証のみのユーザーはメール確認不要
+  # メール確認をスキップ（Resend独自ドメイン設定後に有効化予定）
   def confirmation_required?
-    !sns_only_user?
+    false
   end
 
   # OmniAuthコールバックからユーザーを検索
