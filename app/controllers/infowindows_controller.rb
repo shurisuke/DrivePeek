@@ -18,7 +18,8 @@ class InfowindowsController < ApplicationController
 
     # 出発・帰宅地点の場合はシンプルなパーシャルを返す（ログイン後のみ）
     if @edit_mode.present?
-      return render partial: "map/infowindow_home", locals: home_locals
+      partial = params[:mobile] == "true" ? "map/infowindow_home_mobile" : "map/infowindow_home"
+      return render partial: partial, locals: home_locals
     end
 
     @spot = find_or_create_spot
@@ -28,7 +29,12 @@ class InfowindowsController < ApplicationController
     @map_mode = params[:map_mode]
     @plan_spot_id = find_plan_spot_id
 
-    render partial: "map/infowindow_spot", locals: infowindow_locals
+    # モバイル用パーシャルを返す
+    if params[:mobile] == "true"
+      render partial: "map/infowindow_spot_mobile", locals: infowindow_locals_mobile
+    else
+      render partial: "map/infowindow_spot", locals: infowindow_locals
+    end
   end
 
   # POST /infowindow
@@ -174,6 +180,17 @@ class InfowindowsController < ApplicationController
       edit_mode: @edit_mode,
       zoom_scale: zoom_scale,
       zoom_index: zoom_index
+    }
+  end
+
+  def infowindow_locals_mobile
+    {
+      spot: @spot,
+      photo_urls: @photo_urls,
+      show_button: @show_button,
+      map_mode: @map_mode,
+      plan_id: params[:plan_id],
+      plan_spot_id: @plan_spot_id
     }
   end
 end

@@ -1,0 +1,142 @@
+<%#
+  モバイル用 InfoWindow コンテンツ
+  3カラムヘッダー: [stats] [名前・住所・ジャンル] [×閉じる]
+
+  locals:
+    - spot: Spotモデル
+    - photo_urls: 写真URL配列
+    - show_button: 「プランに追加」ボタン表示
+    - map_mode: 地図モード（"show" = 詳細画面）
+    - plan_id: プランID
+    - plan_spot_id: 削除モード時のID
+%>
+<%
+  safe_name = spot.name.presence || "名称不明"
+  safe_address = spot.address.presence || "住所不明"
+  urls = photo_urls.presence || []
+  has_multiple_photos = urls.size > 1
+  comments = spot.spot_comments.chronological.includes(:user)
+  comment_count = comments.size
+  favorite_spot = current_user&.favorite_spots&.find_by(spot: spot)
+%>
+
+<div class="dp-infowindow dp-infowindow--mobile"
+     data-controller="infowindow--ui"
+     data-infowindow--ui-spot-id-value="<%= spot.id %>"
+     data-infowindow--ui-place-id-value="<%= spot.place_id %>"
+     data-infowindow--ui-photo-count-value="<%= urls.size %>">
+
+  <%# タブ切り替え用ラジオボタン %>
+  <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
+  <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
+
+  <%# ヘッダー: 3カラム [stats] [title] [close] %>
+  <div class="dp-infowindow__header-row">
+    <div class="dp-infowindow__stats">
+      <%= render "favorite_spots/infowindow_button", spot: spot, favorite_spot: favorite_spot %>
+      <label for="iw-tab-comment" class="dp-infowindow__stat dp-infowindow__stat--comment">
+        <i class="bi bi-chat"></i>
+        <span id="comment-count"><%= comment_count %></span>
+      </label>
+    </div>
+
+    <div class="dp-infowindow__title-block">
+      <div class="dp-infowindow__name"><%= safe_name %></div>
+      <div class="dp-infowindow__address"><%= safe_address %></div>
+      <div class="dp-infowindow__genres">
+        <%= render "spots/genres_inline", spot: spot %>
+      </div>
+    </div>
+
+    <button type="button"
+            class="dp-infowindow__close-btn"
+            data-action="click->infowindow--mobile#close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <%# タブ %>
+  <div class="dp-infowindow__tabs">
+    <label for="iw-tab-info" class="dp-infowindow__tab">スポット</label>
+    <label for="iw-tab-comment" class="dp-infowindow__tab">コメント</label>
+  </div>
+
+  <%# スポット情報パネル %>
+  <div class="dp-infowindow__panel dp-infowindow__panel--info">
+    <%# 写真エリア %>
+    <% if urls.any? %>
+      <div class="dp-infowindow__photo">
+        <div class="dp-infowindow__slider" data-infowindow--ui-target="slider">
+          <% urls.each_with_index do |url, i| %>
+            <div class="dp-infowindow__slide<%= ' dp-infowindow__slide--active' if i == 0 %>"
+                 data-index="<%= i %>">
+              <img class="dp-infowindow__img" src="<%= url %>" alt="<%= safe_name %>">
+            </div>
+          <% end %>
+        </div>
+
+        <% if has_multiple_photos %>
+          <button type="button"
+                  class="dp-infowindow__arrow dp-infowindow__arrow--prev"
+                  data-action="click->infowindow--ui#prevSlide">
+            <i class="bi bi-chevron-left"></i>
+          </button>
+          <button type="button"
+                  class="dp-infowindow__arrow dp-infowindow__arrow--next"
+                  data-action="click->infowindow--ui#nextSlide">
+            <i class="bi bi-chevron-right"></i>
+          </button>
+        <% end %>
+
+        <% if spot.place_id.present? %>
+          <button type="button"
+                  class="dp-infowindow__expand-btn"
+                  data-action="click->infowindow--ui#openGallery">
+            <i class="bi bi-arrows-fullscreen"></i>
+          </button>
+        <% end %>
+
+        <% if has_multiple_photos %>
+          <div class="dp-infowindow__indicator" data-infowindow--ui-target="indicator">
+            <% urls.each_with_index do |_, i| %>
+              <span class="dp-infowindow__dot<%= ' dp-infowindow__dot--active' if i == 0 %>"
+                    data-index="<%= i %>"
+                    data-action="click->infowindow--ui#goToSlide"></span>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+    <% else %>
+      <div class="dp-infowindow__photo dp-infowindow__photo--empty">
+        <i class="bi bi-image"></i>
+      </div>
+    <% end %>
+
+    <%# アクションボタン %>
+    <% if map_mode == "show" && user_signed_in? %>
+      <%= link_to "プランを作る", authenticated_root_path, class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
+    <% elsif show_button && plan_id.present? %>
+      <% plan_spot = plan_spot_id.present? ? PlanSpot.find_by(id: plan_spot_id) : nil %>
+      <%= render "map/infowindow_spot_button", spot: spot, plan_id: plan_id, plan_spot: plan_spot %>
+    <% end %>
+  </div>
+
+  <%# コメントパネル %>
+  <div class="dp-infowindow__panel dp-infowindow__panel--comment">
+    <div class="dp-infowindow__comments" id="comments-list">
+      <% if comments.any? %>
+        <%= render partial: "spot_comments/comment",
+                   collection: comments,
+                   as: :comment,
+                   locals: { current_user: current_user } %>
+      <% else %>
+        <div id="comments-empty" class="dp-infowindow__comments-empty">
+          まだコメントはありません
+        </div>
+      <% end %>
+    </div>
+    <div class="dp-infowindow__comment-footer">
+      <%= render "spot_comments/form", spot: spot %>
+    </div>
+  </div>
+</div>

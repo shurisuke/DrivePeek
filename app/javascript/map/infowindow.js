@@ -170,7 +170,7 @@ const showMobileInfoWindow = async ({
   // クエリパラメータを構築
   const params = new URLSearchParams({
     show_button: showButton,
-    zoom_index: 1  // モバイルは常にmd
+    mobile: "true"  // モバイル用パーシャルを要求
   })
   if (spotId) params.append("spot_id", spotId)
   if (placeId) params.append("place_id", placeId)

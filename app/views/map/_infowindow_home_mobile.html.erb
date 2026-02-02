@@ -1,0 +1,51 @@
+<%#
+  InfoWindow コンテンツ（出発・帰宅地点用 - モバイル版）
+  シンプル版: 名前、住所、編集ボタン
+
+  locals:
+    - name: 表示名（"出発" / "帰宅"）
+    - address: 住所
+    - edit_mode: "start_point" | "goal_point"
+    - plan_id: プランID
+%>
+
+<div class="dp-infowindow dp-infowindow--point"
+     data-controller="infowindow--point-editor"
+     data-infowindow--point-editor-edit-mode-value="<%= edit_mode %>"
+     data-infowindow--point-editor-plan-id-value="<%= plan_id %>">
+
+  <div class="dp-infowindow__header">
+    <div class="dp-infowindow__title"><%= name %></div>
+    <button type="button"
+            class="dp-infowindow__close"
+            data-action="click->infowindow--mobile#close">
+      <i class="bi bi-x-lg"></i>
+    </button>
+  </div>
+
+  <div class="dp-infowindow__body">
+    <div class="dp-infowindow__address"><%= address.presence || "住所未設定" %></div>
+
+    <%# 表示モード: ボタン %>
+    <button type="button"
+            class="dp-infowindow__edit-btn"
+            data-infowindow--point-editor-target="displayMode"
+            data-action="click->infowindow--point-editor#showEditMode">
+      <%= edit_mode == "start_point" ? "出発地点を変更" : "帰宅地点を変更" %>
+    </button>
+
+    <%# 編集モード: 入力フォーム %>
+    <div class="dp-infowindow__edit-row" hidden data-infowindow--point-editor-target="editMode">
+      <input type="text"
+             class="dp-infowindow__edit-input"
+             placeholder="住所を入力..."
+             data-infowindow--point-editor-target="input"
+             data-action="keydown->infowindow--point-editor#onKeydown">
+      <button type="button"
+              class="dp-infowindow__edit-submit"
+              data-action="click->infowindow--point-editor#search">
+        変更
+      </button>
+    </div>
+  </div>
+</div>
