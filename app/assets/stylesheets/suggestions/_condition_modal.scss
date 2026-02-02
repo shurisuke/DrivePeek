@@ -460,47 +460,86 @@
   }
 }
 
-// ジャンル選択リスト
+// ジャンル選択リスト（selection-list 再利用・ボタン版）
 .suggestion-condition-modal__genre-list {
   flex: 1;
   overflow-y: auto;
   -webkit-overflow-scrolling: touch;
-}
+  max-height: none; // selection-listのmax-heightを上書き
 
-.suggestion-condition-modal__genre-category {
-  padding: 8px 20px;
-  font-size: 12px;
-  font-weight: 600;
-  color: rgba(102, 126, 234, 0.8);
-  background: #f8f9fa;
-  border-bottom: 1px solid #eee;
-}
+  // ボタン版アイテム（チェックボックスなし）
+  button.selection-list__item {
+    width: 100%;
+    padding: 10px 14px; // チェックボックス用の32px左paddingを上書き
+    background: #fff;
+    border: none;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+    text-align: left;
 
-.suggestion-condition-modal__genre-item {
-  display: block;
-  width: 100%;
-  padding: 12px 20px;
-  font-size: 14px;
-  color: #333;
-  background: #fff;
-  border: none;
-  border-bottom: 1px solid #f0f0f0;
-  text-align: left;
-  cursor: pointer;
-  transition: background 0.15s;
+    &:hover {
+      background: #f8f9fa;
+    }
 
-  &:hover {
-    background: #f8f9fa;
+    &:active {
+      background: #f0f0f0;
+    }
+
+    &:last-child {
+      border-bottom: none;
+    }
   }
 
-  &:active {
-    background: #f0f0f0;
+  // おまかせボタン（特別スタイル）
+  .selection-list__item--omakase {
+    border-bottom: 1px solid #ddd;
+
+    span {
+      color: #667eea;
+      font-weight: 600;
+    }
   }
 
-  &--omakase {
-    color: #667eea;
-    font-weight: 600;
-    border-bottom: 1px solid #eee;
+  // 親行（展開トグルと並べる）
+  .selection-list__parent {
+    gap: 0;
+    padding: 0;
+    border-bottom: 1px solid rgba(60, 60, 67, 0.12);
+  }
+
+  // 親ボタン（ジャンル名クリックで選択）
+  .selection-list__parent-btn {
+    flex: 1;
+    display: flex;
+    align-items: center;
+    padding: 10px 0 10px 14px;
+    background: none;
+    border: none;
+    cursor: pointer;
+    text-align: left;
+
+    span {
+      font-size: 14px;
+      color: #007AFF;
+    }
+
+    &:hover {
+      background: #f8f9fa;
+    }
+
+    &:active {
+      background: #f0f0f0;
+    }
+  }
+
+  // 展開トグル
+  .selection-list__toggle {
+    padding: 10px 14px;
+    cursor: pointer;
+  }
+
+  // 子アイテム（インデント）
+  .selection-list__children button.selection-list__item {
+    padding-left: 28px;
   }
 }
 
