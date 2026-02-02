@@ -102,7 +102,8 @@ export default class extends Controller {
   // ============================================
 
   startDraw(e) {
-    // 既存の円があれば削除
+    // 既存の描画線・円があれば削除
+    this.polyline?.setMap(null)
     this.circle?.setMap(null)
     this.switchToDrawMode()
 
