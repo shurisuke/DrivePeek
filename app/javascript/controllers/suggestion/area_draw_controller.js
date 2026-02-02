@@ -125,7 +125,8 @@ export default class extends Controller {
       path: [],
       strokeColor: "#667eea",
       strokeWeight: 3,
-      strokeOpacity: 0.8
+      strokeOpacity: 0.8,
+      zIndex: 1,
     })
 
     this.addPoint(e)

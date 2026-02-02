@@ -66,15 +66,25 @@ export default class extends Controller {
     // ナビバーの状態を保存して最小化（先に実行して高さを取得）
     this.saveAndCollapseNavibar()
 
-    // 初期高さを設定（共通高さまたはデフォルト）
+    // 初期高さを設定
     const sheet = this.sheetTarget
     const isPoint = contentEl?.querySelector(".dp-infowindow--point")
-    const defaultPercent = isPoint ? 25 : 50
-    const heightPercent = this.savedHeightPercent ?? defaultPercent
-    const initialHeight = window.innerHeight * (heightPercent / 100)
+
     sheet.style.transition = "none"
-    sheet.style.height = `${initialHeight}px`
-    this.currentHeight = initialHeight
+
+    if (isPoint) {
+      // 出発/帰宅地点: コンテンツの高さに合わせる
+      sheet.style.height = "auto"
+      const contentHeight = sheet.scrollHeight
+      sheet.style.height = `${contentHeight}px`
+      this.currentHeight = contentHeight
+    } else {
+      // スポット: 共通高さまたはデフォルト50%
+      const heightPercent = this.savedHeightPercent ?? 50
+      const initialHeight = window.innerHeight * (heightPercent / 100)
+      sheet.style.height = `${initialHeight}px`
+      this.currentHeight = initialHeight
+    }
 
 
     // 写真ギャラリー連携（infowindow-ui → photo-gallery）

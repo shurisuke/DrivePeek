@@ -24,6 +24,7 @@ export const ROUTE_POLYLINE_STYLE = {
   strokeColor: COLORS.MY_PLAN,
   strokeOpacity: 0.85,
   strokeWeight: 4,
+  zIndex: 1,
 }
 
 /**
@@ -33,6 +34,7 @@ export const COMMUNITY_ROUTE_STYLE = {
   strokeColor: COLORS.COMMUNITY,
   strokeOpacity: 0.7,
   strokeWeight: 4,
+  zIndex: 1,
 }
 
 /**
