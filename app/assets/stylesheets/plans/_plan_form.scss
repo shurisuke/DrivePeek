@@ -163,12 +163,17 @@ body.no-footer {
 
         background: rgba(255, 255, 255, 0.95);
         box-sizing: border-box;
+
+        /* ✅ フッターを最下部に固定するためのflex */
+        display: flex;
+        flex-direction: column;
       }
 
-      /* ✅ ブロック一覧コンテナ（固定をやめて100%） */
+      /* ✅ ブロック一覧コンテナ（flex-growで余白を吸収） */
       &__blocks {
         width: 100%;
         box-sizing: border-box;
+        flex: 1 0 auto; /* 余白があれば伸びる */
       }
 
       /* ✅ プランタブ用フッター（距離・時間表示） */
@@ -176,7 +181,7 @@ body.no-footer {
         padding: 16px 24px;
         border-top: 1px solid #e5e5e5;
         background: #fff;
-        flex-shrink: 0;
+        flex-shrink: 0; /* flexで縮まない */
         z-index: 10;
         display: none; /* デフォルト非表示、プランタブ時のみ表示 */
       }
@@ -734,6 +739,12 @@ body.navibar-resizing .plan-form .plan-actions {
             opacity: 0.8;
           }
         }
+      }
+
+      /* フッター: モバイルではstickyを解除し、スクロール内で自然に流す */
+      .navibar__footer {
+        position: static;
+        padding: 12px 16px;
       }
 
       /* トグルボタンの上下マージンを削除 */
