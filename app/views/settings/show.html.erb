@@ -107,8 +107,11 @@
     <%# アカウント操作 %>
     <div class="settings-section settings-section--account">
       <div class="settings-menu">
-        <%= link_to account_settings_path, class: "settings-menu-item settings-menu-item--muted" do %>
-          <span>ログアウト / 退会</span>
+        <%= link_to account_settings_path, class: "settings-menu-item settings-menu-item--with-icon settings-menu-item--muted" do %>
+          <div class="settings-menu-item-left">
+            <i class="bi bi-box-arrow-right"></i>
+            <span>ログアウト・退会</span>
+          </div>
           <i class="bi bi-chevron-right"></i>
         <% end %>
       </div>
