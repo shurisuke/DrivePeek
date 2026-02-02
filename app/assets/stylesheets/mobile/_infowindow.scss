@@ -6,6 +6,24 @@
    ここではモバイル固有のレイアウトのみ定義
 ========================================== */
 
+/* 共通: 閉じるボタン */
+%mobile-close-btn {
+  width: 32px;
+  height: 32px;
+  border: none;
+  background: rgba(0, 0, 0, 0.05);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+
+  i {
+    font-size: 16px;
+    color: #666;
+  }
+}
+
 .mobile-infowindow {
   position: fixed;
   inset: 0;
@@ -20,13 +38,6 @@
   &--visible {
     display: block;
   }
-}
-
-.mobile-infowindow__backdrop {
-  position: absolute;
-  inset: 0;
-  background: transparent;
-  pointer-events: none;
 }
 
 .mobile-infowindow__sheet {
@@ -142,23 +153,9 @@
   }
 
   .dp-infowindow__close-btn {
+    @extend %mobile-close-btn;
     justify-self: end;
     margin-right: 14px;
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-    flex-shrink: 0;
-
-    i {
-      font-size: 16px;
-      color: #666;
-    }
   }
 
   /* タブ: モバイル用スタイル */
@@ -260,24 +257,11 @@
   }
 
   .dp-infowindow__close {
+    @extend %mobile-close-btn;
     position: absolute;
     right: 0;
     top: 50%;
     transform: translateY(-50%);
-    width: 32px;
-    height: 32px;
-    border: none;
-    background: rgba(0, 0, 0, 0.05);
-    border-radius: 50%;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    cursor: pointer;
-
-    i {
-      font-size: 16px;
-      color: #666;
-    }
   }
 
   .dp-infowindow__body {
