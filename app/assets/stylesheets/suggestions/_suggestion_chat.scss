@@ -3,17 +3,11 @@
 ========================================== */
 
 .suggestion {
-  display: block;
+  display: flex;
+  flex-direction: column;
+  height: 100%;
   background-color: #fff;
-  padding-bottom: 80px; /* composer分の余白 */
-
-  /* モバイル時はflexboxで下部配置 + ボトムシートと一緒に収納 */
-  @media (max-width: 767px) {
-    display: flex;
-    flex-direction: column;
-    height: 100%;
-    padding-bottom: 0;
-  }
+  padding-bottom: 0;
 }
 
 /* ==========================================
@@ -124,19 +118,16 @@
   padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   display: flex;
   flex-direction: column;
-
-  /* モバイル時は伸縮して入力欄を下部に押し出す */
-  @media (max-width: 767px) {
-    flex: 1;
-    min-height: 0;
-    overflow-y: auto;
-  }
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
 
   /* 最下部に余白を追加 */
   &::after {
     content: "";
     display: block;
-    height: 300px;
+    height: 80px;
+    flex-shrink: 0;
   }
 }
 
@@ -485,38 +476,17 @@
    入力フォームエリア（ナビバー下部に固定）
 ========================================== */
 .suggestion__composer {
-  position: fixed;
-  bottom: 0;
-  left: 0;
-  width: var(--navibar-width, 360px);
-  z-index: 20;
+  position: static;
+  width: 100%;
   padding: 12px 16px;
-  padding-left: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
-  padding-right: calc(16px + max(0px, (var(--navibar-width, 360px) - 360px) * 0.2));
   background-color: #fff;
   border-top: 1px solid #e5e5ea;
   box-sizing: border-box;
+  flex-shrink: 0;
 
-  /* モバイル時は固定ではなく通常フロー（ボトムシートと一緒に収納） */
   @media (max-width: 767px) {
-    position: static;
-    width: 100%;
-    padding-left: 16px;
-    padding-right: 16px;
-    padding-bottom: calc(12px + env(safe-area-inset-bottom, 0px));
-    flex-shrink: 0; /* 縮まない */
-  }
-
-  // 無効状態（入力欄・送信ボタンのみ非表示、三点リーダは残す）
-  &--disabled {
-    .suggestion__input-row,
-    .suggestion__send-btn {
-      display: none;
-    }
-
-    .suggestion__input-row-wrapper {
-      justify-content: flex-end;
-    }
+    padding-top: 4px;
+    padding-bottom: calc(4px + env(safe-area-inset-bottom, 0px));
   }
 }
 
@@ -546,6 +516,10 @@
   grid-template-columns: 1fr auto 1fr;
   align-items: center;
   margin: 8px 0;
+
+  @media (max-width: 767px) {
+    margin: 0;
+  }
 }
 
 .suggestion__suggest-btns {

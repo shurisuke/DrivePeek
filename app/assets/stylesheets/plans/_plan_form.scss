@@ -631,20 +631,15 @@ body.navibar-resizing .plan-form .plan-actions {
 
         z-index: 100;
 
-        /* ドラッグハンドルを表示 */
+        /* ドラッグハンドル */
         .navibar__handle {
           display: flex;
           justify-content: center;
           align-items: center;
-          height: 24px;
+          height: 5px;
+          padding-top: 4px;
           cursor: grab;
-          touch-action: none;
-          user-select: none;
           flex-shrink: 0;
-
-          &:active {
-            cursor: grabbing;
-          }
         }
 
         /* タブナビを上部に固定（フッターより常に上に表示） */
@@ -655,6 +650,7 @@ body.navibar-resizing .plan-form .plan-actions {
           position: relative;
           z-index: 10;
           background: #fff;
+          touch-action: none;
 
           .tab-btn {
             font-size: 14px;

@@ -13,21 +13,15 @@
 .tab-content.tab-suggestion.active {
   display: flex;
   flex-direction: column;
-  height: calc(100vh - 60px); /* タブナビの高さを除いた全高 */
-
-  /* モバイル時は親の高さに合わせる */
-  @media (max-width: 767px) {
-    height: 100%;
-  }
+  height: 100%;
 }
 
-/* 提案タブ選択時: 親スクロールを無効化 */
+/* 提案タブ選択時: 親スクロールを無効化し、高さを継承 */
 .navibar__content-scroll:has(.tab-suggestion.active) {
-  overflow-y: hidden;
+  overflow: hidden;
+  height: 100%;
 
-  /* モバイル時も同様 */
-  @media (max-width: 767px) {
-    overflow: hidden;
+  .navibar__blocks {
     height: 100%;
   }
 }
@@ -35,7 +29,7 @@
 html { scrollbar-gutter: stable; }
 
 .navibar__content {
-  overflow-y: scroll;        /* auto → scroll */
+  overflow-y: scroll;
   scrollbar-gutter: stable;
   min-height: 0;
 }

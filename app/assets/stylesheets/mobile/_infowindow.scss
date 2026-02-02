@@ -46,15 +46,10 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  height: 24px;
+  height: 5px;
+  padding-top: 4px;
   cursor: grab;
   flex-shrink: 0;
-  position: relative;
-  z-index: 1;
-
-  &:active {
-    cursor: grabbing;
-  }
 }
 
 .mobile-infowindow__handle-bar {
@@ -93,7 +88,7 @@
 /* お気に入り・コメントをsheetレベルで左上に配置 */
 .mobile-infowindow__sheet .dp-infowindow__stats {
   position: absolute;
-  top: 4px;
+  top: 15px;
   left: 12px;
   display: flex;
   flex-direction: row;
@@ -213,18 +208,21 @@
     /* 順序: 名前(1) → 住所(2) → ジャンル(3) → 写真(4) → ボタン(5) */
     .dp-infowindow__name {
       order: 1;
+      margin-top: 15px;
       padding: 4px 65px 0;
       height: auto;
-      white-space: normal;
-      overflow: visible;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
     .dp-infowindow__address {
       order: 2;
       padding: 0 65px;
       height: auto;
-      overflow: visible;
-      white-space: normal;
+      overflow: hidden;
+      white-space: nowrap;
+      text-overflow: ellipsis;
     }
 
     .dp-infowindow__genres {
@@ -301,7 +299,7 @@
       padding: 10px 16px;
       font-size: 14px;
       border-radius: 20px;
-      margin-top: 8px;
+      margin-bottom: 8px;
     }
   }
 }

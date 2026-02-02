@@ -21,34 +21,35 @@ const getBottomSheetHeight = () => {
 }
 
 /**
- * InfoWindowの高さを取得（モバイル時）
+ * デスクトップ用の縦オフセットを計算
+ * 上部障害物と下部障害物の中間にInfoWindowを配置
  */
-const getInfoWindowHeight = () => {
-  if (!isMobile()) return 0
-  // InfoWindowはまだ表示されていない場合があるので、想定高さを返す
-  const infoWindow = document.querySelector(".infowindow-mobile, .gm-style-iw")
-  return infoWindow?.offsetHeight || 280 // デフォルト想定高さ
+const getDesktopOffsetY = () => {
+  // 上部: 検索バー + フローティングボタン
+  const searchBox = document.querySelector(".map-search-box")
+  const floatingButtons = document.querySelector(".map-floating-buttons")
+  const topHeight = (searchBox?.offsetHeight || 50) + (floatingButtons?.offsetHeight || 40)
+
+  // 下部: アクションバー（共有・保存ボタン）
+  const actionBar = document.querySelector(".plan-actions")
+  const bottomHeight = actionBar?.offsetHeight || 0
+
+  // マーカーからInfoWindow中心までの距離（InfoWindow半分 + ピクセルオフセット）
+  const infoWindowHalfHeight = 150
+  const pixelOffsetToMarker = 50
+  const markerToInfoWindowCenter = infoWindowHalfHeight + pixelOffsetToMarker
+
+  // 障害物の中間 - InfoWindow中心を基準に上へシフト（InfoWindowが中央に来る）
+  return (bottomHeight - topHeight) / 2 - markerToInfoWindowCenter
 }
 
 /**
- * ナビバーの表示幅を取得（デスクトップ時）
- */
-const getNavibarWidth = () => {
-  if (isMobile()) return 0
-  const style = getComputedStyle(document.documentElement)
-  const width = parseInt(style.getPropertyValue("--navibar-width")) || 360
-  const slide = parseInt(style.getPropertyValue("--navibar-slide")) || 0
-  return width - slide
-}
-
-/**
- * 指定座標を見た目の中央に表示（モバイルのみ）
- * デスクトップは既存の動作が良いのでそのまま
+ * 指定座標を見た目の中央に表示
+ * モバイル: ボトムシートを考慮
+ * デスクトップ: 検索バー + フローティングボタン + InfoWindowを考慮
  * @param {google.maps.LatLng|{lat, lng}} position - 表示したい座標
- * @param {Object} options
- * @param {number} options.offsetY - 追加の縦オフセット（px、負で上方向）
  */
-export const panToVisualCenter = (position, options = {}) => {
+export const panToVisualCenter = (position) => {
   const map = getMapInstance()
   if (!map) return
 
@@ -59,15 +60,19 @@ export const panToVisualCenter = (position, options = {}) => {
   // まず通常のpanTo
   map.panTo(latLng)
 
-  // モバイルのみオフセット調整
-  if (!isMobile()) return
+  if (isMobile()) {
+    // モバイル: ボトムシートで隠れる領域を考慮して、見える範囲の中央にピンを配置
+    // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
+    const bottomSheetHeight = getBottomSheetHeight()
+    const offsetY = bottomSheetHeight / 2
 
-  // ボトムシートで隠れる領域を考慮して、見える範囲の中央にピンを配置
-  // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
-  const bottomSheetHeight = getBottomSheetHeight()
-  const offsetY = bottomSheetHeight / 2
-
-  if (offsetY > 0) {
+    if (offsetY > 0) {
+      map.panBy(0, offsetY)
+    }
+  } else {
+    // デスクトップ: 検索バー + フローティングボタン + InfoWindow高さを考慮
+    // panBy(0, 負)で地図が上にシフト → InfoWindowが見える位置に
+    const offsetY = getDesktopOffsetY()
     map.panBy(0, offsetY)
   }
 }

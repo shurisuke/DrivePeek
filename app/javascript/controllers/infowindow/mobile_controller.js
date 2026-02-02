@@ -26,14 +26,12 @@ export default class extends Controller {
     this.startHeight = 0
     this.currentHeight = 0
 
-    // ドラッグイベント
+    // ドラッグイベント（document で捕捉し、シート内かをチェック）
     this.boundTouchStart = this.handleTouchStart.bind(this)
     this.boundTouchMove = this.handleTouchMove.bind(this)
     this.boundTouchEnd = this.handleTouchEnd.bind(this)
 
-    if (this.hasHandleTarget) {
-      this.handleTarget.addEventListener("touchstart", this.boundTouchStart, { passive: false })
-    }
+    document.addEventListener("touchstart", this.boundTouchStart, { passive: false })
     document.addEventListener("touchmove", this.boundTouchMove, { passive: false })
     document.addEventListener("touchend", this.boundTouchEnd)
   }
@@ -42,9 +40,7 @@ export default class extends Controller {
     document.removeEventListener("mobileInfowindow:show", this.boundShow)
     document.removeEventListener("mobileInfowindow:close", this.boundClose)
 
-    if (this.hasHandleTarget) {
-      this.handleTarget.removeEventListener("touchstart", this.boundTouchStart)
-    }
+    document.removeEventListener("touchstart", this.boundTouchStart)
     document.removeEventListener("touchmove", this.boundTouchMove)
     document.removeEventListener("touchend", this.boundTouchEnd)
   }
@@ -93,7 +89,7 @@ export default class extends Controller {
     // 写真ギャラリー連携（infowindow-ui → photo-gallery）
     const infoWindowEl = contentEl?.querySelector(".dp-infowindow")
     if (infoWindowEl) {
-      infoWindowEl.addEventListener("infowindow-ui:openGallery", (e) => {
+      infoWindowEl.addEventListener("infowindow--ui:openGallery", (e) => {
         document.dispatchEvent(new CustomEvent("photo-gallery:open", {
           detail: {
             photoUrls: e.detail?.photoUrls || [],
@@ -186,26 +182,47 @@ export default class extends Controller {
   // --- ドラッグ操作 ---
 
   handleTouchStart(e) {
+    const target = e.target
+
+    // シート外のタッチは無視
+    const sheet = target.closest(".mobile-infowindow__sheet")
+    if (!sheet) return
+
+    // スクロール可能なコンテンツ内からのタッチは無視
+    const scrollable = target.closest(".dp-infowindow__comments, .dp-infowindow__panel--comment")
+    if (scrollable) return
+
+    // ボタンやリンクからのタッチは無視（タブのlabelは許可）
+    const interactive = target.closest("button, a, input, textarea, select, .dp-infowindow__btn")
+    if (interactive) return
+
     const touch = e.touches[0]
-    this.isDragging = true
+    this.potentialDrag = true
+    this.isDragging = false
     this.startY = touch.clientY
     this.startHeight = this.currentHeight
+    this.dragThreshold = 10
 
-    const sheet = this.sheetTarget
-    sheet.style.transition = "none"
-
-    e.preventDefault()
+    this.sheetTarget.style.transition = "none"
+    // タップを許可するためここではpreventDefaultを呼ばない
   }
 
   handleTouchMove(e) {
-    if (!this.isDragging) return
+    if (!this.potentialDrag) return
 
     const touch = e.touches[0]
-    const deltaY = this.startY - touch.clientY // 上方向で正
+    const deltaY = this.startY - touch.clientY
+
+    // 閾値を超えたらドラッグ開始
+    if (!this.isDragging && Math.abs(deltaY) > this.dragThreshold) {
+      this.isDragging = true
+    }
+
+    if (!this.isDragging) return
+
+    // ドラッグ中の処理
     const newHeight = this.startHeight + deltaY
     const windowHeight = window.innerHeight
-
-    // 範囲制限（最小100px、最大85vh）
     const minH = 100
     const maxH = windowHeight * 0.85
     const clamped = Math.max(minH, Math.min(maxH, newHeight))
@@ -213,11 +230,11 @@ export default class extends Controller {
     this.sheetTarget.style.height = `${clamped}px`
     this.currentHeight = clamped
 
-    e.preventDefault()
+    if (e.cancelable) e.preventDefault()
   }
 
   handleTouchEnd() {
-    if (!this.isDragging) return
+    this.potentialDrag = false
     this.isDragging = false
   }
 }

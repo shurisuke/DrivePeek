@@ -140,7 +140,7 @@ const getSpotInfoFromDom = () => {
       lat: Number(block.dataset.lat),
       lng: Number(block.dataset.lng),
       placeId: block.dataset.placeId || null,
-      planId: block.dataset.planSpotDeletePlanIdValue || null,
+      planId: block.dataset.planId || null,
       planSpotId: block.dataset.planSpotId || null,
     })
   })
