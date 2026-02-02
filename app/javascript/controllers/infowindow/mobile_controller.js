@@ -24,10 +24,8 @@ export default class extends Controller {
     this.startHeight = 0
     this.currentHeight = 0
 
-    // ナビバー高さ保存用（%）
-    this.savedNavibarPercent = null
-    // InfoWindow高さ保存用（%）
-    this.savedInfowindowPercent = null
+    // 共通高さ保存用（%）- ナビバーとInfoWindowで共有
+    this.savedHeightPercent = null
 
     // ドラッグイベント（document で捕捉し、シート内かをチェック）
     this.boundTouchStart = this.handleTouchStart.bind(this)
@@ -68,11 +66,11 @@ export default class extends Controller {
     // ナビバーの状態を保存して最小化（先に実行して高さを取得）
     this.saveAndCollapseNavibar()
 
-    // 初期高さを設定（ナビバーと同じ高さ、または保存済みの高さ）
+    // 初期高さを設定（共通高さまたはデフォルト）
     const sheet = this.sheetTarget
     const isPoint = contentEl?.querySelector(".dp-infowindow--point")
     const defaultPercent = isPoint ? 25 : 50
-    const heightPercent = this.savedInfowindowPercent ?? this.savedNavibarPercent ?? defaultPercent
+    const heightPercent = this.savedHeightPercent ?? defaultPercent
     const initialHeight = window.innerHeight * (heightPercent / 100)
     sheet.style.transition = "none"
     sheet.style.height = `${initialHeight}px`
@@ -111,15 +109,12 @@ export default class extends Controller {
       contentEl.innerHTML = ""
     }
 
-    // ナビバーを即座に復元
+    // ナビバーを共通高さで復元
     this.restoreNavibar()
-
-    // InfoWindow高さをリセット（次回は初期値から）
-    this.savedInfowindowPercent = null
   }
 
   /**
-   * ナビバーの状態を保存して最小化（アニメーションなし）
+   * ナビバーの高さを保存して最小化（アニメーションなし）
    * 既に保存済みの場合は上書きしない（InfoWindow間遷移対応）
    */
   saveAndCollapseNavibar() {
@@ -129,9 +124,9 @@ export default class extends Controller {
     const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
     if (controller) {
       // 未保存の場合のみ保存（連続表示時に元の状態を維持）
-      if (this.savedNavibarPercent === null) {
+      if (this.savedHeightPercent === null) {
         const percent = (controller.currentHeight / window.innerHeight) * 100
-        this.savedNavibarPercent = percent
+        this.savedHeightPercent = percent
       }
       // アニメーションなしで即座に最小化
       navibar.style.transition = "none"
@@ -140,10 +135,11 @@ export default class extends Controller {
   }
 
   /**
-   * ナビバーを保存した状態に復元（アニメーションなし）
+   * ナビバーを共通高さで復元（アニメーションなし）
+   * 高さはリセットせず維持（次回InfoWindowで再利用）
    */
   restoreNavibar() {
-    if (this.savedNavibarPercent === null) return
+    if (this.savedHeightPercent === null) return
 
     const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
     if (!navibar) return
@@ -151,9 +147,9 @@ export default class extends Controller {
     const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
     if (controller) {
       navibar.style.transition = "none"
-      controller.setHeight(this.savedNavibarPercent)
+      controller.setHeight(this.savedHeightPercent)
     }
-    this.savedNavibarPercent = null
+    // savedHeightPercentはリセットしない（次回InfoWindowで再利用）
   }
 
   // --- ドラッグ操作 ---
@@ -215,9 +211,9 @@ export default class extends Controller {
   }
 
   handleTouchEnd() {
-    // ドラッグ後の高さを保存（次のInfoWindowで再利用）
+    // ドラッグ後の高さを共通変数に保存（ナビバー・次のInfoWindowで再利用）
     if (this.isDragging) {
-      this.savedInfowindowPercent = (this.currentHeight / window.innerHeight) * 100
+      this.savedHeightPercent = (this.currentHeight / window.innerHeight) * 100
     }
     this.potentialDrag = false
     this.isDragging = false
