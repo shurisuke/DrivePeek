@@ -80,11 +80,8 @@ export default class extends Controller {
     this.currentHeight = initialHeight
 
 
-    // コメントフッターをシート直下に移動（ナビバーフッターと同じ構造）
-    this.#setupCommentFooter(contentEl)
-
-    // タブ切替でフッター表示/非表示
-    this.#setupTabListeners(contentEl)
+    // コメント入力欄の表示/非表示はCSSのみで制御
+    // （タブ切替は :checked セレクタ、配置は flex order で実現）
 
     // 写真ギャラリー連携（infowindow-ui → photo-gallery）
     const infoWindowEl = contentEl?.querySelector(".dp-infowindow")
@@ -143,40 +140,6 @@ export default class extends Controller {
     if (controller) {
       controller.collapse()
     }
-  }
-
-  // --- コメントフッター管理（ナビバーフッターと同じ構造） ---
-
-  /**
-   * コメントフッターをシート直下に移動
-   * dp-infowindow内からsheet直下に引き上げることで、flexチェーン問題を解消
-   */
-  #setupCommentFooter(contentEl) {
-    const commentFooter = contentEl?.querySelector(".dp-infowindow__comment-footer")
-    const footerSlot = document.getElementById("mobile-infowindow-footer")
-    if (!commentFooter || !footerSlot) return
-
-    // フッターをシート直下に移動
-    footerSlot.appendChild(commentFooter)
-    // 初期状態ではスポットタブなのでフッター非表示
-    footerSlot.hidden = true
-  }
-
-  /**
-   * タブ切替でフッター表示/非表示を切り替え
-   */
-  #setupTabListeners(contentEl) {
-    const footerSlot = document.getElementById("mobile-infowindow-footer")
-    if (!footerSlot) return
-
-    const radios = contentEl?.querySelectorAll('input[name="iw-tab"]')
-    if (!radios) return
-
-    radios.forEach((radio) => {
-      radio.addEventListener("change", () => {
-        footerSlot.hidden = radio.id !== "iw-tab-comment" || !radio.checked
-      })
-    })
   }
 
   // --- ドラッグ操作 ---

@@ -252,25 +252,9 @@
       margin: 8px 16px 0;
     }
 
-    /* コメントパネル: デフォルト非表示（フッターはJSでシート直下に移動済み） */
-    .dp-infowindow__panel--comment {
-      display: none !important;
-      order: 5;
-      padding: 8px 16px;
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-    }
+    /* コメント関連: グローバルルールで制御（下部参照） */
 
-    /* デスクトップ用max-heightを解除してflex fillさせる */
-    .dp-infowindow__comments {
-      max-height: none;
-      flex: 1;
-      min-height: 0;
-      overflow-y: auto;
-    }
-
-    /* タブ切替: コメント選択時 → 写真・ボタンを隠し、コメントパネルを表示 */
+    /* タブ切替: コメント選択時 → 写真・ボタンを隠す */
     #iw-tab-comment:checked ~ .dp-infowindow__panel--info .dp-infowindow__photo {
       display: none;
     }
@@ -282,13 +266,6 @@
     #iw-tab-comment:checked ~ .dp-infowindow__panel--info .dp-infowindow__btn--create,
     #iw-tab-comment:checked ~ .dp-infowindow__btn--create {
       display: none;
-    }
-
-    #iw-tab-comment:checked ~ .dp-infowindow__panel--comment {
-      display: flex !important;
-      flex-direction: column;
-      flex: 1;
-      min-height: 0;
     }
 
     .dp-infowindow__btn,
@@ -307,22 +284,9 @@
   }
 }
 
-/* コメントフッター（シート直下・ナビバーフッターと同じ構造） */
+/* フッタースロット: 未使用（コメント入力はCSS orderで制御） */
 .mobile-infowindow__footer {
-  flex-shrink: 0;
-  background: #fff;
-  border-top: 1px solid #e0e0e0;
-  padding: 8px 16px;
-  padding-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-}
-
-.mobile-infowindow__footer .dp-infowindow__comment-footer {
-  border-top: none;
-}
-
-/* コメントフッターはシート直下に移動されるため、元の位置の空divを非表示 */
-.mobile-infowindow__content .dp-infowindow__comment-footer {
-  display: none;
+  display: none !important;
 }
 
 /* ボディスクロール防止 */
@@ -330,4 +294,50 @@ body.mobile-infowindow-open {
   overflow: hidden;
   position: fixed;
   width: 100%;
+}
+
+/* ==========================================
+   コメント機能の表示制御
+   - パネルを display:contents にして子要素を flex item 化
+   - order でコンテンツ最下部に配置
+   - :checked セレクタでタブ切替時の表示/非表示を制御
+========================================== */
+/* コメントパネル: contentsにして子要素をflex itemに */
+#mobile-infowindow-content .dp-infowindow__panel--comment {
+  display: contents !important;
+}
+
+/* コメント一覧: デフォルト非表示、コメントタブ時のみ表示 */
+#mobile-infowindow-content .dp-infowindow__comments {
+  display: none !important;
+  order: 100;
+}
+
+/* コメントフッター（入力欄）: 常に最下部に配置、コメントタブ時のみ表示 */
+#mobile-infowindow-content .dp-infowindow__comment-footer {
+  display: none !important;
+  order: 101;
+  width: 100%;
+  padding: 4px 16px 12px;
+  border-top: 1px solid #e0e0e0;
+  background: #fff;
+}
+
+/* コメントタブ選択時: コメント一覧を表示 */
+#mobile-infowindow-content #iw-tab-comment:checked ~ .dp-infowindow__panel--comment .dp-infowindow__comments {
+  display: flex !important;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+/* コメントタブ選択時: コメントフッター（入力欄）を表示 */
+#mobile-infowindow-content #iw-tab-comment:checked ~ .dp-infowindow__panel--comment .dp-infowindow__comment-footer {
+  display: block !important;
+}
+
+/* コメント入力エリア: 上下右パディング0 */
+#mobile-infowindow-content .dp-infowindow__comment-input {
+  padding: 0;
 }
