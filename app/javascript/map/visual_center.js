@@ -21,6 +21,16 @@ const getBottomSheetHeight = () => {
 }
 
 /**
+ * モバイル上部の障害物の高さを取得（検索ボックス + フローティングボタン）
+ */
+const getMobileTopHeight = () => {
+  if (!isMobile()) return 0
+  const searchBox = document.querySelector(".map-search-box")
+  const floatingButtons = document.querySelector(".map-floating-buttons")
+  return (searchBox?.offsetHeight || 0) + (floatingButtons?.offsetHeight || 0)
+}
+
+/**
  * デスクトップ用の縦オフセットを計算
  * 上部障害物と下部障害物の中間にInfoWindowを配置
  */
@@ -61,12 +71,14 @@ export const panToVisualCenter = (position) => {
   map.panTo(latLng)
 
   if (isMobile()) {
-    // モバイル: ボトムシートで隠れる領域を考慮して、見える範囲の中央にピンを配置
-    // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
+    // モバイル: 上部障害物とボトムシートを考慮して、見える範囲の中央にピンを配置
+    const topHeight = getMobileTopHeight()
     const bottomSheetHeight = getBottomSheetHeight()
-    const offsetY = bottomSheetHeight / 2
+    // 上部と下部の差分を2で割って、見える領域の中央へ調整
+    // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
+    const offsetY = (bottomSheetHeight - topHeight) / 2
 
-    if (offsetY > 0) {
+    if (offsetY !== 0) {
       map.panBy(0, offsetY)
     }
   } else {
@@ -85,9 +97,10 @@ export const panToVisualCenter = (position) => {
  */
 export const getMapPadding = () => {
   if (isMobile()) {
+    const topHeight = getMobileTopHeight()
     const bottomSheetHeight = getBottomSheetHeight()
     return {
-      top: 60,  // 検索バー
+      top: topHeight > 0 ? topHeight + 16 : 60,
       right: 16,
       bottom: bottomSheetHeight > 0 ? bottomSheetHeight + 16 : 16,
       left: 16

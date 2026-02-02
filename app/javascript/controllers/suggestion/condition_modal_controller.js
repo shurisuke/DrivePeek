@@ -96,6 +96,14 @@ export default class extends Controller {
     this.genreViewTarget.hidden = true
   }
 
+  toggleGroup(event) {
+    event.stopPropagation()
+    const group = event.currentTarget.closest(".selection-list__group")
+    if (group) {
+      group.classList.toggle("is-expanded")
+    }
+  }
+
   selectGenre(event) {
     const { genreId, genreName } = event.currentTarget.dataset
 
@@ -177,25 +185,43 @@ export default class extends Controller {
     }
   }
 
-  // UXフロー: ボトムシート展開・スクロール
+  // UXフロー: ボトムシート展開・スクロール・パン
   #executeUxFlow() {
     // 1. モバイル: ボトムシートをmidに展開
-    this.#expandBottomSheet()
+    const isMobile = this.#expandBottomSheet()
 
     // 2. 新規メッセージが上部に来る位置までスクロール（DOM更新後）
     setTimeout(() => {
       this.#scrollToNewMessage()
     }, 150)
+
+    // 3. モバイル: ボトムシート展開完了後にサークル中心へパン
+    if (isMobile && this.areaData) {
+      setTimeout(() => {
+        this.#panToCircle()
+      }, 350) // ボトムシートアニメーション(300ms)完了後
+    }
   }
 
   #expandBottomSheet() {
     const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
-    if (!navibar) return
+    if (!navibar) return false
 
     const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
     if (controller && controller.isMobile) {
       controller.setState({ params: { state: "mid" } })
+      return true
     }
+    return false
+  }
+
+  #panToCircle() {
+    import("map/visual_center").then(({ panToVisualCenter }) => {
+      panToVisualCenter({
+        lat: this.areaData.center_lat,
+        lng: this.areaData.center_lng
+      })
+    })
   }
 
   #scrollToNewMessage() {
