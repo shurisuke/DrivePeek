@@ -19,6 +19,7 @@
   padding: 24px 16px;
   background: linear-gradient(135deg, #f5f9f5 0%, #eef4ee 100%);
   border-radius: 16px;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
 .plan-tab-guide__hero-icon {
@@ -81,7 +82,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 0;
+  padding: 24px 0 20px;
 
   span {
     font-size: 12px;
@@ -109,9 +110,11 @@
   background: #f8f8f8;
   border-radius: 14px;
   transition: all 0.15s ease;
+  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
 
   &:hover {
     background: #f0f4f0;
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
   }
 
   i {

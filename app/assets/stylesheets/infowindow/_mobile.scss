@@ -10,13 +10,19 @@
 %mobile-close-btn {
   width: 32px;
   height: 32px;
-  border: none;
-  background: rgba(0, 0, 0, 0.05);
+  border: 1px solid rgba(0, 0, 0, 0.15);
+  background: rgba(255, 255, 255, 0.9);
   border-radius: 50%;
   display: flex;
   align-items: center;
   justify-content: center;
   cursor: pointer;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.15);
+  transition: background-color 0.15s ease, box-shadow 0.15s ease;
+
+  &:active {
+    box-shadow: 0 1px 4px rgba(0, 0, 0, 0.2);
+  }
 
   i {
     font-size: 16px;
@@ -230,6 +236,7 @@
     padding: 8px 12px 12px;
     border-top: 1px solid #e5e5ea;
     border-radius: 0;
+    box-shadow: 0 -6px 16px rgba(0, 0, 0, 0.15);
   }
 
   .dp-infowindow__comment-input {
