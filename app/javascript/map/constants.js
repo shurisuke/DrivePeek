@@ -52,7 +52,7 @@ export const createSuggestionPinSvg = (number) => {
         </linearGradient>
       </defs>
       <circle cx="18" cy="18" r="17" fill="url(#suggestionGradient)"/>
-      <text x="18" y="24" text-anchor="middle" fill="white" font-size="16" font-weight="bold" font-family="sans-serif">${number}</text>
+      <text x="18" y="25" text-anchor="middle" fill="white" font-size="19" font-weight="600" font-family="system-ui, -apple-system, sans-serif">${number}</text>
     </svg>
   `.trim()
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`

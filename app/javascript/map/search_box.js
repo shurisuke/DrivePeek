@@ -39,6 +39,7 @@ export const setupSearchBox = () => {
         map,
         position: place.geometry.location,
         title: place.name,
+        zIndex: 1000 - index,  // ポリラインより上に表示
       })
 
       // ★ クリックで共通InfoWindow表示（Turbo Frame方式）

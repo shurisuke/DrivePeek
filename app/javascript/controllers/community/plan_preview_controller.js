@@ -30,7 +30,7 @@ const createCommunityPinSvg = (number) => {
         </linearGradient>
       </defs>
       <circle cx="18" cy="18" r="17" fill="url(#communityGrad)"/>
-      <text x="18" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="white">${number}</text>
+      <text x="18" y="25" text-anchor="middle" font-size="19" font-weight="600" font-family="system-ui, -apple-system, sans-serif" fill="white">${number}</text>
     </svg>
   `.trim()
   return `data:image/svg+xml;charset=UTF-8,${encodeURIComponent(svg)}`
@@ -102,10 +102,11 @@ export default class extends Controller {
         map,
         position: { lat: Number(spot.lat), lng: Number(spot.lng) },
         title: spot.name || `スポット ${spotNumber}`,
+        zIndex: 1000 - spotNumber,  // ポリラインより上に表示
         icon: {
           url: createCommunityPinSvg(spotNumber),
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 18),
+          scaledSize: new google.maps.Size(32, 32),
+          anchor: new google.maps.Point(16, 16),
         },
       })
 

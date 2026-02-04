@@ -307,15 +307,6 @@ $iw-font-xl: 18;
   border: none;
   padding: 0;
   cursor: pointer;
-  transition: transform 0.15s ease;
-
-  &:hover {
-    transform: scale(1.1);
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   i {
     font-size: 18px;
@@ -971,10 +962,6 @@ $iw-font-xl: 18;
 
 .dp-comment__profile {
   font-weight: 500;
-}
-
-.dp-comment__date {
-  /* スタイルは親から継承 */
 }
 
 /* 自分のコメント（右寄せ） */

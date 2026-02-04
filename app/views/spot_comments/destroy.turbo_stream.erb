@@ -1,10 +1,13 @@
 <%# コメントを削除 %>
 <%= turbo_stream.remove @comment %>
 
-<%# コメント数を更新 %>
+<%# コメント数を更新（InfoWindow用） %>
 <%= turbo_stream.replace "comment-count" do %>
   <span id="comment-count"><%= @spot.spot_comments.count %></span>
 <% end %>
+
+<%# コメント数を更新（スポットカード用） %>
+<%= turbo_stream.update dom_id(@spot, :comment_count), @spot.spot_comments.count.to_s %>
 
 <%# コメントが0件になったら空メッセージを表示 %>
 <% if @spot.spot_comments.count == 0 %>
