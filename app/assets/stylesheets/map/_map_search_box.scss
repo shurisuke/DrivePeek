@@ -149,3 +149,11 @@ body.no-footer .plan-form.navibar--wide .plan-save {
   }
 }
 
+/* 提案ピンクリアボタン: 常に検索ボタンの下に配置 */
+#suggestion-pin-clear {
+  position: absolute;
+  top: 100%;
+  left: 0;
+  margin-top: 8px;
+}
+

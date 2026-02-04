@@ -629,7 +629,7 @@ body.navibar-resizing .plan-form .plan-actions {
         width: 100%;
         height: var(--bottom-sheet-height);
         max-height: 90vh;
-        overflow: hidden;
+        overflow: visible;
         display: flex;
         flex-direction: column;
 
@@ -679,6 +679,7 @@ body.navibar-resizing .plan-form .plan-actions {
           min-height: 0;
           overflow-y: auto;
           touch-action: pan-y;
+          overflow-anchor: auto; /* ✅ DOM操作時のスクロールジャンプ防止 */
         }
       }
 
@@ -692,14 +693,14 @@ body.navibar-resizing .plan-form .plan-actions {
         display: none;
       }
 
-      /* ナビバー内アクションボタン（モバイル用・iOS風デザイン） */
+      /* ナビバー内アクションボタン（モバイル用・フローティングバー） */
       .navibar__actions {
+        position: relative;
+        z-index: 20;
         display: flex;
-        gap: 10px;
-        padding: 10px 16px;
-        padding-bottom: calc(10px + env(safe-area-inset-bottom, 0px));
-        background: #f9f9f9;
-        border-top: 1px solid rgba(0, 0, 0, 0.08);
+        margin: 0 32px;
+        margin-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
+        background: transparent;
         flex-shrink: 0;
       }
 
@@ -708,42 +709,45 @@ body.navibar-resizing .plan-form .plan-actions {
         display: flex;
         align-items: center;
         justify-content: center;
-        gap: 6px;
-        padding: 11px 16px;
+        gap: 4px;
+        padding: 8px 12px;
         border: none;
-        border-radius: 10px;
+        border-radius: 0;
+        background: transparent;
         font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 600;
-        letter-spacing: -0.2px;
+        color: #555;
         cursor: pointer;
-        transition: transform 0.1s ease, opacity 0.1s ease;
+        transition: background-color 0.15s ease;
         -webkit-tap-highlight-color: transparent;
 
         i {
-          font-size: 17px;
+          font-size: 14px;
           line-height: 1;
-          transform: translateY(1px);
         }
 
         &:active {
-          transform: scale(0.97);
-          opacity: 0.7;
-        }
-
-        /* 共有ボタン: iOS風セカンダリ */
-        &--share {
           background: rgba(0, 0, 0, 0.05);
-          color: #1c1c1e;
         }
 
-        /* 保存ボタン: iOS風プライマリ（システムブルー） */
+        /* 共有ボタン: 左側のみ丸み */
+        &--share {
+          color: #333;
+          background: #fff;
+          border-radius: 12px 0 0 12px;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
+        }
+
+        /* 保存ボタン: 右側のみ丸み */
         &--save {
-          background: #007aff;
+          background: var(--personal);
           color: #fff;
+          border-radius: 0 12px 12px 0;
+          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
 
           &:active {
-            opacity: 0.8;
+            background: var(--personal-dark, #d35400);
           }
         }
       }
