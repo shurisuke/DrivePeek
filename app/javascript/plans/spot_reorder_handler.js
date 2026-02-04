@@ -20,6 +20,13 @@ import { patchTurboStream } from "services/api_client"
 let sortableInstance = null
 let bound = false
 
+// ✅ 距離計算中のスケルトン表示
+const showDistanceSkeleton = () => {
+  document.querySelectorAll(".spot-next-move").forEach((el) => {
+    el.classList.add("is-calculating")
+  })
+}
+
 // ✅ 1 RAF で DOM 更新完了を待ってから初期化（setTimeout は不要）
 const requestInitSortable = () => {
   requestAnimationFrame(() => {
@@ -102,6 +109,12 @@ const initSortable = () => {
     onEnd: async (evt) => {
       if (evt.oldIndex === evt.newIndex) return
 
+      // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
+      document.dispatchEvent(new CustomEvent("navibar:updated"))
+
+      // ✅ 距離表示をスケルトン化
+      showDistanceSkeleton()
+
       const orderedIds = getOrderedPlanSpotIds(container)
 
       try {
@@ -126,6 +139,9 @@ const saveOrder = async () => {
   const container = getContainer()
   const planId = getPlanId()
   if (!container || !planId) return
+
+  // ✅ 距離表示をスケルトン化
+  showDistanceSkeleton()
 
   const orderedIds = getOrderedPlanSpotIds(container)
 
@@ -153,12 +169,16 @@ const handleReorderClick = async (e) => {
     const prev = block.previousElementSibling
     if (prev?.classList.contains("spot-block")) {
       block.parentNode.insertBefore(block, prev)
+      // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
+      document.dispatchEvent(new CustomEvent("navibar:updated"))
       await saveOrder()
     }
   } else if (direction === "down") {
     const next = block.nextElementSibling
     if (next?.classList.contains("spot-block")) {
       block.parentNode.insertBefore(next, block)
+      // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
+      document.dispatchEvent(new CustomEvent("navibar:updated"))
       await saveOrder()
     }
   }
