@@ -7,7 +7,11 @@ class Users::PasswordsController < Devise::PasswordsController
   protected
 
   def after_sending_reset_password_instructions_path_for(_resource_name)
-    password_settings_path
+    if user_signed_in?
+      password_settings_path
+    else
+      new_user_session_path
+    end
   end
 
   def after_resetting_password_path_for(_resource)

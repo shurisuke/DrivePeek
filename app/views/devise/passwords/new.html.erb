@@ -4,12 +4,11 @@
       <%= link_to new_user_session_path, class: "auth-back-link" do %>
         <i class="bi bi-chevron-left"></i>
       <% end %>
-      <h2 class="auth-title">パスワードを忘れた場合</h2>
+      <h2 class="auth-title">パスワード再設定</h2>
     </div>
 
     <p class="auth-description">
-      登録したメールアドレスを入力してください。<br>
-      パスワード再設定用のリンクをお送りします。
+      登録したメールアドレスを入力してください。パスワード再設定用のリンクをお送りします。
     </p>
 
     <%= simple_form_for(resource, as: resource_name, url: password_path(resource_name), html: { method: :post }) do |f| %>
