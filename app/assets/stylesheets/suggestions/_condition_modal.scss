@@ -476,6 +476,10 @@
     border-bottom: 1px solid rgba(60, 60, 67, 0.12);
     text-align: left;
 
+    span {
+      color: #5a67d8;
+    }
+
     &:hover {
       background: #f8f9fa;
     }
@@ -490,12 +494,16 @@
   }
 
   // おまかせボタン（特別スタイル）
-  .selection-list__item--omakase {
-    border-bottom: 1px solid #ddd;
+  button.selection-list__item--omakase {
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
 
     span {
-      color: #667eea;
+      color: #fff;
       font-weight: 600;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #6a4295 0%, #5a6fd8 100%);
     }
   }
 
@@ -519,7 +527,7 @@
 
     span {
       font-size: 14px;
-      color: #007AFF;
+      color: #5a67d8;
     }
 
     &:hover {
