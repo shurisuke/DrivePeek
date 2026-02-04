@@ -62,9 +62,11 @@
            data-suggestion-target="spotSuggestions"
            data-controller="suggestion--spots-batch"
            data-suggestion--spots-batch-auto-show-value="<%= auto_show_value %>">
-        <% spot_list.each_with_index do |spot, index| %>
-          <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
-        <% end %>
+        <div class="suggestion__spots-inner">
+          <% spot_list.each_with_index do |spot, index| %>
+            <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
+          <% end %>
+        </div>
       </div>
     <% end %>
 

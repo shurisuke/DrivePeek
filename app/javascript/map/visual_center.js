@@ -13,11 +13,25 @@ const isMobile = () => window.innerWidth < 768
 
 /**
  * ボトムシートの現在の高さを取得（モバイル時）
+ * vh単位で設定されている場合はstyle.heightから計算
  */
 const getBottomSheetHeight = () => {
   if (!isMobile()) return 0
   const navibar = document.querySelector(".navibar")
-  return navibar?.offsetHeight || 0
+  if (!navibar) return 0
+
+  // style.heightがvh単位の場合、実際のピクセル値に変換
+  const styleHeight = navibar.style.height
+  if (styleHeight && styleHeight.endsWith("vh")) {
+    const vhValue = parseFloat(styleHeight)
+    return (vhValue / 100) * window.innerHeight
+  }
+
+  // offsetHeightを使用（フォールバック）
+  // 最小でも画面の10%は確保（ボトムシートのmin値）
+  const height = navibar.offsetHeight
+  const minHeight = window.innerHeight * 0.1
+  return Math.max(height, minHeight)
 }
 
 /**
@@ -67,26 +81,27 @@ export const panToVisualCenter = (position) => {
     ? position
     : new google.maps.LatLng(position.lat, position.lng)
 
-  // まず通常のpanTo
-  map.panTo(latLng)
-
+  // オフセットを計算
+  let offsetY = 0
   if (isMobile()) {
-    // モバイル: 上部障害物とボトムシートを考慮して、見える範囲の中央にピンを配置
     const topHeight = getMobileTopHeight()
     const bottomSheetHeight = getBottomSheetHeight()
-    // 上部と下部の差分を2で割って、見える領域の中央へ調整
-    // panBy(0, 正の値)で地図が下に移動 → ピンが上に見える
-    const offsetY = (bottomSheetHeight - topHeight) / 2
-
-    if (offsetY !== 0) {
-      map.panBy(0, offsetY)
-    }
+    offsetY = (bottomSheetHeight - topHeight) / 2
   } else {
-    // デスクトップ: 検索バー + フローティングボタン + InfoWindow高さを考慮
-    // panBy(0, 負)で地図が上にシフト → InfoWindowが見える位置に
-    const offsetY = getDesktopOffsetY()
-    map.panBy(0, offsetY)
+    offsetY = getDesktopOffsetY()
   }
+
+  // オフセットがない場合は単純にpanTo
+  if (offsetY === 0) {
+    map.panTo(latLng)
+    return
+  }
+
+  // panTo完了後にpanByを実行（アニメーション競合を防ぐ）
+  map.panTo(latLng)
+  google.maps.event.addListenerOnce(map, "idle", () => {
+    map.panBy(0, offsetY)
+  })
 }
 
 /**
