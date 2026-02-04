@@ -1,4 +1,20 @@
 module PlansHelper
+  # プランタイトルを表示用にフォーマット
+  # - タイトルが設定されていればそのまま表示
+  # - 未設定の場合、スポットの市区町村から自動生成
+  def display_plan_title(plan)
+    return plan.title if plan.title.present?
+
+    cities = plan.spots.pluck(:city).compact.uniq
+    return "未定のプラン" if cities.empty?
+
+    if cities.size <= 3
+      "#{cities.join('・')}ドライブ"
+    else
+      "#{cities.take(3).join('・')}ほかドライブ"
+    end
+  end
+
   # 日本の都道府県リスト（地方別）
   PREFECTURES_BY_REGION = {
     "北海道" => %w[北海道],

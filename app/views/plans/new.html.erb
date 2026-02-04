@@ -12,7 +12,7 @@
           </div>
           <div class="plan-entry-modal__latest-info">
             <p class="plan-entry-modal__latest-label">前回のプラン</p>
-            <p class="plan-entry-modal__latest-title"><%= @latest_plan.title.presence || "無題のプラン" %></p>
+            <p class="plan-entry-modal__latest-title"><%= display_plan_title(@latest_plan) %></p>
             <p class="plan-entry-modal__latest-date"><%= @latest_plan.updated_at.strftime("%Y/%m/%d %H:%M") %> 更新</p>
           </div>
         </div>

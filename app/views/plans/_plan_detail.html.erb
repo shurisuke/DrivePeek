@@ -67,7 +67,7 @@
           <%= link_to :back, class: "plan-detail__back-link" do %>
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           <% end %>
-          <h1 class="navibar__title"><%= @plan.title.presence || "ドライブプラン" %></h1>
+          <h1 class="navibar__title"><%= display_plan_title(@plan) %></h1>
           <button type="button"
                   class="plan-detail__share-btn"
                   data-controller="ui--share-modal"

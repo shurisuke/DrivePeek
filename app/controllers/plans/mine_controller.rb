@@ -5,6 +5,7 @@ class Plans::MineController < ApplicationController
     set_filter_variables
 
     @plans = current_user.plans
+      .exclude_stale_empty
       .search_keyword(@search_query)
       .filter_by_cities(@selected_cities)
       .filter_by_genres(@selected_genre_ids)
