@@ -61,24 +61,53 @@ export default class extends Controller {
     }))
   }
 
-  // エリア円を描画してズーム
+  // エリア円を描画してズーム（グロー効果付き）
   #drawAreaCircle(area) {
     const map = getMapInstance()
     if (!map || !area.center_lat || !area.center_lng || !area.radius_km) return
 
-    const circle = new google.maps.Circle({
-      map: map,
-      center: { lat: area.center_lat, lng: area.center_lng },
-      radius: area.radius_km * 1000,
-      strokeColor: "#667eea",
-      strokeWeight: 2,
-      fillColor: "#667eea",
-      fillOpacity: 0.03,
-      clickable: false
+    const center = { lat: area.center_lat, lng: area.center_lng }
+    const radius = area.radius_km * 1000
+    const circles = []
+
+    // 影（ぼかし効果）
+    const shadow = new google.maps.Circle({
+      map,
+      center,
+      radius: radius + 20,
+      strokeColor: "#000",
+      strokeWeight: 12,
+      strokeOpacity: 0.08,
+      fillOpacity: 0,
+      clickable: false,
+      zIndex: 0
+    })
+    circles.push(shadow)
+
+    // グラデーション風の太い縁（外側から内側へ色を重ねる）
+    const strokeLayers = [
+      { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
+      { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
+      { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
+    ]
+
+    strokeLayers.forEach((layer, index) => {
+      const c = new google.maps.Circle({
+        map,
+        center,
+        radius: radius + layer.offset,
+        strokeColor: layer.color,
+        strokeWeight: index === strokeLayers.length - 1 ? 2 : 3,
+        strokeOpacity: layer.opacity,
+        fillOpacity: 0,
+        clickable: false,
+        zIndex: index + 1
+      })
+      circles.push(c)
     })
 
-    setSuggestionAreaCircle(circle)
-    fitBoundsWithPadding(circle.getBounds())
+    setSuggestionAreaCircle(circles)
+    fitBoundsWithPadding(circles[circles.length - 1].getBounds())
   }
 
   // 終了（モード選択UIを再表示）

@@ -76,7 +76,7 @@
   align-items: center;
   gap: 8px;
   padding: 12px 20px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   color: #fff;
   font-size: 14px;
 
@@ -176,7 +176,7 @@
   }
 
   &--submit {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     color: #fff;
     display: flex;
     align-items: center;
@@ -238,7 +238,7 @@
   position: absolute;
   inset: 0;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #667eea 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #7c6ad9 50%, #764ba2 100%);
   background-size: 200% 200%;
   animation:
     orbPulse 2s ease-in-out infinite,
@@ -324,7 +324,7 @@
 }
 
 .suggestion-loading__label {
-  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
+  background: linear-gradient(90deg, #764ba2, #7c6ad9, #764ba2);
   background-size: 200% 100%;
   -webkit-background-clip: text;
   background-clip: text;
@@ -337,7 +337,7 @@
   margin-left: 2px;
 
   span {
-    background: linear-gradient(90deg, #667eea, #764ba2);
+    background: linear-gradient(90deg, #764ba2, #667eea);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;

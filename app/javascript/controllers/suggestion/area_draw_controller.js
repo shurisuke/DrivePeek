@@ -105,7 +105,8 @@ export default class extends Controller {
   startDraw(e) {
     // 既存の描画線・円があれば削除
     this.polyline?.setMap(null)
-    this.circle?.setMap(null)
+    this.polylineGlow?.setMap(null)
+    this.circles?.forEach(c => c.setMap(null))
     this.switchToDrawMode()
 
     // 描画開始時に地図操作を無効化
@@ -119,15 +120,25 @@ export default class extends Controller {
     this.isDrawing = true
     this.drawPath = []
 
-    // ポリライン作成（リアルタイム描画用）
+    // ポリライン作成（リアルタイム描画用）- ダッシュライン
     this.polyline = new google.maps.Polyline({
       map: this.map,
       path: [],
-      strokeColor: "#667eea",
-      strokeWeight: 3,
-      strokeOpacity: 0.8,
+      strokeOpacity: 0,
       zIndex: 1,
+      icons: [{
+        icon: {
+          path: "M 0,-1 0,1",
+          strokeOpacity: 0.9,
+          strokeColor: "#667eea",
+          strokeWeight: 3,
+          scale: 4
+        },
+        offset: "0",
+        repeat: "14px"
+      }]
     })
+    this.polylineGlow = null
 
     this.addPoint(e)
   }
@@ -152,6 +163,7 @@ export default class extends Controller {
     // 点が少なすぎる場合は無視
     if (this.drawPath.length < 3) {
       this.polyline?.setMap(null)
+      this.polylineGlow?.setMap(null)
       return
     }
 
@@ -160,6 +172,7 @@ export default class extends Controller {
 
     // ポリライン消去 → 円表示
     this.polyline?.setMap(null)
+    this.polylineGlow?.setMap(null)
     this.showCircle()
 
     // 確定パネル表示
@@ -182,7 +195,9 @@ export default class extends Controller {
     }
 
     this.drawPath.push(latLng)
-    this.polyline.setPath(this.drawPath.map(p => new google.maps.LatLng(p.lat, p.lng)))
+    const path = this.drawPath.map(p => new google.maps.LatLng(p.lat, p.lng))
+    this.polyline.setPath(path)
+    this.polylineGlow?.setPath(path)
   }
 
   getLatLngFromEvent(e) {
@@ -283,7 +298,9 @@ export default class extends Controller {
 
     // 描画途中のポリラインを消去
     this.polyline?.setMap(null)
+    this.polylineGlow?.setMap(null)
     this.polyline = null
+    this.polylineGlow = null
     this.isDrawing = false
     this.drawPath = []
 
@@ -309,16 +326,48 @@ export default class extends Controller {
   }
 
   showCircle() {
-    this.circle = new google.maps.Circle({
+    const center = this.circleData.center
+    const radius = this.circleData.radius_km * 1000
+    this.circles = []
+
+    // 影（ぼかし効果）
+    const shadow = new google.maps.Circle({
       map: this.map,
-      center: this.circleData.center,
-      radius: this.circleData.radius_km * 1000,
-      strokeColor: "#667eea",
-      strokeWeight: 2,
-      fillColor: "#667eea",
-      fillOpacity: 0.03,
-      clickable: false
+      center,
+      radius: radius + 20,
+      strokeColor: "#000",
+      strokeWeight: 12,
+      strokeOpacity: 0.08,
+      fillOpacity: 0,
+      clickable: false,
+      zIndex: 0
     })
+    this.circles.push(shadow)
+
+    // グラデーション風の太い縁（外側から内側へ色を重ねる）
+    const strokeLayers = [
+      { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
+      { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
+      { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
+    ]
+
+    strokeLayers.forEach((layer, index) => {
+      const circle = new google.maps.Circle({
+        map: this.map,
+        center,
+        radius: radius + layer.offset,
+        strokeColor: layer.color,
+        strokeWeight: index === strokeLayers.length - 1 ? 2 : 3,
+        strokeOpacity: layer.opacity,
+        fillOpacity: 0,
+        clickable: false,
+        zIndex: index + 1
+      })
+      this.circles.push(circle)
+    })
+
+    // メインの円を参照用に保持
+    this.circle = this.circles[this.circles.length - 1]
 
     // 円に合わせてズーム（UI要素を考慮したパディング付き）
     fitBoundsWithPadding(this.circle.getBounds())
@@ -330,9 +379,10 @@ export default class extends Controller {
 
   confirmArea() {
     // 円を専用変数に設定（クリアボタンで一緒に消える）
-    if (this.circle) {
-      setSuggestionAreaCircle(this.circle)
-      this.circle = null // cleanup で消されないように参照を外す
+    if (this.circles) {
+      setSuggestionAreaCircle(this.circles)
+      this.circles = null // cleanup で消されないように参照を外す
+      this.circle = null
     }
 
     document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
@@ -348,7 +398,8 @@ export default class extends Controller {
   }
 
   redraw() {
-    this.circle?.setMap(null)
+    this.circles?.forEach(c => c.setMap(null))
+    this.circles = null
     this.circle = null
     this.circleData = null
     this.backToMoveMode()
@@ -379,8 +430,11 @@ export default class extends Controller {
 
   cleanup() {
     this.polyline?.setMap(null)
+    this.polylineGlow?.setMap(null)
     this.polyline = null
-    this.circle?.setMap(null)
+    this.polylineGlow = null
+    this.circles?.forEach(c => c.setMap(null))
+    this.circles = null
     this.circle = null
     this.circleData = null
     this.drawPath = []
