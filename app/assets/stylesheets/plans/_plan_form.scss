@@ -679,6 +679,7 @@ body.navibar-resizing .plan-form .plan-actions {
           min-height: 0;
           overflow-y: auto;
           touch-action: pan-y;
+          overflow-anchor: auto; /* ✅ DOM操作時のスクロールジャンプ防止 */
         }
       }
 

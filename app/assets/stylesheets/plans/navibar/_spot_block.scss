@@ -9,10 +9,18 @@
 @use "../../mixins/genre_chip" as *;
 
 /* ================================================================
+   スポット番号の自動カウンター
+================================================================ */
+#plan-spots-sortable {
+  counter-reset: spot-order;
+}
+
+/* ================================================================
    スポットブロック本体
 ================================================================ */
 
 .spot-block {
+  counter-increment: spot-order;
   position: relative;
   width: 100%;
   margin-top: 0;
@@ -100,6 +108,11 @@
   font-weight: 700;
 
   box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
+
+  /* ✅ CSSカウンターで番号を自動表示 */
+  &::before {
+    content: counter(spot-order);
+  }
 
   /* ✅ クリック可能なスタイル */
   cursor: pointer;
@@ -471,7 +484,7 @@
   .time {
     color: transparent;
     background: rgba(0, 0, 0, 0.08);
-    border-radius: 4px;
+    border-radius: 10px;
     animation: skeleton-pulse 1.2s ease-in-out infinite;
   }
 }

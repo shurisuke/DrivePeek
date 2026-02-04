@@ -169,7 +169,6 @@ const handleReorderClick = async (e) => {
     const prev = block.previousElementSibling
     if (prev?.classList.contains("spot-block")) {
       block.parentNode.insertBefore(block, prev)
-      // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
       document.dispatchEvent(new CustomEvent("navibar:updated"))
       await saveOrder()
     }
@@ -177,7 +176,6 @@ const handleReorderClick = async (e) => {
     const next = block.nextElementSibling
     if (next?.classList.contains("spot-block")) {
       block.parentNode.insertBefore(next, block)
-      // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
       document.dispatchEvent(new CustomEvent("navibar:updated"))
       await saveOrder()
     }
