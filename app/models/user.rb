@@ -34,6 +34,9 @@ class User < ApplicationRecord
   # SNS登録時のバリデーションスキップ用フラグ
   attr_accessor :registering_via_sns
 
+  # メールアドレス変更時の再確認メール送信
+  after_update :send_reconfirmation_instructions, if: :reconfirmation_required?
+
   # Associations
   has_many :identities, dependent: :destroy
   has_many :plans, dependent: :destroy
@@ -60,9 +63,44 @@ class User < ApplicationRecord
     !sns_only_user?
   end
 
-  # メール確認をスキップ（Resend独自ドメイン設定後に有効化予定）
+  # 初回登録時のメール確認をスキップ（SNSログインとの整合性）
   def confirmation_required?
     false
+  end
+
+  # メールアドレス変更時のreconfirmableフロー
+  # ※ Devise 5.0 + Rails 8 で email= セッターが正しくオーバーライドされないため手動実装
+  def email=(value)
+    new_email = value.to_s.strip.downcase
+    current_email = read_attribute(:email)&.downcase
+
+    if self.class.reconfirmable && persisted? && new_email != current_email && new_email.present?
+      self.unconfirmed_email = value.to_s.strip
+      @reconfirmation_required = true
+    else
+      super
+    end
+  end
+
+  def reconfirmation_required?
+    self.class.reconfirmable && @reconfirmation_required && unconfirmed_email.present?
+  end
+
+  def send_reconfirmation_instructions
+    @reconfirmation_required = false
+    generate_confirmation_token! unless @raw_confirmation_token
+    send_confirmation_instructions
+  end
+
+  def send_confirmation_instructions
+    generate_confirmation_token! unless @raw_confirmation_token
+
+    opts = pending_reconfirmation? ? { to: unconfirmed_email } : {}
+    send_devise_notification(:confirmation_instructions, @raw_confirmation_token, opts)
+  end
+
+  def pending_reconfirmation?
+    self.class.reconfirmable && unconfirmed_email.present?
   end
 
   # OmniAuthコールバックからユーザーを検索

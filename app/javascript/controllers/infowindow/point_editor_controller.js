@@ -13,6 +13,7 @@ import {
 import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
 import { patchTurboStream } from "services/api_client"
 import { closeInfoWindow } from "map/infowindow"
+import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
 
 export default class extends Controller {
   static targets = ["displayMode", "editMode", "input"]
@@ -96,19 +97,21 @@ export default class extends Controller {
       // マーカー更新
       this.updateMarker(map, { lat, lng })
 
-      // 地図を移動
-      if (viewport) {
-        map.fitBounds(viewport)
-      } else {
-        map.panTo(location)
-        map.setZoom(16)
-      }
-
       // サーバーに保存
       await this.persist({ planId, lat, lng, address: displayAddress || query })
 
       // InfoWindowを閉じる
       closeInfoWindow()
+
+      // 地図を移動（ボトムシート考慮）- InfoWindow閉じた後に実行
+      requestAnimationFrame(() => {
+        if (viewport) {
+          fitBoundsWithPadding(viewport)
+        } else {
+          map.setZoom(16)
+          panToVisualCenter({ lat, lng })
+        }
+      })
 
     } catch (err) {
       console.error("[infowindow-point-editor] update failed", err)

@@ -244,6 +244,11 @@ body.no-footer .plan-detail {
   /* ✅ 詳細画面用スポットアイコン（コミュニティ青） */
   .spot-block--show .spot-order-icon {
     background: linear-gradient(135deg, #4A90D9, #2C5FA0);
+
+    /* CSSカウンターを無効化（HTML直接表示を使用） */
+    &::before {
+      content: none;
+    }
   }
 
   /* ✅ スポット間の矢印 */

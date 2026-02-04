@@ -16,18 +16,10 @@
   cursor: grab;
   user-select: none;
   overflow: hidden;
+  touch-action: pan-y; /* 横スワイプをJSに委譲 */
 
   &:active {
     cursor: grabbing;
-  }
-
-  /* スワイプ有効化 */
-  .carousel {
-    touch-action: pan-y pinch-zoom;
-  }
-
-  .carousel-inner {
-    touch-action: pan-x;
   }
 
   /* リンク・ボタンは通常カーソル */
@@ -151,6 +143,11 @@
 .guide-page .carousel-control-prev,
 .guide-page .carousel-control-next {
   display: none;
+}
+
+/* 遷移速度を速くする */
+.guide-page .carousel-item {
+  transition-duration: 0.3s;
 }
 
 /* スライド */
