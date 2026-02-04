@@ -6,3 +6,6 @@
 <%= turbo_stream.replace dom_id(@spot, :infowindow_favorite) do %>
   <%= render "favorite_spots/infowindow_button", spot: @spot, favorite_spot: nil %>
 <% end %>
+
+<%# スポットカード用カウント更新 %>
+<%= turbo_stream.update dom_id(@spot, :favorite_count), @spot.favorite_spots.count.to_s %>

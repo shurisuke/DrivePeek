@@ -71,3 +71,88 @@
     color: #f5c518;
   }
 }
+
+// お気に入りアニメーション（追加時のみ適用）
+.fav-button--animate {
+  position: relative;
+
+  &.fav-button--heart {
+    animation: fav-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      animation: fav-burst-heart 0.35s ease-out forwards;
+      pointer-events: none;
+    }
+  }
+
+  &.fav-button--star {
+    animation: fav-pop 0.35s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: -4px;
+      border-radius: 50%;
+      animation: fav-burst-star 0.35s ease-out forwards;
+      pointer-events: none;
+    }
+  }
+}
+
+@keyframes fav-pop {
+  0% {
+    transform: scale(0.7);
+  }
+  50% {
+    transform: scale(1.15);
+  }
+  100% {
+    transform: scale(1);
+  }
+}
+
+@keyframes fav-burst-heart {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+    box-shadow:
+      3px -3px 0 0 rgba(232, 160, 168, 0.8),
+      -3px -3px 0 0 rgba(232, 160, 168, 0.8),
+      3px 3px 0 0 rgba(232, 160, 168, 0.8),
+      -3px 3px 0 0 rgba(232, 160, 168, 0.8);
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+    box-shadow:
+      8px -8px 0 -1px rgba(232, 160, 168, 0),
+      -8px -8px 0 -1px rgba(232, 160, 168, 0),
+      8px 8px 0 -1px rgba(232, 160, 168, 0),
+      -8px 8px 0 -1px rgba(232, 160, 168, 0);
+  }
+}
+
+@keyframes fav-burst-star {
+  0% {
+    transform: scale(0.5);
+    opacity: 1;
+    box-shadow:
+      3px -3px 0 0 rgba(245, 197, 24, 0.8),
+      -3px -3px 0 0 rgba(245, 197, 24, 0.8),
+      3px 3px 0 0 rgba(245, 197, 24, 0.8),
+      -3px 3px 0 0 rgba(245, 197, 24, 0.8);
+  }
+  100% {
+    transform: scale(1.2);
+    opacity: 0;
+    box-shadow:
+      8px -8px 0 -1px rgba(245, 197, 24, 0),
+      -8px -8px 0 -1px rgba(245, 197, 24, 0),
+      8px 8px 0 -1px rgba(245, 197, 24, 0),
+      -8px 8px 0 -1px rgba(245, 197, 24, 0);
+  }
+}

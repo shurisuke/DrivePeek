@@ -1,11 +1,17 @@
 <%# app/views/favorite_spots/_button.html.erb %>
-<%# locals: spot:, favorite_spot: nil %>
+<%# locals: spot:, favorite_spot: nil, animate: false %>
+
+<%
+  _animate = local_assigns.fetch(:animate, false)
+  active_classes = "fav-button fav-button--heart fav-button--sm fav-button--active"
+  active_classes += " fav-button--animate" if _animate
+%>
 
 <%= turbo_frame_tag dom_id(spot, :favorite_button) do %>
   <% if favorite_spot.present? %>
     <%= button_to favorite_spot_path(favorite_spot),
                   method: :delete,
-                  class: "fav-button fav-button--heart fav-button--sm fav-button--active",
+                  class: active_classes,
                   "aria-label": "お気に入り解除",
                   data: { turbo_frame: dom_id(spot, :favorite_button) } do %>
       <i class="bi bi-heart-fill" aria-hidden="true"></i>

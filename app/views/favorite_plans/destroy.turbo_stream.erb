@@ -1,3 +1,5 @@
 <%= turbo_stream.replace dom_id(@plan, :favorite_button) do %>
   <%= render "favorite_plans/button", plan: @plan, favorite_plan: nil %>
 <% end %>
+
+<%= turbo_stream.update dom_id(@plan, :favorite_count), @plan.favorite_plans.count.to_s %>
