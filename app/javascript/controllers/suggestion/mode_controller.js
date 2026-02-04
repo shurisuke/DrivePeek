@@ -1,6 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, clearSuggestionMarkers, setSuggestionAreaCircle } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
+import { postTurboStream } from "services/api_client"
 
 // ================================================================
 // SuggestModeController
@@ -113,19 +114,7 @@ export default class extends Controller {
   // 終了（モード選択UIを再表示）
   async finish() {
     try {
-      const response = await fetch(`/suggestions/finish?plan_id=${this.planIdValue}`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "Accept": "text/vnd.turbo-stream.html",
-          "X-CSRF-Token": this.#csrfToken
-        }
-      })
-
-      if (!response.ok && response.status !== 204) throw new Error("API error")
-
-      const text = await response.text()
-      if (text) Turbo.renderStreamMessage(text)
+      await postTurboStream("/suggestions/finish", { plan_id: this.planIdValue })
     } catch (error) {
       console.error("[SuggestMode] finish error:", error)
     }
@@ -134,10 +123,6 @@ export default class extends Controller {
   // ============================================
   // Private
   // ============================================
-
-  get #csrfToken() {
-    return document.querySelector("meta[name='csrf-token']")?.content || ""
-  }
 
   #dispatchAreaDraw(mode, options = {}) {
     document.dispatchEvent(new CustomEvent("suggestion:startAreaDraw", {

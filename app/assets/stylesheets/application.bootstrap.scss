@@ -13,10 +13,10 @@
 @use "base/variables";
 @use "base/utilities";
 
-@use "ui/buttons";
-@use "ui/search_filters";
+@use "shared/fav_button";
+@use "shared/search_filters";
 
-@use "components/bottom_sheet";
+@use "shared/bottom_sheet";
 
 @use "shared/alerts";
 @use "shared/logo";
@@ -25,7 +25,7 @@
 @use "shared/share_buttons";
 @use "shared/save_modal";
 @use "shared/auth";
-@use "shared/settings";
+@use "pages/settings";
 @use "shared/help_dialog";
 
 @use "pages/top_guest";
@@ -36,15 +36,21 @@
 @use "pages/list_page";
 
 @use "map/map_search_box";
-@use "map/map_button";
-@use "map/infowindow";
-@use "map/photo_gallery_modal";
+@use "infowindow/base";
+@use "infowindow/photo";
+@use "infowindow/content";
+@use "infowindow/comment";
+@use "infowindow/point";
+@use "infowindow/guest";
+@use "infowindow/photo_modal";
 
-@use "mobile/infowindow" as mobile-infowindow;
+@use "infowindow/mobile";
 
 @use "spots/spot_card";
 
+@use "suggestions/suggestion_button";
 @use "suggestions/suggestion_chat";
+@use "suggestions/suggestion_area_draw";
 @use "suggestions/condition_modal";
 @use "suggestions/suggestion_spot_card";
 
@@ -56,7 +62,6 @@
 @use "plans/navibar/start_point_block";
 @use "plans/navibar/spot_block";
 @use "plans/navibar/goal_point_block";
-@use "plans/navibar/point_edit_modal";
 @use "plans/navibar/time_display";
 @use "plans/navibar/time_rail";
 @use "plans/navibar_responsive";

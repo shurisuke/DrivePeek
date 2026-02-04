@@ -3,7 +3,7 @@
    スポット検索結果用カード
 ========================================== */
 
-@use "../ui/genre_chip" as *;
+@use "../mixins/genre_chip" as *;
 
 // カラー定数
 $card-gradient-start: #4A90D9;

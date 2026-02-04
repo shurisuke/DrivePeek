@@ -6,7 +6,6 @@
 @use "../../mixins/toggle_switch" as *;
 @use "../../mixins/next_move" as *;
 @use "../../mixins/detail_toggle" as *;
-@use "../../mixins/point_edit_form" as *;
 
 .start-point-block {
   background: #ffffff;
@@ -179,17 +178,3 @@
   }
 }
 
-/* ==========================================
-   iOS/Macライクな変更フォーム（共通mixinを使用）
-========================================== */
-.start-edit__inner {
-  @include point-edit-inner;
-}
-
-.start-edit__label {
-  @include point-edit-label;
-}
-
-.start-edit__input.form-control {
-  @include point-edit-input;
-}

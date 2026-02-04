@@ -1,0 +1,260 @@
+/* ==========================================
+   InfoWindow - Comment
+   コメントパネル、チャット風コメント、入力エリア
+========================================== */
+
+/* ✅ コメントパネル */
+.dp-infowindow__comments {
+  flex: 1 1 auto;
+  min-height: 0;
+  max-height: calc(300px - 70px); /* ベースサイズ - フッター */
+  padding: 0 16px;
+  overflow-y: auto;
+  overflow-x: hidden;
+  -webkit-overflow-scrolling: touch;
+  overscroll-behavior: contain;
+  touch-action: pan-y;
+
+  /* 新しいコメントが上に表示される */
+  display: flex;
+  flex-direction: column;
+}
+
+/* ✅ チャット風コメント */
+.dp-comment {
+  display: flex;
+  align-items: flex-start;
+  gap: 10px;
+  padding: 10px 0;
+
+  &:first-child {
+    padding-top: 12px;
+  }
+
+  &:last-child {
+    padding-bottom: 12px;
+  }
+}
+
+.dp-comment__avatar {
+  flex-shrink: 0;
+  width: 32px;
+  height: 32px;
+  background: #e5e5ea;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+
+  i {
+    font-size: 16px;
+    color: #fff;
+  }
+}
+
+.dp-comment__main {
+  flex: 1;
+  min-width: 0;
+}
+
+.dp-comment__bubble {
+  position: relative;
+  background: #f2f2f7;
+  border-radius: 14px;
+  padding: 8px 12px;
+  max-width: 100%;
+}
+
+.dp-comment__text {
+  font-size: 13px;
+  color: #1c1c1e;
+  line-height: 1.5;
+  word-wrap: break-word;
+}
+
+.dp-comment__delete {
+  position: absolute;
+  top: -6px;
+  right: -6px;
+  width: 20px;
+  height: 20px;
+  background: #ff3b30;
+  border: 2px solid #fff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+
+  i {
+    font-size: 10px;
+    color: #fff;
+  }
+}
+
+.dp-comment:hover .dp-comment__delete {
+  opacity: 1;
+}
+
+.dp-comment__meta {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 4px;
+  padding-left: 4px;
+  font-size: 11px;
+  color: #8e8e93;
+}
+
+.dp-comment__profile {
+  font-weight: 500;
+}
+
+/* 自分のコメント（右寄せ） */
+.dp-comment--own {
+  flex-direction: row-reverse;
+  padding-bottom: 0;
+
+  .dp-comment__avatar {
+    background: #007AFF;
+
+    i {
+      color: #fff;
+    }
+  }
+
+  .dp-comment__bubble {
+    background: #007AFF;
+    border-radius: 14px;
+  }
+
+  .dp-comment__text {
+    color: #fff;
+  }
+
+  .dp-comment__meta {
+    justify-content: flex-end;
+    padding-right: 4px;
+    padding-left: 0;
+  }
+}
+
+/* ✅ コメント入力エリア（下部固定） */
+.dp-infowindow__comment-input {
+  display: flex;
+  align-items: flex-end;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 8px 12px 12px;
+}
+
+.dp-infowindow__comment-field {
+  flex: 1;
+  min-width: 0;
+  min-height: 36px;
+  max-height: 72px;
+  padding: 8px 12px;
+  font-size: 13px;
+  font-family: inherit;
+  line-height: 1.4;
+  border: 1px solid #e5e5ea;
+  border-radius: 18px;
+  outline: none;
+  resize: none;
+  overflow-y: auto;
+  transition: border-color 0.15s ease;
+
+  &:focus {
+    border-color: #007AFF;
+  }
+
+  &::placeholder {
+    color: #c7c7cc;
+  }
+}
+
+.dp-infowindow__comment-actions {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+}
+
+.dp-infowindow__comment-submit {
+  width: 32px;
+  height: 32px;
+  background-color: #007AFF;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.15s ease;
+
+  &:hover {
+    filter: brightness(0.9);
+  }
+
+  &:active {
+    transform: scale(0.95);
+  }
+
+  i {
+    color: #fff;
+    font-size: 14px;
+  }
+}
+
+/* ✅ コメント空状態 */
+.dp-infowindow__comments-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  min-height: 80px;
+  color: #8e8e93;
+  font-size: 13px;
+}
+
+/* ✅ コメントフッター（固定） */
+.dp-infowindow__comment-footer {
+  flex-shrink: 0;
+  width: 100%;
+  box-sizing: border-box;
+  border-top: 1px solid #f2f2f7;
+  background: #fff;
+  border-radius: 0 0 10px 10px;
+}
+
+.dp-infowindow__comment-form {
+  margin: 0;
+  width: 100%;
+  box-sizing: border-box;
+}
+
+.dp-infowindow__comment-errors {
+  padding: 4px 12px;
+  font-size: 11px;
+  color: #ff3b30;
+}
+
+.dp-infowindow__comment-counter {
+  flex-shrink: 0;
+  font-size: 11px;
+  color: #8e8e93;
+  align-self: center;
+  padding: 0 4px;
+  transition: color 0.15s ease;
+
+  &--warning {
+    color: #ff9500;
+  }
+
+  &--limit {
+    color: #ff3b30;
+  }
+}

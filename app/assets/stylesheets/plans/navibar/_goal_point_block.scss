@@ -4,7 +4,6 @@
 ========================================== */
 
 @use "../../mixins/toggle_switch" as *;
-@use "../../mixins/point_edit_form" as *;
 
 /* ------------------------------------------
    ✅ 帰宅地点トグル行（出発地点の有料道路トグルと同じ見た目に統一）
@@ -174,17 +173,3 @@
   }
 }
 
-/* ==========================================
-   iOS/Macライクな変更フォーム（共通mixinを使用）
-========================================== */
-.goal-edit__inner {
-  @include point-edit-inner;
-}
-
-.goal-edit__label {
-  @include point-edit-label;
-}
-
-.goal-edit__input.form-control {
-  @include point-edit-input;
-}
