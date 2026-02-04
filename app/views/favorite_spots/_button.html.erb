@@ -13,6 +13,7 @@
                   method: :delete,
                   class: active_classes,
                   "aria-label": "お気に入り解除",
+                  onanimationend: "this.classList.remove('fav-button--animate')",
                   data: { turbo_frame: dom_id(spot, :favorite_button) } do %>
       <i class="bi bi-heart-fill" aria-hidden="true"></i>
     <% end %>
