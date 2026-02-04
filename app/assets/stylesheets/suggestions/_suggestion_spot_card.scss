@@ -1,0 +1,120 @@
+/* ==========================================
+   提案スポットカード
+   spot-cardを継承し、提案専用のスタイルを追加
+========================================== */
+
+$card-accent: #3073F0;
+
+/* 提案カード固有のスタイル */
+.spot-card--suggestion {
+  width: 100%;
+  max-width: 500px;
+  height: auto;
+
+  .spot-card__name {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    white-space: normal;
+  }
+
+  .spot-card__location {
+    margin: 8px 0;
+    border-bottom: none;
+    padding-bottom: 0;
+  }
+
+  .spot-card__footer {
+    padding-top: 0;
+  }
+}
+
+/* 番号バッジ（AI提案用） */
+.spot-card__number {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 24px;
+  height: 24px;
+  border-radius: 8px;
+  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  color: #fff;
+  font-size: 13px;
+  font-weight: 600;
+  flex-shrink: 0;
+}
+
+/* AI説明文 */
+.spot-card__description {
+  font-size: 14px;
+  color: #48484a;
+  line-height: 1.85;
+  letter-spacing: 0.01em;
+  margin-bottom: 12px;
+}
+
+/* アクションボタン（プランに追加など） */
+.spot-card__btn {
+  display: flex;
+  align-items: center;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 500;
+  color: $card-accent;
+  background: transparent;
+  border: 1.5px solid rgba($card-accent, 0.3);
+  border-radius: 8px;
+  cursor: pointer;
+  transition: all 0.15s ease;
+
+  &:hover {
+    background: rgba($card-accent, 0.06);
+    border-color: $card-accent;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  i {
+    font-size: 13px;
+  }
+
+
+  &--added {
+    color: #34c759;
+    border-color: rgba(#34c759, 0.3);
+    cursor: default;
+
+    &:hover {
+      background: transparent;
+      border-color: rgba(#34c759, 0.3);
+    }
+
+    &:active {
+      transform: none;
+    }
+  }
+}
+
+/* コンパクトモード */
+.spot-card--compact {
+  padding: 12px;
+
+  .spot-card__number {
+    width: 20px;
+    height: 20px;
+    font-size: 11px;
+    border-radius: 6px;
+  }
+
+  .spot-card__name {
+    font-size: 14px;
+  }
+
+  .spot-card__location {
+    margin-bottom: 0;
+    font-size: 12px;
+  }
+}
