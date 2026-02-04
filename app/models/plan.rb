@@ -82,7 +82,7 @@ class Plan < ApplicationRecord
 
   # 空プランを除外（タイトル空 + スポット0件）
   scope :exclude_stale_empty, -> {
-    where.not(title: ["", nil])
+    where.not(title: [ "", nil ])
       .or(where(id: joins(:plan_spots).select(:id)))
   }
 
@@ -272,5 +272,4 @@ class Plan < ApplicationRecord
     return nil unless record&.lat.present? && record&.lng.present?
     { lat: record.lat, lng: record.lng }
   end
-
 end

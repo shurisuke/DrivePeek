@@ -227,5 +227,4 @@ RSpec.describe Plan, type: :model do
       expect(data[:polylines].size).to eq(plan.plan_spots.count - 1)
     end
   end
-
 end
