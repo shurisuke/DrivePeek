@@ -1,5 +1,6 @@
-// app/javascript/controllers/plan_spot_delete_controller.js
+// app/javascript/controllers/plan/spot_delete_controller.js
 import { Controller } from "@hotwired/stimulus"
+import { removeSpotFromPlan } from "services/api_client"
 
 export default class extends Controller {
   static values = {
@@ -7,26 +8,14 @@ export default class extends Controller {
     planSpotId: Number,
   }
 
-  // turbo:submit-end で呼ぶ想定
-  afterSubmit(event) {
-    if (!event.detail?.success) return
+  async delete(event) {
+    event.preventDefault()
 
-    // ✅ 先に value を退避（requestAnimationFrame 時点で disconnect されている可能性あり）
-    const planId = this.planIdValue
-    const planSpotId = this.planSpotIdValue
-
-    // Turbo Stream (remove) がDOMへ反映された"後"に通知したい
-    // DOM更新完了を待つため、requestAnimationFrame を2回ネスト
-    requestAnimationFrame(() => {
-      requestAnimationFrame(() => {
-        document.dispatchEvent(
-          new CustomEvent("plan:spot-deleted", {
-            detail: { planId, planSpotId },
-          })
-        )
-        // ✅ マーカー再描画のため navibar:updated を発火
-        document.dispatchEvent(new CustomEvent("navibar:updated"))
-      })
-    })
+    try {
+      await removeSpotFromPlan(this.planSpotIdValue, this.planIdValue)
+    } catch (error) {
+      console.error("[spot_delete] Error:", error)
+      alert("削除に失敗しました")
+    }
   }
 }

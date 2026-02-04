@@ -9,7 +9,6 @@
 >
   <div data-plan--goal-point-visibility-target="blockArea" hidden>
     <div class="goal-point-block"
-         data-controller="plan--goal-point-editor"
          data-lat="<%= goal_point&.lat %>"
          data-lng="<%= goal_point&.lng %>"
          data-ui--time-rail-sync-target="content"
@@ -37,42 +36,12 @@
           </div>
 
           <%# 住所 %>
-          <div class="goal-address navibar-padding" data-plan--goal-point-editor-target="address">
+          <div class="goal-address navibar-padding">
             <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
           </div>
         </div>
         <%# /.goal-content %>
 
-        <%# 帰宅地点変更フォーム（トグル詳細内に配置） %>
-        <div
-          id="goal-point-edit-<%= plan.id %>"
-          class="goal-edit"
-          hidden
-          data-plan--goal-point-editor-target="editArea"
-        >
-          <div class="goal-edit__inner">
-            <label for="goal-point-address-<%= plan.id %>" class="goal-edit__label">帰宅地点を変更</label>
-
-            <input
-              id="goal-point-address-<%= plan.id %>"
-              type="text"
-              class="form-control goal-edit__input"
-              placeholder="（例: 〇〇市〇〇町〇〇-〇）"
-              autocomplete="off"
-              data-plan--goal-point-editor-target="input"
-              data-action="keydown->plan--goal-point-editor#search compositionstart->plan--goal-point-editor#compositionStart compositionend->plan--goal-point-editor#compositionEnd"
-            >
-
-            <div class="point-edit__actions">
-              <button type="button" class="point-edit__cancel-btn">
-                キャンセル
-              </button>
-              <button type="button" class="point-edit__search-btn">
-                検索
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     </div>
 

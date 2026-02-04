@@ -2,6 +2,8 @@
    Suggestion Chat (ChatGPT風UI)
 ========================================== */
 
+@use "suggestion_button" as btn;
+
 .suggestion {
   display: flex;
   flex-direction: column;
@@ -531,30 +533,13 @@
 }
 
 .suggestion__send-btn {
-  width: 32px;
-  height: 32px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: #fff;
-  border: none;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
+  @include btn.btn-base;
+  @include btn.btn-primary;
+  @include btn.btn-circle;
   flex-shrink: 0;
-  transition: opacity 0.15s ease, transform 0.1s ease;
-
-  &:hover {
-    opacity: 0.85;
-  }
-
-  &:active {
-    transform: scale(0.95);
-  }
 
   &:disabled {
     background: #c7c7cc;
-    cursor: not-allowed;
     opacity: 1;
   }
 
@@ -704,26 +689,12 @@
 }
 
 .suggestion-plan-card__adopt-btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 10px 16px;
-  border: none;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: #fff;
+  @include btn.btn-base;
+  @include btn.btn-primary;
+  @include btn.btn-md;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
-  &:hover {
-    opacity: 0.9;
-  }
-
   &:disabled {
-    opacity: 0.6;
     cursor: wait;
   }
 
@@ -768,32 +739,15 @@
 }
 
 .suggestion-mode-select__btn {
-  display: flex;
-  align-items: center;
-  gap: 8px;
+  @include btn.btn-base;
+  @include btn.btn-primary;
   padding: 10px 14px;
-  border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: #fff;
   font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   i {
     font-size: 15px;
-    color: #fff;
-  }
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  &:active {
-    opacity: 0.8;
-    transform: scale(0.98);
   }
 }
 
@@ -811,260 +765,12 @@
 }
 
 .suggest-mode-actions__btn {
-  display: inline-flex;
-  align-items: center;
-  gap: 6px;
-  padding: 8px 14px;
-  border: 1px solid #e5e5ea;
-  border-radius: 20px;
-  background-color: #fff;
-  color: #636366;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
+  @include btn.btn-base;
+  @include btn.btn-secondary;
+  @include btn.btn-sm;
+  border-radius: 20px; // pill形状
 
   i {
     font-size: 14px;
-  }
-
-  &:hover {
-    background-color: #f5f5f7;
-    border-color: #d1d1d6;
-    color: #1c1c1e;
-  }
-
-  &:active {
-    background-color: #e5e5ea;
-    transform: scale(0.97);
-  }
-}
-
-/* ==========================================
-   エリア描画モード
-========================================== */
-.suggestion-area-draw-overlay {
-  position: fixed;
-  inset: 0;
-  z-index: 1100;
-  pointer-events: none;
-}
-
-/* エリア描画モード（body クラスで一括制御） */
-body.suggestion-area-draw-active {
-  .map-search-box,
-  .plan-actions,
-  .hamburger,
-  .map-floating-buttons {
-    display: none !important;
-  }
-
-  .navibar {
-    position: relative;
-
-    &::after {
-      content: "";
-      position: absolute;
-      inset: 0;
-      background: rgba(0, 0, 0, 0.4);
-      z-index: 1000;
-      pointer-events: auto; /* クリック防止 */
-      border-radius: inherit;
-    }
-  }
-}
-
-/* ガイドカード */
-.suggestion-area-draw-guide {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1200;
-  background: #fff;
-  padding: 16px 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-
-  @media (max-width: 767px) {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: none;
-    padding: 16px;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  }
-}
-
-.suggestion-area-draw-guide__header {
-  display: flex;
-  align-items: center;
-  gap: 12px;
-}
-
-.suggestion-area-draw-guide__icon {
-  width: 44px;
-  height: 44px;
-  border-radius: 50%;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  color: #fff;
-  font-size: 20px;
-  flex-shrink: 0;
-  animation: pulseIcon 1.5s ease-in-out infinite;
-
-  @media (max-width: 767px) {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
-  }
-}
-
-@keyframes pulseIcon {
-  0%, 100% { transform: scale(1); }
-  50% { transform: scale(1.1); }
-}
-
-.suggestion-area-draw-guide__text {
-  font-size: 14px;
-  line-height: 1.5;
-  color: #1c1c1e;
-}
-
-.suggestion-area-draw-guide__actions {
-  display: flex;
-  gap: 8px;
-  justify-content: center;
-}
-
-.suggestion-area-draw-guide__cancel-btn {
-  padding: 8px 16px;
-  border: 1px solid #e5e5ea;
-  border-radius: 8px;
-  background: #fff;
-  color: #636366;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-  white-space: nowrap;
-
-  &:hover {
-    background: #f5f5f7;
-    border-color: #d1d1d6;
-  }
-
-  @media (max-width: 767px) {
-    padding: 8px 12px;
-    font-size: 12px;
-  }
-}
-
-.suggestion-area-draw-guide__start-btn {
-  padding: 8px 16px;
-  border: none;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  flex-shrink: 0;
-  white-space: nowrap;
-
-  &:hover {
-    opacity: 0.9;
-  }
-
-  @media (max-width: 767px) {
-    padding: 8px 12px;
-    font-size: 12px;
-  }
-}
-
-/* 確定パネル */
-.suggestion-area-draw-confirm {
-  position: fixed;
-  top: 20px;
-  left: 50%;
-  transform: translateX(-50%);
-  z-index: 1200;
-  background: #fff;
-  padding: 16px 24px;
-  border-radius: 16px;
-  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
-  pointer-events: auto;
-  display: flex;
-  flex-direction: column;
-  gap: 12px;
-
-  @media (max-width: 767px) {
-    top: auto;
-    bottom: 0;
-    left: 0;
-    right: 0;
-    transform: none;
-    padding: 16px;
-    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
-    border-radius: 16px 16px 0 0;
-    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
-  }
-}
-
-.suggestion-area-draw-confirm__info {
-  text-align: center;
-}
-
-.suggestion-area-draw-confirm__radius {
-  font-size: 16px;
-  font-weight: 600;
-  color: #1c1c1e;
-}
-
-.suggestion-area-draw-confirm__actions {
-  display: flex;
-  gap: 10px;
-  justify-content: center;
-}
-
-.suggestion-area-draw-btn {
-  padding: 10px 20px;
-  border-radius: 10px;
-  font-size: 14px;
-  font-weight: 500;
-  cursor: pointer;
-  transition: all 0.15s ease;
-  white-space: nowrap;
-
-  &--primary {
-    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
-    color: #fff;
-    border: none;
-
-    &:hover {
-      opacity: 0.9;
-    }
-  }
-
-  &--secondary {
-    background: #f5f5f7;
-    color: #636366;
-    border: none;
-
-    &:hover {
-      background: #e5e5ea;
-    }
   }
 }

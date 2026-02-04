@@ -8,7 +8,6 @@
 <% minutes = move_minutes % 60 %>
 
 <div class="start-point-block"
-     data-controller="plan--start-point-editor"
      data-polyline="<%= plan.start_point&.polyline %>"
      data-lat="<%= plan.start_point&.lat %>"
      data-lng="<%= plan.start_point&.lng %>"
@@ -41,7 +40,7 @@
     </div>
 
     <%# 住所 %>
-    <div class="start-address navibar-padding" data-plan--start-point-editor-target="address">
+    <div class="start-address navibar-padding">
       <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
     </div>
 
@@ -87,38 +86,6 @@
           >
         </div>
 
-        <%# 出発地点変更フォーム %>
-        <div
-          id="start-point-edit-<%= plan.id %>"
-          class="start-edit"
-          hidden
-          data-plan--start-point-editor-target="editArea"
-        >
-          <div class="start-edit__inner">
-            <label for="start-point-address-<%= plan.id %>" class="start-edit__label">
-              出発地点を変更
-            </label>
-
-            <input
-              id="start-point-address-<%= plan.id %>"
-              type="text"
-              class="form-control start-edit__input"
-              placeholder="（例: 〇〇市〇〇町〇〇-〇）"
-              autocomplete="off"
-              data-plan--start-point-editor-target="input"
-              data-action="keydown->plan--start-point-editor#search compositionstart->plan--start-point-editor#compositionStart compositionend->plan--start-point-editor#compositionEnd"
-            >
-
-            <div class="point-edit__actions">
-              <button type="button" class="point-edit__cancel-btn">
-                キャンセル
-              </button>
-              <button type="button" class="point-edit__search-btn">
-                検索
-              </button>
-            </div>
-          </div>
-        </div>
       </div>
     <% end %>
   </div>

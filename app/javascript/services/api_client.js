@@ -203,3 +203,53 @@ export const patchTurboStream = (url, body, options = {}) => {
     body: JSON.stringify(body),
   })
 }
+
+/**
+ * Turbo Stream DELETE リクエスト
+ */
+export const deleteTurboStream = (url, options = {}) => {
+  return turboStreamRequest(url, {
+    ...options,
+    method: "DELETE",
+  })
+}
+
+// ================================================================
+// スポット追加/削除 API（高レベル関数）
+// ================================================================
+
+/**
+ * スポットをプランに追加
+ * - API呼び出し + Turbo Stream適用
+ * - navibar:updated（turboStreamRequest内で発火）
+ * - plan:spot-added（検索マーカークリア用）
+ * - navibar:activate-tab（プランタブをアクティブに）
+ */
+export const addSpotToPlan = async (planId, spotId) => {
+  await postTurboStream("/api/plan_spots", { plan_id: planId, spot_id: spotId })
+
+  // DOM更新完了後にイベント発火（turboStreamRequestの requestAnimationFrame の後）
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.dispatchEvent(new CustomEvent("plan:spot-added", { detail: { planId, spotId } }))
+      document.dispatchEvent(new CustomEvent("navibar:activate-tab", { detail: { tab: "plan" } }))
+    })
+  })
+}
+
+/**
+ * スポットをプランから削除
+ * - API呼び出し + Turbo Stream適用
+ * - navibar:updated（turboStreamRequest内で発火）
+ * - plan:spot-deleted（マーカー再描画用）
+ */
+export const removeSpotFromPlan = async (planSpotId, planId) => {
+  await deleteTurboStream(`/plans/${planId}/plan_spots/${planSpotId}`)
+
+  // DOM更新完了後にイベント発火
+  requestAnimationFrame(() => {
+    requestAnimationFrame(() => {
+      document.dispatchEvent(new CustomEvent("plan:spot-deleted", { detail: { planId, planSpotId } }))
+    })
+  })
+}

@@ -1,0 +1,75 @@
+/* ==========================================
+   Suggestion - 共通ボタン
+   提案UI全体で使用するボタンスタイル
+========================================== */
+
+/* Mixin: ボタンベース */
+@mixin btn-base {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: all 0.15s ease;
+}
+
+/* Mixin: プライマリボタン */
+@mixin btn-primary {
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  color: #fff;
+  border: none;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  &:disabled {
+    opacity: 0.6;
+    cursor: not-allowed;
+  }
+}
+
+/* Mixin: セカンダリボタン */
+@mixin btn-secondary {
+  background: #fff;
+  color: #636366;
+  border: 1px solid #e5e5ea;
+
+  &:hover {
+    background: #f5f5f7;
+    border-color: #d1d1d6;
+    color: #1c1c1e;
+  }
+
+  &:active {
+    background: #e5e5ea;
+    transform: scale(0.97);
+  }
+}
+
+/* Mixin: サイズ - SM */
+@mixin btn-sm {
+  padding: 8px 14px;
+  border-radius: 8px;
+  font-size: 13px;
+}
+
+/* Mixin: サイズ - MD */
+@mixin btn-md {
+  padding: 10px 16px;
+  border-radius: 10px;
+  font-size: 14px;
+}
+
+/* Mixin: 円形 */
+@mixin btn-circle {
+  width: 32px;
+  height: 32px;
+  padding: 0;
+  border-radius: 50%;
+  justify-content: center;
+}

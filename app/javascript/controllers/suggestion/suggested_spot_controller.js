@@ -3,6 +3,7 @@ import { getMapInstance, addSuggestionMarker } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
 import { panToVisualCenter } from "map/visual_center"
+import { addSpotToPlan } from "services/api_client"
 
 // ================================================================
 // SuggestionSpotActionController
@@ -27,7 +28,7 @@ export default class extends Controller {
     this.#showSpotOnMap()
   }
 
-  // プランに追加（直接API呼び出し）
+  // プランに追加
   async addToPlan(event) {
     event.preventDefault()
 
@@ -39,28 +40,13 @@ export default class extends Controller {
 
     try {
       const planId = this.planIdValue || document.getElementById("map")?.dataset.planId
-      const response = await fetch(`/api/plan_spots`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": document.querySelector('meta[name="csrf-token"]')?.content,
-          Accept: "text/vnd.turbo-stream.html",
-        },
-        body: JSON.stringify({ plan_id: planId, spot_id: this.spotIdValue }),
-      })
+      await addSpotToPlan(planId, this.spotIdValue)
 
-      if (response.ok) {
-        Turbo.renderStreamMessage(await response.text())
-        document.dispatchEvent(new CustomEvent("navibar:updated"))
+      button.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
+      button.classList.add("spot-card__btn--added")
 
-        button.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
-        button.classList.add("spot-card__btn--added")
-
-        // 追加成功後に地図で表示
-        this.#showSpotOnMap()
-      } else {
-        throw new Error("追加に失敗しました")
-      }
+      // 追加成功後に地図で表示
+      this.#showSpotOnMap()
     } catch (error) {
       console.error("[suggestion_spot_action] addToPlan error:", error)
       alert(error.message || "追加に失敗しました")

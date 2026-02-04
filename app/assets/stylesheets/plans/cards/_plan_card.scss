@@ -3,7 +3,7 @@
    プランカードコンポーネント
 ========================================== */
 
-@use "../../ui/genre_chip" as *;
+@use "../../mixins/genre_chip" as *;
 
 // カラー定数（spot_cardと統一）
 $card-gradient-start: #4A90D9;

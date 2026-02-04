@@ -2,14 +2,14 @@
 <% compact = local_assigns.fetch(:compact, false) %>
 <% existing_place_ids = local_assigns.fetch(:existing_place_ids, []) %>
 <div class="spot-card spot-card--suggestion<%= ' spot-card--compact' if compact %>"
-     data-controller="suggestion--spot-action"
-     data-suggestion--spot-action-name-value="<%= spot[:name] %>"
-     data-suggestion--spot-action-plan-id-value="<%= plan&.id %>"
-     data-suggestion--spot-action-number-value="<%= number %>"
-     data-suggestion--spot-action-spot-id-value="<%= spot[:spot_id] %>"
-     data-suggestion--spot-action-lat-value="<%= spot[:lat] %>"
-     data-suggestion--spot-action-lng-value="<%= spot[:lng] %>"
-     data-suggestion--spot-action-place-id-value="<%= spot[:place_id] %>">
+     data-controller="suggestion--suggested-spot"
+     data-suggestion--suggested-spot-name-value="<%= spot[:name] %>"
+     data-suggestion--suggested-spot-plan-id-value="<%= plan&.id %>"
+     data-suggestion--suggested-spot-number-value="<%= number %>"
+     data-suggestion--suggested-spot-spot-id-value="<%= spot[:spot_id] %>"
+     data-suggestion--suggested-spot-lat-value="<%= spot[:lat] %>"
+     data-suggestion--suggested-spot-lng-value="<%= spot[:lng] %>"
+     data-suggestion--suggested-spot-place-id-value="<%= spot[:place_id] %>">
 
   <%# ヘッダー: 番号 + 名前 %>
   <div class="spot-card__header">
@@ -38,7 +38,7 @@
     <div class="spot-card__footer">
       <button type="button"
               class="spot-card__map-link"
-              data-action="click->suggestion--spot-action#showOnMap">
+              data-action="click->suggestion--suggested-spot#showOnMap">
         <i class="bi bi-geo-alt-fill"></i>
         地図で見る
       </button>
@@ -52,8 +52,8 @@
       <% else %>
         <button type="button"
                 class="spot-card__btn spot-card__btn--primary"
-                data-action="click->suggestion--spot-action#addToPlan"
-                data-suggestion--spot-action-target="addBtn">
+                data-action="click->suggestion--suggested-spot#addToPlan"
+                data-suggestion--suggested-spot-target="addBtn">
           プランに追加
           <i class="bi bi-plus-lg"></i>
         </button>

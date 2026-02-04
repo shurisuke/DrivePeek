@@ -6,7 +6,7 @@
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
-  data-controller="plan--spot-memo plan-spot-delete"
+  data-controller="plan--spot-memo plan--spot-delete"
   data-plan--spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
   data-plan--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
@@ -161,20 +161,12 @@
                 <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
               </button>
 
-              <%= form_with(
-                    url: plan_plan_spot_path(plan_spot.plan, plan_spot),
-                    method: :delete,
-                    class: "d-inline w-100",
-                    data: {
-                      action: "turbo:submit-end->plan--spot-delete#afterSubmit pointerdown->plan--spot-memo#stopPropagation"
-                    }
-                  ) do %>
-                <button type="submit"
-                        class="btn btn-outline-secondary btn-sm w-100"
-                        aria-label="スポットを削除">
-                  <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
-                </button>
-              <% end %>
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm w-100"
+                      aria-label="スポットを削除"
+                      data-action="click->plan--spot-delete#delete pointerdown->plan--spot-memo#stopPropagation">
+                <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
+              </button>
           </div>
 
     </div>
