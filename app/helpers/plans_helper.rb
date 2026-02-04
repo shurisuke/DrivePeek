@@ -2,16 +2,19 @@ module PlansHelper
   # プランタイトルを表示用にフォーマット
   # - タイトルが設定されていればそのまま表示
   # - 未設定の場合、スポットの市区町村から自動生成
-  def display_plan_title(plan)
+  def plan_title(plan)
     return plan.title if plan.title.present?
 
-    cities = plan.spots.pluck(:city).compact.uniq
+    cities = plan.spots.map(&:city).compact.uniq
     return "未定のプラン" if cities.empty?
 
-    if cities.size <= 3
-      "#{cities.join('・')}ドライブ"
+    # 市区町村郡の接尾辞を除外（例：宇都宮市 → 宇都宮）
+    short_names = cities.map { |c| c.gsub(/[市区町村郡]$/, "") }
+
+    if short_names.size <= 3
+      "#{short_names.join('・')}ドライブ"
     else
-      "#{cities.take(3).join('・')}ほかドライブ"
+      "#{short_names.take(3).join('・')}ほかドライブ"
     end
   end
 

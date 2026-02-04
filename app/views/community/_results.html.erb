@@ -70,7 +70,7 @@
             genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
           %>
           <%= render "plans/plan_card",
-                     plan_title: display_plan_title(plan),
+                     plan_title: plan_title(plan),
                      spots: spots_data,
                      genres: genre_names,
                      total_duration: format_move_time(plan.spots_only_move_time),
