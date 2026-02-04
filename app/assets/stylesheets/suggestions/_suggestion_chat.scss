@@ -175,6 +175,12 @@
   align-self: flex-start;
   max-width: 100%;
 
+  /* アイコン列の影響を相殺してフル幅 */
+  .suggest-mode-actions {
+    margin-left: -38px; /* アイコン幅 + gap分を相殺 */
+    width: calc(100% + 38px);
+  }
+
   /* モバイル時：アイコンは表示、スポットカード・採用ボタンは中央寄せ */
   @media (max-width: 767px) {
     .suggestion__spots,
@@ -208,7 +214,7 @@
 
   i {
     font-size: 22px;
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     -webkit-background-clip: text;
     background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -390,89 +396,6 @@
 }
 
 /* ==========================================
-   待機インジケーター（考え中）
-========================================== */
-.suggestion__icon--thinking {
-  animation: iconPulse 2s ease-in-out infinite;
-}
-
-@keyframes iconPulse {
-  0%, 100% {
-    transform: scale(1);
-    opacity: 1;
-  }
-  50% {
-    transform: scale(1.1);
-    opacity: 0.8;
-  }
-}
-
-.suggestion__thinking {
-  display: flex;
-  align-items: center;
-  padding: 4px 0;
-  color: #8e8e93;
-  font-size: 14px;
-}
-
-.suggestion__thinking-text {
-  background: linear-gradient(90deg, #667eea, #764ba2, #667eea);
-  background-size: 200% 100%;
-  -webkit-background-clip: text;
-  background-clip: text;
-  -webkit-text-fill-color: transparent;
-  animation: shimmerText 2s linear infinite;
-  font-weight: 500;
-}
-
-@keyframes shimmerText {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
-.suggestion__thinking-dots {
-  display: inline-flex;
-  margin-left: 2px;
-
-  span {
-    background: linear-gradient(90deg, #667eea, #764ba2);
-    -webkit-background-clip: text;
-    background-clip: text;
-    -webkit-text-fill-color: transparent;
-    font-weight: 600;
-    animation: dotFade 1.4s ease-in-out infinite;
-
-    &:nth-child(1) { animation-delay: 0s; }
-    &:nth-child(2) { animation-delay: 0.2s; }
-    &:nth-child(3) { animation-delay: 0.4s; }
-  }
-}
-
-@keyframes dotFade {
-  0%, 100% { opacity: 0.3; }
-  50% { opacity: 1; }
-}
-
-.suggestion__thinking-bar {
-  height: 3px;
-  width: 120px;
-  margin-top: 8px;
-  border-radius: 2px;
-  background: linear-gradient(90deg,
-    rgba(102, 126, 234, 0.2) 0%,
-    rgba(118, 75, 162, 0.6) 50%,
-    rgba(102, 126, 234, 0.2) 100%
-  );
-  background-size: 200% 100%;
-  animation: shimmerBar 1.5s ease-in-out infinite;
-}
-
-@keyframes shimmerBar {
-  0% { background-position: 100% 0; }
-  100% { background-position: -100% 0; }
-}
-
-/* ==========================================
    入力フォームエリア（ナビバー下部に固定）
 ========================================== */
 .suggestion__composer {
@@ -611,7 +534,7 @@
   width: 32px;
   height: 32px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   color: #fff;
   border: none;
   cursor: pointer;
@@ -686,17 +609,16 @@
   display: flex;
   flex-direction: column;
   align-items: center;
-  margin: 16px 0 24px;
-  padding: 0 16px;
+  margin: 32px 0 24px;
+  padding: 0;
 
-  .suggestion-spot-card {
+  .spot-card--suggestion {
     width: 100%;
-    max-width: 600px;
   }
 
   .suggestion-plan-card__actions {
     width: 100%;
-    max-width: 600px;
+    max-width: 500px;
     margin-top: 12px;
   }
 }
@@ -704,8 +626,9 @@
 .suggestion__spots-inner {
   display: flex;
   flex-direction: column;
+  gap: 20px;
   width: 100%;
-  max-width: 600px;
+  max-width: 500px;
 }
 
 /* スポットモード用のバブルスタイル */
@@ -714,7 +637,7 @@
   padding: 16px 20px;
   border-radius: 16px;
   background: rgba(102, 126, 234, 0.12);
-  margin-bottom: 5px;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
 }
 
 /* イントロ横のアイコンは少し下げる */
@@ -736,169 +659,8 @@
   }
 }
 
-.suggestion__bubble--summary {
-  margin-top: 15px;
-  font-weight: 600;
-  color: #1c1c1e;
-}
-
-.suggestion__bubble--description {
-  margin-top: 5px;
-  color: #48484a;
-  line-height: 1.85;
-  letter-spacing: 0.01em;
-}
-
 .suggestion__bubble--closing {
   color: #8e8e93;
-}
-
-.suggestion-spot-card {
-  background: #fff;
-  border-radius: 16px;
-  padding: 16px;
-  margin-top: 20px;
-  border: 1px solid rgba(0, 0, 0, 0.06);
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.08), 0 1px 2px rgba(0, 0, 0, 0.04);
-  transition: all 0.2s ease;
-
-  &:first-child {
-    margin-top: 0;
-  }
-
-  &:hover {
-    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 2px 4px rgba(0, 0, 0, 0.06);
-  }
-}
-
-.suggestion-spot-card__header {
-  display: flex;
-  align-items: center;
-  gap: 10px;
-  margin-bottom: 8px;
-}
-
-.suggestion-spot-card__number {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 24px;
-  height: 24px;
-  border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
-  color: #fff;
-  font-size: 13px;
-  font-weight: 600;
-  flex-shrink: 0;
-}
-
-.suggestion-spot-card__name {
-  font-weight: 600;
-  font-size: 16px;
-  color: #1c1c1e;
-  letter-spacing: -0.01em;
-}
-
-.suggestion-spot-card__address {
-  font-size: 13px;
-  color: #8e8e93;
-  margin-bottom: 12px;
-  display: flex;
-  align-items: center;
-  gap: 4px;
-
-  i {
-    font-size: 12px;
-  }
-}
-
-.suggestion-spot-card__summary {
-  font-size: 14px;
-  font-weight: 600;
-  color: #1c1c1e;
-  line-height: 1.5;
-  margin-bottom: 8px;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
-}
-
-.suggestion-spot-card__description {
-  font-size: 14px;
-  color: #48484a;
-  line-height: 1.85;
-  letter-spacing: 0.01em;
-  margin-bottom: 12px;
-
-  > *:first-child { margin-top: 0; }
-  > *:last-child { margin-bottom: 0; }
-
-  p {
-    margin: 0 0 8px;
-  }
-}
-
-.suggestion-spot-card__reason {
-  font-size: 14px;
-  color: #3a3a3c;
-  line-height: 1.5;
-  margin-bottom: 14px;
-}
-
-.suggestion-spot-card__actions {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding-top: 12px;
-  border-top: 1px solid #f0f0f0;
-  margin-top: 4px;
-}
-
-.suggestion-spot-card__link {
-  display: inline-flex;
-  align-items: center;
-  gap: 4px;
-  padding: 6px 0;
-  background: none;
-  border: none;
-  color: #8e8e93;
-  font-size: 14px;
-  font-weight: 400;
-  cursor: pointer;
-  transition: color 0.15s ease;
-
-  &:hover {
-    color: #636366;
-  }
-
-  &:active {
-    opacity: 0.6;
-  }
-
-  &--primary {
-    color: #8e8e93;
-    font-weight: 400;
-
-    &:hover {
-      color: #636366;
-    }
-
-    i {
-      font-size: 12px;
-    }
-  }
-
-  &--added {
-    color: #34c759;
-    cursor: default;
-
-    &:hover {
-      color: #34c759;
-    }
-
-    &:active {
-      opacity: 1;
-    }
-  }
 }
 
 /* ==========================================
@@ -938,7 +700,7 @@
   display: flex;
   justify-content: center;
   padding-top: 16px;
-  margin-top: 8px;
+  margin: 16px 0;
 }
 
 .suggestion-plan-card__adopt-btn {
@@ -952,8 +714,9 @@
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   color: #fff;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   &:hover {
     opacity: 0.9;
@@ -993,36 +756,6 @@
   font-weight: 500;
 }
 
-/* コンパクトカード（参考表示用） */
-.suggestion-spot-card--compact {
-  padding: 12px;
-  margin-top: 8px;
-  box-shadow: 0 1px 4px rgba(0, 0, 0, 0.08);
-
-  &:hover {
-    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
-  }
-
-  .suggestion-spot-card__header {
-    margin-bottom: 4px;
-  }
-
-  .suggestion-spot-card__number {
-    width: 20px;
-    height: 20px;
-    font-size: 11px;
-    border-radius: 6px;
-  }
-
-  .suggestion-spot-card__name {
-    font-size: 14px;
-  }
-
-  .suggestion-spot-card__address {
-    margin-bottom: 0;
-    font-size: 12px;
-  }
-}
 
 /* ==========================================
    モード選択UI（初期表示）
@@ -1030,7 +763,7 @@
 .suggestion-mode-select {
   display: flex;
   flex-direction: column;
-  gap: 8px;
+  gap: 12px;
   margin-top: 12px;
 }
 
@@ -1041,12 +774,13 @@
   padding: 10px 14px;
   border: none;
   border-radius: 10px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   color: #fff;
   font-size: 13px;
   font-weight: 500;
   cursor: pointer;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
 
   i {
     font-size: 15px;
@@ -1069,8 +803,9 @@
 .suggest-mode-actions {
   display: flex;
   flex-wrap: wrap;
+  justify-content: center;
   gap: 8px;
-  margin-top: 20px;
+  margin-top: 16px;
   padding-top: 16px;
   border-top: 1px solid #e5e5ea;
 }
@@ -1179,7 +914,7 @@ body.suggestion-area-draw-active {
   width: 44px;
   height: 44px;
   border-radius: 50%;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   display: flex;
   align-items: center;
   justify-content: center;
@@ -1240,7 +975,7 @@ body.suggestion-area-draw-active {
   padding: 8px 16px;
   border: none;
   border-radius: 8px;
-  background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
   color: #fff;
   font-size: 13px;
   font-weight: 500;
@@ -1314,7 +1049,7 @@ body.suggestion-area-draw-active {
   white-space: nowrap;
 
   &--primary {
-    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    background: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
     color: #fff;
     border: none;
 

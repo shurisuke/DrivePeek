@@ -12,7 +12,7 @@
   background: #fff;
   border-radius: 14px;
   padding: 0;
-  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 16px rgba(0, 0, 0, 0.06);
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1), 0 8px 24px rgba(0, 0, 0, 0.08);
 
   > form {
     display: contents;
@@ -32,14 +32,16 @@
   &::before {
     content: "";
     position: absolute;
-    top: 3px;
-    left: 3px;
-    width: calc(50% - 3px);
-    height: calc(100% - 6px);
+    top: 0;
+    left: 0;
+    width: 50%;
+    height: calc(100% - 3px);
     background: #fff;
-    border-radius: 7px 7px 0 0;
-    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
-    transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1);
+    border-radius: 9px 7px 0 0;
+    box-shadow:
+      -3px 0 8px rgba(0, 0, 0, 0.08),
+      3px 0 8px rgba(0, 0, 0, 0.08);
+    transition: transform 0.08s cubic-bezier(0.4, 0, 0.2, 1), border-radius 0.08s cubic-bezier(0.4, 0, 0.2, 1);
     z-index: 0;
     transform: translateX(0);
   }
@@ -48,12 +50,14 @@
   &:has(.search-tabs__tab:first-child input:checked)::before,
   &:has(.search-tabs__tab:first-child.is-active)::before {
     transform: translateX(0);
+    border-radius: 9px 7px 0 0;
   }
 
   /* 2番目のタブがアクティブな場合（右） */
   &:has(.search-tabs__tab:last-child input:checked)::before,
   &:has(.search-tabs__tab:last-child.is-active)::before {
     transform: translateX(100%);
+    border-radius: 7px 9px 0 0;
   }
 }
 
@@ -238,11 +242,12 @@
   display: inline-block;
   padding: 6px 14px;
   font-size: 11px;
-  font-weight: 500;
-  color: #888;
+  font-weight: 400;
+  color: #555;
   background: #fff;
   border-radius: 20px;
   letter-spacing: 0.5px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08), 0 4px 12px rgba(0, 0, 0, 0.06);
 }
 
 /* ==========================================

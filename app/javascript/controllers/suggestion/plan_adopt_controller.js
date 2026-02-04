@@ -68,7 +68,7 @@ export default class extends Controller {
 
   // スポット情報を取得（DBから検証済みデータを読み取り）
   #resolveSpots() {
-    const spotElements = this.spotsTarget.querySelectorAll(".suggestion-spot-card")
+    const spotElements = this.spotsTarget.querySelectorAll(".spot-card--suggestion")
     return Array.from(spotElements).map((el, index) => ({
       index,
       spot_id: parseInt(el.dataset["suggestion-SpotActionSpotIdValue"], 10),
@@ -122,11 +122,11 @@ export default class extends Controller {
 
   // スポットカードの「プランに追加」ボタンを「追加済み」に更新
   #markSpotCardsAsAdded() {
-    const buttons = this.spotsTarget.querySelectorAll(".suggestion-spot-card__link--primary")
+    const buttons = this.spotsTarget.querySelectorAll(".spot-card__btn--primary")
     buttons.forEach((btn) => {
       btn.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
-      btn.classList.remove("suggestion-spot-card__link--primary")
-      btn.classList.add("suggestion-spot-card__btn--added")
+      btn.classList.remove("spot-card__btn--primary")
+      btn.classList.add("spot-card__btn--added")
       btn.disabled = true
       btn.removeAttribute("data-action")
     })
@@ -147,8 +147,8 @@ export default class extends Controller {
         zIndex: 1000 - (index + 1),  // 番号が小さいほど前面に表示
         icon: {
           url: createSuggestionPinSvg(index + 1),
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 18),
+          scaledSize: new google.maps.Size(32, 32),
+          anchor: new google.maps.Point(16, 16),
         },
       })
 

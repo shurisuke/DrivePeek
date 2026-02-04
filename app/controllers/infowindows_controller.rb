@@ -179,7 +179,8 @@ class InfowindowsController < ApplicationController
       plan_spot_id: @plan_spot_id,
       edit_mode: @edit_mode,
       zoom_scale: zoom_scale,
-      zoom_index: zoom_index
+      zoom_index: zoom_index,
+      default_tab: params[:default_tab]
     }
   end
 
@@ -190,7 +191,8 @@ class InfowindowsController < ApplicationController
       show_button: @show_button,
       map_mode: @map_mode,
       plan_id: params[:plan_id],
-      plan_spot_id: @plan_spot_id
+      plan_spot_id: @plan_spot_id,
+      default_tab: params[:default_tab]
     }
   end
 end

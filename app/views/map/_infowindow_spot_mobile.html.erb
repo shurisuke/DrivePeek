@@ -27,8 +27,9 @@
      data-infowindow--ui-photo-count-value="<%= urls.size %>">
 
   <%# タブ切り替え用ラジオボタン %>
-  <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" checked>
-  <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio">
+  <% _default_tab = local_assigns[:default_tab] %>
+  <input type="radio" name="iw-tab" id="iw-tab-info" class="dp-infowindow__tab-radio" <%= "checked" unless _default_tab == "comment" %>>
+  <input type="radio" name="iw-tab" id="iw-tab-comment" class="dp-infowindow__tab-radio" <%= "checked" if _default_tab == "comment" %>>
 
   <%# ヘッダー: 3カラム [stats] [title] [close] %>
   <div class="dp-infowindow__header-row">

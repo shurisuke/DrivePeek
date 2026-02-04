@@ -1,40 +1,51 @@
 /* ==========================================
-   Spot Card - iOS/macOS Style
+   Spot Card - Modern Blue Gradient Theme
    スポット検索結果用カード
 ========================================== */
 
 @use "../ui/genre_chip" as *;
+
+// カラー定数
+$card-gradient-start: #4A90D9;
+$card-gradient-end: #2C5FA0;
+$card-accent: #3073F0;
+$card-text: #1a1a1a;
+$card-text-secondary: #666;
+$card-text-muted: #999;
 
 .spot-card {
   display: flex;
   flex-direction: column;
   height: 100%;
   min-width: 0;
-  background-color: #fff;
+  max-width: 400px;
+  background: #fff;
   border: none;
   border-radius: 16px;
-  padding: 18px;
+  padding: 16px 16px 12px;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.06);
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
 .spot-card__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0;
+}
+
+.spot-card__title-block {
+  flex: 1;
   min-width: 0;
 }
 
 .spot-card__name {
-  flex: 1;
-  min-width: 0;
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: #1a1a1a;
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: $card-text;
   letter-spacing: -0.2px;
 
   /* 長い名前は1行省略 */
@@ -43,40 +54,80 @@
   text-overflow: ellipsis;
 }
 
-.spot-card__actions {
+.spot-card__genres {
+  @include genre-list;
+  margin-top: 4px;
+  margin-bottom: 7px;
+  flex-grow: 1;
+  align-content: flex-start;
+}
+
+/* アクションボタン（お気に入り・コメント） */
+.spot-card__actions-zone {
   display: flex;
-  align-items: center;
-  gap: 4px;
+  align-items: flex-start;
+  gap: 0;
   flex-shrink: 0;
   margin-right: -6px;
 }
 
+.spot-card__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+}
+
+.spot-card__comment-btn {
+  width: 32px;
+  height: 32px;
+  margin: 0;
+  padding: 0;
+  background: transparent;
+  border: none;
+  border-radius: 50%;
+  cursor: pointer;
+
+  i {
+    font-size: 16px;
+    color: $card-text-muted;
+  }
+
+  &:hover i {
+    color: $card-accent;
+  }
+}
+
+.spot-card__stat-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: $card-text-muted;
+  line-height: 1;
+}
+
+.spot-card__genre {
+  @include genre-chip-md;
+  background: linear-gradient(135deg, rgba($card-gradient-start, 0.1), rgba($card-gradient-end, 0.1));
+  color: $card-accent;
+  border: none;
+}
 
 .spot-card__location {
   display: flex;
   align-items: center;
   gap: 6px;
   font-size: 13px;
-  color: #666;
-  margin-top: 6px;
-  margin-bottom: 10px;
+  color: $card-text-secondary;
+  padding-bottom: 6px;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.06);
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 
   i {
-    color: #999;
+    color: $card-accent;
     font-size: 14px;
   }
-}
-
-.spot-card__genres {
-  @include genre-list;
-  margin-top: 4px;
-  margin-bottom: 4px;
-  flex-grow: 1;
-  align-content: flex-start;
-}
-
-.spot-card__genre {
-  @include genre-chip-md;
 }
 
 .spot-card__footer {
@@ -84,58 +135,53 @@
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
 }
 
 .spot-card__plans-count {
   display: flex;
   align-items: center;
-  gap: 4px;
+  gap: 6px;
   font-size: 13px;
-  color: #888;
+  color: $card-text-secondary;
 
   i {
-    font-size: 14px;
-    color: #999;
+    font-size: 16px;
+    color: $card-accent;
+    transform: translateY(-2px);
   }
 
   span {
     font-weight: 600;
-    color: #555;
+    color: $card-text;
   }
 }
 
 .spot-card__map-link {
   display: flex;
   align-items: center;
-  gap: 4px;
-  padding: 6px 8px;
-  font-size: 13px;
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
   font-weight: 500;
-  color: var(--personal, #506d53);
+  color: $card-accent;
   text-decoration: none;
-  border: none;
-  background: none;
-  border-radius: 6px;
+  background: transparent;
+  border: 1.5px solid rgba($card-accent, 0.3);
+  border-radius: 8px;
   cursor: pointer;
   transition: all 0.15s ease;
 
   &:hover {
-    color: #3d5340;
-    background: rgba(80, 109, 83, 0.08);
+    background: rgba($card-accent, 0.06);
+    border-color: $card-accent;
   }
 
-  &--preview {
-    color: #3073F0;
-
-    &:hover {
-      color: #2561d9;
-      background: rgba(48, 115, 240, 0.08);
-    }
+  &:active {
+    transform: scale(0.97);
   }
 
   i {
-    font-size: 12px;
+    font-size: 13px;
   }
 }

@@ -7,12 +7,22 @@
   _plan = local_assigns.fetch(:plan, nil)
   _favorite_plan = local_assigns.fetch(:favorite_plan, nil)
   _preview_mode = local_assigns.fetch(:preview_mode, false)
+  favorite_count = _plan&.favorite_plans&.count || 0
 %>
 
 <div class="plan-card<%= ' plan-card--preview' if _preview_mode %>">
-  <%# ヘッダー：タイトル + アクション + お気に入り %>
+  <%# ヘッダー：タイトル・ジャンル + アクション + お気に入り %>
   <div class="plan-card__header">
-    <h3 class="plan-card__title"><%= plan_title %></h3>
+    <div class="plan-card__title-block">
+      <h3 class="plan-card__title"><%= plan_title %></h3>
+      <% if local_assigns[:genres].present? %>
+        <div class="plan-card__genres">
+          <% genres.each do |genre_name| %>
+            <span class="plan-card__genre"><%= genre_name %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
     <div class="plan-card__header-actions">
       <% if _can_edit || _can_delete %>
         <div class="plan-card__actions">
@@ -46,20 +56,14 @@
         </button>
       <% end %>
       <% if _plan %>
-        <%= render "favorite_plans/button", plan: _plan, favorite_plan: _favorite_plan %>
+        <div class="plan-card__stats">
+          <div class="plan-card__stat">
+            <%= render "favorite_plans/button", plan: _plan, favorite_plan: _favorite_plan %>
+            <span id="<%= dom_id(_plan, :favorite_count) %>" class="plan-card__stat-count"><%= favorite_count %></span>
+          </div>
+        </div>
       <% end %>
     </div>
-  </div>
-
-  <%# ジャンルタグ %>
-  <div class="plan-card__meta">
-    <% if local_assigns[:genres].present? %>
-      <div class="plan-card__genres">
-        <% genres.each do |genre_name| %>
-          <span class="plan-card__genre"><%= genre_name %></span>
-        <% end %>
-      </div>
-    <% end %>
   </div>
 
   <%# スポット一覧 %>

@@ -46,10 +46,11 @@ const renderSpotMarker = (spotData) => {
     map,
     position,
     title: spotData.name || "スポット",
+    zIndex: 1000,  // ポリラインより上に表示
     icon: {
       url: createSpotPinSvg(),
-      scaledSize: new google.maps.Size(36, 36),
-      anchor: new google.maps.Point(18, 18),
+      scaledSize: new google.maps.Size(32, 32),
+      anchor: new google.maps.Point(16, 16),
     },
   })
 

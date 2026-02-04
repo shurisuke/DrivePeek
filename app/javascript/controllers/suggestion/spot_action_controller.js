@@ -54,7 +54,7 @@ export default class extends Controller {
         document.dispatchEvent(new CustomEvent("navibar:updated"))
 
         button.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
-        button.classList.add("suggestion-spot-card__btn--added")
+        button.classList.add("spot-card__btn--added")
 
         // 追加成功後に地図で表示
         this.#showSpotOnMap()
@@ -99,8 +99,8 @@ export default class extends Controller {
       zIndex: 1000 - this.numberValue,
       icon: {
         url: createSuggestionPinSvg(this.numberValue),
-        scaledSize: new google.maps.Size(36, 36),
-        anchor: new google.maps.Point(18, 18),
+        scaledSize: new google.maps.Size(32, 32),
+        anchor: new google.maps.Point(16, 16),
       },
     })
 

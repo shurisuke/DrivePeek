@@ -29,7 +29,7 @@ let spotPinMarker = null;           // 単一スポットピン（単体）
 // --- 提案マーカー ---
 let suggestionMarkers = [];         // 提案スポット（配列）
 let suggestionOverlays = [];        // 提案パルスオーバーレイ（配列）
-let suggestionAreaCircle = null;    // 提案エリア円（単体）
+let suggestionAreaCircles = [];     // 提案エリア円（グロー効果用に複数）
 
 // --- map instance ---
 export const getMapInstance = () => map;
@@ -169,18 +169,14 @@ export const clearSuggestionMarkers = () => {
   suggestionMarkers = [];
   suggestionOverlays.forEach((o) => o.setMap(null));
   suggestionOverlays = [];
-  if (suggestionAreaCircle) {
-    suggestionAreaCircle.setMap(null);
-    suggestionAreaCircle = null;
-  }
+  suggestionAreaCircles.forEach(c => c.setMap(null));
+  suggestionAreaCircles = [];
 };
 
-// エリア円を設定
-export const setSuggestionAreaCircle = (circle) => {
-  if (suggestionAreaCircle) {
-    suggestionAreaCircle.setMap(null);
-  }
-  suggestionAreaCircle = circle;
+// エリア円を設定（配列対応）
+export const setSuggestionAreaCircle = (circles) => {
+  suggestionAreaCircles.forEach(c => c.setMap(null));
+  suggestionAreaCircles = Array.isArray(circles) ? circles : [circles];
 };
 
 export const setSuggestionMarkers = (markers) => {

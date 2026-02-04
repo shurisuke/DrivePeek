@@ -101,8 +101,8 @@ export default class extends Controller {
         zIndex: 1000 - info.number,  // 番号が小さいほど前面に表示
         icon: {
           url: createSuggestionPinSvg(info.number),
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 18),
+          scaledSize: new google.maps.Size(32, 32),
+          anchor: new google.maps.Point(16, 16),
         },
       })
 

@@ -1,7 +1,7 @@
-<%# 提案スポットカード %>
+<%# 提案スポットカード（spot-cardを再利用） %>
 <% compact = local_assigns.fetch(:compact, false) %>
 <% existing_place_ids = local_assigns.fetch(:existing_place_ids, []) %>
-<div class="suggestion-spot-card<%= ' suggestion-spot-card--compact' if compact %>"
+<div class="spot-card spot-card--suggestion<%= ' spot-card--compact' if compact %>"
      data-controller="suggestion--spot-action"
      data-suggestion--spot-action-name-value="<%= spot[:name] %>"
      data-suggestion--spot-action-plan-id-value="<%= plan&.id %>"
@@ -10,38 +10,52 @@
      data-suggestion--spot-action-lat-value="<%= spot[:lat] %>"
      data-suggestion--spot-action-lng-value="<%= spot[:lng] %>"
      data-suggestion--spot-action-place-id-value="<%= spot[:place_id] %>">
-  <div class="suggestion-spot-card__header">
-    <span class="suggestion-spot-card__number"><%= number %></span>
-    <span class="suggestion-spot-card__name"><%= spot[:name] %></span>
+
+  <%# ヘッダー: 番号 + 名前 %>
+  <div class="spot-card__header">
+    <div class="spot-card__title-block">
+      <h3 class="spot-card__name">
+        <span class="spot-card__number"><%= number %></span>
+        <%= spot[:name] %>
+      </h3>
+    </div>
   </div>
 
-  <div class="suggestion-spot-card__address"><i class="bi bi-geo-alt"></i><%= spot[:address] %></div>
+  <%# 住所 %>
+  <div class="spot-card__location">
+    <i class="bi bi-geo-alt" aria-hidden="true"></i>
+    <%= spot[:address] %>
+  </div>
 
+  <%# AI説明文（提案専用） %>
   <% if spot[:description].present? %>
-    <div class="suggestion-spot-card__description"><%= spot[:description] %></div>
+    <div class="spot-card__description"><%= spot[:description] %></div>
   <% end %>
 
+  <%# フッター %>
   <% unless compact %>
     <% already_added = existing_place_ids.include?(spot[:place_id]) %>
-    <div class="suggestion-spot-card__actions">
+    <div class="spot-card__footer">
       <button type="button"
-              class="suggestion-spot-card__link"
+              class="spot-card__map-link"
               data-action="click->suggestion--spot-action#showOnMap">
+        <i class="bi bi-geo-alt-fill"></i>
         地図で見る
       </button>
       <% if already_added %>
         <button type="button"
-                class="suggestion-spot-card__link suggestion-spot-card__btn--added"
+                class="spot-card__btn spot-card__btn--added"
                 disabled>
-          <i class="bi bi-check-lg"></i> 追加済み
+          <i class="bi bi-check-lg"></i>
+          追加済み
         </button>
       <% else %>
         <button type="button"
-                class="suggestion-spot-card__link suggestion-spot-card__link--primary"
+                class="spot-card__btn spot-card__btn--primary"
                 data-action="click->suggestion--spot-action#addToPlan"
                 data-suggestion--spot-action-target="addBtn">
           プランに追加
-          <i class="bi bi-chevron-right"></i>
+          <i class="bi bi-plus-lg"></i>
         </button>
       <% end %>
     </div>

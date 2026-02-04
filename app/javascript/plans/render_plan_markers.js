@@ -33,7 +33,7 @@ const createNumberedPinSvg = (number, color = COLORS.MY_PLAN) => {
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       ${fillDef}
       <circle cx="18" cy="18" r="17" fill="${fillAttr}"/>
-      <text x="18" y="24" text-anchor="middle" font-size="16" font-weight="700" fill="white">${number}</text>
+      <text x="18" y="25" text-anchor="middle" font-size="19" font-weight="600" font-family="system-ui, -apple-system, sans-serif" fill="white">${number}</text>
     </svg>
   `.trim()
 
@@ -81,6 +81,7 @@ const buildHouseMarker = ({ map, position, title }) => {
     map,
     position,
     title,
+    zIndex: 1001,  // ポリラインより上に表示
     icon: {
       url: "/icons/house-pin.png",
       scaledSize: new google.maps.Size(50, 55),
@@ -234,10 +235,11 @@ export const renderPlanMarkers = (planData, { pinColor = COLORS.MY_PLAN } = {}) 
         map,
         position: { lat: spotInfo.lat, lng: spotInfo.lng },
         title: spotInfo.name || `スポット ${spotNumber}`,
+        zIndex: 1000 - spotNumber,  // 番号が小さいほど前面、ポリラインより上
         icon: {
           url: createNumberedPinSvg(spotNumber, pinColor),
-          scaledSize: new google.maps.Size(36, 36),
-          anchor: new google.maps.Point(18, 18),
+          scaledSize: new google.maps.Size(32, 32),
+          anchor: new google.maps.Point(16, 16),
         },
       })
 

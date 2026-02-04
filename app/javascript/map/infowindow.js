@@ -165,7 +165,7 @@ const isMobile = () => window.innerWidth < 768
 // モバイル用InfoWindow表示
 const showMobileInfoWindow = async ({
   spotId, placeId, name, address, genres, lat, lng,
-  showButton, planId, planSpotId, editMode
+  showButton, planId, planSpotId, editMode, defaultTab
 }) => {
   // クエリパラメータを構築
   const params = new URLSearchParams({
@@ -180,6 +180,7 @@ const showMobileInfoWindow = async ({
   if (lng) params.append("lng", lng)
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
+  if (defaultTab) params.append("default_tab", defaultTab)
   const mobileMapMode = getMapMode()
   if (mobileMapMode) params.append("map_mode", mobileMapMode)
 
@@ -217,7 +218,8 @@ export const showInfoWindowWithFrame = ({
   showButton = true,
   planId = null,
   planSpotId = null, // 削除モード時のPlanSpot ID
-  editMode = null   // "start_point" | "goal_point" | null
+  editMode = null,  // "start_point" | "goal_point" | null
+  defaultTab = null // "comment" | null
 }) => {
   const map = getMapInstance()
   if (!map) return
@@ -226,7 +228,7 @@ export const showInfoWindowWithFrame = ({
   if (isMobile()) {
     showMobileInfoWindow({
       spotId, placeId, name, address, genres, lat, lng,
-      showButton, planId, planSpotId, editMode
+      showButton, planId, planSpotId, editMode, defaultTab
     })
     return
   }
@@ -251,6 +253,7 @@ export const showInfoWindowWithFrame = ({
   if (lng) params.append("lng", lng)
   if (planId) params.append("plan_id", planId)
   if (editMode) params.append("edit_mode", editMode)
+  if (defaultTab) params.append("default_tab", defaultTab)
   const desktopMapMode = getMapMode()
   if (desktopMapMode) params.append("map_mode", desktopMapMode)
 

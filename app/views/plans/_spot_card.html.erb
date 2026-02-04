@@ -5,24 +5,50 @@
   _preview_mode = local_assigns.fetch(:preview_mode, false)
   spot_location = [spot.prefecture, spot.city].compact.reject(&:blank?).join("/")
   plans_count = spot.plans.count
+  comment_count = spot.spot_comments.count
+  favorite_count = spot.favorite_spots.count
+  favorite_spot ||= current_user&.favorite_spots&.find_by(spot: spot)
 %>
 
 <div class="spot-card">
+  <%# ヘッダー: 名前・ジャンル + アクションボタン %>
   <div class="spot-card__header">
-    <h3 class="spot-card__name"><%= spot.name %></h3>
-    <div class="spot-card__actions">
-      <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
+    <div class="spot-card__title-block">
+      <h3 class="spot-card__name"><%= spot.name %></h3>
+      <% if spot.genres.any? %>
+        <div class="spot-card__genres">
+          <% spot.genres.each do |genre| %>
+            <span class="spot-card__genre"><%= genre.name %></span>
+          <% end %>
+        </div>
+      <% end %>
+    </div>
+    <div class="spot-card__actions-zone">
+      <%# お気に入りボタン（数値付き） %>
+      <div class="spot-card__stat">
+        <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
+        <span id="<%= dom_id(spot, :favorite_count) %>" class="spot-card__stat-count"><%= favorite_count %></span>
+      </div>
+      <%# コメントボタン（数値付き） %>
+      <div class="spot-card__stat">
+        <button type="button"
+                class="spot-card__comment-btn"
+                data-controller="spot-card--comment"
+                data-spot-card--comment-spot-id-value="<%= spot.id %>"
+                data-spot-card--comment-place-id-value="<%= spot.place_id %>"
+                data-spot-card--comment-lat-value="<%= spot.lat %>"
+                data-spot-card--comment-lng-value="<%= spot.lng %>"
+                data-spot-card--comment-name-value="<%= spot.name %>"
+                data-spot-card--comment-address-value="<%= spot.address %>"
+                data-action="click->spot-card--comment#openComment">
+          <i class="bi bi-chat"></i>
+        </button>
+        <span id="<%= dom_id(spot, :comment_count) %>" class="spot-card__stat-count"><%= comment_count %></span>
+      </div>
     </div>
   </div>
 
-  <% if spot.genres.any? %>
-    <div class="spot-card__genres">
-      <% spot.genres.each do |genre| %>
-        <span class="spot-card__genre"><%= genre.name %></span>
-      <% end %>
-    </div>
-  <% end %>
-
+  <%# 場所 %>
   <% if spot_location.present? %>
     <div class="spot-card__location">
       <i class="bi bi-geo-alt" aria-hidden="true"></i>
@@ -30,15 +56,16 @@
     </div>
   <% end %>
 
+  <%# フッター %>
   <div class="spot-card__footer">
     <div class="spot-card__plans-count">
-      <i class="bi bi-people" aria-hidden="true"></i>
-      <span><%= plans_count %></span>人がドライブしました
+      <i class="fa-solid fa-car" aria-hidden="true"></i>
+      <span><%= plans_count %></span>人がドライブ
     </div>
 
     <% if _preview_mode && spot.lat.present? && spot.lng.present? && spot.place_id.present? %>
       <button type="button"
-              class="spot-card__map-link spot-card__map-link--preview"
+              class="spot-card__map-link"
               aria-label="地図でこのスポットを見る"
               data-controller="community--single-spot-preview"
               data-community--single-spot-preview-lat-value="<%= spot.lat %>"
@@ -53,8 +80,8 @@
       </button>
     <% else %>
       <%= link_to spot_path(spot), class: "spot-card__map-link", aria: { label: "スポット詳細を見る" } do %>
+        <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
         地図で見る
-        <i class="bi bi-chevron-right" aria-hidden="true"></i>
       <% end %>
     <% end %>
   </div>

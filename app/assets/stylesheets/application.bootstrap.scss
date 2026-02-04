@@ -42,8 +42,11 @@
 
 @use "mobile/infowindow" as mobile-infowindow;
 
+@use "spots/spot_card";
+
 @use "suggestions/suggestion_chat";
 @use "suggestions/condition_modal";
+@use "suggestions/suggestion_spot_card";
 
 @use "plans/plan_form";
 @use "plans/plan_detail";
@@ -65,4 +68,3 @@
 @use "plans/cards/community_preview";
 
 @use "spots/spot_detail";
-@use "spots/spot_card";

@@ -7,12 +7,13 @@
 /* 閉じるボタンのスタイルは _map_search_box.scss の .map-floating-btn に統合 */
 
 /* プレビューモード時のカードリスト */
-.list-page__cards:has(.plan-card--preview) {
+.list-page__cards:has(.plan-card--preview),
+.list-page__cards:has(.spot-card) {
   grid-template-columns: repeat(auto-fit, minmax(min(300px, 100%), 1fr));
   justify-items: center;
 }
 
-.plan-card--preview {
-  max-width: 500px;
+.plan-card--preview,
+.spot-card {
   width: 100%;
 }
