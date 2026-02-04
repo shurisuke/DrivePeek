@@ -1,5 +1,5 @@
 <% content_for :head do %>
-  <meta property="og:title" content="<%= @plan.title.presence || 'ドライブプラン' %> | DrivePeek">
+  <meta property="og:title" content="<%= plan_title(@plan) %> | DrivePeek">
   <meta property="og:description" content="DrivePeekで作成したドライブプラン">
   <meta property="og:type" content="article">
   <meta property="og:url" content="<%= plan_url(@plan) %>">

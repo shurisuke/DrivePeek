@@ -80,8 +80,13 @@ class Plan < ApplicationRecord
       .distinct
   }
 
+  # 空プランを除外（タイトル空 + スポット0件）
+  scope :exclude_stale_empty, -> {
+    where.not(title: [ "", nil ])
+      .or(where(id: joins(:plan_spots).select(:id)))
+  }
+
   # Callbacks
-  before_update :set_default_title_if_blank
 
   def marker_data_for_edit
     {
@@ -266,16 +271,5 @@ class Plan < ApplicationRecord
   def lat_lng_hash(record)
     return nil unless record&.lat.present? && record&.lng.present?
     { lat: record.lat, lng: record.lng }
-  end
-
-  def set_default_title_if_blank
-    if title.blank?
-      cities = spots.map(&:city).uniq.compact
-     self.title = if cities.any?
-                     "#{cities.join('・')}の旅"
-     else
-                     "ドライブプラン"
-     end
-    end
   end
 end

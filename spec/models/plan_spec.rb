@@ -227,26 +227,4 @@ RSpec.describe Plan, type: :model do
       expect(data[:polylines].size).to eq(plan.plan_spots.count - 1)
     end
   end
-
-  describe "callbacks" do
-    describe "#set_default_title_if_blank" do
-      let(:plan) { create(:plan, user: user, title: "") }
-      let(:spot) { create(:spot, city: "日光市") }
-
-      before { create(:plan_spot, plan: plan, spot: spot) }
-
-      it "更新時にタイトルが空なら自動設定する" do
-        plan.update!(title: "")
-
-        expect(plan.title).to eq("日光市の旅")
-      end
-
-      it "スポットがない場合はデフォルトタイトル" do
-        plan.plan_spots.destroy_all
-        plan.update!(title: "")
-
-        expect(plan.title).to eq("ドライブプラン")
-      end
-    end
-  end
 end
