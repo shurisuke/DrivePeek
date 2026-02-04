@@ -1,9 +1,17 @@
 /* ==========================================
-   Plan Card - iOS/macOS Style
+   Plan Card - Modern Blue Gradient Theme
    プランカードコンポーネント
 ========================================== */
 
 @use "../../ui/genre_chip" as *;
+
+// カラー定数（spot_cardと統一）
+$card-gradient-start: #4A90D9;
+$card-gradient-end: #2C5FA0;
+$card-accent: #3073F0;
+$card-text: #1a1a1a;
+$card-text-secondary: #666;
+$card-text-muted: #999;
 
 .plan-card {
   display: flex;
@@ -11,57 +19,49 @@
   height: 100%;
   min-width: 0;
   max-width: 400px;
-  background-color: #fff;
+  background: #fff;
   border: none;
   border-radius: 16px;
-  padding: 18px;
+  padding: 16px 16px 12px;
   box-shadow:
-    0 1px 3px rgba(0, 0, 0, 0.04),
-    0 4px 12px rgba(0, 0, 0, 0.06);
-  transition: box-shadow 0.2s ease;
-
-  &:hover {
-    box-shadow:
-      0 2px 6px rgba(0, 0, 0, 0.06),
-      0 8px 24px rgba(0, 0, 0, 0.1);
-  }
+    0 4px 12px rgba(0, 0, 0, 0.1),
+    0 8px 24px rgba(0, 0, 0, 0.1);
 }
 
-/* ヘッダー（タイトル + アクション + お気に入り） */
+/* ヘッダー（タイトル・ジャンル + アクション + お気に入り） */
 .plan-card__header {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   justify-content: space-between;
-  gap: 12px;
+  gap: 0;
 }
 
 .plan-card__header-actions {
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0;
   flex-shrink: 0;
   margin-right: -6px;
 }
 
-.plan-card__title {
+.plan-card__title-block {
   flex: 1;
   min-width: 0;
-  margin: 0 0 8px 0;
-  font-size: 18px;
-  font-weight: 500;
-  line-height: 1.45;
-  color: #1a1a1a;
+  margin-bottom: 8px;
+}
+
+.plan-card__title {
+  margin: 0;
+  font-size: 17px;
+  font-weight: 600;
+  line-height: 1.4;
+  color: $card-text;
   letter-spacing: -0.2px;
 
   /* 長いタイトルは1行省略 */
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
-}
-
-/* メタ情報（ジャンル） */
-.plan-card__meta {
-  margin-bottom: 10px;
 }
 
 .plan-card__actions {
@@ -93,12 +93,12 @@
   font-size: 17px;
   line-height: 1;
   text-decoration: none;
-  color: #999;
+  color: $card-text-muted;
   transition: all 0.15s ease;
 
   &:hover {
     background: rgba(0, 0, 0, 0.05);
-    color: #666;
+    color: $card-text-secondary;
   }
 
   &--delete:hover {
@@ -110,10 +110,47 @@
     color: #8e8e8e;
 
     &:hover {
-      color: var(--personal, #506d53);
-      background: rgba(80, 109, 83, 0.08);
+      color: $card-accent;
+      background: rgba($card-accent, 0.08);
     }
   }
+}
+
+/* ステータス（お気に入り） */
+.plan-card__stats {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  flex-shrink: 0;
+}
+
+.plan-card__stat {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 2px;
+  transition: all 0.15s ease;
+
+  &:hover {
+    .plan-card__stat-count {
+      color: $card-accent;
+    }
+  }
+
+  /* お気に入りボタンのラッパー */
+  .favorite-button,
+  .fav-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+}
+
+.plan-card__stat-count {
+  font-size: 13px;
+  font-weight: 600;
+  color: $card-text-muted;
+  line-height: 1;
 }
 
 /* ジャンル一覧 */
@@ -126,12 +163,15 @@
 
 .plan-card__genre {
   @include genre-chip-md;
+  background: linear-gradient(135deg, rgba($card-gradient-start, 0.1), rgba($card-gradient-end, 0.1));
+  color: $card-accent;
+  border: none;
 }
 
 /* スポット一覧 */
 .plan-card__spots {
   flex-grow: 1;
-  margin-bottom: 14px;
+  margin-bottom: 6px;
 }
 
 .plan-card__spot {
@@ -145,21 +185,11 @@
     transition: background-color 0.15s ease;
 
     &:hover {
-      background: rgba(80, 109, 83, 0.08);
+      background: rgba($card-accent, 0.08);
     }
 
     &:active {
-      background: rgba(80, 109, 83, 0.12);
-    }
-
-    .plan-card--preview & {
-      &:hover {
-        background: rgba(48, 115, 240, 0.08);
-      }
-
-      &:active {
-        background: rgba(48, 115, 240, 0.12);
-      }
+      background: rgba($card-accent, 0.12);
     }
   }
 }
@@ -168,7 +198,7 @@
   flex-shrink: 0;
   width: 24px;
   height: 24px;
-  background: linear-gradient(135deg, #4A90D9, #2C5FA0);
+  background: linear-gradient(135deg, $card-gradient-start, $card-gradient-end);
   color: #fff;
   border-radius: 50%;
   font-size: 12px;
@@ -176,17 +206,13 @@
   display: flex;
   align-items: center;
   justify-content: center;
-
-  .plan-card--preview & {
-    background: #3073F0;
-  }
 }
 
 .plan-card__spot-name {
   flex: 1;
   font-size: 14px;
   font-weight: 500;
-  color: #333;
+  color: $card-text;
   line-height: 1.4;
 
   /* 長い名前は1行省略 */
@@ -196,17 +222,13 @@
 }
 
 .plan-card__spot--clickable:hover .plan-card__spot-name {
-  color: var(--personal, #506d53);
-
-  .plan-card--preview & {
-    color: #3073F0;
-  }
+  color: $card-accent;
 }
 
 .plan-card__spot-location {
   flex-shrink: 0;
   font-size: 11px;
-  color: #999;
+  color: $card-text-muted;
   white-space: nowrap;
 }
 
@@ -223,8 +245,8 @@
   align-items: center;
   justify-content: space-between;
   margin-top: auto;
-  padding-top: 14px;
-  border-top: 1px solid #f0f0f0;
+  padding-top: 12px;
+  border-top: 1px solid rgba(0, 0, 0, 0.06);
   gap: 8px;
 }
 
@@ -236,33 +258,25 @@
 
 .plan-card__total-item {
   display: flex;
-  align-items: baseline;
+  align-items: center;
   flex-wrap: nowrap;
   gap: 4px;
-  font-size: 14px;
+  font-size: 13px;
   font-weight: 500;
-  color: #555;
+  color: $card-text-secondary;
   white-space: nowrap;
 
   i {
-    font-size: 15px;
-    color: var(--personal, #506d53);
-    align-self: center;
-  }
-
-  .plan-summary__unit {
-    font-size: 11px;
-    font-weight: 400;
-    color: #666;
-    margin-left: -2px;
-    margin-right: -1px;
+    font-size: 16px;
+    color: $card-accent;
+    transform: translateY(-2px);
   }
 }
 
 .plan-card__unit {
   font-size: 12px;
   font-weight: 400;
-  color: #666;
+  color: $card-text-secondary;
   margin-left: 2px;
 }
 
@@ -271,34 +285,29 @@
   align-items: center;
   flex-shrink: 0;
   white-space: nowrap;
-  gap: 4px;
-  padding: 6px 0 6px 8px;
-  font-size: 13px;
-  font-weight: 500;
-  color: var(--personal, #506d53);
+  gap: 5px;
+  padding: 6px 12px;
+  font-size: 12px;
+  font-weight: 600;
+  color: $card-accent;
   text-decoration: none;
-  border-radius: 6px;
-  transition: all 0.15s ease;
-  border: none;
-  background: none;
+  background: transparent;
+  border: 1.5px solid rgba($card-accent, 0.3);
+  border-radius: 8px;
   cursor: pointer;
+  transition: all 0.15s ease;
 
   &:hover {
-    color: #3d5340;
-    background: rgba(80, 109, 83, 0.08);
+    background: rgba($card-accent, 0.06);
+    border-color: $card-accent;
   }
 
-  &--preview {
-    color: #3073F0;
-
-    &:hover {
-      color: #2561d9;
-      background: rgba(48, 115, 240, 0.08);
-    }
+  &:active {
+    transform: scale(0.97);
   }
 
   i {
-    font-size: 14px;
+    font-size: 13px;
   }
 }
 
