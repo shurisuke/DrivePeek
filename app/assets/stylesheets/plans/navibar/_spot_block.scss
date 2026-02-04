@@ -17,11 +17,12 @@
   width: 100%;
   margin-top: 0;
 
-  --spot-action-bg: rgba(80, 109, 83, 0.06);
-  --spot-action-bg-hover: rgba(80, 109, 83, 0.10);
-  --spot-action-border: rgba(80, 109, 83, 0.22);
-  --spot-action-border-hover: rgba(80, 109, 83, 0.32);
-  --spot-action-text: rgba(80, 109, 83, 0.90);
+  /* ✅ トグル内アクションボタン: 白背景 + グレー枠 */
+  --spot-action-bg: #ffffff;
+  --spot-action-bg-hover: #f5f5f5;
+  --spot-action-border: rgba(0, 0, 0, 0.15);
+  --spot-action-border-hover: rgba(0, 0, 0, 0.25);
+  --spot-action-text: #555;
 
   cursor: grab;
   transition: box-shadow 0.12s, background-color 0.12s;
@@ -98,7 +99,7 @@
   font-size: 1rem;
   font-weight: 700;
 
-  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.12);
+  box-shadow: 0 1px 6px rgba(0, 0, 0, 0.3);
 
   /* ✅ クリック可能なスタイル */
   cursor: pointer;
@@ -313,7 +314,7 @@
   justify-content: center;
   align-items: center;
   width: 100%;
-  margin-top: 16px;
+  margin-top: 0;
   margin-bottom: 0;
 }
 
@@ -356,7 +357,7 @@
   background: var(--spot-action-bg) !important;
   color: var(--spot-action-text) !important;
 
-  box-shadow: none !important;
+  box-shadow: 0 1px 5px rgba(0, 0, 0, 0.2) !important;
   transition: transform 0.12s, box-shadow 0.12s, background-color 0.12s, border-color 0.12s;
 
   line-height: 1 !important;
@@ -374,7 +375,7 @@
 .spot-block .spot-detail-actions__buttons .fav-button:active {
   transform: translateY(0);
   box-shadow: none !important;
-  background: rgba(80, 109, 83, 0.14) !important;
+  background: #e8e8e8 !important;
 }
 
 .spot-block .spot-detail-actions__buttons .btn:focus-visible,
@@ -397,6 +398,13 @@
   top: 2px;
 }
 
+/* コメントアイコンは他より上に配置 */
+.spot-block .spot-detail-actions__buttons .btn i.bi-chat::before {
+  position: relative;
+  top: 1px;
+}
+
+
 /* 余計な文字幅を消す（アイコンだけ表示） */
 .spot-block .spot-detail-actions__buttons .btn:not(.fav-button) {
   font-size: 0;
@@ -407,8 +415,13 @@
   font-size: 0.95rem !important;
 }
 
+.spot-block .spot-detail-actions__buttons .fav-button.fav-button--active {
+  background: rgba(232, 160, 168, 0.08) !important;
+  border-color: #e8a0a8 !important;
+}
+
 .spot-block .spot-detail-actions__buttons .fav-button.fav-button--active i {
-  color: var(--personal) !important;
+  color: #e8a0a8 !important;
 }
 
 /* 削除アイコンを少し太く & 小さく */
@@ -444,6 +457,23 @@
   @include next-move-grid;
   margin-top: 10px;
   margin-bottom: 0;
+}
+
+/* ✅ 距離計算中のスケルトン表示 */
+@keyframes skeleton-pulse {
+  0% { opacity: 1; }
+  50% { opacity: 0.4; }
+  100% { opacity: 1; }
+}
+
+.spot-block .spot-next-move.is-calculating {
+  .km,
+  .time {
+    color: transparent;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 4px;
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
+  }
 }
 
 /* ------------------------------------------
@@ -625,17 +655,25 @@
     height: 26px;
     padding: 0;
     border: none;
-    background: rgba(0, 0, 0, 0.04);
-    color: #999;
+    background: #fff;
+    color: #555;
     font-size: 12px;
     cursor: pointer;
     border-radius: 50%;
-    transition: background 0.15s, color 0.15s;
+    box-shadow: 0 1px 6px rgba(0, 0, 0, 0.35);
+    transition: background 0.15s, color 0.15s, box-shadow 0.15s;
     -webkit-tap-highlight-color: transparent;
 
     &:active {
-      background: rgba(0, 0, 0, 0.12);
-      color: #555;
+      background: #f0f0f0;
+      color: #333;
+      box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
+    }
+
+    /* first/lastで非表示（レイアウト維持） */
+    &.is-hidden {
+      visibility: hidden;
+      pointer-events: none;
     }
   }
 

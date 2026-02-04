@@ -14,10 +14,13 @@
 
     <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
     <div id="plan-spots-sortable" data-sortable="plan-spots">
-      <% @plan.plan_spots.includes(spot: :genres).order(:position).each do |plan_spot| %>
+      <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
+      <% plan_spots.each_with_index do |plan_spot, index| %>
         <%= render "plans/spot_block_edit",
-                   plan_spot:  plan_spot,
-                   favorite_spot: favorite_spots_map[plan_spot.spot_id] %>
+                   plan_spot: plan_spot,
+                   favorite_spot: favorite_spots_map[plan_spot.spot_id],
+                   is_first: index == 0,
+                   is_last: index == plan_spots.size - 1 %>
       <% end %>
     </div>
 

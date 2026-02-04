@@ -1,7 +1,9 @@
 <%# app/views/plans/_spot_block.html.erb %>
-<%# locals: plan_spot:, favorite_spot: nil %>
+<%# locals: plan_spot:, favorite_spot: nil, is_first: false, is_last: false %>
 
 <% spot = plan_spot.spot %>
+<% is_first = local_assigns.fetch(:is_first, false) %>
+<% is_last = local_assigns.fetch(:is_last, false) %>
 
 <div
   id="<%= dom_id(plan_spot) %>"
@@ -36,16 +38,18 @@
                  role="button"
                  tabindex="0"
                  aria-label="スポットを地図で表示"><%= plan_spot.position %></div>
-            <%# モバイル用並び替えボタン %>
+            <%# モバイル用並び替えボタン（first/lastで表示制御） %>
             <div class="spot-reorder-buttons">
-              <button type="button" class="spot-reorder-btn"
+              <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_first %>"
                       data-reorder-direction="up"
-                      aria-label="上に移動">
+                      aria-label="上に移動"
+                      <%= 'disabled' if is_first %>>
                 <i class="bi bi-chevron-up"></i>
               </button>
-              <button type="button" class="spot-reorder-btn"
+              <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_last %>"
                       data-reorder-direction="down"
-                      aria-label="下に移動">
+                      aria-label="下に移動"
+                      <%= 'disabled' if is_last %>>
                 <i class="bi bi-chevron-down"></i>
               </button>
             </div>
@@ -154,18 +158,33 @@
           <div class="spot-detail-actions__buttons">
               <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
 
+              <%# コメントボタン（InfoWindowのコメントタブを開く） %>
               <button type="button"
-                      class="btn btn-outline-secondary btn-sm w-100"
-                      data-action="click->plan--spot-memo#open"
-                      aria-label="メモを編集">
-                <i class="bi bi-journal-text me-1" aria-hidden="true"></i>
+                      class="btn btn-outline-secondary btn-sm"
+                      data-controller="spot-card--comment"
+                      data-spot-card--comment-spot-id-value="<%= spot.id %>"
+                      data-spot-card--comment-place-id-value="<%= spot.place_id %>"
+                      data-spot-card--comment-lat-value="<%= spot.lat %>"
+                      data-spot-card--comment-lng-value="<%= spot.lng %>"
+                      data-spot-card--comment-name-value="<%= spot.name %>"
+                      data-spot-card--comment-address-value="<%= spot.address %>"
+                      data-action="click->spot-card--comment#openComment"
+                      aria-label="コメントを見る">
+                <i class="bi bi-chat" aria-hidden="true"></i>
               </button>
 
               <button type="button"
-                      class="btn btn-outline-secondary btn-sm w-100"
+                      class="btn btn-outline-secondary btn-sm"
+                      data-action="click->plan--spot-memo#open"
+                      aria-label="メモを編集">
+                <i class="bi bi-journal-text" aria-hidden="true"></i>
+              </button>
+
+              <button type="button"
+                      class="btn btn-outline-secondary btn-sm"
                       aria-label="スポットを削除"
                       data-action="click->plan--spot-delete#delete pointerdown->plan--spot-memo#stopPropagation">
-                <i class="bi bi-x-lg me-1 spot-delete-icon" aria-hidden="true"></i>
+                <i class="bi bi-x-lg spot-delete-icon" aria-hidden="true"></i>
               </button>
           </div>
 
