@@ -165,10 +165,12 @@
   outline: none;
   resize: none;
   overflow-y: auto;
-  transition: border-color 0.15s ease;
+  transition: border-color 0.15s ease, box-shadow 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 
   &:focus {
     border-color: #007AFF;
+    box-shadow: 0 2px 12px rgba(0, 122, 255, 0.15);
   }
 
   &::placeholder {
@@ -194,13 +196,16 @@
   align-items: center;
   justify-content: center;
   transition: all 0.15s ease;
+  box-shadow: 0 2px 8px rgba(0, 122, 255, 0.4);
 
   &:hover {
     filter: brightness(0.9);
+    box-shadow: 0 4px 12px rgba(0, 122, 255, 0.5);
   }
 
   &:active {
     transform: scale(0.95);
+    box-shadow: 0 1px 4px rgba(0, 122, 255, 0.3);
   }
 
   i {
@@ -228,6 +233,7 @@
   border-top: 1px solid #f2f2f7;
   background: #fff;
   border-radius: 0 0 10px 10px;
+  box-shadow: 0 -4px 12px rgba(0, 0, 0, 0.08);
 }
 
 .dp-infowindow__comment-form {
