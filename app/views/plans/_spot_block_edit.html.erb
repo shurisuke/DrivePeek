@@ -120,9 +120,11 @@
               type="checkbox"
               role="switch"
               aria-label="有料道路の使用を切り替える"
-              data-toll-used-switch="1"
-              data-plan-id="<%= plan_spot.plan_id %>"
-              data-plan-spot-id="<%= plan_spot.id %>"
+              data-controller="plan-tab--toll-used"
+              data-plan-tab--toll-used-type-value="plan_spot"
+              data-plan-tab--toll-used-plan-id-value="<%= plan_spot.plan_id %>"
+              data-plan-tab--toll-used-plan-spot-id-value="<%= plan_spot.id %>"
+              data-action="change->plan-tab--toll-used#toggle"
               <%= 'checked="checked"' if plan_spot.toll_used? %>
             >
           </div>
