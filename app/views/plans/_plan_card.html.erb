@@ -76,14 +76,14 @@
         %>
         <% if _preview_mode && spot[:lat].present? && spot[:lng].present? %>
           <div class="plan-card__spot plan-card__spot--clickable"
-               data-controller="community--single-spot-preview"
-               data-community--single-spot-preview-lat-value="<%= spot[:lat] %>"
-               data-community--single-spot-preview-lng-value="<%= spot[:lng] %>"
-               data-community--single-spot-preview-name-value="<%= spot[:name] %>"
-               data-community--single-spot-preview-address-value="<%= spot[:address] %>"
-               data-community--single-spot-preview-place-id-value="<%= spot[:place_id] %>"
-               data-community--single-spot-preview-genres-value="<%= (spot[:genres] || []).to_json %>"
-               data-action="click->community--single-spot-preview#show"
+               data-controller="community-tab--single-spot-preview"
+               data-community-tab--single-spot-preview-lat-value="<%= spot[:lat] %>"
+               data-community-tab--single-spot-preview-lng-value="<%= spot[:lng] %>"
+               data-community-tab--single-spot-preview-name-value="<%= spot[:name] %>"
+               data-community-tab--single-spot-preview-address-value="<%= spot[:address] %>"
+               data-community-tab--single-spot-preview-place-id-value="<%= spot[:place_id] %>"
+               data-community-tab--single-spot-preview-genres-value="<%= (spot[:genres] || []).to_json %>"
+               data-action="click->community-tab--single-spot-preview#show"
                role="button"
                tabindex="0">
             <span class="plan-card__spot-number"><%= index + 1 %></span>
@@ -134,9 +134,9 @@
         <button type="button"
                 class="plan-card__detail-link plan-card__detail-link--preview"
                 aria-label="ルートをプレビュー"
-                data-controller="community--plan-preview"
-                data-community--plan-preview-plan-id-value="<%= _plan.id %>"
-                data-action="click->community--plan-preview#show">
+                data-controller="community-tab--plan-preview"
+                data-community-tab--plan-preview-plan-id-value="<%= _plan.id %>"
+                data-action="click->community-tab--plan-preview#show">
           <i class="bi bi-share" aria-hidden="true"></i>
           ルート
         </button>

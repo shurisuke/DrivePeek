@@ -14,18 +14,13 @@ import { setupSearchBox } from "map/search_box"
 import { setupPoiClick } from "map/poi_click"
 import { addCurrentLocationMarker } from "map/current_location"
 import { getPlanDataFromPage } from "plans/plan_data"
-import { fitMapToSpots } from "plans/route_renderer_show"
+import { fitMapToSpots } from "map/visual_center"
 import { waitForGoogleMaps, isEditPage } from "map/utils"
 import { bindPlanMapSync } from "plans/plan_map_sync"
 import { bindSpotReorderHandler } from "plans/spot_reorder_handler"
-import { bindTollUsedHandler } from "plans/toll_used_handler"
-import { bindStayDurationHandler } from "plans/stay_duration_handler"
-
 // 編集画面専用ハンドラーをバインド（各ハンドラーは内部で二重バインド防止済み）
 bindPlanMapSync()
 bindSpotReorderHandler()
-bindTollUsedHandler()
-bindStayDurationHandler()
 
 document.addEventListener("turbo:load", async () => {
   const mapElement = document.getElementById("map")

@@ -1,7 +1,7 @@
-// app/javascript/plans/route_renderer_show.js
+// app/javascript/plans/polyline_show.js
 //
 // ================================================================
-// Route Renderer（詳細画面用）
+// Polyline Renderer（詳細画面用）
 // 用途: スポット間の経路線を描画（詳細画面専用）
 //       ※ 出発地点→最初のスポット、最後のスポット→帰宅地点の経路は
 //          プライバシー保護のため描画しない
@@ -9,7 +9,6 @@
 
 import { getMapInstance } from "map/state"
 import { COMMUNITY_ROUTE_STYLE } from "map/constants"
-import { fitBoundsWithPadding } from "map/visual_center"
 
 /**
  * スポット間の経路線を描画する（詳細画面用）
@@ -20,7 +19,7 @@ export const renderRoutePolylinesForShow = () => {
 
   // geometry library がロードされているか確認
   if (!google?.maps?.geometry?.encoding?.decodePath) {
-    console.warn("[route_renderer] geometry library not loaded")
+    console.warn("[polyline_show] geometry library not loaded")
     return
   }
 
@@ -48,54 +47,7 @@ export const renderRoutePolylinesForShow = () => {
         ...COMMUNITY_ROUTE_STYLE,
       })
     } catch (e) {
-      console.warn("[route_renderer] Failed to decode polyline:", e)
+      console.warn("[polyline_show] Failed to decode polyline:", e)
     }
   })
-}
-
-/**
- * プランの全ポイント（出発・スポット・帰宅）が表示されるように地図をフィットする
- */
-export const fitMapToSpots = (planData) => {
-  const map = getMapInstance()
-  if (!map) return
-
-  const bounds = new google.maps.LatLngBounds()
-  let pointCount = 0
-
-  // 出発地点
-  const startPoint = planData?.start_point
-  if (startPoint?.lat && startPoint?.lng) {
-    bounds.extend({ lat: Number(startPoint.lat), lng: Number(startPoint.lng) })
-    pointCount++
-  }
-
-  // スポット
-  const spots = planData?.spots || []
-  spots.forEach((spot) => {
-    if (spot?.lat && spot?.lng) {
-      bounds.extend({ lat: Number(spot.lat), lng: Number(spot.lng) })
-      pointCount++
-    }
-  })
-
-  // 帰宅地点
-  const endPoint = planData?.end_point
-  if (endPoint?.lat && endPoint?.lng) {
-    bounds.extend({ lat: Number(endPoint.lat), lng: Number(endPoint.lng) })
-    pointCount++
-  }
-
-  if (pointCount === 0) return
-
-  fitBoundsWithPadding(bounds)
-
-  // ポイントが1つの場合、fitBoundsだとズームしすぎるので調整
-  if (pointCount === 1) {
-    google.maps.event.addListenerOnce(map, "bounds_changed", () => {
-      if (map.getZoom() > 15) {
-        map.setZoom(15)
-      }
-    })
-  }
 }

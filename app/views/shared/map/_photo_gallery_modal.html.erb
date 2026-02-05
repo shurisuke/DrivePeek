@@ -1,45 +1,45 @@
 <%# 写真ギャラリーモーダル（Stimulusで制御） %>
 <div class="photo-gallery-modal"
      hidden
-     data-controller="ui--photo-gallery"
-     data-action="photo-gallery:open@document->ui--photo-gallery#open keydown.esc->ui--photo-gallery#close keydown.left->ui--photo-gallery#prev keydown.right->ui--photo-gallery#next">
-  <div class="photo-gallery-modal__overlay" data-action="click->ui--photo-gallery#close"></div>
+     data-controller="infowindow--photo-gallery"
+     data-action="photo-gallery:open@document->infowindow--photo-gallery#open keydown.esc->infowindow--photo-gallery#close keydown.left->infowindow--photo-gallery#prev keydown.right->infowindow--photo-gallery#next">
+  <div class="photo-gallery-modal__overlay" data-action="click->infowindow--photo-gallery#close"></div>
   <div class="photo-gallery-modal__content">
     <%# タイトル（上部中央） %>
     <div class="photo-gallery-modal__header">
-      <span class="photo-gallery-modal__title" data-ui--photo-gallery-target="title"></span>
+      <span class="photo-gallery-modal__title" data-infowindow--photo-gallery-target="title"></span>
     </div>
 
     <%# 左矢印ボタン %>
     <button type="button"
             class="photo-gallery-modal__arrow photo-gallery-modal__arrow--prev"
-            data-ui--photo-gallery-target="prevBtn"
-            data-action="click->ui--photo-gallery#prev"
+            data-infowindow--photo-gallery-target="prevBtn"
+            data-action="click->infowindow--photo-gallery#prev"
             hidden>
       <i class="bi bi-chevron-left"></i>
     </button>
 
     <div class="photo-gallery-modal__slider"
-         data-ui--photo-gallery-target="slider"
-         data-action="scroll->ui--photo-gallery#onScroll">
+         data-infowindow--photo-gallery-target="slider"
+         data-action="scroll->infowindow--photo-gallery#onScroll">
       <%# スライドはJSで動的に生成 %>
     </div>
 
     <%# 右矢印ボタン %>
     <button type="button"
             class="photo-gallery-modal__arrow photo-gallery-modal__arrow--next"
-            data-ui--photo-gallery-target="nextBtn"
-            data-action="click->ui--photo-gallery#next"
+            data-infowindow--photo-gallery-target="nextBtn"
+            data-action="click->infowindow--photo-gallery#next"
             hidden>
       <i class="bi bi-chevron-right"></i>
     </button>
 
     <%# フッター（インジケーター + 閉じるボタン） %>
     <div class="photo-gallery-modal__footer">
-      <div class="photo-gallery-modal__indicator" data-ui--photo-gallery-target="indicator">
+      <div class="photo-gallery-modal__indicator" data-infowindow--photo-gallery-target="indicator">
         <%# ドットはJSで動的に生成 %>
       </div>
-      <button type="button" class="photo-gallery-modal__close-btn" data-action="click->ui--photo-gallery#close">
+      <button type="button" class="photo-gallery-modal__close-btn" data-action="click->infowindow--photo-gallery#close">
         閉じる
       </button>
     </div>

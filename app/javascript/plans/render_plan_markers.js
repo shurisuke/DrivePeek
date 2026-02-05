@@ -85,6 +85,7 @@ const buildHouseMarker = ({ map, position, title }) => {
     icon: {
       url: "/icons/house-pin.png",
       scaledSize: new google.maps.Size(50, 55),
+      anchor: new google.maps.Point(25, 40),
     },
   })
 }

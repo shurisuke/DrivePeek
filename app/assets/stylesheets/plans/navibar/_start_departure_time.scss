@@ -83,66 +83,103 @@
 
 .time-wheel-picker__content {
   position: fixed;
-  bottom: 0;
-  left: 0;
-  right: 0;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
 
+  width: 280px;
   background: #f2f2f7;
-  border-radius: 12px 12px 0 0;
+  border-radius: 12px;
+  box-shadow: 0 8px 30px rgba(0, 0, 0, 0.2);
 
-  /* Safe area for iPhone */
-  padding-bottom: env(safe-area-inset-bottom, 0);
+  @media (max-width: 767px) {
+    top: auto;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    transform: none;
+
+    width: 100%;
+    border-radius: 16px 16px 0 0;
+  }
 }
 
 .time-wheel-picker__header {
-  position: relative;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
+  position: relative;
 
   padding: 12px 16px;
   background: #f9f9fb;
   border-bottom: 1px solid #d1d1d6;
   border-radius: 12px 12px 0 0;
+
+  @media (max-width: 767px) {
+    border-radius: 16px 16px 0 0;
+  }
 }
 
 .time-wheel-picker__title {
-  position: absolute;
-  left: 50%;
-  transform: translateX(-50%);
-
   font-size: 15px;
   font-weight: 600;
   color: #1c1c1e;
 }
 
-.time-wheel-picker__cancel,
-.time-wheel-picker__confirm {
-  padding: 6px 12px;
-  border: none;
-  border-radius: 6px;
-  background: transparent;
+/* ヘッダー内の完了ボタン（モバイルのみ表示） */
+.time-wheel-picker__header-confirm {
+  display: none;
 
-  font-size: 15px;
-  font-weight: 500;
-  cursor: pointer;
-  z-index: 1;
-}
+  @media (max-width: 767px) {
+    display: block;
+    position: absolute;
+    right: 16px;
+    top: 50%;
+    transform: translateY(-50%);
 
-.time-wheel-picker__cancel {
-  color: #8e8e93;
+    padding: 4px 8px;
+    border: none;
+    background: transparent;
 
-  &:hover {
-    background: rgba(0, 0, 0, 0.05);
+    font-size: 15px;
+    font-weight: 600;
+    color: #007aff;
+    cursor: pointer;
+
+    &:active {
+      opacity: 0.5;
+    }
   }
 }
 
+/* フッターの完了ボタン（PCのみ表示） */
 .time-wheel-picker__confirm {
-  color: #007aff;
+  width: 100%;
+  padding: 14px 0;
+  border: none;
+  border-radius: 0 0 12px 12px;
+  background: transparent;
+
+  font-size: 16px;
   font-weight: 600;
+  color: #007aff;
+  cursor: pointer;
 
   &:hover {
-    background: rgba(0, 122, 255, 0.1);
+    background: rgba(0, 122, 255, 0.08);
+  }
+
+  &:active {
+    background: rgba(0, 122, 255, 0.15);
+  }
+}
+
+.time-wheel-picker__footer {
+  display: flex;
+  border-top: 1px solid #d1d1d6;
+
+  @media (max-width: 767px) {
+    display: none;
   }
 }
 

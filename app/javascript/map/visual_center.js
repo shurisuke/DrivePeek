@@ -91,17 +91,18 @@ export const panToVisualCenter = (position) => {
     offsetY = getDesktopOffsetY()
   }
 
-  // オフセットがない場合は単純にpanTo
-  if (offsetY === 0) {
+  // オフセットがない or projection未取得の場合は単純にpanTo
+  const projection = map.getProjection()
+  if (offsetY === 0 || !projection) {
     map.panTo(latLng)
     return
   }
 
-  // panTo完了後にpanByを実行（アニメーション競合を防ぐ）
-  map.panTo(latLng)
-  google.maps.event.addListenerOnce(map, "idle", () => {
-    map.panBy(0, offsetY)
-  })
+  // ピクセルオフセットをワールド座標に変換し、1回のpanToで完結
+  const scale = Math.pow(2, map.getZoom())
+  const worldPoint = projection.fromLatLngToPoint(latLng)
+  worldPoint.y += offsetY / scale
+  map.panTo(projection.fromPointToLatLng(worldPoint))
 }
 
 /**
@@ -155,4 +156,52 @@ export const fitBoundsWithPadding = (bounds) => {
   if (!map) return
 
   map.fitBounds(bounds, getMapPadding())
+}
+
+/**
+ * プランの全ポイント（出発・スポット・帰宅）が表示されるように地図をフィットする
+ * @param {Object} planData - プランデータ（start_point, spots, end_point を含む）
+ */
+export const fitMapToSpots = (planData) => {
+  const map = getMapInstance()
+  if (!map) return
+
+  const bounds = new google.maps.LatLngBounds()
+  let pointCount = 0
+
+  // 出発地点
+  const startPoint = planData?.start_point
+  if (startPoint?.lat && startPoint?.lng) {
+    bounds.extend({ lat: Number(startPoint.lat), lng: Number(startPoint.lng) })
+    pointCount++
+  }
+
+  // スポット
+  const spots = planData?.spots || []
+  spots.forEach((spot) => {
+    if (spot?.lat && spot?.lng) {
+      bounds.extend({ lat: Number(spot.lat), lng: Number(spot.lng) })
+      pointCount++
+    }
+  })
+
+  // 帰宅地点
+  const endPoint = planData?.end_point
+  if (endPoint?.lat && endPoint?.lng) {
+    bounds.extend({ lat: Number(endPoint.lat), lng: Number(endPoint.lng) })
+    pointCount++
+  }
+
+  if (pointCount === 0) return
+
+  fitBoundsWithPadding(bounds)
+
+  // ポイントが1つの場合、fitBoundsだとズームしすぎるので調整
+  if (pointCount === 1) {
+    google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+      if (map.getZoom() > 15) {
+        map.setZoom(15)
+      }
+    })
+  }
 }

@@ -129,7 +129,7 @@ export default class extends Controller {
         map,
         position: location,
         title: "出発地点",
-        icon: { url: iconUrl, scaledSize: iconSize },
+        icon: { url: iconUrl, scaledSize: iconSize, anchor: new google.maps.Point(25, 40) },
       })
       setStartPointMarker(marker)
     } else if (this.editModeValue === "goal_point") {
@@ -138,7 +138,7 @@ export default class extends Controller {
         map,
         position: location,
         title: "帰宅地点",
-        icon: { url: iconUrl, scaledSize: iconSize },
+        icon: { url: iconUrl, scaledSize: iconSize, anchor: new google.maps.Point(25, 40) },
       })
       setEndPointMarker(marker)
     }

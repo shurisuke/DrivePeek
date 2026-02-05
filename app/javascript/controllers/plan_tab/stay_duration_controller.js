@@ -1,9 +1,8 @@
-// app/javascript/controllers/start_departure_time_controller.js
+// app/javascript/controllers/spot_stay_duration_controller.js
 // ================================================================
-// Start Departure Time Controller（単一責務）
-// 用途: 出発ブロックの「出発時間」をiOS風ホイールピッカーで入力し、
+// Spot Stay Duration Controller（単一責務）
+// 用途: スポットブロックの「滞在時間」をiOS風ホイールピッカーで入力し、
 //       変更時にAPIで保存する
-// 前提: Turbo Frame で navibar が差し替わっても、connect で確実に再初期化される
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
@@ -11,7 +10,7 @@ import { patchTurboStream } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["trigger"]
-  static values = { planId: Number, current: String }
+  static values = { planId: Number, planSpotId: Number, current: Number }
 
   connect() {
     // 初期化処理があれば追加
@@ -32,41 +31,34 @@ export default class extends Controller {
   // ============================
   _showWheelPicker() {
     // 既存のピッカーがあれば削除
-    const existingPicker = document.getElementById("time-wheel-picker")
+    const existingPicker = document.getElementById("stay-duration-wheel-picker")
     if (existingPicker) existingPicker.remove()
 
-    // 現在の値をパース
-    let currentHour = 9
-    let currentMinute = 0
-    if (this.currentValue) {
-      const parts = this.currentValue.split(":")
-      if (parts.length === 2) {
-        currentHour = parseInt(parts[0], 10) || 0
-        currentMinute = parseInt(parts[1], 10) || 0
-      }
-    }
+    // 現在の値をパース（分）
+    const currentMinutes = this.currentValue || 0
+    const currentHour = Math.floor(currentMinutes / 60)
+    const currentMinute = currentMinutes % 60
 
     // ピッカーモーダルを作成
     const dialog = document.createElement("dialog")
-    dialog.id = "time-wheel-picker"
+    dialog.id = "stay-duration-wheel-picker"
     dialog.className = "time-wheel-picker"
 
-    // 時間オプション (0-23)
-    const hourOptions = Array.from({ length: 24 }, (_, i) =>
-      `<div class="time-wheel-picker__item" data-value="${i}">${String(i).padStart(2, "0")}</div>`
+    // 時間オプション (0-12時間)
+    const hourOptions = Array.from({ length: 13 }, (_, i) =>
+      `<div class="time-wheel-picker__item" data-value="${i}">${i}</div>`
     ).join("")
 
-    // 分オプション (0, 5, 10, ... 55)
-    const minuteOptions = Array.from({ length: 12 }, (_, i) =>
-      `<div class="time-wheel-picker__item" data-value="${i * 5}">${String(i * 5).padStart(2, "0")}</div>`
+    // 分オプション (0, 10, 20, 30, 40, 50)
+    const minuteOptions = [0, 10, 20, 30, 40, 50].map((m) =>
+      `<div class="time-wheel-picker__item" data-value="${m}">${String(m).padStart(2, "0")}</div>`
     ).join("")
 
     dialog.innerHTML = `
       <div class="time-wheel-picker__content">
         <div class="time-wheel-picker__header">
-          <button type="button" class="time-wheel-picker__cancel">キャンセル</button>
-          <span class="time-wheel-picker__title">出発時間</span>
-          <button type="button" class="time-wheel-picker__confirm">完了</button>
+          <span class="time-wheel-picker__title">滞在時間</span>
+          <button type="button" class="time-wheel-picker__header-confirm">完了</button>
         </div>
         <div class="time-wheel-picker__body">
           <div class="time-wheel-picker__wheels">
@@ -75,14 +67,18 @@ export default class extends Controller {
                 ${hourOptions}
               </div>
             </div>
-            <div class="time-wheel-picker__colon">:</div>
+            <div class="time-wheel-picker__unit">時間</div>
             <div class="time-wheel-picker__wheel" data-type="minute">
               <div class="time-wheel-picker__scroll">
                 ${minuteOptions}
               </div>
             </div>
+            <div class="time-wheel-picker__unit">分</div>
           </div>
           <div class="time-wheel-picker__highlight"></div>
+        </div>
+        <div class="time-wheel-picker__footer">
+          <button type="button" class="time-wheel-picker__confirm">完了</button>
         </div>
       </div>
     `
@@ -97,7 +93,8 @@ export default class extends Controller {
     // 初期位置にスクロール
     setTimeout(() => {
       hourWheel.scrollTop = currentHour * itemHeight
-      minuteWheel.scrollTop = Math.round(currentMinute / 5) * itemHeight
+      // 10分刻み: 0→0, 10→1, 20→2, 30→3, 40→4, 50→5
+      minuteWheel.scrollTop = Math.round(currentMinute / 10) * itemHeight
     }, 10)
 
     // 選択値を取得するヘルパー
@@ -111,23 +108,19 @@ export default class extends Controller {
       return 0
     }
 
-    // キャンセルボタン
-    dialog.querySelector(".time-wheel-picker__cancel").addEventListener("click", () => {
-      dialog.close()
-      dialog.remove()
-    })
-
-    // 完了ボタン
-    dialog.querySelector(".time-wheel-picker__confirm").addEventListener("click", () => {
+    // 完了ボタン（フッター + ヘッダー両方）
+    const onConfirm = () => {
       const hour = getSelectedValue(hourWheel)
       const minute = getSelectedValue(minuteWheel)
-      const timeStr = `${String(hour).padStart(2, "0")}:${String(minute).padStart(2, "0")}`
+      const totalMinutes = hour * 60 + minute
 
       dialog.close()
       dialog.remove()
 
-      this._save(timeStr)
-    })
+      this._save(totalMinutes)
+    }
+    dialog.querySelector(".time-wheel-picker__confirm").addEventListener("click", onConfirm)
+    dialog.querySelector(".time-wheel-picker__header-confirm").addEventListener("click", onConfirm)
 
     // 背景クリックで閉じる
     dialog.addEventListener("click", (e) => {
@@ -143,17 +136,17 @@ export default class extends Controller {
   // ============================
   // private
   // ============================
-  async _save(timeStr) {
-    if (!timeStr || !this.planIdValue) return
+  async _save(minutes) {
+    if (!this.planSpotIdValue) return
 
     try {
-      await patchTurboStream(`/api/start_point`, {
-        plan_id: this.planIdValue,
-        start_point: { departure_time: timeStr },
-      })
+      await patchTurboStream(
+        `/api/plan_spots/${this.planSpotIdValue}`,
+        { stay_duration: minutes }
+      )
       // 保存成功 → turbo_stream で navibar が自動更新される
     } catch (e) {
-      console.error("[start-departure-time] save error", e)
+      console.error("[spot-stay-duration] save error", e)
     }
   }
 }
