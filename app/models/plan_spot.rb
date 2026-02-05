@@ -6,8 +6,11 @@ class PlanSpot < ApplicationRecord
   # 順序管理（plan スコープで position を自動採番）
   acts_as_list scope: :plan
 
-  # 滞在時間の上限（20時間 = 1200分）※ホテル滞在を考慮
+  # 滞在時間のデフォルト（60分）と上限（20時間 = 1200分）※ホテル滞在を考慮
+  DEFAULT_STAY_DURATION = 60
   MAX_STAY_DURATION = 1200
+
+  attribute :stay_duration, :integer, default: DEFAULT_STAY_DURATION
 
   # Validations
   validates :spot_id, uniqueness: { scope: :plan_id, message: "は既にこのプランに追加されています" }
