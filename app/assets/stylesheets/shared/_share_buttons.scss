@@ -162,6 +162,56 @@
   background: #06c755;
 }
 
+.share-modal__link-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin: 0 16px 16px;
+  padding: 0;
+  background: transparent;
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.share-modal__link-input {
+  flex: 1;
+  min-width: 0;
+  padding: 10px 12px;
+  border: none;
+  background: transparent;
+  font-size: 13px;
+  color: #555;
+  outline: none;
+  text-overflow: ellipsis;
+}
+
+.share-modal__link-copy {
+  flex-shrink: 0;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 40px;
+  height: 40px;
+  border: none;
+  background: transparent;
+  color: #007aff;
+  font-size: 18px;
+  cursor: pointer;
+  transition: color 0.15s ease;
+
+  &:hover {
+    color: #005ec4;
+  }
+
+  &:active {
+    transform: scale(0.9);
+  }
+
+  &--done {
+    color: #34c759;
+  }
+}
+
 .share-modal__cancel {
   width: 100%;
   padding: 14px 16px;
