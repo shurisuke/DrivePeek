@@ -74,19 +74,19 @@ export default class extends Controller {
     clearSuggestionMarkers()
 
     // 子要素からスポットカードを取得
-    const cards = this.element.querySelectorAll("[data-controller*='suggestion--suggested-spot']")
+    const cards = this.element.querySelectorAll("[data-controller*='suggestion-tab--suggested-spot']")
     if (cards.length === 0) return
 
     // 各カードからDB検証済み情報を抽出
     const spotInfos = Array.from(cards).map((card, index) => ({
       card,
-      name: card.dataset["suggestion-SuggestedSpotNameValue"],
-      planId: card.dataset["suggestion-SuggestedSpotPlanIdValue"],
+      name: card.dataset["suggestionTab-SuggestedSpotNameValue"],
+      planId: card.dataset["suggestionTab-SuggestedSpotPlanIdValue"],
       number: index + 1,
-      spotId: parseInt(card.dataset["suggestion-SuggestedSpotSpotIdValue"], 10),
-      lat: parseFloat(card.dataset["suggestion-SuggestedSpotLatValue"]),
-      lng: parseFloat(card.dataset["suggestion-SuggestedSpotLngValue"]),
-      placeId: card.dataset["suggestion-SuggestedSpotPlaceIdValue"],
+      spotId: parseInt(card.dataset["suggestionTab-SuggestedSpotSpotIdValue"], 10),
+      lat: parseFloat(card.dataset["suggestionTab-SuggestedSpotLatValue"]),
+      lng: parseFloat(card.dataset["suggestionTab-SuggestedSpotLngValue"]),
+      placeId: card.dataset["suggestionTab-SuggestedSpotPlaceIdValue"],
     }))
 
     // 有効なスポット（座標あり）のみ処理
@@ -126,7 +126,7 @@ export default class extends Controller {
       // 子コントローラーにマーカーとspotDataを保存
       const controller = this.application.getControllerForElementAndIdentifier(
         info.card,
-        "suggestion--suggested-spot"
+        "suggestion-tab--suggested-spot"
       )
       if (controller) {
         controller._marker = marker

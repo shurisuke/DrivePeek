@@ -7,7 +7,7 @@
               url: spot_comments_path(spot),
               id: "comment-form",
               class: "dp-infowindow__comment-form",
-              data: { controller: "community--comment-form", community__comment_form_max_length_value: 100 } do |f| %>
+              data: { controller: "infowindow--comment-form", infowindow__comment_form_max_length_value: 100 } do |f| %>
   <div class="dp-infowindow__comment-input">
     <%= f.text_area :body,
                     placeholder: "コメントを入力...",
@@ -16,9 +16,9 @@
                     autocomplete: "off",
                     required: true,
                     rows: 1,
-                    data: { community__comment_form_target: "input", action: "input->community--comment-form#updateCounter input->community--comment-form#autoResize" } %>
+                    data: { infowindow__comment_form_target: "input", action: "input->infowindow--comment-form#updateCounter input->infowindow--comment-form#autoResize" } %>
     <div class="dp-infowindow__comment-actions">
-      <span class="dp-infowindow__comment-counter" data-community--comment-form-target="counter">0/100</span>
+      <span class="dp-infowindow__comment-counter" data-infowindow--comment-form-target="counter">0/100</span>
       <%= f.button type: :submit, class: "dp-infowindow__comment-submit" do %>
         <i class="bi bi-send-fill"></i>
       <% end %>

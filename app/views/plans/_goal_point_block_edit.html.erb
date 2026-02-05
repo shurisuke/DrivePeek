@@ -4,14 +4,14 @@
 
 <div
   class="goal-point-section"
-  data-controller="plan--goal-point-visibility"
-  data-plan--goal-point-visibility-plan-id-value="<%= plan.id %>"
+  data-controller="plan-tab--goal-point-visibility"
+  data-plan-tab--goal-point-visibility-plan-id-value="<%= plan.id %>"
 >
-  <div data-plan--goal-point-visibility-target="blockArea" hidden>
+  <div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
     <div class="goal-point-block"
          data-lat="<%= goal_point&.lat %>"
          data-lng="<%= goal_point&.lng %>"
-         data-ui--time-rail-sync-target="content"
+         data-plan-tab--time-rail-sync-target="content"
          data-time-rail-sync="goal-point">
       <%# ✅ 上部：帰宅コンテンツ %>
       <div class="goal-content">
@@ -55,8 +55,8 @@
         role="switch"
         id="goal-point-visibility-switch-<%= plan.id %>"
         aria-label="帰宅地点の表示を切り替える"
-        data-plan--goal-point-visibility-target="switch"
-        data-action="change->plan--goal-point-visibility#toggle"
+        data-plan-tab--goal-point-visibility-target="switch"
+        data-action="change->plan-tab--goal-point-visibility#toggle"
       >
     </div>
   <% end %>

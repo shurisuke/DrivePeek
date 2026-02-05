@@ -1,7 +1,7 @@
 <% content_for :body_class, "no-footer" %>
 
 <div class="main-content plan-form"
-     data-controller="ui--navibar-resize suggestion--area-draw"
+     data-controller="ui--navibar-resize suggestion-tab--area-draw"
      data-ui--navibar-resize-min-value="300"
      data-ui--navibar-resize-max-percent-value="80"
      data-ui--navibar-resize-default-value="350">
@@ -26,8 +26,8 @@
             class="map-floating-btn map-floating-btn--blue"
             hidden
             title="プレビューを閉じる"
-            data-controller="community--plan-preview"
-            data-action="click->community--plan-preview#hide">
+            data-controller="community-tab--plan-preview"
+            data-action="click->community-tab--plan-preview#hide">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-share" aria-hidden="true"></i>
     </button>
@@ -50,8 +50,8 @@
             class="map-floating-btn map-floating-btn--purple"
             hidden
             title="提案ピンをクリア"
-            data-controller="suggestion--pin-clear"
-            data-action="click->suggestion--pin-clear#clear">
+            data-controller="suggestion-tab--pin-clear"
+            data-action="click->suggestion-tab--pin-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-stars" aria-hidden="true"></i>
     </button>
@@ -77,9 +77,9 @@
 
   <!-- アクションボタン（保存・共有） -->
   <div class="plan-actions"
-       data-controller="plan--save-modal"
-       data-plan--save-modal-plan-id-value="<%= plan.id %>"
-       data-plan--save-modal-title-value="<%= plan.title %>">
+       data-controller="ui--save-modal"
+       data-ui--save-modal-plan-id-value="<%= plan.id %>"
+       data-ui--save-modal-title-value="<%= plan.title %>">
     <div class="plan-actions__buttons">
       <button type="button"
               class="btn btn-action btn-action--share"
@@ -91,7 +91,7 @@
       </button>
       <button type="button"
               class="btn btn-action btn-action--save"
-              data-action="click->plan--save-modal#open">
+              data-action="click->ui--save-modal#open">
         保存
       </button>
     </div>

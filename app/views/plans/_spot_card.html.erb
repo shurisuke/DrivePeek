@@ -33,14 +33,14 @@
       <div class="spot-card__stat">
         <button type="button"
                 class="spot-card__comment-btn"
-                data-controller="spot-card--comment"
-                data-spot-card--comment-spot-id-value="<%= spot.id %>"
-                data-spot-card--comment-place-id-value="<%= spot.place_id %>"
-                data-spot-card--comment-lat-value="<%= spot.lat %>"
-                data-spot-card--comment-lng-value="<%= spot.lng %>"
-                data-spot-card--comment-name-value="<%= spot.name %>"
-                data-spot-card--comment-address-value="<%= spot.address %>"
-                data-action="click->spot-card--comment#openComment">
+                data-controller="infowindow--comment-open"
+                data-infowindow--comment-open-spot-id-value="<%= spot.id %>"
+                data-infowindow--comment-open-place-id-value="<%= spot.place_id %>"
+                data-infowindow--comment-open-lat-value="<%= spot.lat %>"
+                data-infowindow--comment-open-lng-value="<%= spot.lng %>"
+                data-infowindow--comment-open-name-value="<%= spot.name %>"
+                data-infowindow--comment-open-address-value="<%= spot.address %>"
+                data-action="click->infowindow--comment-open#openComment">
           <i class="bi bi-chat"></i>
         </button>
         <span id="<%= dom_id(spot, :comment_count) %>" class="spot-card__stat-count"><%= comment_count %></span>
@@ -67,14 +67,14 @@
       <button type="button"
               class="spot-card__map-link"
               aria-label="地図でこのスポットを見る"
-              data-controller="community--single-spot-preview"
-              data-community--single-spot-preview-lat-value="<%= spot.lat %>"
-              data-community--single-spot-preview-lng-value="<%= spot.lng %>"
-              data-community--single-spot-preview-name-value="<%= spot.name %>"
-              data-community--single-spot-preview-address-value="<%= spot.address %>"
-              data-community--single-spot-preview-place-id-value="<%= spot.place_id %>"
-              data-community--single-spot-preview-genres-value="<%= spot.genres.first(2).map(&:name).to_json %>"
-              data-action="click->community--single-spot-preview#show">
+              data-controller="community-tab--single-spot-preview"
+              data-community-tab--single-spot-preview-lat-value="<%= spot.lat %>"
+              data-community-tab--single-spot-preview-lng-value="<%= spot.lng %>"
+              data-community-tab--single-spot-preview-name-value="<%= spot.name %>"
+              data-community-tab--single-spot-preview-address-value="<%= spot.address %>"
+              data-community-tab--single-spot-preview-place-id-value="<%= spot.place_id %>"
+              data-community-tab--single-spot-preview-genres-value="<%= spot.genres.first(2).map(&:name).to_json %>"
+              data-action="click->community-tab--single-spot-preview#show">
         <i class="bi bi-geo-alt-fill" aria-hidden="true"></i>
         地図で見る
       </button>

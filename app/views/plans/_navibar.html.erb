@@ -1,5 +1,5 @@
 <aside class="navibar"
-       data-controller="ui--navibar ui--bottom-sheet"
+       data-controller="ui--navibar-tab ui--bottom-sheet"
        data-ui--bottom-sheet-min-value="8"
        data-ui--bottom-sheet-mid-value="45"
        data-ui--bottom-sheet-max-value="85"
@@ -12,22 +12,22 @@
   <div class="plan-tab-nav">
     <button class="tab-btn tab-community"
             data-tab="community"
-            data-ui--navibar-target="button"
-            data-action="click->ui--navibar#switch">
+            data-ui--navibar-tab-target="button"
+            data-action="click->ui--navibar-tab#switch">
       みんなの旅
     </button>
 
     <button class="tab-btn active"
             data-tab="plan"
-            data-ui--navibar-target="button"
-            data-action="click->ui--navibar#switch">
+            data-ui--navibar-tab-target="button"
+            data-action="click->ui--navibar-tab#switch">
       プラン
     </button>
 
     <button class="tab-btn tab-suggestion"
             data-tab="suggestion"
-            data-ui--navibar-target="button"
-            data-action="click->ui--navibar#switch">
+            data-ui--navibar-tab-target="button"
+            data-action="click->ui--navibar-tab#switch">
       AI提案
     </button>
   </div>
@@ -49,18 +49,18 @@
 
   <%# 提案タブ用フッター %>
   <div class="suggestion__composer"
-       data-ui--navibar-target="footer"
+       data-ui--navibar-tab-target="footer"
        data-tab="suggestion">
     <%= render "suggestions/form", plan: plan %>
   </div>
 
   <%# モバイル用アクションボタン（ナビバー内に配置） %>
   <div class="navibar__actions"
-       data-ui--navibar-target="footer"
+       data-ui--navibar-tab-target="footer"
        data-tab="plan"
-       data-controller="plan--save-modal"
-       data-plan--save-modal-plan-id-value="<%= plan.id %>"
-       data-plan--save-modal-title-value="<%= plan.title %>">
+       data-controller="ui--save-modal"
+       data-ui--save-modal-plan-id-value="<%= plan.id %>"
+       data-ui--save-modal-title-value="<%= plan.title %>">
     <button type="button"
             class="navibar__action-btn navibar__action-btn--share"
             data-controller="ui--share-modal"
@@ -71,7 +71,7 @@
     </button>
     <button type="button"
             class="navibar__action-btn navibar__action-btn--save"
-            data-action="click->plan--save-modal#open">
+            data-action="click->ui--save-modal#open">
       保存
     </button>
   </div>

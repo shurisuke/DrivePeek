@@ -8,10 +8,10 @@
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
-  data-controller="plan--spot-memo plan--spot-delete"
-  data-plan--spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
-  data-plan--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
-  data-plan--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
+  data-controller="plan-tab--spot-memo plan-tab--spot-delete"
+  data-plan-tab--spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
+  data-plan-tab--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
+  data-plan-tab--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
   data-spot-id="<%= spot.id %>"
   data-plan-spot-id="<%= plan_spot.id %>"
   data-plan-id="<%= plan_spot.plan_id %>"
@@ -20,7 +20,7 @@
   data-lng="<%= spot.lng %>"
   data-polyline="<%= plan_spot.polyline %>"
   data-place-id="<%= spot.place_id %>"
-  data-ui--time-rail-sync-target="content"
+  data-plan-tab--time-rail-sync-target="content"
   data-time-rail-sync="<%= dom_id(plan_spot) %>"
 >
   <% is_open = defined?(@open_spot_ids) && @open_spot_ids&.include?(plan_spot.id) %>
@@ -76,8 +76,8 @@
 
         <%# メモ表示 %>
         <div class="spot-memo spot-memo--pin navibar-padding <%= "d-none" if plan_spot.memo.blank? %>"
-             data-plan--spot-memo-target="memoDisplay">
-          <div class="spot-memo__content" data-plan--spot-memo-target="memoContent">
+             data-plan-tab--spot-memo-target="memoDisplay">
+          <div class="spot-memo__content" data-plan-tab--spot-memo-target="memoContent">
             <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
             <%= simple_format(h(plan_spot.memo.to_s)) %>
           </div>
@@ -85,7 +85,7 @@
           <button type="button"
                   class="spot-memo__delete"
                   aria-label="メモを削除"
-                  data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#clear">
+                  data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#clear">
             ×
           </button>
         </div>
@@ -110,7 +110,7 @@
       <%# ✅ 下部：トグル詳細コンテンツ %>
       <div class="collapse spot-detail<%= ' show' if is_open %>"
            id="spotDetail-<%= plan_spot.id %>"
-           data-plan--spot-memo-target="detail">
+           data-plan-tab--spot-memo-target="detail">
 
           <%# 有料道路設定行 %>
           <div class="spot-toll-row">
@@ -129,25 +129,25 @@
 
           <%# メモ編集エリア %>
           <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
-               data-plan--spot-memo-target="editor"
-               data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#stopPropagation">
-            <form data-action="submit->plan--spot-memo#submit">
+               data-plan-tab--spot-memo-target="editor"
+               data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#stopPropagation">
+            <form data-action="submit->plan-tab--spot-memo#submit">
               <textarea class="form-control"
                         rows="2"
                         placeholder="メモを入力"
-                        data-plan--spot-memo-target="textarea"
-                        data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
+                        data-plan-tab--spot-memo-target="textarea"
+                        data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#focusTextarea"><%= plan_spot.memo.to_s %></textarea>
 
               <div class="spot-memo__editor-actions">
                 <button type="button"
                         class="btn btn-outline-secondary"
-                        data-action="pointerdown->plan--spot-memo#stopPropagation click->plan--spot-memo#close">
+                        data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#close">
                   閉じる
                 </button>
 
                 <button type="submit"
                         class="btn btn-personal"
-                        data-action="pointerdown->plan--spot-memo#stopPropagation">
+                        data-action="pointerdown->plan-tab--spot-memo#stopPropagation">
                   追加
                 </button>
               </div>
@@ -161,21 +161,21 @@
               <%# コメントボタン（InfoWindowのコメントタブを開く） %>
               <button type="button"
                       class="btn btn-outline-secondary btn-sm"
-                      data-controller="spot-card--comment"
-                      data-spot-card--comment-spot-id-value="<%= spot.id %>"
-                      data-spot-card--comment-place-id-value="<%= spot.place_id %>"
-                      data-spot-card--comment-lat-value="<%= spot.lat %>"
-                      data-spot-card--comment-lng-value="<%= spot.lng %>"
-                      data-spot-card--comment-name-value="<%= spot.name %>"
-                      data-spot-card--comment-address-value="<%= spot.address %>"
-                      data-action="click->spot-card--comment#openComment"
+                      data-controller="infowindow--comment-open"
+                      data-infowindow--comment-open-spot-id-value="<%= spot.id %>"
+                      data-infowindow--comment-open-place-id-value="<%= spot.place_id %>"
+                      data-infowindow--comment-open-lat-value="<%= spot.lat %>"
+                      data-infowindow--comment-open-lng-value="<%= spot.lng %>"
+                      data-infowindow--comment-open-name-value="<%= spot.name %>"
+                      data-infowindow--comment-open-address-value="<%= spot.address %>"
+                      data-action="click->infowindow--comment-open#openComment"
                       aria-label="コメントを見る">
                 <i class="bi bi-chat" aria-hidden="true"></i>
               </button>
 
               <button type="button"
                       class="btn btn-outline-secondary btn-sm"
-                      data-action="click->plan--spot-memo#open"
+                      data-action="click->plan-tab--spot-memo#open"
                       aria-label="メモを編集">
                 <i class="bi bi-journal-text" aria-hidden="true"></i>
               </button>
@@ -183,7 +183,7 @@
               <button type="button"
                       class="btn btn-outline-secondary btn-sm"
                       aria-label="スポットを削除"
-                      data-action="click->plan--spot-delete#delete pointerdown->plan--spot-memo#stopPropagation">
+                      data-action="click->plan-tab--spot-delete#delete pointerdown->plan-tab--spot-memo#stopPropagation">
                 <i class="bi bi-x-lg spot-delete-icon" aria-hidden="true"></i>
               </button>
           </div>
