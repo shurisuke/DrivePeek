@@ -157,3 +157,51 @@ export const fitBoundsWithPadding = (bounds) => {
 
   map.fitBounds(bounds, getMapPadding())
 }
+
+/**
+ * プランの全ポイント（出発・スポット・帰宅）が表示されるように地図をフィットする
+ * @param {Object} planData - プランデータ（start_point, spots, end_point を含む）
+ */
+export const fitMapToSpots = (planData) => {
+  const map = getMapInstance()
+  if (!map) return
+
+  const bounds = new google.maps.LatLngBounds()
+  let pointCount = 0
+
+  // 出発地点
+  const startPoint = planData?.start_point
+  if (startPoint?.lat && startPoint?.lng) {
+    bounds.extend({ lat: Number(startPoint.lat), lng: Number(startPoint.lng) })
+    pointCount++
+  }
+
+  // スポット
+  const spots = planData?.spots || []
+  spots.forEach((spot) => {
+    if (spot?.lat && spot?.lng) {
+      bounds.extend({ lat: Number(spot.lat), lng: Number(spot.lng) })
+      pointCount++
+    }
+  })
+
+  // 帰宅地点
+  const endPoint = planData?.end_point
+  if (endPoint?.lat && endPoint?.lng) {
+    bounds.extend({ lat: Number(endPoint.lat), lng: Number(endPoint.lng) })
+    pointCount++
+  }
+
+  if (pointCount === 0) return
+
+  fitBoundsWithPadding(bounds)
+
+  // ポイントが1つの場合、fitBoundsだとズームしすぎるので調整
+  if (pointCount === 1) {
+    google.maps.event.addListenerOnce(map, "bounds_changed", () => {
+      if (map.getZoom() > 15) {
+        map.setZoom(15)
+      }
+    })
+  }
+}
