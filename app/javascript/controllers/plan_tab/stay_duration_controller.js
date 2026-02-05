@@ -57,9 +57,8 @@ export default class extends Controller {
     dialog.innerHTML = `
       <div class="time-wheel-picker__content">
         <div class="time-wheel-picker__header">
-          <button type="button" class="time-wheel-picker__cancel">キャンセル</button>
           <span class="time-wheel-picker__title">滞在時間</span>
-          <button type="button" class="time-wheel-picker__confirm">完了</button>
+          <button type="button" class="time-wheel-picker__header-confirm">完了</button>
         </div>
         <div class="time-wheel-picker__body">
           <div class="time-wheel-picker__wheels">
@@ -77,6 +76,9 @@ export default class extends Controller {
             <div class="time-wheel-picker__unit">分</div>
           </div>
           <div class="time-wheel-picker__highlight"></div>
+        </div>
+        <div class="time-wheel-picker__footer">
+          <button type="button" class="time-wheel-picker__confirm">完了</button>
         </div>
       </div>
     `
@@ -106,14 +108,8 @@ export default class extends Controller {
       return 0
     }
 
-    // キャンセルボタン
-    dialog.querySelector(".time-wheel-picker__cancel").addEventListener("click", () => {
-      dialog.close()
-      dialog.remove()
-    })
-
-    // 完了ボタン
-    dialog.querySelector(".time-wheel-picker__confirm").addEventListener("click", () => {
+    // 完了ボタン（フッター + ヘッダー両方）
+    const onConfirm = () => {
       const hour = getSelectedValue(hourWheel)
       const minute = getSelectedValue(minuteWheel)
       const totalMinutes = hour * 60 + minute
@@ -122,7 +118,9 @@ export default class extends Controller {
       dialog.remove()
 
       this._save(totalMinutes)
-    })
+    }
+    dialog.querySelector(".time-wheel-picker__confirm").addEventListener("click", onConfirm)
+    dialog.querySelector(".time-wheel-picker__header-confirm").addEventListener("click", onConfirm)
 
     // 背景クリックで閉じる
     dialog.addEventListener("click", (e) => {
