@@ -3,7 +3,6 @@ import {
   getMapInstance,
   addSuggestionMarker,
   addSuggestionOverlay,
-  clearSuggestionMarkers,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
@@ -69,9 +68,6 @@ export default class extends Controller {
   #processAllSpots() {
     const map = getMapInstance()
     if (!map) return
-
-    // 既存の提案マーカーをクリア（重複防止）
-    clearSuggestionMarkers()
 
     // 子要素からスポットカードを取得
     const cards = this.element.querySelectorAll("[data-controller*='suggestion-tab--suggested-spot']")
