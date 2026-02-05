@@ -91,17 +91,18 @@ export const panToVisualCenter = (position) => {
     offsetY = getDesktopOffsetY()
   }
 
-  // オフセットがない場合は単純にpanTo
-  if (offsetY === 0) {
+  // オフセットがない or projection未取得の場合は単純にpanTo
+  const projection = map.getProjection()
+  if (offsetY === 0 || !projection) {
     map.panTo(latLng)
     return
   }
 
-  // panTo完了後にpanByを実行（アニメーション競合を防ぐ）
-  map.panTo(latLng)
-  google.maps.event.addListenerOnce(map, "idle", () => {
-    map.panBy(0, offsetY)
-  })
+  // ピクセルオフセットをワールド座標に変換し、1回のpanToで完結
+  const scale = Math.pow(2, map.getZoom())
+  const worldPoint = projection.fromLatLngToPoint(latLng)
+  worldPoint.y += offsetY / scale
+  map.panTo(projection.fromPointToLatLng(worldPoint))
 }
 
 /**
