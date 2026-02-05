@@ -185,7 +185,7 @@ body.goal-point-visible .time-rail-block--goal {
 .spot-stay-duration__label {
   font-size: 0.7rem;
   font-weight: 500;
-  color: rgb(35, 35, 35);
+  color: rgba(33, 33, 33, 0.6);
   line-height: 1.2;
   letter-spacing: 0.01em;
 }
@@ -195,7 +195,7 @@ body.goal-point-visible .time-rail-block--goal {
   align-items: baseline;
   justify-content: center;
 
-  color: #2d2d2d;
+  color: #555;
   font-size: 14px;
   font-weight: 500;
   letter-spacing: 0.02em;
@@ -205,7 +205,7 @@ body.goal-point-visible .time-rail-block--goal {
 .spot-stay-duration__unit {
   font-size: 10px;
   font-weight: 400;
-  color: #2d2d2d;
+  color: #555;
   margin: 0 1px;
   vertical-align: baseline;
 }
