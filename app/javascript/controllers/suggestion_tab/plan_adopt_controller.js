@@ -137,9 +137,6 @@ export default class extends Controller {
     const map = getMapInstance()
     if (!map) return
 
-    // 既存の提案マーカーをクリア（重複防止）
-    clearSuggestionMarkers()
-
     this._resolvedSpots.forEach((spot, index) => {
       const position = { lat: spot.lat, lng: spot.lng }
 
