@@ -2,8 +2,6 @@
 
 サービスURL：https://drivepeek.onrender.com/
 
-<!-- TODO: Qiita記事等があれば追加 -->
-
 <img width="1200" alt="DrivePeek サービス画面" src="https://github.com/user-attachments/assets/sample-hero-image" />
 
 # ■ サービス概要
@@ -23,10 +21,10 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-plan-map" alt="スポットをプランに追加">
+      <img src="https://github.com/user-attachments/assets/485cbd03-15da-4681-862f-0e00aae37b4b" alt="スポットをプランに追加" width="95%">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-plan-infowindow" alt="InfoWindow">
+      <img src="https://github.com/user-attachments/assets/b8e971db-62c1-41d5-ba0c-0f5c9b87d119" alt="InfoWindow" width="95%">
     </td>
   </tr>
   <tr>
@@ -35,43 +33,23 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
 </table>
 
-## ⏱️ スケジュール自動計算
-<table>
-  <tr>
-    <td width="50%" align="center"><strong>リアルなスケジューリング</strong></td>
-    <td width="50%" align="center"><strong>ナビバーでドライブの流れをひと目で把握</strong></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-scheduling" alt="リアルなスケジューリング">
-    </td>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-navibar" alt="ナビバーUI">
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">滞在時間・移動時間・有料道路の有無まで加味した、実際の旅程に近いスケジュールを自動生成します。</td>
-    <td width="50%">出発から帰宅までの時刻をナビバーに一覧表示。<br>スケジュール全体の流れをひと目で把握できます。</td>
-  </tr>
-</table>
-
 ## 🤖 AI スポット提案
 <table>
   <tr>
     <td width="50%" align="center"><strong>エリア＆ジャンルを選ぶだけ</strong></td>
-    <td width="50%" align="center"><strong>プラン・スポットをまるごと提案</strong></td>
+    <td width="50%" align="center"><strong>提案プランは一括採用可能</strong></td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-ai-select" alt="エリア＆ジャンル選択">
+      <img src="https://github.com/user-attachments/assets/532f4a70-ef9d-4576-b46a-8d1c37f5805a" alt="エリア＆ジャンル選択" width="95%">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-ai-proposal" alt="AI提案結果">
+      <img src="https://github.com/user-attachments/assets/950735bc-411d-4282-a64c-bd7a1d1cc822" alt="AI提案結果" width="95%">
     </td>
   </tr>
   <tr>
-    <td width="50%">地図上でエリアを囲んでジャンルを選択。<br>文字入力なしでAIに提案をおまかせできます。</td>
-    <td width="50%">AIがスポットだけでなくプランも提案。<br>プランは気に入ったらまるごと一括採用できます。</td>
+    <td width="50%">地図上で指をなぞってエリアを囲み、食事・観光などのジャンルを選択。<br>文字入力なしでAIに提案をおまかせできます。</td>
+    <td width="50%">AIが提案したプランは、気に入ったらワンタップで一括採用。<br>スポット単体での追加も可能です。</td>
   </tr>
 </table>
 
@@ -83,10 +61,10 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-community-search" alt="コミュニティ検索">
+      <img src="https://github.com/user-attachments/assets/e060adf3-3027-45c0-9fcb-1a65d4b134cd" alt="コミュニティ検索" width="95%">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-community-preview" alt="気になるプランを地図で追体験">
+      <img src="https://github.com/user-attachments/assets/e7688dba-634e-41c2-b706-ed055a59a791" alt="気になるプランを地図で追体験" width="95%">
     </td>
   </tr>
   <tr>
@@ -95,43 +73,43 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
 </table>
 
-## 🚗 Google Mapsナビ連携
+## ⏱️ スケジュール自動計算
 <table>
   <tr>
-    <td width="50%" align="center"><strong>ワンタップでナビ起動</strong></td>
-    <td width="50%" align="center"><strong>出発地・経由地を自動連携</strong></td>
+    <td width="50%" align="center"><strong>リアルなスケジューリング</strong></td>
+    <td width="50%" align="center"><strong>ナビバーでドライブの流れをひと目で把握</strong></td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-nav-launch" alt="ナビ起動">
+      <img src="https://github.com/user-attachments/assets/6310e0a3-ce79-4ecd-b755-4f5d4c48a369" alt="リアルなスケジューリング" width="95%">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-nav-waypoints" alt="経由地連携">
+      <img src="https://github.com/user-attachments/assets/f2c7033a-86bc-4bc1-8a7e-35944b2e2ed4" alt="ナビバーUI" width="95%">
     </td>
   </tr>
   <tr>
-    <td width="50%">完成したプランからGoogle Mapsのナビをワンタップで起動できます。</td>
-    <td width="50%">出発地・経由地・目的地がそのまま引き継がれ、すぐに出発できます。</td>
+    <td width="50%">滞在時間・移動時間・有料道路の有無まで加味した、実際の旅程に近いスケジュールを自動生成します。</td>
+    <td width="50%">出発から帰宅までの時刻をナビバーに一覧表示。<br>スケジュール全体の流れをひと目で把握できます。</td>
   </tr>
 </table>
 
-## 📱 モバイル対応
+## 📱 モバイル対応 & Google Mapsナビ連携
 <table>
   <tr>
-    <td width="50%" align="center"><strong>BottomSheet UI</strong></td>
-    <td width="50%" align="center"><strong>モバイル最適化UI</strong></td>
+    <td width="50%" align="center"><strong>モバイル対応</strong></td>
+    <td width="50%" align="center"><strong>Google Mapsナビ連携</strong></td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-mobile-bottomsheet" alt="モバイル BottomSheet">
+      <img src="https://github.com/user-attachments/assets/f0629f22-8a9d-452b-9bfc-d89a7ca27a95" alt="モバイル対応" height="400">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/sample-mobile-ui" alt="モバイルUI">
+      <img src="https://i.gyazo.com/710e58461ac63124d54ecb7f7b6f3847.png" alt="ナビ連携" height="400">
     </td>
   </tr>
   <tr>
-    <td width="50%">モバイルではナビバーやInfoWindowをBottomSheet形式で表示。<br>スワイプで自由に開閉できます。</td>
-    <td width="50%">プラン編集・AI提案・コミュニティすべてモバイル最適化。<br>スポットの並び替えは上下ボタンで直感的に操作できます。</td>
+    <td width="50%">スマートフォンに最適化されたUIで、外出先でもスムーズにプラン確認・編集ができます。</td>
+    <td width="50%">完成したプランからGoogle Mapsナビをワンタップ起動。経由地もそのまま引き継がれ、すぐに出発できます。</td>
   </tr>
 </table>
 
@@ -167,7 +145,6 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
 - **Hotwire (Turbo + Stimulus)**: Rails標準搭載のフロントエンド技術として採用。サーバー側でUI状態を管理でき、別途フレームワークなしでリアルタイムなUI更新を実現できた
 - **Google Maps API**: Mapbox等と比較し、日本のスポットデータの充実度からGoogle Mapsを選択。Places APIで写真・営業時間等を取得でき、スポットDBを自前で持たずに済んだ
 - **OpenAI API**: 構造化出力（JSON Schema）により、AIの応答からスポット情報を安定して抽出。Turbo Streamと組み合わせ、応答をストリーミング表示している
-
 
 ## Stimulus コントローラ構成
 
@@ -210,6 +187,53 @@ CI: GitHub ActionsでPRごとにRSpec・RuboCop・Brakemanを自動実行
 Figma：https://www.figma.com/design/k9Qhg0des02wxAjroLW3MA/DrivePeek-%E7%94%BB%E9%9D%A2%E9%81%B7%E7%A7%BB%E5%9B%B3-?node-id=0-1&p=f&t=Y0GH5C5Pvvhz2Ot9-0
 
 
+# ■ 技術的チャレンジ
+
+## 経路計算と時刻計算の分離
+
+不要なAPI呼び出しを避けるため、経路計算と時刻計算を分離した。
+
+<table>
+  <tr>
+    <td><strong>Plan::Route</strong></td>
+    <td>スポット間の距離・移動時間を計算</td>
+  </tr>
+  <tr>
+    <td><strong>Plan::Schedule</strong></td>
+    <td>DBの移動時間を読み、到着・出発時刻を計算</td>
+  </tr>
+  <tr>
+    <td><strong>Plan::Recalculator</strong></td>
+    <td>Route → Schedule の順序を保証するオーケストレータ</td>
+  </tr>
+</table>
+
+この分離により、出発時間や滞在時間の変更時は時刻計算のみ実行し、Directions APIの呼び出し回数とコストを削減。ユーザーの操作に即座に反応できる設計とした。
+
+## AI提案の設計
+
+当初はAIにスポット選定を全て任せていたが、ホテルやチェーン店など的外れな提案や、ハルシネーションが課題となった。
+
+**解決策**: 責務を3層に分離し、AIの役割を「候補から文脈に合うものを選ぶ」に限定した。
+
+<table>
+  <tr>
+    <td><strong>ユーザー</strong></td>
+    <td>エリア描画・ジャンル選択で意図を明示</td>
+  </tr>
+  <tr>
+    <td><strong>DB</strong></td>
+    <td>お気に入り数で人気スポットに絞り込み</td>
+  </tr>
+  <tr>
+    <td><strong>AI</strong></td>
+    <td>季節やドライブ適性を考慮して選定</td>
+  </tr>
+</table>
+
+これにより、真冬に海水浴場をおすすめするような的外れな提案を防ぎつつ、ユーザーは文字入力なしの簡単な操作だけで、季節に合った精度の高い提案を受けられるようになった。
+
+
 # ■ サービス開発の背景
 私自身、休日のドライブが大好きで日々のリフレッシュになっています。
 しかし計画段階で、いつも同じ悩みにぶつかっていました。
@@ -219,4 +243,4 @@ Figma：https://www.figma.com/design/k9Qhg0des02wxAjroLW3MA/DrivePeek-%E7%94%BB%
 「行き先で何を食べようか、毎回決まらない...」
 
 こうした **行き先探し・時間計算・食事選び** の3つの課題を、**地図 + AI + コミュニティ** で一気に解決したいという思いから開発しました。
-他のユーザーのリアルなプランを参考にしたり、AIに提案してもらうことで、「思い立ったらすぐ出発できる」体験を目指しています。
+他のユーザーのリアルなプランを参考にしたり、AIにおまかせで提案してもらえる。スポット探しの手間をなくし、「思い立ったらすぐ出発できる」体験を目指しています。
