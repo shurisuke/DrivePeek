@@ -9,6 +9,20 @@
   display: block;
 }
 
+/* プランタブ: sticky ボタン用にflex化 */
+.tab-content.tab-plan.active {
+  display: flex;
+  flex-direction: column;
+  min-height: 100%;
+}
+
+/* プランタブ選択時: 親に高さを継承 */
+.navibar__content-scroll:has(.tab-plan.active) {
+  .navibar__blocks {
+    height: 100%;
+  }
+}
+
 /* 提案タブ: 入力エリアを下部固定 */
 .tab-content.tab-suggestion.active {
   display: flex;
