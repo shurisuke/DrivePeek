@@ -508,6 +508,11 @@ body.navibar-resizing .plan-form .plan-time-slot {
   display: none !important;
 }
 
+/* プランタブがアクティブな時、提案フッターを確実に非表示 */
+.navibar:has(.tab-plan.active) .suggestion__composer {
+  display: none !important;
+}
+
 /* ==========================================
    ✅ プランタブ用アクションボタン（ナビ・共有・保存）
 ========================================== */
