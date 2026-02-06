@@ -73,26 +73,6 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
 </table>
 
-## ⏱️ スケジュール自動計算
-<table>
-  <tr>
-    <td width="50%" align="center"><strong>リアルなスケジューリング</strong></td>
-    <td width="50%" align="center"><strong>ナビバーでドライブの流れをひと目で把握</strong></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/6310e0a3-ce79-4ecd-b755-4f5d4c48a369" alt="リアルなスケジューリング" width="95%">
-    </td>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/f2c7033a-86bc-4bc1-8a7e-35944b2e2ed4" alt="ナビバーUI" width="95%">
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">滞在時間・移動時間・有料道路の有無まで加味した、実際の旅程に近いスケジュールを自動生成します。</td>
-    <td width="50%">出発から帰宅までの時刻をナビバーに一覧表示。<br>スケジュール全体の流れをひと目で把握できます。</td>
-  </tr>
-</table>
-
 ## 📱 モバイル対応 & Google Mapsナビ連携
 <table>
   <tr>
@@ -117,6 +97,7 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
 
 | 機能 | 説明 |
 |------|------|
+| スケジュール自動計算 | 滞在時間・移動時間・有料道路の有無を加味した旅程を自動生成 |
 | お気に入り | スポット・プランをワンタップで保存、一覧管理 |
 | メモ | スポットごとに注意点・買いたいものなどを記録 |
 | SNS ログイン | LINE / X (Twitter) でワンクリック認証 |
