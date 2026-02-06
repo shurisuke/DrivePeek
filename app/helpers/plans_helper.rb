@@ -89,12 +89,11 @@ module PlansHelper
     spots = plan.plan_spots.includes(:spot).order(:position)
     return nil if spots.empty?
 
-    start = plan.start_point
     last = spots.last.spot
     waypoints = spots[0...-1].map(&:spot)
 
     params = { api: 1, travelmode: "driving" }
-    params[:origin] = "#{start.lat},#{start.lng}" if start&.lat && start&.lng
+    # originは指定しない（現在地から開始）
     params[:destination] = last.name
     params[:destination_place_id] = last.place_id if last.place_id.present?
 

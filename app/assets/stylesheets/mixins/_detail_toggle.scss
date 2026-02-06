@@ -6,6 +6,8 @@
 ========================================== */
 
 @mixin detail-toggle-button {
+  position: relative;
+  z-index: 1; /* 下のブロックに影が隠れないように */
   width: 40px;
   height: 40px;
   margin: 15px 0;

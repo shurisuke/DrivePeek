@@ -542,7 +542,7 @@ body.navibar-resizing .plan-form .plan-time-slot {
   padding: 14px 28px;
   border: none;
   border-radius: 0;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
   color: #555;
   cursor: pointer;
@@ -684,10 +684,21 @@ body.navibar-resizing .plan-form .plan-time-slot {
         flex: none;
       }
 
-      /* モバイル用アクションボタン: sticky 維持 */
+      /* モバイル用アクションボタン: 横幅100%、左右10pxマージン */
       .plan-tab-actions {
         position: sticky;
         bottom: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .plan-tab-actions__group {
+        width: 100%;
+      }
+
+      .plan-tab-actions__btn {
+        flex: 1;
+        padding: 14px 0;
       }
 
       /* トグルボタンの上下マージンを削除 */
