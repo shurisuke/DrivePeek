@@ -43,17 +43,6 @@
     </div>
   </div>
 
-  <%# プランタブ用フッター %>
-  <div class="plan-tab-actions"
-       id="plan_tab_actions"
-       data-ui--navibar-tab-target="footer"
-       data-tab="plan"
-       data-controller="ui--save-modal"
-       data-ui--save-modal-plan-id-value="<%= @plan.id %>"
-       data-ui--save-modal-title-value="<%= @plan.title %>">
-    <%= render "plans/plan_tab_actions", plan: @plan %>
-  </div>
-
   <%# 提案タブ用フッター %>
   <div class="suggestion__composer"
        data-ui--navibar-tab-target="footer"

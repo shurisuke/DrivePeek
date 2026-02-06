@@ -1,5 +1,8 @@
-<%# プランタブ用フッター（スポットがある場合のみ表示） %>
-<% if plan.plan_spots.any? %>
+<%# プランタブ用フッター（sticky で下部固定） %>
+<div class="plan-tab-actions"
+     data-controller="ui--save-modal"
+     data-ui--save-modal-plan-id-value="<%= plan.id %>"
+     data-ui--save-modal-title-value="<%= plan.title %>">
   <div class="plan-tab-actions__group">
     <% if (nav_url = google_maps_nav_url(plan)) %>
       <a href="<%= nav_url %>" target="_blank" rel="noopener"
@@ -21,4 +24,4 @@
       共有
     </button>
   </div>
-<% end %>
+</div>

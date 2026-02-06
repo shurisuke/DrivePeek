@@ -1,91 +1,40 @@
 <%# app/views/plans/_goal_point_block_edit.html.erb %>
+<%# 帰宅地点ブロック（親の plan-tab-wrapper コントローラーから制御される） %>
 <% plan ||= @plan %>
 <% goal_point = plan.goal_point %>
 
-<div
-  class="goal-point-section"
-  data-controller="plan-tab--goal-point-visibility"
-  data-plan-tab--goal-point-visibility-plan-id-value="<%= plan.id %>"
->
-  <div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
-    <div class="goal-point-block"
-         data-lat="<%= goal_point&.lat %>"
-         data-lng="<%= goal_point&.lng %>"
-         data-plan-tab--time-rail-sync-target="content"
-         data-time-rail-sync="goal-point">
-      <%# ✅ 上部：帰宅コンテンツ %>
-      <div class="goal-content">
-          <%# 3層構造: アイコン | タイトル | スペーサー %>
-          <div class="goal-header">
-            <span class="goal-icon"
-                  data-controller="ui--navibar-marker-button"
-                  data-point-type="goal"
-                  data-action="click->ui--navibar-marker-button#point"
-                  role="button"
-                  tabindex="0"
-                  aria-label="帰宅地点を地図で表示"></span>
+<div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
+  <div class="goal-point-block"
+       data-lat="<%= goal_point&.lat %>"
+       data-lng="<%= goal_point&.lng %>"
+       data-plan-tab--time-rail-sync-target="content"
+       data-time-rail-sync="goal-point">
+    <%# ✅ 上部：帰宅コンテンツ %>
+    <div class="goal-content">
+      <%# 3層構造: アイコン | タイトル | スペーサー %>
+      <div class="goal-header">
+        <span class="goal-icon"
+              data-controller="ui--navibar-marker-button"
+              data-point-type="goal"
+              data-action="click->ui--navibar-marker-button#point"
+              role="button"
+              tabindex="0"
+              aria-label="帰宅地点を地図で表示"></span>
 
-            <span class="goal-title goal-title--clickable"
-                  data-controller="ui--navibar-marker-button"
-                  data-point-type="goal"
-                  data-action="click->ui--navibar-marker-button#point"
-                  role="button"
-                  tabindex="0">帰宅</span>
+        <span class="goal-title goal-title--clickable"
+              data-controller="ui--navibar-marker-button"
+              data-point-type="goal"
+              data-action="click->ui--navibar-marker-button#point"
+              role="button"
+              tabindex="0">帰宅</span>
 
-            <div class="goal-spacer" aria-hidden="true"></div>
-          </div>
+        <div class="goal-spacer" aria-hidden="true"></div>
+      </div>
 
-          <%# 住所 %>
-          <div class="goal-address navibar-padding">
-            <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
-          </div>
-        </div>
-        <%# /.goal-content %>
-
+      <%# 住所 %>
+      <div class="goal-address navibar-padding">
+        <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
       </div>
     </div>
-
-  <% if plan.plan_spots.exists? %>
-    <%# ✅ プラン設定カード（帰宅地点トグル + サマリー） %>
-    <div class="plan-settings-card" id="navibar_footer">
-      <div class="plan-settings-card__row">
-        <span class="plan-settings-card__label">帰宅地点表示</span>
-        <input
-          class="option-switch"
-          type="checkbox"
-          role="switch"
-          id="goal-point-visibility-switch-<%= plan.id %>"
-          aria-label="帰宅地点の表示を切り替える"
-          data-plan-tab--goal-point-visibility-target="switch"
-          data-action="change->plan-tab--goal-point-visibility#toggle"
-        >
-      </div>
-      <div class="plan-settings-card__summary">
-        <%# 帰宅地点OFF時 %>
-        <div class="plan-summary plan-summary--spots-only">
-          <div class="plan-summary__item">
-            <i class="bi bi-signpost-2" aria-hidden="true"></i>
-            <span class="plan-summary__value" data-plan-total="spots-only-distance"><%= plan.start_to_last_spot_distance %></span>
-            <span class="plan-summary__unit">km</span>
-          </div>
-          <div class="plan-summary__item">
-            <i class="bi bi-car-front" aria-hidden="true"></i>
-            <span class="plan-summary__value" data-plan-total="spots-only-time"><%= format_move_time(plan.start_to_last_spot_move_time) %></span>
-          </div>
-        </div>
-        <%# 帰宅地点ON時 %>
-        <div class="plan-summary plan-summary--with-goal">
-          <div class="plan-summary__item">
-            <i class="bi bi-signpost-2" aria-hidden="true"></i>
-            <span class="plan-summary__value" data-plan-total="with-goal-distance"><%= plan.total_distance %></span>
-            <span class="plan-summary__unit">km</span>
-          </div>
-          <div class="plan-summary__item">
-            <i class="bi bi-car-front" aria-hidden="true"></i>
-            <span class="plan-summary__value" data-plan-total="with-goal-time"><%= format_move_time(plan.total_move_time) %></span>
-          </div>
-        </div>
-      </div>
-    </div>
-  <% end %>
+  </div>
 </div>

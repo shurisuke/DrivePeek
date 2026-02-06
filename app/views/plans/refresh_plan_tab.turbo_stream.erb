@@ -1,10 +1,6 @@
-<%# プランタブとフッターを更新するturbo_stream %>
+<%# プランタブを更新（ボタンも含まれる） %>
 <%= turbo_stream.update "plan_tab_content" do %>
   <%= render "plans/plan_tab", plan: @plan %>
-<% end %>
-
-<%= turbo_stream.update "plan_tab_actions" do %>
-  <%= render "plans/plan_tab_actions", plan: @plan %>
 <% end %>
 
 <%# InfoWindowのボタンを更新（開いている場合のみ） %>
