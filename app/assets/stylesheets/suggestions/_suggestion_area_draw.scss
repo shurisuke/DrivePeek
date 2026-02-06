@@ -15,7 +15,6 @@
 /* エリア描画モード（body クラスで一括制御） */
 body.suggestion-area-draw-active {
   .map-search-box,
-  .plan-actions,
   .hamburger,
   .map-floating-buttons {
     display: none !important;

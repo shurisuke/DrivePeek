@@ -152,11 +152,11 @@ body.no-footer {
         position: absolute;
         top: 0;
         left: 0;
+        right: 0;
+        bottom: 0;
 
         overflow-y: auto;
         overflow-x: hidden; /* ✅ 横スクロールを防止 */
-        width: 100%; /* ✅ 350固定をやめる（親=navibarの幅に追従） */
-        height: 100%;
 
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
@@ -184,79 +184,6 @@ body.no-footer {
         flex-shrink: 0; /* flexで縮まない */
         z-index: 10;
         display: none; /* デフォルト非表示、プランタブ時のみ表示 */
-      }
-    }
-
-    /* ✅ プランタブがアクティブな時のみフッターを表示 */
-    .navibar__footer[data-tab="plan"] {
-      display: block;
-    }
-
-    /* アクションボタン（保存・共有）- 案3: フローティングカード */
-    .plan-actions {
-      position: fixed;
-      bottom: 16px;
-      left: calc(
-        (var(--navibar-width) - var(--navibar-slide)) +
-        (100% - (var(--navibar-width) - var(--navibar-slide))) / 2
-      );
-      transform: translateX(-50%);
-      z-index: 3;
-    }
-
-    .plan-actions__buttons {
-      display: flex;
-      background: #fff;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-      overflow: hidden;
-    }
-
-    .btn-action {
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 14px;
-      padding: 14px 24px;
-      margin: 0;
-      border-radius: 0;
-      font-weight: 600;
-      letter-spacing: 0.2px;
-      border: none;
-      cursor: pointer;
-      transition: all 0.15s ease;
-
-      &--share {
-        background: #fff;
-        color: #666;
-
-        &:hover {
-          background: #f8f8f8;
-          color: #333;
-        }
-
-        &:active {
-          background: #f0f0f0;
-        }
-      }
-
-      &--save {
-        background: var(--personal);
-        color: #fff;
-        border-left: 1px solid rgba(0, 0, 0, 0.1);
-
-        &:hover {
-          background: color-mix(in srgb, var(--personal) 85%, black);
-        }
-
-        &:active {
-          background: color-mix(in srgb, var(--personal) 75%, black);
-        }
-      }
-
-      &:disabled {
-        opacity: 0.5;
-        cursor: not-allowed;
       }
     }
 
@@ -314,6 +241,7 @@ body.no-footer.goal-point-visible {
   flex-direction: row;
   align-items: stretch;
   width: 100%;
+  padding-top: 10px;
 }
 
 /* 左カラム: ブロックコンテンツ */
@@ -554,8 +482,7 @@ body.no-footer .plan-form .plan-time-slot {
 body.navibar-resizing .plan-form .navibar,
 body.navibar-resizing .plan-form .map,
 body.navibar-resizing .plan-form .navibar-resize-handle,
-body.navibar-resizing .plan-form .plan-time-slot,
-body.navibar-resizing .plan-form .plan-actions {
+body.navibar-resizing .plan-form .plan-time-slot {
   transition: none !important;
 }
 
@@ -576,17 +503,75 @@ body.navibar-resizing .plan-form .plan-actions {
 /* ==========================================
    ✅ タブ切り替え用の非表示クラス
 ========================================== */
-.navibar__footer.is-hidden,
-.navibar__actions.is-hidden,
-.suggestion__composer.is-hidden {
+.suggestion__composer.is-hidden,
+.plan-tab-actions.is-hidden {
+  display: none !important;
+}
+
+/* プランタブがアクティブな時、提案フッターを確実に非表示 */
+.navibar:has(.tab-plan.active) .suggestion__composer {
   display: none !important;
 }
 
 /* ==========================================
-   ✅ モバイル用アクションボタン（デスクトップでは非表示）
+   ✅ プランタブ用アクションボタン（ナビ・共有・保存）
 ========================================== */
-.navibar__actions {
-  display: none;
+.plan-tab-actions {
+  position: sticky;
+  bottom: 0;
+  margin-top: auto; /* コンテンツ少ない時も下部に配置 */
+  display: flex;
+  justify-content: center;
+  padding: 16px;
+  background: linear-gradient(to top, #fff 60%, transparent 100%);
+  z-index: 10;
+}
+
+.plan-tab-actions__group {
+  display: flex;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+}
+
+.plan-tab-actions__btn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 14px 28px;
+  border: none;
+  border-radius: 0;
+  font-size: 15px;
+  font-weight: 600;
+  color: #555;
+  cursor: pointer;
+  text-decoration: none;
+  transition: background-color 0.15s ease;
+
+  &--nav {
+    background: #fff;
+    color: #555;
+    border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+
+    &:hover { background: #f5f5f5; }
+  }
+
+  &--save {
+    background: #fff;
+    color: var(--personal);
+    font-weight: 700;
+    border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+
+    &:hover { background: #f5f5f5; }
+  }
+
+  &--share {
+    background: #fff;
+    color: #555;
+
+    &:hover { background: #f5f5f5; }
+  }
 }
 
 /* ==========================================
@@ -635,6 +620,7 @@ body.navibar-resizing .plan-form .plan-actions {
 
         border-radius: 16px 16px 0 0;
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+        background: #fff;
 
         z-index: 100;
 
@@ -660,8 +646,8 @@ body.navibar-resizing .plan-form .plan-actions {
           touch-action: none;
 
           .tab-btn {
-            font-size: 14px;
-            padding: 12px 0 8px 0;
+            font-size: 16px;
+            padding: 10px 0 6px 0;
           }
         }
 
@@ -688,74 +674,32 @@ body.navibar-resizing .plan-form .plan-actions {
         display: none;
       }
 
-      /* フローティングアクションボタンはモバイルで非表示（ナビバー内に移動） */
-      .plan-actions {
-        display: none;
-      }
-
-      /* ナビバー内アクションボタン（モバイル用・フローティングバー） */
-      .navibar__actions {
-        position: relative;
-        z-index: 20;
-        display: flex;
-        margin: 0 32px;
-        margin-bottom: calc(8px + env(safe-area-inset-bottom, 0px));
-        background: transparent;
-        flex-shrink: 0;
-      }
-
-      .navibar__action-btn {
-        flex: 1;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        gap: 4px;
-        padding: 8px 12px;
-        border: none;
-        border-radius: 0;
-        background: transparent;
-        font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
-        font-size: 13px;
-        font-weight: 600;
-        color: #555;
-        cursor: pointer;
-        transition: background-color 0.15s ease;
-        -webkit-tap-highlight-color: transparent;
-
-        i {
-          font-size: 14px;
-          line-height: 1;
-        }
-
-        &:active {
-          background: rgba(0, 0, 0, 0.05);
-        }
-
-        /* 共有ボタン: 左側のみ丸み */
-        &--share {
-          color: #333;
-          background: #fff;
-          border-radius: 12px 0 0 12px;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-        }
-
-        /* 保存ボタン: 右側のみ丸み */
-        &--save {
-          background: var(--personal);
-          color: #fff;
-          border-radius: 0 12px 12px 0;
-          box-shadow: 0 2px 12px rgba(0, 0, 0, 0.35);
-
-          &:active {
-            background: var(--personal-dark, #d35400);
-          }
-        }
-      }
-
-      /* フッター: モバイルではstickyを解除し、スクロール内で自然に流す */
-      .navibar__footer {
-        position: static;
+      /* 距離/時間サマリー */
+      .plan-summary-section {
         padding: 12px 16px;
+      }
+
+      /* モバイル用: flex: 1 を解除してボトムシート収納時に画面下に収納 */
+      .plan-tab-wrapper {
+        flex: none;
+      }
+
+      /* モバイル用アクションボタン: 横幅100%、左右10pxマージン */
+      .plan-tab-actions {
+        position: sticky;
+        bottom: 0;
+        padding-left: 20px;
+        padding-right: 20px;
+      }
+
+      .plan-tab-actions__group {
+        width: 100%;
+      }
+
+      .plan-tab-actions__btn {
+        flex: 1;
+        padding: 14px 0;
+        font-size: 17px;
       }
 
       /* トグルボタンの上下マージンを削除 */

@@ -80,6 +80,12 @@ export default class extends Controller {
               <span>LINE</span>
             </button>
           </div>
+          <div class="share-modal__link-row">
+            <input type="text" class="share-modal__link-input" value="${this.urlValue}" readonly>
+            <button type="button" class="share-modal__link-copy">
+              <i class="bi bi-copy" aria-hidden="true"></i>
+            </button>
+          </div>
           <button type="button" class="share-modal__cancel">キャンセル</button>
         </div>
       </div>
@@ -90,6 +96,7 @@ export default class extends Controller {
     modal.querySelector(".share-modal__cancel").addEventListener("click", () => this.close())
     modal.querySelector(".share-modal__btn--x").addEventListener("click", () => this.shareX())
     modal.querySelector(".share-modal__btn--line").addEventListener("click", () => this.shareLine())
+    modal.querySelector(".share-modal__link-copy").addEventListener("click", (e) => this.copyLink(e))
 
     return modal
   }
@@ -103,6 +110,27 @@ export default class extends Controller {
       "noopener,noreferrer"
     )
     this.close()
+  }
+
+  async copyLink(e) {
+    const btn = e.currentTarget
+    const icon = btn.querySelector("i")
+    const input = this.modal.querySelector(".share-modal__link-input")
+
+    try {
+      await navigator.clipboard.writeText(this.urlValue)
+    } catch {
+      // HTTP環境用フォールバック: inputを選択してexecCommand
+      input.select()
+      document.execCommand("copy")
+    }
+
+    icon.className = "bi bi-check-lg"
+    btn.classList.add("share-modal__link-copy--done")
+    setTimeout(() => {
+      icon.className = "bi bi-copy"
+      btn.classList.remove("share-modal__link-copy--done")
+    }, 1500)
   }
 
   shareLine() {

@@ -74,29 +74,6 @@
 
   <%# 提案条件設定モーダル %>
   <%= render "suggestions/condition_modal", plan: plan %>
-
-  <!-- アクションボタン（保存・共有） -->
-  <div class="plan-actions"
-       data-controller="ui--save-modal"
-       data-ui--save-modal-plan-id-value="<%= plan.id %>"
-       data-ui--save-modal-title-value="<%= plan.title %>">
-    <div class="plan-actions__buttons">
-      <button type="button"
-              class="btn btn-action btn-action--share"
-              data-controller="ui--share-modal"
-              data-ui--share-modal-url-value="<%= plan_url(plan) %>"
-              data-ui--share-modal-plan-id-value="<%= plan.id %>"
-              data-action="click->ui--share-modal#open">
-        共有
-      </button>
-      <button type="button"
-              class="btn btn-action btn-action--save"
-              data-action="click->ui--save-modal#open">
-        保存
-      </button>
-    </div>
-  </div>
-
 </div>
 
 <%# InfoWindowスケルトンテンプレート（JSから参照） %>

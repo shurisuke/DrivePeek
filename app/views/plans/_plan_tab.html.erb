@@ -1,40 +1,89 @@
 <%# ================================================================
-    Planタブ（2カラム構造）
-    用途: 出発地点 + プラン内スポット一覧（position順）を描画する
-    構造: 左カラム（ブロックコンテンツ）+ 右カラム（時刻レール）
+    Planタブ
+    スポットがない時: ガイドのみ表示
+    スポットがある時: 出発地点・スポット・帰宅地点・サマリー・ボタン表示
 ================================================================ %>
 
-<div class="plan-tab-layout" data-controller="plan-tab--time-rail-sync">
-  <%# ✅ 左カラム: ブロックコンテンツ %>
-  <div class="plan-tab-content">
-    <%= render "plans/start_point_block_edit" %>
-
-    <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
-    <% favorite_spots_map = FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
-
-    <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
-    <div id="plan-spots-sortable" data-sortable="plan-spots">
-      <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
-      <% plan_spots.each_with_index do |plan_spot, index| %>
-        <%= render "plans/spot_block_edit",
-                   plan_spot: plan_spot,
-                   favorite_spot: favorite_spots_map[plan_spot.spot_id],
-                   is_first: index == 0,
-                   is_last: index == plan_spots.size - 1 %>
-      <% end %>
-    </div>
-
-    <%# ✅ 帰宅地点は「スポットの有無」ではなく、トグル操作で表示/非表示を管理する %>
-    <%= render "plans/goal_point_block_edit", plan: @plan %>
-  </div>
-
-  <%# ✅ 右カラム: 時刻レール（Turbo Frameで遅延読み込み可能） %>
-  <div class="plan-tab-time-rail">
-    <%= render "plans/time_rail", plan: @plan %>
-  </div>
-</div>
-
-<%# スポット未追加時のみ案内を表示（時刻レールに影響しないようlayoutの外に配置） %>
 <% if @plan.plan_spots.empty? %>
   <%= render "plans/plan_tab_guide" %>
+<% else %>
+  <%# 帰宅地点表示コントローラーのスコープ（トグルが帰宅ブロックを制御） %>
+  <div class="plan-tab-wrapper"
+       data-controller="plan-tab--goal-point-visibility"
+       data-plan-tab--goal-point-visibility-plan-id-value="<%= @plan.id %>">
+
+    <div class="plan-tab-layout" data-controller="plan-tab--time-rail-sync">
+      <%# ✅ 左カラム: ブロックコンテンツ %>
+      <div class="plan-tab-content">
+        <%= render "plans/start_point_block_edit" %>
+
+        <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
+        <% favorite_spots_map = FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) %>
+
+        <%# ✅ SortableJS の「親要素」(この中の .spot-block が入れ替わる) %>
+        <div id="plan-spots-sortable" data-sortable="plan-spots">
+          <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
+          <% plan_spots.each_with_index do |plan_spot, index| %>
+            <%= render "plans/spot_block_edit",
+                       plan_spot: plan_spot,
+                       favorite_spot: favorite_spots_map[plan_spot.spot_id],
+                       is_first: index == 0,
+                       is_last: index == plan_spots.size - 1 %>
+          <% end %>
+        </div>
+
+        <%# ✅ 帰宅地点（トグルで表示/非表示） %>
+        <%= render "plans/goal_point_block_edit", plan: @plan %>
+      </div>
+
+      <%# ✅ 右カラム: 時刻レール %>
+      <div class="plan-tab-time-rail">
+        <%= render "plans/time_rail", plan: @plan %>
+      </div>
+    </div>
+
+    <%# ✅ プラン設定カード（帰宅地点トグル + サマリー） %>
+    <div class="plan-settings-card" id="navibar_footer">
+      <div class="plan-settings-card__row">
+        <span class="plan-settings-card__label">帰宅地点表示</span>
+        <input
+          class="option-switch"
+          type="checkbox"
+          role="switch"
+          id="goal-point-visibility-switch-<%= @plan.id %>"
+          aria-label="帰宅地点の表示を切り替える"
+          data-plan-tab--goal-point-visibility-target="switch"
+          data-action="change->plan-tab--goal-point-visibility#toggle"
+        >
+      </div>
+      <div class="plan-settings-card__summary">
+        <%# 帰宅地点OFF時 %>
+        <div class="plan-summary plan-summary--spots-only">
+          <div class="plan-summary__item">
+            <i class="bi bi-signpost-2" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="spots-only-distance"><%= @plan.start_to_last_spot_distance %></span>
+            <span class="plan-summary__unit">km</span>
+          </div>
+          <div class="plan-summary__item">
+            <i class="bi bi-car-front" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="spots-only-time"><%= format_move_time(@plan.start_to_last_spot_move_time) %></span>
+          </div>
+        </div>
+        <%# 帰宅地点ON時 %>
+        <div class="plan-summary plan-summary--with-goal">
+          <div class="plan-summary__item">
+            <i class="bi bi-signpost-2" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="with-goal-distance"><%= @plan.total_distance %></span>
+            <span class="plan-summary__unit">km</span>
+          </div>
+          <div class="plan-summary__item">
+            <i class="bi bi-car-front" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="with-goal-time"><%= format_move_time(@plan.total_move_time) %></span>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <%= render "plans/plan_tab_actions", plan: @plan %>
+  </div>
 <% end %>

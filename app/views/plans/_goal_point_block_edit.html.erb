@@ -1,63 +1,40 @@
 <%# app/views/plans/_goal_point_block_edit.html.erb %>
+<%# 帰宅地点ブロック（親の plan-tab-wrapper コントローラーから制御される） %>
 <% plan ||= @plan %>
 <% goal_point = plan.goal_point %>
 
-<div
-  class="goal-point-section"
-  data-controller="plan-tab--goal-point-visibility"
-  data-plan-tab--goal-point-visibility-plan-id-value="<%= plan.id %>"
->
-  <div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
-    <div class="goal-point-block"
-         data-lat="<%= goal_point&.lat %>"
-         data-lng="<%= goal_point&.lng %>"
-         data-plan-tab--time-rail-sync-target="content"
-         data-time-rail-sync="goal-point">
-      <%# ✅ 上部：帰宅コンテンツ %>
-      <div class="goal-content">
-          <%# 3層構造: アイコン | タイトル | スペーサー %>
-          <div class="goal-header">
-            <span class="goal-icon"
-                  data-controller="ui--navibar-marker-button"
-                  data-point-type="goal"
-                  data-action="click->ui--navibar-marker-button#point"
-                  role="button"
-                  tabindex="0"
-                  aria-label="帰宅地点を地図で表示"></span>
+<div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
+  <div class="goal-point-block"
+       data-lat="<%= goal_point&.lat %>"
+       data-lng="<%= goal_point&.lng %>"
+       data-plan-tab--time-rail-sync-target="content"
+       data-time-rail-sync="goal-point">
+    <%# ✅ 上部：帰宅コンテンツ %>
+    <div class="goal-content">
+      <%# 3層構造: アイコン | タイトル | スペーサー %>
+      <div class="goal-header">
+        <span class="goal-icon"
+              data-controller="ui--navibar-marker-button"
+              data-point-type="goal"
+              data-action="click->ui--navibar-marker-button#point"
+              role="button"
+              tabindex="0"
+              aria-label="帰宅地点を地図で表示"></span>
 
-            <span class="goal-title goal-title--clickable"
-                  data-controller="ui--navibar-marker-button"
-                  data-point-type="goal"
-                  data-action="click->ui--navibar-marker-button#point"
-                  role="button"
-                  tabindex="0">帰宅</span>
+        <span class="goal-title goal-title--clickable"
+              data-controller="ui--navibar-marker-button"
+              data-point-type="goal"
+              data-action="click->ui--navibar-marker-button#point"
+              role="button"
+              tabindex="0">帰宅</span>
 
-            <div class="goal-spacer" aria-hidden="true"></div>
-          </div>
+        <div class="goal-spacer" aria-hidden="true"></div>
+      </div>
 
-          <%# 住所 %>
-          <div class="goal-address navibar-padding">
-            <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
-          </div>
-        </div>
-        <%# /.goal-content %>
-
+      <%# 住所 %>
+      <div class="goal-address navibar-padding">
+        <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
       </div>
     </div>
-
-  <% if plan.plan_spots.exists? %>
-    <%# ✅ 帰宅地点トグル（出発地点の有料道路トグルと同じ見た目に統一） %>
-    <div class="goal-point-toggle-row">
-      <span class="label">帰宅地点表示</span>
-      <input
-        class="option-switch"
-        type="checkbox"
-        role="switch"
-        id="goal-point-visibility-switch-<%= plan.id %>"
-        aria-label="帰宅地点の表示を切り替える"
-        data-plan-tab--goal-point-visibility-target="switch"
-        data-action="change->plan-tab--goal-point-visibility#toggle"
-      >
-    </div>
-  <% end %>
+  </div>
 </div>
