@@ -7,7 +7,7 @@
 .plan-summary {
   display: flex;
   justify-content: center;
-  gap: 32px;
+  gap: 24px;
 }
 
 .plan-summary__item {
@@ -51,6 +51,7 @@
 .plan-summary__minutes {
   margin-left: 2px;
 }
+
 
 // ✅ 帰宅地点トグルによる切り替え用
 .plan-summary--spots-only {
