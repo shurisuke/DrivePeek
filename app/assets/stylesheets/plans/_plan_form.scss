@@ -542,7 +542,7 @@ body.navibar-resizing .plan-form .plan-time-slot {
   padding: 14px 28px;
   border: none;
   border-radius: 0;
-  font-size: 17px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
   cursor: pointer;
@@ -699,6 +699,7 @@ body.navibar-resizing .plan-form .plan-time-slot {
       .plan-tab-actions__btn {
         flex: 1;
         padding: 14px 0;
+        font-size: 17px;
       }
 
       /* トグルボタンの上下マージンを削除 */
