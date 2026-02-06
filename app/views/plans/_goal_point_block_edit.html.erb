@@ -46,18 +46,46 @@
     </div>
 
   <% if plan.plan_spots.exists? %>
-    <%# ✅ 帰宅地点トグル（出発地点の有料道路トグルと同じ見た目に統一） %>
-    <div class="goal-point-toggle-row">
-      <span class="label">帰宅地点表示</span>
-      <input
-        class="option-switch"
-        type="checkbox"
-        role="switch"
-        id="goal-point-visibility-switch-<%= plan.id %>"
-        aria-label="帰宅地点の表示を切り替える"
-        data-plan-tab--goal-point-visibility-target="switch"
-        data-action="change->plan-tab--goal-point-visibility#toggle"
-      >
+    <%# ✅ プラン設定カード（帰宅地点トグル + サマリー） %>
+    <div class="plan-settings-card" id="navibar_footer">
+      <div class="plan-settings-card__row">
+        <span class="plan-settings-card__label">帰宅地点表示</span>
+        <input
+          class="option-switch"
+          type="checkbox"
+          role="switch"
+          id="goal-point-visibility-switch-<%= plan.id %>"
+          aria-label="帰宅地点の表示を切り替える"
+          data-plan-tab--goal-point-visibility-target="switch"
+          data-action="change->plan-tab--goal-point-visibility#toggle"
+        >
+      </div>
+      <div class="plan-settings-card__summary">
+        <%# 帰宅地点OFF時 %>
+        <div class="plan-summary plan-summary--spots-only">
+          <div class="plan-summary__item">
+            <i class="bi bi-signpost-2" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="spots-only-distance"><%= plan.start_to_last_spot_distance %></span>
+            <span class="plan-summary__unit">km</span>
+          </div>
+          <div class="plan-summary__item">
+            <i class="bi bi-car-front" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="spots-only-time"><%= format_move_time(plan.start_to_last_spot_move_time) %></span>
+          </div>
+        </div>
+        <%# 帰宅地点ON時 %>
+        <div class="plan-summary plan-summary--with-goal">
+          <div class="plan-summary__item">
+            <i class="bi bi-signpost-2" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="with-goal-distance"><%= plan.total_distance %></span>
+            <span class="plan-summary__unit">km</span>
+          </div>
+          <div class="plan-summary__item">
+            <i class="bi bi-car-front" aria-hidden="true"></i>
+            <span class="plan-summary__value" data-plan-total="with-goal-time"><%= format_move_time(plan.total_move_time) %></span>
+          </div>
+        </div>
+      </div>
     </div>
   <% end %>
 </div>

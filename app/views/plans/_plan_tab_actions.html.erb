@@ -1,0 +1,24 @@
+<%# プランタブ用フッター（スポットがある場合のみ表示） %>
+<% if plan.plan_spots.any? %>
+  <div class="plan-tab-actions__group">
+    <% if (nav_url = google_maps_nav_url(plan)) %>
+      <a href="<%= nav_url %>" target="_blank" rel="noopener"
+         class="plan-tab-actions__btn plan-tab-actions__btn--nav">
+        ナビ
+      </a>
+    <% end %>
+    <button type="button"
+            class="plan-tab-actions__btn plan-tab-actions__btn--save"
+            data-action="click->ui--save-modal#open">
+      保存
+    </button>
+    <button type="button"
+            class="plan-tab-actions__btn plan-tab-actions__btn--share"
+            data-controller="ui--share-modal"
+            data-ui--share-modal-url-value="<%= plan_url(plan) %>"
+            data-ui--share-modal-plan-id-value="<%= plan.id %>"
+            data-action="click->ui--share-modal#open">
+      共有
+    </button>
+  </div>
+<% end %>

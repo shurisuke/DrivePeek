@@ -83,6 +83,30 @@ module PlansHelper
     "#{spot_lines.join("\n")}\n\n"
   end
 
+  # Google Maps Directions URLを組み立て
+  # スポットが0件の場合はnilを返す
+  def google_maps_nav_url(plan)
+    spots = plan.plan_spots.includes(:spot).order(:position)
+    return nil if spots.empty?
+
+    start = plan.start_point
+    last = spots.last.spot
+    waypoints = spots[0...-1].map(&:spot)
+
+    params = { api: 1, travelmode: "driving" }
+    params[:origin] = "#{start.lat},#{start.lng}" if start&.lat && start&.lng
+    params[:destination] = last.name
+    params[:destination_place_id] = last.place_id if last.place_id.present?
+
+    if waypoints.any?
+      params[:waypoints] = waypoints.map(&:name).join("|")
+      ids = waypoints.filter_map(&:place_id)
+      params[:waypoint_place_ids] = ids.join("|") if ids.any?
+    end
+
+    "https://www.google.com/maps/dir/?#{params.to_query}"
+  end
+
   # 選択されたエリアをフォーマット
   # 全市区町村選択時は県名のみ表示
   def format_selected_cities(cities, cities_by_prefecture = {})

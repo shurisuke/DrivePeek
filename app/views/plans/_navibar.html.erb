@@ -40,11 +40,18 @@
         <%= render "plans/navibar_tabs", plan: plan %>
       </div>
 
-      <%# フッター（モバイル時はスクロール領域内に配置） %>
-      <div id="navibar_footer">
-        <%= render "plans/navibar_footer", plan: plan %>
-      </div>
     </div>
+  </div>
+
+  <%# プランタブ用フッター %>
+  <div class="plan-tab-actions"
+       id="plan_tab_actions"
+       data-ui--navibar-tab-target="footer"
+       data-tab="plan"
+       data-controller="ui--save-modal"
+       data-ui--save-modal-plan-id-value="<%= @plan.id %>"
+       data-ui--save-modal-title-value="<%= @plan.title %>">
+    <%= render "plans/plan_tab_actions", plan: @plan %>
   </div>
 
   <%# 提案タブ用フッター %>
@@ -52,27 +59,5 @@
        data-ui--navibar-tab-target="footer"
        data-tab="suggestion">
     <%= render "suggestions/form", plan: plan %>
-  </div>
-
-  <%# モバイル用アクションボタン（ナビバー内に配置） %>
-  <div class="navibar__actions"
-       data-ui--navibar-tab-target="footer"
-       data-tab="plan"
-       data-controller="ui--save-modal"
-       data-ui--save-modal-plan-id-value="<%= plan.id %>"
-       data-ui--save-modal-title-value="<%= plan.title %>">
-    <button type="button"
-            class="navibar__action-btn navibar__action-btn--share"
-            data-controller="ui--share-modal"
-            data-ui--share-modal-url-value="<%= plan_url(plan) %>"
-            data-ui--share-modal-plan-id-value="<%= plan.id %>"
-            data-action="click->ui--share-modal#open">
-      共有
-    </button>
-    <button type="button"
-            class="navibar__action-btn navibar__action-btn--save"
-            data-action="click->ui--save-modal#open">
-      保存
-    </button>
   </div>
 </aside>

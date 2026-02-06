@@ -34,7 +34,7 @@
   </div>
 </div>
 
-<%# スポット未追加時のみ案内を表示（時刻レールに影響しないようlayoutの外に配置） %>
+<%# スポットがない場合はガイド表示 %>
 <% if @plan.plan_spots.empty? %>
   <%= render "plans/plan_tab_guide" %>
 <% end %>

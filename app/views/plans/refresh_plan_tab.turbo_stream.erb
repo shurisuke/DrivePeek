@@ -3,8 +3,8 @@
   <%= render "plans/plan_tab", plan: @plan %>
 <% end %>
 
-<%= turbo_stream.update "navibar_footer" do %>
-  <%= render "plans/navibar_footer", plan: @plan %>
+<%= turbo_stream.update "plan_tab_actions" do %>
+  <%= render "plans/plan_tab_actions", plan: @plan %>
 <% end %>
 
 <%# InfoWindowのボタンを更新（開いている場合のみ） %>
