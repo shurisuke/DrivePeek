@@ -1,7 +1,7 @@
 # app/models/genre.rb
 class Genre < ApplicationRecord
-  # AI提案で非表示にするジャンル
-  AI_HIDDEN_SLUGS = %w[manga_cafe sports_ground farm cat_cafe dog_cafe].freeze
+  # カテゴリの表示順序
+  CATEGORY_ORDER = %w[食べる 見る 買う お風呂 動物 自然 遊ぶ 泊まる].freeze
 
   # 親子関係
   belongs_to :parent, class_name: "Genre", optional: true
@@ -28,27 +28,34 @@ class Genre < ApplicationRecord
     parent_id.present?
   end
 
+  # 指定IDのジャンルとその親・子を含めて展開
+  # @param ids [Array<Integer>] ジャンルIDの配列
+  # @return [Array<Integer>] 展開後のジャンルID配列
+  def self.expand_family(ids)
+    valid_ids = Array(ids).map(&:to_i).reject(&:zero?)
+    return [] if valid_ids.empty?
+
+    where(id: valid_ids).flat_map do |genre|
+      [ genre.id, genre.parent_id ] + where(parent_id: genre.id).pluck(:id)
+    end.compact.uniq
+  end
+
   # 検索フィルタ用: カテゴリ別にグループ化されたジャンル構造を返す
   # 戻り値: { "食べる" => [{ genre: グルメ, children: [ラーメン, 寿司, ...] }, ...], ... }
   def self.grouped_by_category
     all_genres = includes(:children).ordered.to_a
-    # トップレベルには親を持たない visible ジャンルのみ表示
     visible_root_genres = all_genres.select { |g| g.visible && g.parent_id.nil? }
+    grouped = visible_root_genres.group_by(&:category)
 
-    visible_root_genres.group_by(&:category).transform_values do |genres|
-      genres.map do |genre|
+    # CATEGORY_ORDER順で並び替え
+    CATEGORY_ORDER.each_with_object({}) do |cat, hash|
+      next unless grouped[cat]
+      hash[cat] = grouped[cat].map do |genre|
         {
           genre: genre,
           children: genre.children.select(&:visible).sort_by(&:position)
         }
       end
     end
-  end
-
-  # AI提案用: 不要なジャンルを除外したカテゴリ別リスト
-  def self.for_ai_suggestion
-    grouped_by_category.except("その他").transform_values do |groups|
-      groups.reject { |g| AI_HIDDEN_SLUGS.include?(g[:genre].slug) }
-    end.reject { |_, v| v.empty? }
   end
 end
