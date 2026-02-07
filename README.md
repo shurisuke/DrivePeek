@@ -84,7 +84,7 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
       <img src="https://github.com/user-attachments/assets/f0629f22-8a9d-452b-9bfc-d89a7ca27a95" alt="モバイル対応" height="400">
     </td>
     <td width="50%" align="center">
-      <img src="https://i.gyazo.com/710e58461ac63124d54ecb7f7b6f3847.png" alt="ナビ連携" height="400">
+      <img src="https://github.com/user-attachments/assets/4cde3215-106f-45f4-a95a-a2156e60154b" alt="ナビ連携" height="400">
     </td>
   </tr>
   <tr>
@@ -144,7 +144,7 @@ app/javascript/controllers/
 
 ## ER図
 
-<img alt="ER図" src="https://i.gyazo.com/301ff37253a0d2e6e3dcaa906b9c8971.png" />
+<img alt="ER図" src="https://github.com/user-attachments/assets/bca35b99-5b83-4301-95f1-ab2561062052" />
 
 
 ## テスト
