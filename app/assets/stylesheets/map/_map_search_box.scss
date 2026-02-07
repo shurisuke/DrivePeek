@@ -157,3 +157,96 @@ body.no-footer .plan-form.navibar--wide .plan-save {
   margin-top: 8px;
 }
 
+/* ==========================================
+   デスクトップ用：地図下部中央のアクションボタン
+========================================== */
+.map-bottom-actions {
+  position: absolute;
+  bottom: 12px;
+  top: auto;
+  /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
+  left: calc(
+    (var(--navibar-width) - var(--navibar-slide)) +
+    (100% - (var(--navibar-width) - var(--navibar-slide))) / 2
+  );
+  transform: translateX(-50%);
+  z-index: 10;
+
+  display: flex;
+  border-radius: 10px;
+  border: 1.5px solid rgba(0, 0, 0, 0.1);
+  overflow: hidden;
+  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 6px;
+    padding: 14px 28px;
+    border: none;
+    border-radius: 0;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    text-decoration: none;
+    transition: background-color 0.15s ease;
+
+    i {
+      font-size: 14px;
+    }
+
+    &--nav {
+      background: #fff;
+      color: #555;
+      border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: #f5f5f5;
+        color: #555;
+      }
+    }
+
+    &--save {
+      background: #fff;
+      color: var(--personal);
+      font-weight: 700;
+      border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+
+    &--share {
+      background: #fff;
+      color: #555;
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+  }
+
+  /* モバイルでは非表示（ナビバー内のボタンを使用） */
+  @media (max-width: 767px) {
+    display: none;
+  }
+
+  /* スポットなし時のメッセージ */
+  &--empty {
+    background: rgba(255, 255, 255, 0.9);
+    padding: 12px 24px;
+  }
+
+  &__message {
+    font-size: 14px;
+    color: #888;
+  }
+}
+
+/* プランバーが80%を超えたら非表示 */
+body.no-footer .plan-form.navibar--wide .map-bottom-actions {
+  display: none;
+}
+

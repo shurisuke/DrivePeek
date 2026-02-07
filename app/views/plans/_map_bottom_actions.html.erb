@@ -1,0 +1,36 @@
+<%#
+  デスクトップ用：地図下部中央のアクションボタン
+
+  locals:
+    - plan: Planモデル
+%>
+<% if plan.plan_spots.any? %>
+  <div class="map-bottom-actions"
+       data-controller="ui--save-modal"
+       data-ui--save-modal-plan-id-value="<%= plan.id %>"
+       data-ui--save-modal-title-value="<%= plan.title %>">
+    <% if (nav_url = google_maps_nav_url(plan)) %>
+      <a href="<%= nav_url %>" target="_blank" rel="noopener"
+         class="map-bottom-actions__btn map-bottom-actions__btn--nav">
+        ナビ
+      </a>
+    <% end %>
+    <button type="button"
+            class="map-bottom-actions__btn map-bottom-actions__btn--save"
+            data-action="click->ui--save-modal#open">
+      保存
+    </button>
+    <button type="button"
+            class="map-bottom-actions__btn map-bottom-actions__btn--share"
+            data-controller="ui--share-modal"
+            data-ui--share-modal-url-value="<%= plan_url(plan) %>"
+            data-ui--share-modal-plan-id-value="<%= plan.id %>"
+            data-action="click->ui--share-modal#open">
+      共有
+    </button>
+  </div>
+<% else %>
+  <div class="map-bottom-actions map-bottom-actions--empty">
+    <span class="map-bottom-actions__message">スポットを追加してください</span>
+  </div>
+<% end %>

@@ -57,6 +57,11 @@
     </button>
   </div>
 
+  <!-- デスクトップ用：地図下部中央のアクションボタン -->
+  <%= turbo_frame_tag "map_bottom_actions" do %>
+    <%= render "plans/map_bottom_actions", plan: plan %>
+  <% end %>
+
   <!-- 左ナビバー（Turbo Frame化） -->
   <%= turbo_frame_tag "navibar" do %>
     <%= render "plans/navibar", plan: plan %>
