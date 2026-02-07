@@ -2,7 +2,7 @@
 
 サービスURL：https://drivepeek.onrender.com/
 
-<img width="1200" alt="DrivePeek サービス画面" src="https://github.com/user-attachments/assets/9e32c5c4-4204-4477-a689-ee4d8f69324f" />
+<img width="1200" alt="DrivePeek サービス画面" src="https://github.com/user-attachments/assets/0dd1465b-ec63-472e-8a4f-e4d1d1830a64" />
 
 # ■ サービス概要
 **3つの探し方で見つけて、計画、そのまま出発。**
