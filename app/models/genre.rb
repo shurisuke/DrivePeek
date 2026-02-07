@@ -36,7 +36,7 @@ class Genre < ApplicationRecord
     return [] if valid_ids.empty?
 
     where(id: valid_ids).flat_map do |genre|
-      [genre.id, genre.parent_id] + where(parent_id: genre.id).pluck(:id)
+      [ genre.id, genre.parent_id ] + where(parent_id: genre.id).pluck(:id)
     end.compact.uniq
   end
 
@@ -58,5 +58,4 @@ class Genre < ApplicationRecord
       end
     end
   end
-
 end
