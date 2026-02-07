@@ -397,8 +397,8 @@
 }
 
 // メインビュー / ジャンル選択ビュー共通
-[data-suggestion--condition-modal-target="mainView"],
-[data-suggestion--condition-modal-target="genreView"] {
+[data-suggestion-tab--condition-modal-target="mainView"],
+[data-suggestion-tab--condition-modal-target="genreView"] {
   display: flex;
   flex-direction: column;
   flex: 1;
@@ -410,7 +410,7 @@
 }
 
 // プランモードのコンテンツ
-[data-suggestion--condition-modal-target="planContent"] {
+[data-suggestion-tab--condition-modal-target="planContent"] {
   flex: 1;
   overflow-y: auto;
 
@@ -420,7 +420,7 @@
 }
 
 // スポットモードのコンテンツ（縦中央寄せ）
-[data-suggestion--condition-modal-target="spotContent"] {
+[data-suggestion-tab--condition-modal-target="spotContent"] {
   flex: 1;
   display: flex;
   flex-direction: column;
