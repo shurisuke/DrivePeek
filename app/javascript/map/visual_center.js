@@ -55,7 +55,7 @@ const getDesktopOffsetY = () => {
   const topHeight = (searchBox?.offsetHeight || 50) + (floatingButtons?.offsetHeight || 40)
 
   // 下部: アクションバー（共有・保存ボタン）
-  const actionBar = document.querySelector(".plan-actions")
+  const actionBar = document.querySelector(".map-bottom-actions") || document.querySelector(".plan-actions")
   const bottomHeight = actionBar?.offsetHeight || 0
 
   // マーカーからInfoWindow中心までの距離（InfoWindow半分 + ピクセルオフセット）
@@ -132,7 +132,7 @@ export const getMapPadding = () => {
   const topPadding = (searchBox?.offsetHeight || 50) + 40
 
   // 下部: アクションバー（共有・保存ボタン）
-  const actionBar = document.querySelector(".plan-actions")
+  const actionBar = document.querySelector(".map-bottom-actions") || document.querySelector(".plan-actions")
   const bottomPadding = (actionBar?.offsetHeight || 50) + 20
 
   // 左右: 余白のみ
@@ -185,12 +185,7 @@ export const fitMapToSpots = (planData) => {
     }
   })
 
-  // 帰宅地点
-  const endPoint = planData?.end_point
-  if (endPoint?.lat && endPoint?.lng) {
-    bounds.extend({ lat: Number(endPoint.lat), lng: Number(endPoint.lng) })
-    pointCount++
-  }
+  // 帰宅地点はデフォルト非表示のためboundsに含めない
 
   if (pointCount === 0) return
 

@@ -3,6 +3,11 @@
   <%= render "plans/plan_tab", plan: @plan %>
 <% end %>
 
+<%# デスクトップ用アクションボタンを更新（ナビURL含む） %>
+<%= turbo_stream.update "map_bottom_actions" do %>
+  <%= render "plans/map_bottom_actions", plan: @plan %>
+<% end %>
+
 <%# InfoWindowのボタンを更新（開いている場合のみ） %>
 <% if @spot.present? %>
   <%# 削除後は@plan_spot.destroyed?がtrueになるのでnilを渡す %>

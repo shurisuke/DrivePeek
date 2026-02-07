@@ -15,6 +15,10 @@
   overscroll-behavior: contain;
   touch-action: pan-y;
 
+  /* スクロールバーを非表示 */
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
+
   /* 新しいコメントが上に表示される */
   display: flex;
   flex-direction: column;
@@ -167,6 +171,10 @@
   overflow-y: auto;
   transition: border-color 0.15s ease, box-shadow 0.15s ease;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+
+  /* スクロールバーを非表示 */
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 
   &:focus {
     border-color: #007AFF;

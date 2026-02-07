@@ -13,6 +13,7 @@ import {
   getEndPointMarker,
 } from "map/state"
 import { showInfoWindowWithFrame } from "map/infowindow"
+import { panToVisualCenter } from "map/visual_center"
 
 export default class extends Controller {
   // スポットのボタンクリック
@@ -30,7 +31,7 @@ export default class extends Controller {
     const map = getMapInstance()
     if (!map) return
 
-    map.panTo(marker.getPosition())
+    panToVisualCenter(marker.getPosition())
 
     // DOMからスポット情報を取得
     const spotId = spotBlock.dataset.spotId
@@ -66,7 +67,7 @@ export default class extends Controller {
 
     // ✅ 出発アイコンクリック
     if (type === "start" && startMarker) {
-      map.panTo(startMarker.getPosition())
+      panToVisualCenter(startMarker.getPosition())
       showInfoWindowWithFrame({
         anchor: startMarker,
         name: "出発",
@@ -78,7 +79,7 @@ export default class extends Controller {
 
     // ✅ 帰宅アイコンクリック（帰宅マーカーが存在する場合）
     if (type === "goal" && goalMarker) {
-      map.panTo(goalMarker.getPosition())
+      panToVisualCenter(goalMarker.getPosition())
       showInfoWindowWithFrame({
         anchor: goalMarker,
         name: "帰宅",
@@ -90,7 +91,7 @@ export default class extends Controller {
 
     // ✅ 帰宅マーカーが存在しない場合（出発地点と近すぎて省略された場合）
     if (type === "goal" && !goalMarker && startMarker) {
-      map.panTo(startMarker.getPosition())
+      panToVisualCenter(startMarker.getPosition())
       showInfoWindowWithFrame({
         anchor: startMarker,
         name: "帰宅",

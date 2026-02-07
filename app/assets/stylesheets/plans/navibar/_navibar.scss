@@ -46,4 +46,10 @@ html { scrollbar-gutter: stable; }
   overflow-y: scroll;
   scrollbar-gutter: stable;
   min-height: 0;
+
+  /* モバイル: スクロールは子要素に任せる */
+  @media (max-width: 767px) {
+    overflow-y: visible;
+    scrollbar-gutter: auto;
+  }
 }
