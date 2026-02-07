@@ -161,6 +161,10 @@ body.no-footer {
         -webkit-overflow-scrolling: touch;
         overscroll-behavior: contain;
 
+        /* スクロールバー非表示 */
+        scrollbar-width: none;
+        &::-webkit-scrollbar { display: none; }
+
         background: rgba(255, 255, 255, 0.95);
         box-sizing: border-box;
 
@@ -349,9 +353,11 @@ body.navibar-updating * {
 }
 
 .navibar__content-scroll {
-  /* ✅ 横振れの主因：スクロールバー有無で幅が変わるのを止める */
-  overflow-y: scroll;           /* 常にスクロールバー領域を確保 */
-  scrollbar-gutter: stable;     /* 対応ブラウザではさらに安定 */
+  overflow-y: scroll;
+
+  /* デスクトップ: スクロールバー非表示 */
+  scrollbar-width: none;
+  &::-webkit-scrollbar { display: none; }
 }
 
 
@@ -525,6 +531,11 @@ body.navibar-resizing .plan-form .plan-time-slot {
   padding: 16px;
   background: linear-gradient(to top, #fff 60%, transparent 100%);
   z-index: 10;
+
+  /* デスクトップでは非表示（地図上のボタンを使用） */
+  @media (min-width: 768px) {
+    display: none;
+  }
 }
 
 .plan-tab-actions__group {
