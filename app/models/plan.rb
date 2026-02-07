@@ -58,13 +58,8 @@ class Plan < ApplicationRecord
   # ジャンルで絞り込み（複数対応）
   # 親ジャンル選択時は子ジャンルも、子ジャンル選択時は親ジャンルも含めて検索
   scope :filter_by_genres, ->(genre_ids) {
-    valid_ids = Array(genre_ids).map(&:to_i).reject(&:zero?)
-    return all if valid_ids.empty?
-
-    # 選択されたジャンルの親・子両方を含めて展開
-    expanded_ids = Genre.where(id: valid_ids).flat_map do |genre|
-      [genre.id, genre.parent_id] + Genre.where(parent_id: genre.id).pluck(:id)
-    end.compact.uniq
+    expanded_ids = Genre.expand_family(genre_ids)
+    return all if expanded_ids.empty?
 
     joins(spots: :spot_genres).where(spot_genres: { genre_id: expanded_ids }).distinct
   }
@@ -86,8 +81,6 @@ class Plan < ApplicationRecord
       .or(where(id: joins(:plan_spots).select(:id)))
   }
 
-  # Callbacks
-
   def marker_data_for_edit
     {
       start_point: lat_lng_hash(start_point),
@@ -104,10 +97,9 @@ class Plan < ApplicationRecord
 
   # コミュニティプランプレビュー用（マーカー + ポリライン）
   def preview_data
-    ordered_plan_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-
+    spots = ordered_plan_spots
     {
-      spots: ordered_plan_spots.map do |ps|
+      spots: spots.map do |ps|
         {
           id: ps.spot.id,
           lat: ps.spot.lat,
@@ -119,7 +111,7 @@ class Plan < ApplicationRecord
         }
       end,
       # スポット間のポリラインのみ（最後のスポット→帰宅は除外）
-      polylines: ordered_plan_spots[0..-2].map(&:polyline).compact
+      polylines: spots[0..-2].map(&:polyline).compact
     }
   end
 
@@ -149,41 +141,37 @@ class Plan < ApplicationRecord
 
   # ✅ スポット間のみの合計距離（公開用：start→spot1 と lastSpot→goal を除く）
   def spots_only_distance
-    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-    return 0.0 if ordered_spots.size < 2
+    spots = ordered_plan_spots
+    return 0.0 if spots.size < 2
 
-    # 最後のスポット以外の move_distance を合計
-    ordered_spots[0..-2].sum(&:move_distance).to_f.round(1)
+    spots[0..-2].sum(&:move_distance).to_f.round(1)
   end
 
   # ✅ スポット間のみの合計時間（公開用：start→spot1 と lastSpot→goal を除く）
   def spots_only_move_time
-    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-    return 0 if ordered_spots.size < 2
+    spots = ordered_plan_spots
+    return 0 if spots.size < 2
 
-    # 最後のスポット以外の move_time を合計
-    ordered_spots[0..-2].sum(&:move_time).to_i
+    spots[0..-2].sum(&:move_time).to_i
   end
 
   # ✅ 出発地点→最後のスポットまでの距離（帰宅地点を除く）
   def start_to_last_spot_distance
-    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-    return 0.0 if ordered_spots.empty?
+    spots = ordered_plan_spots
+    return 0.0 if spots.empty?
 
     distance = start_point&.move_distance.to_f
-    # 最後のスポット以外の move_distance を合計（最後のスポットは帰宅地点への距離）
-    distance += ordered_spots[0..-2].sum(&:move_distance) if ordered_spots.size > 1
+    distance += spots[0..-2].sum(&:move_distance) if spots.size > 1
     distance.round(1)
   end
 
   # ✅ 出発地点→最後のスポットまでの時間（帰宅地点を除く）
   def start_to_last_spot_move_time
-    ordered_spots = plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-    return 0 if ordered_spots.empty?
+    spots = ordered_plan_spots
+    return 0 if spots.empty?
 
     time = start_point&.move_time.to_i
-    # 最後のスポット以外の move_time を合計（最後のスポットは帰宅地点への時間）
-    time += ordered_spots[0..-2].sum(&:move_time) if ordered_spots.size > 1
+    time += spots[0..-2].sum(&:move_time) if spots.size > 1
     time
   end
 
@@ -255,6 +243,12 @@ class Plan < ApplicationRecord
   end
 
   private
+
+  # position順に並んだplan_spotsを返す
+  # preload済みならRubyでソート、未ロードならSQLでorder
+  def ordered_plan_spots
+    plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
+  end
 
   def recalculator
     Plan::Recalculator.new(self)

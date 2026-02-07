@@ -91,13 +91,8 @@ class Spot < ApplicationRecord
   # ジャンルで絞り込み（複数対応）
   # 親ジャンル選択時は子ジャンルも、子ジャンル選択時は親ジャンルも含めて検索
   scope :filter_by_genres, ->(genre_ids) {
-    valid_ids = Array(genre_ids).map(&:to_i).reject(&:zero?)
-    return all if valid_ids.empty?
-
-    # 選択されたジャンルの親・子両方を含めて展開
-    expanded_ids = Genre.where(id: valid_ids).flat_map do |genre|
-      [genre.id, genre.parent_id] + Genre.where(parent_id: genre.id).pluck(:id)
-    end.compact.uniq
+    expanded_ids = Genre.expand_family(genre_ids)
+    return all if expanded_ids.empty?
 
     joins(:spot_genres).where(spot_genres: { genre_id: expanded_ids }).distinct
   }
