@@ -123,7 +123,7 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
 
 ## 技術選定の理由
 - **Ruby on Rails**: プランやスポットの管理等、サーバー側の処理はCRUDが中心のため、規約に沿うだけで素早く実装できるRailsを選択
-- **Hotwire (Turbo + Stimulus)**: Rails標準搭載のフロントエンド技術として採用。サーバー側でUI状態を管理でき、別途フレームワークなしでリアルタイムなUI更新を実現できた
+- **Hotwire (Turbo + Stimulus)**: 地図操作など複雑なUIが必要な箇所はStimulusで対応しつつ、それ以外はTurboによるサーバー主導でJSを最小化。React/Vue等を導入せず、必要な複雑さだけに限定した
 - **Google Maps API**: Mapbox等と比較し、日本のスポットデータの充実度から選択
 
 ## Stimulus コントローラ構成
