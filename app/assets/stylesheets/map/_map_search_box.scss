@@ -147,15 +147,19 @@ body.no-footer .plan-form.navibar--wide .plan-save {
       box-shadow: 0 4px 12px rgba(118, 75, 162, 0.5);
     }
   }
+
+  /* オレンジ（盛り上がりピンをクリア） */
+  &--orange {
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+
+    &:hover {
+      background: linear-gradient(135deg, #EA580C 0%, #DC2626 100%);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.5);
+    }
+  }
 }
 
-/* 提案ピンクリアボタン: 常に検索ボタンの下に配置 */
-#suggestion-pin-clear {
-  position: absolute;
-  top: 100%;
-  left: 0;
-  margin-top: 8px;
-}
 
 /* ==========================================
    デスクトップ用：地図下部中央のアクションボタン

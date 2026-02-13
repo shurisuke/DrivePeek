@@ -1,0 +1,182 @@
+/* ==========================================
+   人気スポット（盛り上がってるスポット）
+========================================== */
+
+// トリガーボタン（ハンバーガーメニューの下）
+.popular-spots-trigger {
+  position: fixed;
+  top: 84px;
+  right: 24px;
+  z-index: 100;
+
+  &__btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    border: none;
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(249, 115, 22, 0.4);
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    i {
+      font-size: 20px;
+      color: #fff;
+    }
+
+    &:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 12px rgba(249, 115, 22, 0.5);
+    }
+  }
+
+  &__detail-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    background: #fff;
+    border: 1px solid #F97316;
+    border-radius: 50%;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 24px;
+      font-weight: bold;
+      color: #EA580C;
+    }
+
+    &:hover {
+      background: #FFF7ED;
+      border-color: #EA580C;
+    }
+  }
+}
+
+// モーダル
+.popular-spots-modal {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  z-index: 10000;
+
+  &__overlay {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.5);
+  }
+
+  &__dialog {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: min(400px, 90vw);
+    max-height: 80vh;
+    background: #fff;
+    border-radius: 16px;
+    overflow: hidden;
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px 20px;
+    border-bottom: 1px solid #eee;
+  }
+
+  &__title {
+    margin: 0;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  &__close-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    background: transparent;
+    border: none;
+    border-radius: 8px;
+    cursor: pointer;
+
+    &:hover {
+      background: #f5f5f5;
+    }
+
+    i {
+      font-size: 16px;
+      color: #666;
+    }
+  }
+
+  &__list {
+    flex: 1;
+    overflow-y: auto;
+
+    // テキスト色をオレンジに
+    .selection-list__parent span,
+    .selection-list__item span {
+      color: #F97316;
+    }
+  }
+
+  &__submit-btn {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    width: 100%;
+    padding: 14px 20px;
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    border: none;
+    color: #fff;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+
+    &:hover {
+      background: linear-gradient(135deg, #EA580C 0%, #DC2626 100%);
+    }
+
+    i {
+      font-size: 16px;
+    }
+  }
+}
+
+// モバイル対応
+@media (max-width: 767px) {
+  .popular-spots-trigger {
+    top: 60px;
+    right: 12px;
+
+    &__btn {
+      width: 44px;
+      height: 44px;
+
+      i {
+        font-size: 18px;
+      }
+    }
+  }
+}

@@ -18,6 +18,9 @@
     >
   </div>
 
+  <%# 人気スポットボタン（ハンバーガーメニューの下） %>
+  <%= render "shared/popular_spots_button" %>
+
   <!-- 地図上のフローティングボタン群 -->
   <div class="map-floating-buttons">
     <!-- コミュニティプランプレビュー閉じるボタン -->
@@ -54,6 +57,18 @@
             data-action="click->suggestion-tab--pin-clear#clear">
       <i class="bi bi-x-lg" aria-hidden="true"></i>
       <i class="bi bi-stars" aria-hidden="true"></i>
+    </button>
+
+    <!-- 盛り上がりピンクリアボタン -->
+    <button type="button"
+            id="popular-spots-clear"
+            class="map-floating-btn map-floating-btn--orange"
+            hidden
+            title="盛り上がりピンをクリア"
+            data-controller="ui--popular-spots-clear"
+            data-action="click->ui--popular-spots-clear#clear">
+      <i class="bi bi-x-lg" aria-hidden="true"></i>
+      <i class="bi bi-fire" aria-hidden="true"></i>
     </button>
   </div>
 
