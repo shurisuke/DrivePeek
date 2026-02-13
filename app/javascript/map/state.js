@@ -26,6 +26,9 @@ let communityPreviewPolylines = []; // コミュニティプランの経路（�
 // --- 単一スポットピン（カード・スポット詳細から地図表示用） ---
 let spotPinMarker = null;           // 単一スポットピン（単体）
 
+// --- 人気スポットマーカー ---
+let popularSpotMarkers = [];        // 人気スポット（配列）
+
 // --- 提案マーカー ---
 let suggestionMarkers = [];         // 提案スポット（配列）
 let suggestionOverlays = [];        // 提案パルスオーバーレイ（配列）
@@ -161,6 +164,19 @@ export const setSpotPinMarker = (marker) => {
   clearSpotPinMarker();
   spotPinMarker = marker;
 };
+
+// --- 人気スポットマーカー ---
+export const clearPopularSpotMarkers = () => {
+  popularSpotMarkers.forEach((m) => m.setMap(null));
+  popularSpotMarkers = [];
+};
+
+export const setPopularSpotMarkers = (markers) => {
+  clearPopularSpotMarkers();
+  popularSpotMarkers = markers;
+};
+
+export const getPopularSpotMarkers = () => popularSpotMarkers;
 
 // --- 提案マーカー ---
 // 全クリア（マーカー + パルス + 円）

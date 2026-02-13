@@ -17,6 +17,18 @@ class Spot < ApplicationRecord
   # 近傍検索の閾値（0.001度 ≈ 約100m）
   PROXIMITY_THRESHOLD = 0.001
 
+  # 表示範囲内の人気スポットを取得（お気に入り数順）
+  scope :popular_in_bounds, ->(north:, south:, east:, west:, genre_ids: nil, limit: 10) {
+    base = where(lat: south..north, lng: west..east)
+           .left_joins(:favorite_spots)
+           .group(:id)
+           .select("spots.*, COUNT(favorite_spots.id) AS favorites_count")
+           .order("favorites_count DESC")
+           .limit(limit)
+
+    genre_ids.present? ? base.filter_by_genres(genre_ids.map(&:to_i)) : base
+  }
+
   # 近傍のSpotを検索
   scope :nearby, ->(lat:, lng:, threshold: PROXIMITY_THRESHOLD) {
     where(lat: (lat - threshold)..(lat + threshold))

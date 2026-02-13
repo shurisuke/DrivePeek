@@ -95,6 +95,8 @@ Rails.application.routes.draw do
   # API（JSON）
   # ========================================
   namespace :api do
+    resources :popular_spots, only: %i[index]
+
     resource :preview, only: %i[show], controller: "plans/previews"
 
     resources :spots, only: [] do

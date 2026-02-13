@@ -1,0 +1,83 @@
+<%# 人気スポットボタン（ハンバーガーメニューの下に配置） %>
+<% genres_by_category = Genre.grouped_by_category %>
+
+<div class="popular-spots-trigger"
+     data-controller="ui--popular-spots"
+     data-action="keydown.esc->ui--popular-spots#closeModal">
+  <%# メインボタン（クリックで即表示） %>
+  <button type="button"
+          class="popular-spots-trigger__btn"
+          data-action="click->ui--popular-spots#show"
+          title="盛り上がってるスポット">
+    <i class="bi bi-fire"></i>
+  </button>
+
+  <%# 詳細ボタン（ジャンル選択モーダルを開く） %>
+  <button type="button"
+          class="popular-spots-trigger__detail-btn"
+          data-action="click->ui--popular-spots#openModal"
+          title="ジャンルを選択">
+    <i class="bi bi-plus"></i>
+  </button>
+
+  <%# ジャンル選択モーダル %>
+  <div class="popular-spots-modal" hidden data-ui--popular-spots-target="modal">
+    <div class="popular-spots-modal__overlay" data-action="click->ui--popular-spots#closeModal"></div>
+    <div class="popular-spots-modal__dialog">
+      <div class="popular-spots-modal__header">
+        <h3 class="popular-spots-modal__title">ジャンルを選択</h3>
+        <button type="button"
+                class="popular-spots-modal__close-btn"
+                data-action="click->ui--popular-spots#closeModal">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="selection-list popular-spots-modal__list">
+        <% genres_by_category.each do |category, groups| %>
+          <div class="selection-list__region">
+            <div class="selection-list__region-label"><%= category %></div>
+            <% groups.each do |group| %>
+              <% genre = group[:genre] %>
+              <% children = group[:children] %>
+              <% if children.present? %>
+                <div class="selection-list__group" data-parent-group>
+                  <div class="selection-list__parent" data-action="click->ui--popular-spots#toggleParent">
+                    <input type="checkbox" data-parent-checkbox
+                           data-action="click->ui--popular-spots#selectParent">
+                    <span><%= genre.name %></span>
+                    <i class="bi bi-chevron-down selection-list__toggle"
+                       data-action="click->ui--popular-spots#toggleGroup"></i>
+                  </div>
+                  <div class="selection-list__children">
+                    <% children.each do |child| %>
+                      <label class="selection-list__item">
+                        <input type="checkbox" name="genre_ids[]" value="<%= child.id %>"
+                               data-action="change->ui--popular-spots#updateParent"
+                               data-ui--popular-spots-target="genreCheckbox">
+                        <span><%= child.name %></span>
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <label class="selection-list__item">
+                  <input type="checkbox" name="genre_ids[]" value="<%= genre.id %>"
+                         data-ui--popular-spots-target="genreCheckbox">
+                  <span><%= genre.name %></span>
+                </label>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <button type="button"
+              class="popular-spots-modal__submit-btn"
+              data-action="click->ui--popular-spots#submit">
+        <i class="bi bi-fire"></i>
+        決定
+      </button>
+    </div>
+  </div>
+</div>
