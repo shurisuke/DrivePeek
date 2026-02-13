@@ -1,26 +1,28 @@
 <%# 人気スポットボタン（ハンバーガーメニューの下に配置） %>
 <% genres_by_category = Genre.grouped_by_category %>
 
-<div class="popular-spots-trigger"
-     data-controller="ui--popular-spots"
+<div data-controller="ui--popular-spots"
      data-action="keydown.esc->ui--popular-spots#closeModal">
-  <%# メインボタン（クリックで即表示） %>
-  <button type="button"
-          class="popular-spots-trigger__btn"
-          data-action="click->ui--popular-spots#show"
-          title="盛り上がってるスポット">
-    <i class="bi bi-fire"></i>
-  </button>
+  <%# トリガーボタン %>
+  <div class="popular-spots-trigger">
+    <%# メインボタン（クリックで即表示） %>
+    <button type="button"
+            class="popular-spots-trigger__btn"
+            data-action="click->ui--popular-spots#show"
+            title="盛り上がってるスポット">
+      <i class="bi bi-fire"></i>
+    </button>
 
-  <%# 詳細ボタン（ジャンル選択モーダルを開く） %>
-  <button type="button"
-          class="popular-spots-trigger__detail-btn"
-          data-action="click->ui--popular-spots#openModal"
-          title="ジャンルを選択">
-    <i class="bi bi-plus"></i>
-  </button>
+    <%# 詳細ボタン（ジャンル選択モーダルを開く） %>
+    <button type="button"
+            class="popular-spots-trigger__detail-btn"
+            data-action="click->ui--popular-spots#openModal"
+            title="ジャンルを選択">
+      <i class="bi bi-plus"></i>
+    </button>
+  </div>
 
-  <%# ジャンル選択モーダル %>
+  <%# ジャンル選択モーダル（トリガーの外に配置でz-index問題を解決） %>
   <div class="popular-spots-modal" hidden data-ui--popular-spots-target="modal">
     <div class="popular-spots-modal__overlay" data-action="click->ui--popular-spots#closeModal"></div>
     <div class="popular-spots-modal__dialog">

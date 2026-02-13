@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, clearPopularSpotMarkers, setPopularSpotMarkers } from "map/state"
-import { showInfoWindowWithFrame } from "map/infowindow"
+import { showInfoWindowWithFrame, closeInfoWindow, closeMobileInfoWindow } from "map/infowindow"
 import { getMapPadding } from "map/visual_center"
 
 // ================================================================
@@ -26,8 +26,25 @@ export default class extends Controller {
   // ============================================
 
   openModal() {
+    // InfoWindowを閉じる
+    closeInfoWindow()
+    closeMobileInfoWindow()
+
+    // モバイル時はナビバーボトムシートを閉じる
+    this.#collapseBottomSheet()
+
     this.modalTarget.hidden = false
     document.body.style.overflow = "hidden"
+  }
+
+  #collapseBottomSheet() {
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return
+
+    const controller = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
+    if (controller && controller.isMobile) {
+      controller.collapse()
+    }
   }
 
   closeModal() {
