@@ -1,5 +1,3 @@
-<% content_for :hide_footer, true %>
-
 <div class="top-hero">
   <!-- すりガラスカード -->
   <div class="top-hero__card">
@@ -9,9 +7,9 @@
     <% end %>
 
     <div class="top-hero__logo">
-      <%= image_tag "drivepeek_icon.png", width: 64, height: 64, alt: "DrivePeek" %>
+      <%= image_tag "car.png", width: 64, height: 64, alt: "DrivePeek" %>
     </div>
-    <h1 class="top-hero__title">DrivePeek</h1>
+    <h1 class="top-hero__title"><span class="top-hero__title-drive">Drive</span><span class="top-hero__title-peek">Peek</span></h1>
     <p class="top-hero__tagline">地図 × AI × 誰かの旅で<br>理想のドライブプランを</p>
 
     <div class="top-hero__actions">
@@ -42,13 +40,4 @@
       </div>
     </div>
   </div>
-
-  <!-- フッター -->
-  <footer class="top-hero__footer">
-    <%= link_to "利用規約", terms_path %>
-    <span>|</span>
-    <%= link_to "プライバシーポリシー", privacy_path %>
-    <span>|</span>
-    <%= link_to "お問い合わせ", new_contact_path %>
-  </footer>
 </div>

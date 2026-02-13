@@ -92,22 +92,39 @@
 }
 
 .top-hero__logo {
-  margin-bottom: 0.75rem;
+  margin: 0 auto 0.75rem;
+  width: 90px;
+  height: 90px;
+  background: linear-gradient(180deg, color-mix(in srgb, var(--personal) 90%, white) 0%, var(--personal) 100%);
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow:
+    0 4px 12px color-mix(in srgb, var(--personal) 25%, transparent),
+    0 0 0 4px color-mix(in srgb, var(--personal) 10%, transparent);
 
   img {
-    filter: drop-shadow(0 4px 8px rgba(0, 0, 0, 0.15));
+    width: 90px;
+    height: 90px;
+    object-fit: contain;
   }
 }
 
 .top-hero__title {
   font-size: 3rem;
   font-weight: 800;
-  background: linear-gradient(135deg, var(--personal) 0%, color-mix(in srgb, var(--personal) 70%, black) 100%);
-  -webkit-background-clip: text;
-  -webkit-text-fill-color: transparent;
-  background-clip: text;
-  letter-spacing: -1px;
+  letter-spacing: 0;
   margin: 0 0 0.75rem;
+}
+
+.top-hero__title-drive {
+  color: #333;
+  margin-right: 2px;
+}
+
+.top-hero__title-peek {
+  color: var(--personal);
 }
 
 .top-hero__tagline {
