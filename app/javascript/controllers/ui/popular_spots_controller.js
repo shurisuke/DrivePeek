@@ -1,14 +1,15 @@
-import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, clearPopularSpotMarkers, setPopularSpotMarkers } from "map/state"
-import { showInfoWindowWithFrame, closeInfoWindow, closeMobileInfoWindow } from "map/infowindow"
-import { getMapPadding } from "map/visual_center"
-
+// app/javascript/controllers/ui/popular_spots_controller.js
 // ================================================================
 // PopularSpotsController
 // 用途: 人気スポット（盛り上がってるスポット）の表示制御
 // - 炎ボタンクリック → 即座に人気スポットを地図に表示
 // - 詳細ボタン → ジャンル選択モーダルを開く（複数選択可）
 // ================================================================
+
+import { Controller } from "@hotwired/stimulus"
+import { getMapInstance, clearPopularSpotMarkers, setPopularSpotMarkers } from "map/state"
+import { showInfoWindowWithFrame, closeInfoWindow, closeMobileInfoWindow } from "map/infowindow"
+import { getMapPadding } from "map/visual_center"
 
 export default class extends Controller {
   static targets = ["modal", "genreCheckbox"]
@@ -141,7 +142,7 @@ export default class extends Controller {
     genreIds.forEach(id => params.append("genre_ids[]", id))
 
     try {
-      const response = await fetch(`/api/popular_spots?${params}`)
+      const response = await fetch(`/popular_spots?${params}`)
       if (!response.ok) throw new Error("API error")
 
       const data = await response.json()

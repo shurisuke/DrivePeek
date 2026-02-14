@@ -1,6 +1,6 @@
 // app/javascript/controllers/plan/spot_delete_controller.js
 import { Controller } from "@hotwired/stimulus"
-import { removeSpotFromPlan } from "services/api_client"
+import { removeSpotFromPlan } from "services/navibar_api"
 
 export default class extends Controller {
   static values = {

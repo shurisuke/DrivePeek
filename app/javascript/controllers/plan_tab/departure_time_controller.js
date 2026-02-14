@@ -1,25 +1,16 @@
-// app/javascript/controllers/start_departure_time_controller.js
+// app/javascript/controllers/plan_tab/departure_time_controller.js
 // ================================================================
-// Start Departure Time Controller（単一責務）
-// 用途: 出発ブロックの「出発時間」をiOS風ホイールピッカーで入力し、
+// DepartureTimeController
+// 用途: 出発ブロックの「出発時間」をホイールピッカーで入力し、
 //       変更時にAPIで保存する
-// 前提: Turbo Frame で navibar が差し替わっても、connect で確実に再初期化される
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { patchTurboStream } from "services/api_client"
+import { patchTurboStream } from "services/navibar_api"
 
 export default class extends Controller {
   static targets = ["trigger"]
   static values = { planId: Number, current: String }
-
-  connect() {
-    // 初期化処理があれば追加
-  }
-
-  disconnect() {
-    // クリーンアップ処理があれば追加
-  }
 
   // トリガーボタンクリックでピッカーを開く
   openPicker(event) {
@@ -145,8 +136,7 @@ export default class extends Controller {
     if (!timeStr || !this.planIdValue) return
 
     try {
-      await patchTurboStream(`/api/start_point`, {
-        plan_id: this.planIdValue,
+      await patchTurboStream(`/plans/${this.planIdValue}/start_point`, {
         start_point: { departure_time: timeStr },
       })
       // 保存成功 → turbo_stream で navibar が自動更新される

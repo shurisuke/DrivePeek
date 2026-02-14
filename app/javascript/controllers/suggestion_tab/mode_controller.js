@@ -1,7 +1,7 @@
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, clearSuggestionMarkers, setSuggestionAreaCircle } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
-import { postTurboStream } from "services/api_client"
+import { postTurboStream } from "services/navibar_api"
 
 // ================================================================
 // SuggestModeController

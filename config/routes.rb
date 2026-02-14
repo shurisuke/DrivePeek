@@ -24,7 +24,7 @@ Rails.application.routes.draw do
   end
 
   # ========================================
-  # ルート
+  # トップページ
   # ========================================
   authenticated :user do
     root to: "plans#new", as: :authenticated_root
@@ -33,6 +33,51 @@ Rails.application.routes.draw do
   unauthenticated do
     root to: "static_pages#top", as: :unauthenticated_root
   end
+
+  # ========================================
+  # プラン関連
+  # ========================================
+  resources :plans, only: %i[index show new create edit update destroy] do
+    resource :start_point, only: %i[update]
+    resource :goal_point, only: %i[update]
+    patch "plan_spots/reorder", to: "plan_spot_reorders#update"
+    post "plan_spots/adopt", to: "plan_spot_adoptions#create"
+    resources :plan_spots, only: %i[create update destroy]
+  end
+
+  # ========================================
+  # スポット関連
+  # ========================================
+  resources :spots, only: %i[show] do
+    resources :comments, only: %i[create destroy], controller: "spot_comments"
+    resource :genres, only: %i[show], controller: "spot_genres"
+  end
+
+  resources :popular_spots, only: %i[index]
+
+  # ========================================
+  # AI提案
+  # ========================================
+  resource :suggestion_history, only: %i[destroy]
+
+  resource :suggestions, only: [] do
+    post :suggest
+    post :finish
+  end
+
+  # ========================================
+  # InfoWindow
+  # ========================================
+  resource :infowindow, only: %i[show create]
+
+  # ========================================
+  # コミュニティ・お気に入り
+  # ========================================
+  get "community", to: "community#index"
+  get "favorites", to: "favorites#index"
+
+  resources :favorite_spots, only: %i[create destroy]
+  resources :favorite_plans, only: %i[create destroy]
 
   # ========================================
   # 設定
@@ -45,71 +90,6 @@ Rails.application.routes.draw do
     get :sns
     get :account
     get :visibility
-  end
-
-  # ========================================
-  # プラン関連
-  # ========================================
-  namespace :plans do
-    resources :mine, only: %i[index]
-  end
-
-  resources :plans, only: %i[show new create edit update destroy] do
-    resources :plan_spots, only: %i[destroy]
-  end
-
-  # ========================================
-  # 提案機能（AIアシスタント）
-  # ========================================
-  resources :suggestion_logs, only: [] do
-    delete :destroy_all, on: :collection
-  end
-
-  resource :suggestions, only: [] do
-    post :suggest
-    post :finish
-  end
-
-  # ========================================
-  # スポット関連
-  # ========================================
-  resources :spots, only: %i[show] do
-    resources :comments, only: %i[create destroy], controller: "spot_comments"
-  end
-
-  # ========================================
-  # コミュニティ・お気に入り
-  # ========================================
-  get "community", to: "community#index"
-  get "favorites", to: "favorites#index"
-
-  resources :favorite_spots, only: %i[create destroy]
-  resources :favorite_plans, only: %i[create destroy]
-
-  # ========================================
-  # InfoWindow
-  # ========================================
-  resource :infowindow, only: %i[show create]
-
-  # ========================================
-  # API（JSON）
-  # ========================================
-  namespace :api do
-    resources :popular_spots, only: %i[index]
-
-    resources :spots, only: [] do
-      resource :genres, only: %i[show], controller: "spots/genres"
-    end
-
-    resource :start_point, only: %i[update]
-    resource :goal_point, only: %i[update]
-
-    resources :plan_spots, only: %i[create update] do
-      collection do
-        patch :reorder, to: "plan_spot_reorders#update"
-        post :adopt, to: "plan_spot_adoptions#create"
-      end
-    end
   end
 
   # ========================================

@@ -47,6 +47,8 @@
       background: #fff;
       box-shadow: 0 1px 4px rgba(0, 0, 0, 0.18);
 
+      /* ✅ 明示的に初期値を設定（OFF→ONとON→OFF両方のトランジションを確実に動作させる） */
+      transform: translateX(0);
       transition: transform 0.15s ease;
     }
 
@@ -55,6 +57,23 @@
 
       &::after {
         transform: translateX(13px);
+      }
+    }
+
+    /* ✅ JS制御用：:checkedに依存しない強制スタイル */
+    &.is-on {
+      background-color: var(--personal) !important;
+
+      &::after {
+        transform: translateX(13px) !important;
+      }
+    }
+
+    &.is-off {
+      background-color: #d0d5d2 !important;
+
+      &::after {
+        transform: translateX(0) !important;
       }
     }
 

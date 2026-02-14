@@ -95,26 +95,6 @@ class Plan < ApplicationRecord
     }
   end
 
-  # コミュニティプランプレビュー用（マーカー + ポリライン）
-  def preview_data
-    spots = ordered_plan_spots
-    {
-      spots: spots.map do |ps|
-        {
-          id: ps.spot.id,
-          lat: ps.spot.lat,
-          lng: ps.spot.lng,
-          name: ps.spot.name,
-          address: ps.spot.address,
-          place_id: ps.spot.place_id,
-          genres: ps.spot.genres.first(2).map(&:name)
-        }
-      end,
-      # スポット間のポリラインのみ（最後のスポット→帰宅は除外）
-      polylines: spots[0..-2].map(&:polyline).compact
-    }
-  end
-
   # ✅ 合計走行距離（km）
   # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
   def total_distance
@@ -212,16 +192,25 @@ class Plan < ApplicationRecord
   end
 
   # ================================================================
-  # プラン採用（AI提案 / コミュニティプラン）
+  # スポット操作（採用・並び替え）
   # ================================================================
 
-  # スポットを一括置換して経路再計算
-  # @param spot_ids [Array<Integer>] 採用するスポットのID配列
+  # スポットを一括置換して経路再計算（AI提案の採用）
+  # @param spot_ids [Array<Integer>] spot ID配列（検証済み）
   def adopt_spots!(spot_ids)
     transaction do
       plan_spots.destroy_all
       spot_ids.each { |id| plan_spots.create!(spot_id: id) }
       recalculate_for!(nil, action: :create)
+    end
+  end
+
+  # スポットの並び順を変更して経路再計算
+  # @param ordered_ids [Array] 並び替え後のplan_spot ID配列（検証済み）
+  def reorder_spots!(ordered_ids)
+    transaction do
+      PlanSpot.reorder_for_plan!(plan: self, ordered_ids: ordered_ids.map(&:to_i))
+      recalculate_for!(nil, action: :reorder)
     end
   end
 

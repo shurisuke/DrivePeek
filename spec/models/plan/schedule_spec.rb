@@ -87,8 +87,7 @@ RSpec.describe Plan::Schedule, type: :model do
 
     context "出発時間が未設定の場合" do
       before do
-        start_point = create(:start_point, plan: plan, departure_time: nil)
-        plan.update!(start_point: start_point)
+        plan.start_point.update!(departure_time: nil)
         create(:plan_spot, plan: plan, spot: spot1, position: 0)
       end
 
@@ -126,11 +125,10 @@ RSpec.describe Plan::Schedule, type: :model do
     let(:spot) { create(:spot) }
 
     before do
-      start_point = create(:start_point,
-                           plan: plan,
-                           departure_time: Time.zone.local(2000, 1, 1, 23, 0),
-                           move_time: 90)
-      plan.update!(start_point: start_point)
+      plan.start_point.update!(
+        departure_time: Time.zone.local(2000, 1, 1, 23, 0),
+        move_time: 90
+      )
       create(:plan_spot, plan: plan, spot: spot, position: 0, stay_duration: 30)
     end
 
