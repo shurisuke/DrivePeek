@@ -7,7 +7,7 @@
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { patchTurboStream } from "services/api_client"
+import { patchTurboStream } from "services/navibar_api"
 
 export default class extends Controller {
   static targets = ["trigger"]

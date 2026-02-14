@@ -15,7 +15,7 @@
 // ================================================================
 
 import Sortable from "sortablejs"
-import { patchTurboStream } from "services/api_client"
+import { patchTurboStream } from "services/navibar_api"
 
 let sortableInstance = null
 let bound = false

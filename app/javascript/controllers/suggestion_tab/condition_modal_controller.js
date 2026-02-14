@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { clearSuggestionMarkers } from "map/state"
-import { postTurboStream } from "services/api_client"
+import { postTurboStream } from "services/navibar_api"
 
 // ================================================================
 // SuggestionConditionModalController

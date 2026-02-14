@@ -6,6 +6,7 @@ import {
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
+import { postTurboStream } from "services/navibar_api"
 
 // ================================================================
 // SuggestionPlanAdoptController
@@ -51,13 +52,29 @@ export default class extends Controller {
         throw new Error("スポットが見つかりませんでした")
       }
 
-      await this.#callAdoptApi(spots)
+      await postTurboStream(`/api/plan_spots/adopt`, {
+        plan_id: this.planIdValue,
+        spots: spots.map((s) => ({ spot_id: s.spot_id })),
+      })
 
       btn.innerHTML = '<i class="bi bi-check-lg"></i> 採用済み'
       btn.classList.add("suggestion-plan-card__adopt-btn--adopted")
 
+      // 提案ピンをクリア
+      clearSuggestionMarkers()
+      closeInfoWindow()
+      const clearBtn = document.getElementById("suggestion-pin-clear")
+      if (clearBtn) clearBtn.hidden = true
+
       // スポットカードの「プランに追加」ボタンを「追加済み」に更新
       this.#markSpotCardsAsAdded()
+
+      // DOM更新を待ってからマーカー再描画
+      requestAnimationFrame(() => {
+        requestAnimationFrame(() => {
+          document.dispatchEvent(new CustomEvent("map:route-updated"))
+        })
+      })
     } catch (error) {
       console.error("[suggestion_plan_adopt] Error:", error)
       alert(error.message || "プランの採用に失敗しました")
@@ -76,48 +93,6 @@ export default class extends Controller {
       lng: parseFloat(el.dataset["suggestionTab-SuggestedSpotLngValue"]),
       place_id: el.dataset["suggestionTab-SuggestedSpotPlaceIdValue"],
     }))
-  }
-
-  // adopt API を呼び出し
-  async #callAdoptApi(spots) {
-    const csrfToken = document.querySelector('meta[name="csrf-token"]')?.content
-    const response = await fetch(
-      `/api/plan_spots/adopt`,
-      {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-          "X-CSRF-Token": csrfToken,
-          Accept: "text/vnd.turbo-stream.html",
-        },
-        body: JSON.stringify({
-          plan_id: this.planIdValue,
-          spots: spots.map((s) => ({ spot_id: s.spot_id })),
-        }),
-      }
-    )
-
-    if (response.ok) {
-      // Turbo Stream で自動更新
-      const html = await response.text()
-      Turbo.renderStreamMessage(html)
-
-      // 提案ピンをクリア
-      clearSuggestionMarkers()
-      closeInfoWindow()
-      const clearBtn = document.getElementById("suggestion-pin-clear")
-      if (clearBtn) clearBtn.hidden = true
-
-      // DOM更新を待ってからマーカー再描画（Turbo Streamの処理完了を待つ）
-      requestAnimationFrame(() => {
-        requestAnimationFrame(() => {
-          document.dispatchEvent(new CustomEvent("navibar:updated"))
-          document.dispatchEvent(new CustomEvent("map:route-updated"))
-        })
-      })
-    } else {
-      throw new Error("プランの採用に失敗しました")
-    }
   }
 
   // スポットカードの「プランに追加」ボタンを「追加済み」に更新

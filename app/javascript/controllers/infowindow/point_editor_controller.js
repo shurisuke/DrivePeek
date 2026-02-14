@@ -11,7 +11,7 @@ import {
   setEndPointMarker,
 } from "map/state"
 import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
-import { patchTurboStream } from "services/api_client"
+import { patchTurboStream } from "services/navibar_api"
 import { closeInfoWindow } from "map/infowindow"
 import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
 

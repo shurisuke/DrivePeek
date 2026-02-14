@@ -3,7 +3,7 @@ import { getMapInstance, addSuggestionMarker } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
 import { panToVisualCenter } from "map/visual_center"
-import { addSpotToPlan } from "services/api_client"
+import { addSpotToPlan } from "services/navibar_api"
 
 // ================================================================
 // SuggestionSpotActionController

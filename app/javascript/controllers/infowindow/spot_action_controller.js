@@ -1,6 +1,6 @@
 import { Controller } from "@hotwired/stimulus"
 import { closeInfoWindow } from "map/infowindow"
-import { addSpotToPlan, removeSpotFromPlan } from "services/api_client"
+import { addSpotToPlan, removeSpotFromPlan } from "services/navibar_api"
 
 // InfoWindow内のスポット追加・削除ボタン用
 export default class extends Controller {
