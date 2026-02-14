@@ -1,5 +1,4 @@
 class Plan < ApplicationRecord
-
   # Associations
   belongs_to :user
   has_many :plan_spots, dependent: :destroy
