@@ -97,19 +97,17 @@ Rails.application.routes.draw do
   namespace :api do
     resources :popular_spots, only: %i[index]
 
-    resource :preview, only: %i[show], controller: "plans/previews"
-
     resources :spots, only: [] do
       resource :genres, only: %i[show], controller: "spots/genres"
     end
 
-    resource :start_point, only: %i[update], controller: "plans/start_points"
-    resource :goal_point, only: %i[update], controller: "plans/goal_points"
+    resource :start_point, only: %i[update]
+    resource :goal_point, only: %i[update]
 
-    resources :plan_spots, only: %i[create update], controller: "plans/plan_spots" do
+    resources :plan_spots, only: %i[create update] do
       collection do
-        patch :reorder, to: "plans/plan_spots/reorders#update"
-        post :adopt, to: "plans/plan_spots/adoptions#create"
+        patch :reorder, to: "plan_spot_reorders#update"
+        post :adopt, to: "plan_spot_adoptions#create"
       end
     end
   end

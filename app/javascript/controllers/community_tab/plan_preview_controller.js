@@ -10,7 +10,6 @@ import {
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
-import { get } from "services/api_client"
 import { COLORS, COMMUNITY_ROUTE_STYLE } from "map/constants"
 
 // ================================================================
@@ -49,40 +48,31 @@ const hideCloseButton = () => {
 
 export default class extends Controller {
   static values = {
-    planId: Number,
+    spots: Array,
+    polylines: Array,
   }
 
-  async show(event) {
+  show(event) {
     event.preventDefault()
 
-    if (!this.planIdValue) {
-      console.warn("[community-plan-preview] planId not set")
+    const spots = this.spotsValue
+    if (!spots || spots.length === 0) {
+      console.warn("[community-plan-preview] No spots in plan")
       return
     }
 
     closeInfoWindow()
     clearCommunityPreview()
 
-    try {
-      const data = await get(`/api/preview?plan_id=${this.planIdValue}`)
+    this.#renderMarkers(spots)
 
-      if (!data.spots || data.spots.length === 0) {
-        console.warn("[community-plan-preview] No spots in plan")
-        return
-      }
-
-      this.#renderMarkers(data.spots)
-
-      if (data.polylines?.length > 0) {
-        this.#renderPolylines(data.polylines)
-      }
-
-      this.#fitMapToBothPlans(data.spots)
-      showCloseButton()
-
-    } catch (error) {
-      console.error("[community-plan-preview] Failed to show preview:", error)
+    const polylines = this.polylinesValue
+    if (polylines?.length > 0) {
+      this.#renderPolylines(polylines)
     }
+
+    this.#fitMapToBothPlans(spots)
+    showCloseButton()
   }
 
   hide() {

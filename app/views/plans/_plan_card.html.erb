@@ -135,7 +135,8 @@
                 class="plan-card__detail-link plan-card__detail-link--preview"
                 aria-label="ルートをプレビュー"
                 data-controller="community-tab--plan-preview"
-                data-community-tab--plan-preview-plan-id-value="<%= _plan.id %>"
+                data-community-tab--plan-preview-spots-value="<%= plan_preview_spots_json(spots) %>"
+                data-community-tab--plan-preview-polylines-value="<%= plan_preview_polylines_json(_plan) %>"
                 data-action="click->community-tab--plan-preview#show">
           <i class="bi bi-share" aria-hidden="true"></i>
           ルート

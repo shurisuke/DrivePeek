@@ -157,4 +157,14 @@ module PlansHelper
 
     (parent_names + remaining).join(", ")
   end
+
+  # プランプレビュー用のスポットデータをJSON形式で返す
+  def plan_preview_spots_json(spots)
+    spots.map { |s| s.slice(:lat, :lng, :name, :address, :place_id, :genres, :id) }.to_json
+  end
+
+  # プランプレビュー用のポリラインデータをJSON形式で返す
+  def plan_preview_polylines_json(plan)
+    plan.plan_spots.order(:position).to_a[0..-2].map(&:polyline).compact.to_json
+  end
 end
