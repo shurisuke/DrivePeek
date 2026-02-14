@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe "SuggestionLogs", type: :request do
+RSpec.describe "SuggestionHistory", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
@@ -12,7 +12,7 @@ RSpec.describe "SuggestionLogs", type: :request do
     stub_google_directions_api
   end
 
-  describe "DELETE /suggestion_logs/destroy_all" do
+  describe "DELETE /suggestion_history" do
     before do
       create(:suggestion_log, :user_message, user: user, plan: plan)
       create(:suggestion_log, :assistant_conversation, user: user, plan: plan)
@@ -23,7 +23,7 @@ RSpec.describe "SuggestionLogs", type: :request do
 
       it "会話履歴を全削除する" do
         expect {
-          delete destroy_all_suggestion_logs_path, params: { plan_id: plan.id },
+          delete suggestion_history_path, params: { plan_id: plan.id },
                  headers: { "Accept" => "text/vnd.turbo-stream.html" }
         }.to change { plan.suggestion_logs.count }.from(2).to(0)
 
@@ -31,7 +31,7 @@ RSpec.describe "SuggestionLogs", type: :request do
       end
 
       it "Turbo Stream形式でレスポンスを返す" do
-        delete destroy_all_suggestion_logs_path, params: { plan_id: plan.id },
+        delete suggestion_history_path, params: { plan_id: plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
         expect(response.content_type).to include("text/vnd.turbo-stream.html")
@@ -46,14 +46,14 @@ RSpec.describe "SuggestionLogs", type: :request do
       end
 
       it "404エラーを返す" do
-        delete destroy_all_suggestion_logs_path, params: { plan_id: other_plan.id },
+        delete suggestion_history_path, params: { plan_id: other_plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
         expect(response).to have_http_status(:not_found)
       end
 
       it "他人のメッセージは削除されない" do
         expect {
-          delete destroy_all_suggestion_logs_path, params: { plan_id: other_plan.id },
+          delete suggestion_history_path, params: { plan_id: other_plan.id },
                  headers: { "Accept" => "text/vnd.turbo-stream.html" }
         }.not_to change { other_plan.suggestion_logs.count }
       end
@@ -61,7 +61,7 @@ RSpec.describe "SuggestionLogs", type: :request do
 
     context "未ログインの場合" do
       it "ログイン画面にリダイレクトする" do
-        delete destroy_all_suggestion_logs_path, params: { plan_id: plan.id }
+        delete suggestion_history_path, params: { plan_id: plan.id }
 
         expect(response).to redirect_to(new_user_session_path)
       end

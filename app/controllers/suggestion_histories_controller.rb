@@ -1,9 +1,10 @@
-class SuggestionLogsController < ApplicationController
+# app/controllers/suggestion_histories_controller.rb
+class SuggestionHistoriesController < ApplicationController
   before_action :authenticate_user!
   before_action :set_plan
 
-  # 会話履歴をクリア
-  def destroy_all
+  # DELETE /suggestion_history
+  def destroy
     @plan.suggestion_logs.destroy_all
 
     respond_to do |format|

@@ -25,7 +25,7 @@
         <i class="bi bi-three-dots"></i>
       </button>
       <div class="suggestion__menu-dropdown" data-ui--dropdown-target="menu" hidden>
-        <%= link_to destroy_all_suggestion_logs_path(plan_id: plan.id),
+        <%= link_to suggestion_history_path(plan_id: plan.id),
               id: "suggestion-clear-btn",
               class: "suggestion__menu-item suggestion__menu-item--danger #{'suggestion__menu-item--disabled' unless plan.suggestion_logs.exists?}",
               data: { turbo_method: :delete, action: "click->ui--dropdown#close" } do %>

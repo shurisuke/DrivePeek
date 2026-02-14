@@ -1,6 +1,20 @@
 class PlansController < ApplicationController
   before_action :authenticate_user!, except: %i[show]
 
+  def index
+    set_filter_variables
+
+    @plans = current_user.plans
+      .exclude_stale_empty
+      .search_keyword(@search_query)
+      .filter_by_cities(@selected_cities)
+      .filter_by_genres(@selected_genre_ids)
+      .includes(:start_point, plan_spots: { spot: :genres })
+      .order(updated_at: :desc)
+      .page(params[:page])
+      .per(10)
+  end
+
   def show
     @plan = Plan.publicly_visible
                 .includes(:user, :start_point, :goal_point, plan_spots: { spot: :genres })
@@ -51,5 +65,13 @@ class PlansController < ApplicationController
 
   def plan_params
     params.require(:plan).permit(:title)
+  end
+
+  def set_filter_variables
+    @search_query = params[:q]
+    @selected_cities = Array(params[:cities]).reject(&:blank?)
+    @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
+    @genres_by_category = Genre.grouped_by_category
+    @cities_by_prefecture = Spot.cities_by_prefecture
   end
 end
