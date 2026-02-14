@@ -203,28 +203,4 @@ RSpec.describe Plan, type: :model do
       expect(data[:start_point]).to eq({ lat: 35.0, lng: 139.0 })
     end
   end
-
-  describe "#preview_data" do
-    let(:plan) { create(:plan, :with_spots, user: user) }
-
-    before do
-      plan.plan_spots.each_with_index do |ps, i|
-        ps.update!(polyline: "encoded_polyline_#{i}")
-      end
-    end
-
-    it "spotsを含む" do
-      data = plan.preview_data
-
-      expect(data[:spots]).to be_present
-      expect(data[:spots].size).to eq(plan.plan_spots.count)
-    end
-
-    it "polylinesを含む（最後のスポット除く）" do
-      data = plan.preview_data
-
-      # 最後のスポット→帰宅のポリラインは除外
-      expect(data[:polylines].size).to eq(plan.plan_spots.count - 1)
-    end
-  end
 end

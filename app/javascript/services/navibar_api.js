@@ -172,7 +172,7 @@ export const deleteTurboStream = (url, options = {}) => {
  * - navibar:activate-tab（プランタブをアクティブに）
  */
 export const addSpotToPlan = async (planId, spotId) => {
-  await postTurboStream("/api/plan_spots", { plan_id: planId, spot_id: spotId })
+  await postTurboStream(`/plans/${planId}/plan_spots`, { spot_id: spotId })
 
   // DOM更新完了後にイベント発火（turboStreamRequestの requestAnimationFrame の後）
   requestAnimationFrame(() => {

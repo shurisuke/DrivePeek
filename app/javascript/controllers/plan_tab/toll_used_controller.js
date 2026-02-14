@@ -1,12 +1,13 @@
-import { Controller } from "@hotwired/stimulus"
-import { patchTurboStream } from "services/navibar_api"
-
+// app/javascript/controllers/plan_tab/toll_used_controller.js
 // ================================================================
 // TollUsedController
 // 用途: 有料道路スイッチの変更をRailsへ保存
 //   - plan_spot用: type="plan_spot"
 //   - start_point用: type="start_point"
 // ================================================================
+
+import { Controller } from "@hotwired/stimulus"
+import { patchTurboStream } from "services/navibar_api"
 
 export default class extends Controller {
   static values = {
@@ -27,20 +28,19 @@ export default class extends Controller {
       block?.classList.add("is-loading")
 
       if (this.typeValue === "start_point") {
-        await patchTurboStream(`/api/start_point`, {
-          plan_id: this.planIdValue,
+        await patchTurboStream(`/plans/${this.planIdValue}/start_point`, {
           start_point: { toll_used: tollUsed },
         })
       } else {
-        await patchTurboStream(`/api/plan_spots/${this.planSpotIdValue}`, {
+        await patchTurboStream(`/plans/${this.planIdValue}/plan_spots/${this.planSpotIdValue}`, {
           toll_used: tollUsed,
         })
       }
 
       document.dispatchEvent(new CustomEvent("map:route-updated"))
     } catch (err) {
+      console.error("toll_used更新エラー:", err)
       block?.classList.remove("is-loading")
-      alert(err.message)
       // エラー時はアニメーションを戻す
       this.#animateToggle(!tollUsed)
       this.element.checked = !tollUsed

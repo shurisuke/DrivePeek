@@ -1,6 +1,6 @@
-// app/javascript/controllers/spot_stay_duration_controller.js
+// app/javascript/controllers/plan_tab/stay_duration_controller.js
 // ================================================================
-// Spot Stay Duration Controller（単一責務）
+// StayDurationController
 // 用途: スポットブロックの「滞在時間」をiOS風ホイールピッカーで入力し、
 //       変更時にAPIで保存する
 // ================================================================
@@ -11,14 +11,6 @@ import { patchTurboStream } from "services/navibar_api"
 export default class extends Controller {
   static targets = ["trigger"]
   static values = { planId: Number, planSpotId: Number, current: Number }
-
-  connect() {
-    // 初期化処理があれば追加
-  }
-
-  disconnect() {
-    // クリーンアップ処理があれば追加
-  }
 
   // トリガーボタンクリックでピッカーを開く
   openPicker(event) {
@@ -141,7 +133,7 @@ export default class extends Controller {
 
     try {
       await patchTurboStream(
-        `/api/plan_spots/${this.planSpotIdValue}`,
+        `/plans/${this.planIdValue}/plan_spots/${this.planSpotIdValue}`,
         { stay_duration: minutes }
       )
       // 保存成功 → turbo_stream で navibar が自動更新される

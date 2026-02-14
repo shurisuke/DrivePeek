@@ -1,15 +1,13 @@
-<%# app/views/plans/_spot_block.html.erb %>
+<%# app/views/plans/_spot_block_edit.html.erb %>
 <%# locals: plan_spot:, favorite_spot: nil, is_first: false, is_last: false %>
 
 <% spot = plan_spot.spot %>
-<% is_first = local_assigns.fetch(:is_first, false) %>
-<% is_last = local_assigns.fetch(:is_last, false) %>
 
 <div
   id="<%= dom_id(plan_spot) %>"
   class="spot-block"
   data-controller="plan-tab--spot-memo plan-tab--spot-delete"
-  data-plan-tab--spot-memo-url-value="<%= api_plan_spot_path(plan_spot) %>"
+  data-plan-tab--spot-memo-url-value="<%= plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-plan-tab--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan-tab--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
   data-spot-id="<%= spot.id %>"

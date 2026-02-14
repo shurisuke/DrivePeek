@@ -111,22 +111,7 @@ const initSortable = () => {
 
       // ✅ 即座にマーカー再描画（番号更新含む）- API前に実行
       document.dispatchEvent(new CustomEvent("navibar:updated"))
-
-      // ✅ 距離表示をスケルトン化
-      showDistanceSkeleton()
-
-      const orderedIds = getOrderedPlanSpotIds(container)
-
-      try {
-        await patchTurboStream(`/api/plan_spots/reorder`, {
-          plan_id: planId,
-          ordered_plan_spot_ids: orderedIds,
-        })
-        document.dispatchEvent(new CustomEvent("map:route-updated"))
-      } catch (err) {
-        console.error("並び替え保存エラー:", err)
-        alert(err.message)
-      }
+      await saveOrder()
     },
   })
 }
@@ -146,14 +131,12 @@ const saveOrder = async () => {
   const orderedIds = getOrderedPlanSpotIds(container)
 
   try {
-    await patchTurboStream(`/api/plan_spots/reorder`, {
-      plan_id: planId,
+    await patchTurboStream(`/plans/${planId}/plan_spots/reorder`, {
       ordered_plan_spot_ids: orderedIds,
     })
     document.dispatchEvent(new CustomEvent("map:route-updated"))
   } catch (err) {
     console.error("並び替え保存エラー:", err)
-    alert(err.message)
   }
 }
 

@@ -1,6 +1,11 @@
-// app/javascript/controllers/infowindow_point_editor_controller.js
-//
-// InfoWindow内で出発・帰宅地点を編集するコントローラ
+// app/javascript/controllers/infowindow/point_editor_controller.js
+// ================================================================
+// PointEditorController
+// 用途: InfoWindow内で出発地点・帰宅地点の住所を編集
+//   - 住所入力 → Geocode API で座標取得
+//   - マーカー更新 + サーバー保存（Turbo Stream）
+//   - editModeValue: "start_point" | "goal_point"
+// ================================================================
 
 import { Controller } from "@hotwired/stimulus"
 import {
@@ -77,9 +82,7 @@ export default class extends Controller {
       const geo = await geocodeAddress(query)
 
       const formattedAddress = geo?.formattedAddress || geo?.address || query
-      const displayAddress = normalizeDisplayAddress
-        ? normalizeDisplayAddress(formattedAddress)
-        : formattedAddress
+      const displayAddress = normalizeDisplayAddress(formattedAddress)
 
       const location =
         geo?.location ||
@@ -115,7 +118,6 @@ export default class extends Controller {
 
     } catch (err) {
       console.error("[infowindow-point-editor] update failed", err)
-      alert("住所が見つからない、または保存に失敗しました。")
     }
   }
 
@@ -146,10 +148,10 @@ export default class extends Controller {
 
   async persist({ planId, lat, lng, address }) {
     const isStartPoint = this.editModeValue === "start_point"
-    const url = isStartPoint ? `/api/start_point` : `/api/goal_point`
+    const url = isStartPoint ? `/plans/${planId}/start_point` : `/plans/${planId}/goal_point`
     const key = isStartPoint ? "start_point" : "goal_point"
 
-    await patchTurboStream(url, { plan_id: planId, [key]: { lat, lng, address } })
+    await patchTurboStream(url, { [key]: { lat, lng, address } })
   }
 
   detectPlanId() {

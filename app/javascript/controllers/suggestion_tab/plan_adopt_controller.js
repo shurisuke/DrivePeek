@@ -1,3 +1,12 @@
+// app/javascript/controllers/suggestion_tab/plan_adopt_controller.js
+// ================================================================
+// PlanAdoptController
+// 用途: 提案プランテーマカードの自動ピン表示・採用
+// フロー:
+//   1. connect時に自動でピン表示
+//   2. 採用APIでplan_spotsを一括作成
+// ================================================================
+
 import { Controller } from "@hotwired/stimulus"
 import {
   getMapInstance,
@@ -7,14 +16,6 @@ import {
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
 import { postTurboStream } from "services/navibar_api"
-
-// ================================================================
-// SuggestionPlanAdoptController
-// 用途: 提案プランテーマカードの自動ピン表示・採用
-// フロー:
-//   1. connect時に自動でピン表示
-//   2. 採用APIでplan_spotsを一括作成
-// ================================================================
 
 export default class extends Controller {
   static values = {
@@ -52,8 +53,7 @@ export default class extends Controller {
         throw new Error("スポットが見つかりませんでした")
       }
 
-      await postTurboStream(`/api/plan_spots/adopt`, {
-        plan_id: this.planIdValue,
+      await postTurboStream(`/plans/${this.planIdValue}/plan_spots/adopt`, {
         spots: spots.map((s) => ({ spot_id: s.spot_id })),
       })
 
@@ -77,7 +77,6 @@ export default class extends Controller {
       })
     } catch (error) {
       console.error("[suggestion_plan_adopt] Error:", error)
-      alert(error.message || "プランの採用に失敗しました")
       btn.disabled = false
       btn.innerHTML = '<i class="bi bi-check-circle"></i> このプランを採用'
     }
@@ -86,8 +85,7 @@ export default class extends Controller {
   // スポット情報を取得（DBから検証済みデータを読み取り）
   #resolveSpots() {
     const spotElements = this.spotsTarget.querySelectorAll(".spot-card--suggestion")
-    return Array.from(spotElements).map((el, index) => ({
-      index,
+    return Array.from(spotElements).map((el) => ({
       spot_id: parseInt(el.dataset["suggestionTab-SuggestedSpotSpotIdValue"], 10),
       lat: parseFloat(el.dataset["suggestionTab-SuggestedSpotLatValue"]),
       lng: parseFloat(el.dataset["suggestionTab-SuggestedSpotLngValue"]),

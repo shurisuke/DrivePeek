@@ -1,15 +1,16 @@
+// app/javascript/controllers/suggestion_tab/suggested_spot_controller.js
+// ================================================================
+// SuggestedSpotController
+// 用途: 提案スポットカードの「地図で見る」「プランに追加」ボタン
+// フロー: DB検証済みスポットをマーカー表示 + InfoWindow
+// ================================================================
+
 import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, addSuggestionMarker } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { createSuggestionPinSvg } from "map/constants"
 import { panToVisualCenter } from "map/visual_center"
 import { addSpotToPlan } from "services/navibar_api"
-
-// ================================================================
-// SuggestionSpotActionController
-// 用途: 提案スポットカードの「地図で見る」「プランに追加」ボタン
-// フロー: DB検証済みスポットをマーカー表示 + InfoWindow
-// ================================================================
 
 export default class extends Controller {
   static values = {
@@ -20,6 +21,10 @@ export default class extends Controller {
     lat: Number,
     lng: Number,
     placeId: String,
+  }
+
+  get #planId() {
+    return this.planIdValue || document.getElementById("map")?.dataset.planId
   }
 
   // 地図で見る（InfoWindowも表示）
@@ -39,8 +44,7 @@ export default class extends Controller {
     button.innerHTML = '<i class="bi bi-hourglass-split"></i> 追加中...'
 
     try {
-      const planId = this.planIdValue || document.getElementById("map")?.dataset.planId
-      await addSpotToPlan(planId, this.spotIdValue)
+      await addSpotToPlan(this.#planId, this.spotIdValue)
 
       button.innerHTML = '<i class="bi bi-check-lg"></i> 追加済み'
       button.classList.add("spot-card__btn--added")
@@ -49,7 +53,6 @@ export default class extends Controller {
       this.#showSpotOnMap()
     } catch (error) {
       console.error("[suggestion_spot_action] addToPlan error:", error)
-      alert(error.message || "追加に失敗しました")
       button.disabled = false
       button.innerHTML = 'プランに追加<i class="bi bi-chevron-right"></i>'
     }
@@ -118,7 +121,7 @@ export default class extends Controller {
       lat: spotData.lat,
       lng: spotData.lng,
       showButton: true,
-      planId: this.planIdValue || document.getElementById("map")?.dataset.planId,
+      planId: this.#planId,
     })
   }
 }

@@ -1,4 +1,12 @@
-// app/javascript/controllers/plan_spot_memo_controller.js
+// app/javascript/controllers/plan_tab/spot_memo_controller.js
+// ================================================================
+// SpotMemoController
+// 用途: スポットブロック内のメモ編集UI
+//   - メモの表示/編集切り替え
+//   - メモ保存（PATCH）・削除
+//   - トグル収納時に自動でエディタを閉じる
+// ================================================================
+
 import { Controller } from "@hotwired/stimulus"
 import { patch } from "services/api_client"
 
@@ -58,13 +66,10 @@ export default class extends Controller {
     // ② メモエディタを表示
     this.editorTarget.classList.remove("d-none")
 
-    // ③ 既存メモは「表示したまま」
-    // this.memoDisplayTarget.classList.add("d-none")
-
-    // ④ 編集中フラグ：削除ボタン表示用
+    // ③ 編集中フラグ：削除ボタン表示用
     this.memoDisplayTarget.classList.add("is-editing")
 
-    // ⑤ 初回フォーカス（末尾へ）
+    // ④ 初回フォーカス（末尾へ）
     window.setTimeout(() => this.focusTextareaToEnd(), 0)
   }
 
@@ -121,7 +126,7 @@ export default class extends Controller {
     try {
       return await patch(this.urlValue, { memo })
     } catch (error) {
-      alert(error.message || "メモの保存に失敗しました")
+      console.error("メモ保存エラー:", error)
       return null
     }
   }
