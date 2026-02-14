@@ -97,8 +97,6 @@ Rails.application.routes.draw do
   namespace :api do
     resources :popular_spots, only: %i[index]
 
-    resource :preview, only: %i[show]
-
     resources :spots, only: [] do
       resource :genres, only: %i[show], controller: "spots/genres"
     end
