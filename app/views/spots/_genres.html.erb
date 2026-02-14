@@ -1,7 +1,7 @@
 <%# app/views/spots/_genres.html.erb %>
 <%# locals: spot: %>
 
-<%= turbo_frame_tag dom_id(spot, :genres), src: (api_spot_genres_path(spot) if spot.genres.empty?) do %>
+<%= turbo_frame_tag dom_id(spot, :genres), src: (spot_genres_path(spot) if spot.genres.empty?) do %>
   <% if spot.genres.empty? %>
     <div class="spot-genres spot-genres--loading navibar-padding">
       <span class="genre-chip genre-chip--skeleton"></span>

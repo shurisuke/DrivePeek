@@ -75,6 +75,7 @@ Rails.application.routes.draw do
   # ========================================
   resources :spots, only: %i[show] do
     resources :comments, only: %i[create destroy], controller: "spot_comments"
+    resource :genres, only: %i[show], controller: "spot_genres"
   end
 
   # ========================================
@@ -96,10 +97,6 @@ Rails.application.routes.draw do
   # ========================================
   namespace :api do
     resources :popular_spots, only: %i[index]
-
-    resources :spots, only: [] do
-      resource :genres, only: %i[show], controller: "spots/genres"
-    end
 
     resource :start_point, only: %i[update]
     resource :goal_point, only: %i[update]
