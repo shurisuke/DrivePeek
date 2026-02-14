@@ -10,7 +10,7 @@ class PlanSpotsController < ApplicationController
     @spot = @plan_spot.spot
     @plan_spot.destroy!
     @plan.recalculate_for!(@plan_spot, action: :destroy)
-    @plan.reload
+    @plan = Plan.includes(:start_point, :goal_point, plan_spots: { spot: :genres }).find(@plan.id)
 
     respond_to do |format|
       format.turbo_stream { render "plans/refresh_plan_tab" }

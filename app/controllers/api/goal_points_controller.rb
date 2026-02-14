@@ -7,17 +7,10 @@ module Api
       @goal_point = @plan.goal_point || @plan.build_goal_point
       @goal_point.update!(goal_point_params)
       @plan.recalculate_for!(@goal_point)
-      @plan.reload
+      @plan = Plan.includes(:start_point, :goal_point, plan_spots: { spot: :genres }).find(@plan.id)
 
       respond_to do |format|
         format.turbo_stream { render "plans/refresh_plan_tab" }
-        format.json do
-          render json: {
-            address: @goal_point.address,
-            lat: @goal_point.lat,
-            lng: @goal_point.lng
-          }, status: :ok
-        end
       end
     rescue ActiveRecord::RecordInvalid => e
       render json: { message: "帰宅地点の更新に失敗しました", details: e.record.errors.full_messages }, status: :unprocessable_entity

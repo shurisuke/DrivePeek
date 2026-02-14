@@ -23,12 +23,13 @@ RSpec.describe "Api::GoalPoints", type: :request do
         }
       }
     end
+    let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
 
       it "帰宅地点を設定する" do
-        patch api_goal_point_path, params: goal_point_params, as: :json
+        patch api_goal_point_path, params: goal_point_params, headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.goal_point).to be_present
@@ -38,25 +39,25 @@ RSpec.describe "Api::GoalPoints", type: :request do
       it "既存の帰宅地点を更新する" do
         create(:goal_point, plan: plan, address: "旧住所")
 
-        patch api_goal_point_path, params: goal_point_params, as: :json
+        patch api_goal_point_path, params: goal_point_params, headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.goal_point.address).to eq("東京都千代田区")
       end
 
-      it "座標情報を返す" do
-        patch api_goal_point_path, params: goal_point_params, as: :json
+      it "座標情報を保存する" do
+        patch api_goal_point_path, params: goal_point_params, headers: turbo_stream_headers
 
-        json = response.parsed_body
-        expect(json["lat"]).to eq(35.6812)
-        expect(json["lng"]).to eq(139.7671)
-        expect(json["address"]).to eq("東京都千代田区")
+        goal_point = plan.reload.goal_point
+        expect(goal_point.lat).to eq(35.6812)
+        expect(goal_point.lng).to eq(139.7671)
+        expect(goal_point.address).to eq("東京都千代田区")
       end
 
-      it "Turbo Stream形式でも動作する" do
+      it "Turbo Stream形式でレスポンスを返す" do
         patch api_goal_point_path,
               params: goal_point_params,
-              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+              headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to include("text/vnd.turbo-stream.html")

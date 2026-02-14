@@ -7,6 +7,7 @@ RSpec.describe "Api::PlanSpots", type: :request do
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
   let(:spot) { create(:spot) }
+  let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 
   before do
     stub_google_geocoding_api
@@ -19,18 +20,18 @@ RSpec.describe "Api::PlanSpots", type: :request do
 
       it "スポットをプランに追加する" do
         expect {
-          post api_plan_spots_path, params: { plan_id: plan.id, spot_id: spot.id }, as: :json
+          post api_plan_spots_path, params: { plan_id: plan.id, spot_id: spot.id }, headers: turbo_stream_headers
         }.to change(PlanSpot, :count).by(1)
 
-        expect(response).to have_http_status(:created)
+        expect(response).to have_http_status(:ok)
       end
 
-      it "追加されたplan_spotの情報を返す" do
-        post api_plan_spots_path, params: { plan_id: plan.id, spot_id: spot.id }, as: :json
+      it "追加されたplan_spotを作成する" do
+        post api_plan_spots_path, params: { plan_id: plan.id, spot_id: spot.id }, headers: turbo_stream_headers
 
-        json = response.parsed_body
-        expect(json["plan_spot_id"]).to be_present
-        expect(json["spot_id"]).to eq(spot.id)
+        plan_spot = plan.reload.plan_spots.last
+        expect(plan_spot).to be_present
+        expect(plan_spot.spot_id).to eq(spot.id)
       end
 
       it "存在しないスポットの場合404を返す" do
@@ -39,10 +40,10 @@ RSpec.describe "Api::PlanSpots", type: :request do
         expect(response).to have_http_status(:not_found)
       end
 
-      it "Turbo Stream形式でも動作する" do
+      it "Turbo Stream形式でレスポンスを返す" do
         post api_plan_spots_path,
              params: { plan_id: plan.id, spot_id: spot.id },
-             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+             headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to include("text/vnd.turbo-stream.html")
@@ -74,12 +75,11 @@ RSpec.describe "Api::PlanSpots", type: :request do
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
 
-      # toll_usedのテスト
       describe "toll_used更新" do
         it "有料道路設定をtrueに更新する" do
           patch api_plan_spot_path(plan_spot),
                 params: { toll_used: true },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.toll_used).to be true
@@ -90,31 +90,18 @@ RSpec.describe "Api::PlanSpots", type: :request do
 
           patch api_plan_spot_path(plan_spot),
                 params: { toll_used: false },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.toll_used).to be false
         end
-
-        it "レスポンスに必要な情報が含まれる" do
-          patch api_plan_spot_path(plan_spot),
-                params: { toll_used: true },
-                as: :json
-
-          json = response.parsed_body
-          expect(json["plan_spot_id"]).to eq(plan_spot.id)
-          expect(json["toll_used"]).to be true
-          expect(json["spots"]).to be_an(Array)
-          expect(json["footer"]).to include("spots_only_distance", "with_goal_distance")
-        end
       end
 
-      # memoのテスト
       describe "memo更新" do
         it "メモを更新する" do
           patch api_plan_spot_path(plan_spot),
                 params: { memo: "ここでランチ" },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.memo).to eq("ここでランチ")
@@ -125,41 +112,18 @@ RSpec.describe "Api::PlanSpots", type: :request do
 
           patch api_plan_spot_path(plan_spot),
                 params: { memo: "" },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.memo).to eq("")
         end
-
-        it "レスポンスに必要な情報が含まれる" do
-          patch api_plan_spot_path(plan_spot),
-                params: { memo: "テストメモ" },
-                as: :json
-
-          json = response.parsed_body
-          expect(json["plan_spot_id"]).to eq(plan_spot.id)
-          expect(json["memo"]).to eq("テストメモ")
-          expect(json["memo_present"]).to be true
-          expect(json["memo_html"]).to include("テストメモ")
-        end
-
-        it "メモが空の場合memo_presentはfalse" do
-          patch api_plan_spot_path(plan_spot),
-                params: { memo: "" },
-                as: :json
-
-          json = response.parsed_body
-          expect(json["memo_present"]).to be false
-          expect(json["memo_html"]).to eq("")
-        end
       end
 
-      # stay_durationのテスト
       describe "stay_duration更新" do
         it "滞在時間を更新する" do
           patch api_plan_spot_path(plan_spot),
                 params: { stay_duration: 60 },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.stay_duration).to eq(60)
@@ -168,7 +132,7 @@ RSpec.describe "Api::PlanSpots", type: :request do
         it "滞在時間を0にする" do
           patch api_plan_spot_path(plan_spot),
                 params: { stay_duration: 0 },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.stay_duration).to eq(0)
@@ -177,17 +141,17 @@ RSpec.describe "Api::PlanSpots", type: :request do
         it "滞在時間を空にする（nil）" do
           patch api_plan_spot_path(plan_spot),
                 params: { stay_duration: "" },
-                as: :json
+                headers: turbo_stream_headers
 
           expect(response).to have_http_status(:ok)
           expect(plan_spot.reload.stay_duration).to be_nil
         end
       end
 
-      it "Turbo Stream形式でも動作する" do
+      it "Turbo Stream形式でレスポンスを返す" do
         patch api_plan_spot_path(plan_spot),
               params: { toll_used: true },
-              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+              headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to include("text/vnd.turbo-stream.html")
@@ -235,7 +199,7 @@ RSpec.describe "Api::PlanSpots", type: :request do
         ]
 
         expect {
-          post adopt_api_plan_spots_path, params: { plan_id: plan.id, spots: spots_params }, as: :json
+          post adopt_api_plan_spots_path, params: { plan_id: plan.id, spots: spots_params }, headers: turbo_stream_headers
         }.to change { plan.plan_spots.count }.by(3)
 
         expect(response).to have_http_status(:ok)
@@ -250,7 +214,7 @@ RSpec.describe "Api::PlanSpots", type: :request do
           { spot_id: spot2.id }
         ]
 
-        post adopt_api_plan_spots_path, params: { plan_id: plan.id, spots: spots_params }, as: :json
+        post adopt_api_plan_spots_path, params: { plan_id: plan.id, spots: spots_params }, headers: turbo_stream_headers
 
         expect(plan.reload.plan_spots.count).to eq(2)
         expect(plan.plan_spots.pluck(:spot_id)).to match_array([ spot1.id, spot2.id ])
@@ -262,14 +226,15 @@ RSpec.describe "Api::PlanSpots", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it "Turbo Stream形式でも動作する" do
+      it "Turbo Stream形式でレスポンスを返す" do
         spots_params = [ { spot_id: spot1.id } ]
 
         post adopt_api_plan_spots_path,
              params: { plan_id: plan.id, spots: spots_params },
-             headers: { "Accept" => "text/vnd.turbo-stream.html" }
+             headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
+        expect(response.content_type).to include("text/vnd.turbo-stream.html")
       end
     end
 

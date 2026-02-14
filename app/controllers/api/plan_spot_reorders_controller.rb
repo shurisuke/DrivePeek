@@ -13,7 +13,7 @@ module Api
 
       PlanSpot.reorder_for_plan!(plan: @plan, ordered_ids: ordered_ids.map(&:to_i))
       @plan.recalculate_for!(nil, action: :reorder)
-      @plan.reload
+      @plan = Plan.includes(:start_point, :goal_point, plan_spots: { spot: :genres }).find(@plan.id)
 
       respond_to do |format|
         format.turbo_stream { render "plans/refresh_plan_tab" }

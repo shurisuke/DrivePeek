@@ -25,12 +25,13 @@ RSpec.describe "Api::StartPoints", type: :request do
         }
       }
     end
+    let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
 
       it "出発地点を設定する" do
-        patch api_start_point_path, params: start_point_params, as: :json
+        patch api_start_point_path, params: start_point_params, headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.start_point).to be_present
@@ -40,18 +41,18 @@ RSpec.describe "Api::StartPoints", type: :request do
       it "既存の出発地点を更新する" do
         create(:start_point, plan: plan, address: "旧住所")
 
-        patch api_start_point_path, params: start_point_params, as: :json
+        patch api_start_point_path, params: start_point_params, headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.start_point.address).to eq("東京都渋谷区")
       end
 
       it "toll_usedのみを更新できる" do
-        start_point = create(:start_point, plan: plan, toll_used: false)
+        create(:start_point, plan: plan, toll_used: false)
 
         patch api_start_point_path,
               params: { plan_id: plan.id, start_point: { toll_used: true } },
-              as: :json
+              headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.start_point.toll_used).to be true
@@ -65,10 +66,10 @@ RSpec.describe "Api::StartPoints", type: :request do
         expect(response).to have_http_status(:unprocessable_entity)
       end
 
-      it "Turbo Stream形式でも動作する" do
+      it "Turbo Stream形式でレスポンスを返す" do
         patch api_start_point_path,
               params: start_point_params,
-              headers: { "Accept" => "text/vnd.turbo-stream.html" }
+              headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(response.content_type).to include("text/vnd.turbo-stream.html")
@@ -85,7 +86,7 @@ RSpec.describe "Api::StartPoints", type: :request do
           }
         }
 
-        patch api_start_point_path, params: params, as: :json
+        patch api_start_point_path, params: params, headers: turbo_stream_headers
 
         expect(response).to have_http_status(:ok)
         expect(plan.reload.start_point.departure_time.strftime("%H:%M")).to eq("09:00")

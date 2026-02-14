@@ -74,15 +74,19 @@ class Plan::Route
   # @return [Array<Hash>] セグメント配列
   def build_all_segments
     segments = []
-    plan_spots = plan.plan_spots.includes(:spot).order(:position).to_a
+    # アソシエーションキャッシュをクリアして最新のデータを取得
+    plan_spots = plan.plan_spots.reload.includes(:spot).order(:position).to_a
 
     # start_point が存在し、plan_spots がある場合
     if plan_spots.any?
+      # start_point もリロードして最新のデータを取得
+      start_point = plan.start_point.reload
+
       # 区間1: start_point → plan_spots[0]
       segments << build_segment(
-        from_record: plan.start_point,
+        from_record: start_point,
         to_record: plan_spots.first,
-        toll_used: plan.start_point.toll_used?
+        toll_used: start_point.toll_used?
       )
 
       # 区間2〜N: plan_spots[i] → plan_spots[i+1] or goal_point
