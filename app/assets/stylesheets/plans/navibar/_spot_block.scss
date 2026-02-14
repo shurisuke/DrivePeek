@@ -604,6 +604,20 @@
    Sortable / 末尾表示制御など
 ------------------------------------------ */
 
+/* ------------------------------------------
+   ローディング状態（API通信中）
+------------------------------------------ */
+
+.spot-block.is-loading .spot-next-move {
+  .km,
+  .time {
+    color: transparent;
+    background: rgba(0, 0, 0, 0.08);
+    border-radius: 10px;
+    animation: skeleton-pulse 1.2s ease-in-out infinite;
+  }
+}
+
 .spot-block--ghost {
   opacity: 0;
   pointer-events: none;

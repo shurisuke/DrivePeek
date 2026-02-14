@@ -177,5 +177,16 @@
     @include detail-toggle-button;
     align-self: center;
   }
+
+  /* ローディング状態（API通信中） */
+  &.is-loading .start-next-move {
+    .km,
+    .time {
+      color: transparent;
+      background: rgba(0, 0, 0, 0.08);
+      border-radius: 10px;
+      animation: skeleton-pulse 1.2s ease-in-out infinite;
+    }
+  }
 }
 
