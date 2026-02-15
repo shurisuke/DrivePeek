@@ -82,11 +82,6 @@ RSpec.describe "Favorites", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        get favorites_path
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { favorites_path }
   end
 end

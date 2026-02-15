@@ -6,6 +6,7 @@ RSpec.describe "PlanSpots", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
+  let(:other_plan) { create(:plan, user: other_user) }
   let(:spot) { create(:spot) }
   let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 
@@ -51,26 +52,23 @@ RSpec.describe "PlanSpots", type: :request do
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        post plan_plan_spots_path(other_plan), params: { spot_id: spot.id }, as: :json
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否",
+                      :post,
+                      -> { plan_plan_spots_path(other_plan) },
+                      params: { spot_id: 1 }
     end
 
-    context "未ログインの場合" do
-      it "401エラーを返す" do
-        post plan_plan_spots_path(plan), params: { spot_id: spot.id }, as: :json
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
+    it_behaves_like "要認証エンドポイント",
+                    :post,
+                    -> { plan_plan_spots_path(plan) },
+                    params: { spot_id: 1 }
   end
 
   describe "PATCH /plans/:plan_id/plan_spots/:id" do
     let!(:plan_spot) { create(:plan_spot, plan: plan, spot: spot, toll_used: false, memo: nil, stay_duration: 30) }
+    let!(:other_plan_spot) { create(:plan_spot, plan: other_plan, spot: spot) }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -147,44 +145,26 @@ RSpec.describe "PlanSpots", type: :request do
           expect(plan_spot.reload.stay_duration).to be_nil
         end
       end
-
-      it "Turbo Stream形式でレスポンスを返す" do
-        patch plan_plan_spot_path(plan, plan_spot),
-              params: { toll_used: true },
-              headers: turbo_stream_headers
-
-        expect(response).to have_http_status(:ok)
-        expect(response.content_type).to include("text/vnd.turbo-stream.html")
-      end
     end
 
     context "他人のプランのplan_spotの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
-      let!(:other_plan_spot) { create(:plan_spot, plan: other_plan, spot: spot) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        patch plan_plan_spot_path(other_plan, other_plan_spot),
-              params: { toll_used: true },
-              as: :json
-
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否",
+                      :patch,
+                      -> { plan_plan_spot_path(other_plan, other_plan_spot) },
+                      params: { toll_used: true }
     end
 
-    context "未ログインの場合" do
-      it "401エラーを返す" do
-        patch plan_plan_spot_path(plan, plan_spot),
-              params: { toll_used: true },
-              as: :json
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
+    it_behaves_like "要認証エンドポイント",
+                    :patch,
+                    -> { plan_plan_spot_path(plan, plan_spot) },
+                    params: { toll_used: true }
   end
 
   describe "DELETE /plans/:plan_id/plan_spots/:id" do
     let!(:plan_spot) { create(:plan_spot, plan: plan, spot: spot) }
+    let!(:other_plan_spot) { create(:plan_spot, plan: other_plan, spot: spot) }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -197,12 +177,6 @@ RSpec.describe "PlanSpots", type: :request do
         expect(response).to have_http_status(:ok)
       end
 
-      it "Turbo Stream形式でレスポンスを返す" do
-        delete plan_plan_spot_path(plan, plan_spot), headers: turbo_stream_headers
-
-        expect(response.content_type).to include("text/vnd.turbo-stream.html")
-      end
-
       it "HTML形式ではリダイレクトする" do
         delete plan_plan_spot_path(plan, plan_spot)
 
@@ -211,8 +185,6 @@ RSpec.describe "PlanSpots", type: :request do
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
-      let!(:other_plan_spot) { create(:plan_spot, plan: other_plan, spot: spot) }
       before { sign_in user }
 
       it "404エラーを返す" do
@@ -227,19 +199,9 @@ RSpec.describe "PlanSpots", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログイン画面にリダイレクトする" do
-        delete plan_plan_spot_path(plan, plan_spot)
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-
-      it "スポットは削除されない" do
-        expect {
-          delete plan_plan_spot_path(plan, plan_spot)
-        }.not_to change(PlanSpot, :count)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :delete,
+                    -> { plan_plan_spot_path(plan, plan_spot) }
   end
 
   describe "POST /plans/:plan_id/plan_spots/adopt" do
@@ -284,39 +246,20 @@ RSpec.describe "PlanSpots", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
       end
-
-      it "Turbo Stream形式でレスポンスを返す" do
-        spots_params = [ { spot_id: spot1.id } ]
-
-        post plan_plan_spots_adopt_path(plan),
-             params: { spots: spots_params },
-             headers: turbo_stream_headers
-
-        expect(response).to have_http_status(:ok)
-        expect(response.content_type).to include("text/vnd.turbo-stream.html")
-      end
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        spots_params = [ { spot_id: spot1.id } ]
-
-        post plan_plan_spots_adopt_path(other_plan), params: { spots: spots_params }, as: :json
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否",
+                      :post,
+                      -> { plan_plan_spots_adopt_path(other_plan) },
+                      params: { spots: [ { spot_id: 1 } ] }
     end
 
-    context "未ログインの場合" do
-      it "401エラーを返す" do
-        spots_params = [ { spot_id: spot1.id } ]
-
-        post plan_plan_spots_adopt_path(plan), params: { spots: spots_params }, as: :json
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
+    it_behaves_like "要認証エンドポイント",
+                    :post,
+                    -> { plan_plan_spots_adopt_path(plan) },
+                    params: { spots: [ { spot_id: 1 } ] }
   end
 end

@@ -30,12 +30,10 @@ RSpec.describe "FavoriteSpots", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        post favorite_spots_path, params: { spot_id: spot.id }
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :post,
+                    -> { favorite_spots_path },
+                    params: { spot_id: 1 }
   end
 
   describe "DELETE /favorite_spots/:id" do
@@ -61,11 +59,8 @@ RSpec.describe "FavoriteSpots", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        delete favorite_spot_path(favorite_spot)
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :delete,
+                    -> { favorite_spot_path(favorite_spot) }
   end
 end

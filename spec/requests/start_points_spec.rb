@@ -6,6 +6,7 @@ RSpec.describe "StartPoints", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
+  let(:other_plan) { create(:plan, user: other_user) }
 
   before do
     stub_google_geocoding_api
@@ -84,21 +85,17 @@ RSpec.describe "StartPoints", type: :request do
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        patch plan_start_point_path(other_plan), params: start_point_params, as: :json
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否",
+                      :patch,
+                      -> { plan_start_point_path(other_plan) },
+                      params: { start_point: { lat: 35.0 } }
     end
 
-    context "未ログインの場合" do
-      it "401エラーを返す" do
-        patch plan_start_point_path(plan), params: start_point_params, as: :json
-
-        expect(response).to have_http_status(:unauthorized)
-      end
-    end
+    it_behaves_like "要認証エンドポイント",
+                    :patch,
+                    -> { plan_start_point_path(plan) },
+                    params: { start_point: { lat: 35.0 } }
   end
 end

@@ -15,12 +15,7 @@ RSpec.describe "Settings", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        get settings_path
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { settings_path }
   end
 
   describe "GET /settings/profile" do
@@ -33,12 +28,7 @@ RSpec.describe "Settings", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        get profile_settings_path
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { profile_settings_path }
   end
 
   describe "PATCH /settings/profile" do
@@ -77,12 +67,10 @@ RSpec.describe "Settings", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        patch profile_settings_path, params: { user: { age_group: "30s" } }
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :patch,
+                    -> { profile_settings_path },
+                    params: { user: { age_group: "30s" } }
   end
 
   describe "GET /settings/email" do
@@ -159,11 +147,9 @@ RSpec.describe "Settings", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        patch settings_path, params: { status: "active" }
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :patch,
+                    -> { settings_path },
+                    params: { status: "active" }
   end
 end

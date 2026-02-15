@@ -27,8 +27,8 @@ RSpec.describe Plan::Schedule, type: :model do
         goal_point = create(:goal_point, plan: plan)
         plan.update!(start_point: start_point, goal_point: goal_point)
 
-        create(:plan_spot, plan: plan, spot: spot1, position: 0, stay_duration: 45, move_time: 30)
-        create(:plan_spot, plan: plan, spot: spot2, position: 1, stay_duration: 45, move_time: 30)
+        create(:plan_spot, plan: plan, spot: spot1, position: 1, stay_duration: 45, move_time: 30)
+        create(:plan_spot, plan: plan, spot: spot2, position: 2, stay_duration: 45, move_time: 30)
       end
 
       it "trueを返す" do
@@ -88,7 +88,7 @@ RSpec.describe Plan::Schedule, type: :model do
     context "出発時間が未設定の場合" do
       before do
         plan.start_point.update!(departure_time: nil)
-        create(:plan_spot, plan: plan, spot: spot1, position: 0)
+        create(:plan_spot, plan: plan, spot: spot1, position: 1)
       end
 
       it "trueを返す（計算スキップも成功扱い）" do
@@ -129,7 +129,7 @@ RSpec.describe Plan::Schedule, type: :model do
         departure_time: Time.zone.local(2000, 1, 1, 23, 0),
         move_time: 90
       )
-      create(:plan_spot, plan: plan, spot: spot, position: 0, stay_duration: 30)
+      create(:plan_spot, plan: plan, spot: spot, position: 1, stay_duration: 30)
     end
 
     it "24時間で丸め込まれる" do
