@@ -299,34 +299,6 @@ export const bindPlanMapSync = () => {
     clearSearchHitMarkers()
   })
 
-  // 出発地点変更時：検索ヒットマーカーをクリア
-  // ※ マーカーは start_point_editor_controller で既に正しい位置に作成済みなので、
-  //   ここでは cachedPlanData の更新のみ行い、マーカー再描画はスキップする
-  document.addEventListener("plan:start-point-updated", async (e) => {
-    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
-    clearSearchHitMarkers()
-
-    // ✅ 出発地点の情報を cachedPlanData に保存（後続の navibar:updated で使用）
-    const basePlanData = getPlanDataFromPage() || cachedPlanData
-    if (!basePlanData) return
-
-    const startPoint = e?.detail
-    if (startPoint) {
-      cachedPlanData = {
-        ...basePlanData,
-        start_point: {
-          lat: Number(startPoint.lat),
-          lng: Number(startPoint.lng),
-          address: startPoint.address,
-        },
-      }
-    }
-
-    // ✅ マーカーは start_point_editor_controller で既に作成済みなので、ここでは再描画しない
-    // spots の情報だけ更新しておく
-    cachedPlanData = mergeSpotsFromDom(cachedPlanData)
-  })
-
   // ✅ 経路更新後：polyline を再描画する
   document.addEventListener("map:route-updated", () => {
     renderRoutePolylines()
