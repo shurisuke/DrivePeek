@@ -35,7 +35,7 @@ const buildHeaders = (options = {}) => {
  * @returns {Promise<object>} - JSON レスポンス
  * @throws {Error} - リクエスト失敗時
  */
-export const apiRequest = async (url, options = {}) => {
+const apiRequest = async (url, options = {}) => {
   const config = {
     credentials: "same-origin",
     ...options,
@@ -59,24 +59,6 @@ export const apiRequest = async (url, options = {}) => {
 }
 
 /**
- * GET リクエスト
- */
-export const get = (url, options = {}) => {
-  return apiRequest(url, { ...options, method: "GET" })
-}
-
-/**
- * POST リクエスト
- */
-export const post = (url, body, options = {}) => {
-  return apiRequest(url, {
-    ...options,
-    method: "POST",
-    body: JSON.stringify(body),
-  })
-}
-
-/**
  * PATCH リクエスト
  */
 export const patch = (url, body, options = {}) => {
@@ -85,11 +67,4 @@ export const patch = (url, body, options = {}) => {
     method: "PATCH",
     body: JSON.stringify(body),
   })
-}
-
-/**
- * DELETE リクエスト
- */
-export const destroy = (url, options = {}) => {
-  return apiRequest(url, { ...options, method: "DELETE" })
 }

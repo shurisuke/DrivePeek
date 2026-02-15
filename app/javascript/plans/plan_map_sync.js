@@ -167,23 +167,6 @@ const setGoalVisible = (visible) => {
   mapEl.dataset.goalPointVisible = visible ? "true" : "false"
 }
 
-const mergeGoalPoint = (planData, goal) => {
-  if (!planData || !goal) return planData
-
-  const normalized = {
-    address: goal.address,
-    lat: Number(goal.lat),
-    lng: Number(goal.lng),
-  }
-
-  // planDataの揺れを吸収（end_point / goal_point 両方）
-  return {
-    ...planData,
-    goal_point: { ...(planData.goal_point || {}), ...normalized },
-    end_point: { ...(planData.end_point || {}), ...normalized },
-  }
-}
-
 const renderAllMarkersSafe = async (planData) => {
   try {
     const { renderPlanMarkers } = await import("plans/render_plan_markers")
@@ -270,27 +253,6 @@ export const bindPlanMapSync = () => {
 
     // ✅ 帰宅地点の表示状態に応じて polyline を再描画
     renderRoutePolylines()
-  })
-
-  // 帰宅地点の更新：必ず visible=true にして、帰宅ピンを更新
-  document.addEventListener("plan:goal-point-updated", async (e) => {
-    // ✅ 検索ヒットマーカーをクリア（プラン変更時は検索結果を消す）
-    clearSearchHitMarkers()
-
-    // ✅ visible は文字列 "true" を直接セット（boolean禁止）
-    const mapEl = document.getElementById("map")
-    if (mapEl) {
-      mapEl.dataset.goalPointVisible = "true"
-    }
-
-    // ✅ 最新の planData を取得しつつ、null なら cachedPlanData でフォールバック
-    const freshPlanData = getPlanDataFromPage()
-    const basePlanData = freshPlanData || cachedPlanData
-    cachedPlanData = mergeGoalPoint(basePlanData, e?.detail)
-
-    if (!cachedPlanData) return
-
-    await refreshGoalMarkerSafe(cachedPlanData)
   })
 
   // スポット追加時：検索ヒットマーカーをクリア

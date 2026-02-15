@@ -176,8 +176,6 @@ export const setPopularSpotMarkers = (markers) => {
   popularSpotMarkers = markers;
 };
 
-export const getPopularSpotMarkers = () => popularSpotMarkers;
-
 // --- 提案マーカー ---
 // 全クリア（マーカー + パルス + 円）
 export const clearSuggestionMarkers = () => {

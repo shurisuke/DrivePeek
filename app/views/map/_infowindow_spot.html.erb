@@ -25,9 +25,6 @@
 <%= turbo_frame_tag "infowindow-content" do %>
 <div class="dp-infowindow dp-infowindow--<%= zoom_scale %>"
      data-controller="infowindow--ui"
-     data-infowindow--ui-spot-id-value="<%= spot.id %>"
-     data-infowindow--ui-place-id-value="<%= spot.place_id %>"
-     data-infowindow--ui-photo-count-value="<%= urls.size %>"
      data-infowindow--ui-zoom-scales-value="<%= infowindow_zoom_scales_json %>"
      data-infowindow--ui-zoom-index-value="<%= zoom_index %>">
 

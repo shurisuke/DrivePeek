@@ -9,9 +9,6 @@ export default class extends Controller {
   ]
 
   static values = {
-    spotId: Number,
-    placeId: String,
-    photoCount: Number,
     zoomScales: Array,
     zoomIndex: Number
   }
@@ -116,8 +113,6 @@ export default class extends Controller {
   // ==================== 編集ボタン（出発・帰宅地点用） ====================
   handleEditButton(event) {
     event.stopPropagation()
-    const action = event.currentTarget.dataset.editAction
-    this.dispatch("editAction", { detail: { action } })
     // InfoWindowを閉じる（Googleの閉じるボタンをクリック）
     this.element.closest(".gm-style-iw-a")?.querySelector("button.gm-ui-hover-effect")?.click()
   }

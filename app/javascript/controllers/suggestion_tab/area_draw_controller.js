@@ -268,9 +268,8 @@ export default class extends Controller {
   // ============================================
 
   showModal() {
-    // エリア描画モード開始（CSS一括制御 + 他コントローラーへ通知）
+    // エリア描画モード開始（CSS一括制御）
     document.body.classList.add("suggestion-area-draw-active")
-    document.dispatchEvent(new CustomEvent("suggestion:areaDrawStart"))
 
     // モーダル表示（移動モード）
     this.modalTarget.hidden = false

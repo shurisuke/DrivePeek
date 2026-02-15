@@ -9,13 +9,9 @@ import { Controller } from "@hotwired/stimulus"
  *      data-ui--bottom-sheet-min-value="80"
  *      data-ui--bottom-sheet-mid-value="50"
  *      data-ui--bottom-sheet-max-value="90">
- *   <div data-ui--bottom-sheet-target="handle">ドラッグハンドル</div>
- *   <div data-ui--bottom-sheet-target="content">コンテンツ</div>
  * </div>
  */
 export default class extends Controller {
-  static targets = ["handle", "content"]
-
   static values = {
     // スナップ位置（%）
     min: { type: Number, default: 10 },   // 最小（タブバーのみ）
@@ -24,9 +20,7 @@ export default class extends Controller {
     // 現在の状態
     state: { type: String, default: "min" }, // "min" | "mid" | "max"
     // アニメーション時間（ms）
-    duration: { type: Number, default: 300 },
-    // スワイプ速度閾値（px/ms）
-    velocityThreshold: { type: Number, default: 0.5 }
+    duration: { type: Number, default: 300 }
   }
 
   connect() {
@@ -35,9 +29,6 @@ export default class extends Controller {
     this.startY = 0
     this.startHeight = 0
     this.currentHeight = 0
-    this.lastY = 0
-    this.lastTime = 0
-    this.velocity = 0
     this.isMobile = false
     this.dragThreshold = 10
 
@@ -117,9 +108,6 @@ export default class extends Controller {
     this.isDragging = false
     this.startY = touch.clientY
     this.startHeight = this.currentHeight
-    this.lastY = touch.clientY
-    this.lastTime = Date.now()
-    this.velocity = 0
 
     this.element.style.transition = "none"
   }
@@ -163,15 +151,6 @@ export default class extends Controller {
     // 範囲制限
     const clampedPercent = Math.max(this.minValue, Math.min(this.maxValue, newHeightPercent))
 
-    // 速度計算
-    const now = Date.now()
-    const dt = now - this.lastTime
-    if (dt > 0) {
-      this.velocity = (this.lastY - y) / dt // 上向きで正
-    }
-    this.lastY = y
-    this.lastTime = now
-
     // 高さを更新
     this.setHeight(clampedPercent)
   }
@@ -181,12 +160,6 @@ export default class extends Controller {
     this.isDragging = false
     this.element.classList.remove("bottom-sheet--dragging")
 
-    // 自由調整モード: 現在の位置をそのまま維持（スナップしない）
-    const windowHeight = window.innerHeight
-    const currentPercent = (this.currentHeight / windowHeight) * 100
-
-    // 状態変更イベントを発火
-    this.dispatch("stateChange", { detail: { heightPercent: currentPercent } })
   }
 
   // スナップ位置に移動
@@ -219,9 +192,6 @@ export default class extends Controller {
 
     this.setHeight(targetPercent)
     this.stateValue = state
-
-    // 状態変更イベントを発火
-    this.dispatch("stateChange", { detail: { state, heightPercent: targetPercent } })
 
     // クラス更新
     this.element.classList.remove("bottom-sheet--min", "bottom-sheet--mid", "bottom-sheet--max")
