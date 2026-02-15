@@ -6,8 +6,8 @@ class PlanSpotsController < ApplicationController
 
   # POST /plans/:plan_id/plan_spots
   def create
-    spot = Spot.find(params[:spot_id])
-    @plan_spot = @plan.plan_spots.create!(spot: spot)
+    @spot = Spot.find(params[:spot_id])
+    @plan_spot = @plan.plan_spots.create!(spot: @spot)
 
     @plan.recalculate_for!(@plan_spot, action: :create)
     reload_plan
@@ -36,6 +36,7 @@ class PlanSpotsController < ApplicationController
 
   # DELETE /plans/:plan_id/plan_spots/:id
   def destroy
+    @spot = @plan_spot.spot
     @plan_spot.destroy!
     @plan.recalculate_for!(@plan_spot, action: :destroy)
     reload_plan

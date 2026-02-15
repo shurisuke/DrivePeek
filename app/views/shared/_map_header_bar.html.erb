@@ -1,0 +1,138 @@
+<%# 地図上部のヘッダーバー: 検索 + ピルボタン（ジャンル|🔥） + ハンバーガー %>
+<% genres_by_category = Genre.grouped_by_category %>
+
+<div class="map-header-bar" data-controller="ui--popular-spots ui--hamburger" data-action="keydown.esc->ui--popular-spots#closeModal">
+  <%# 検索バー %>
+  <div class="map-header-bar__search">
+    <i class="fa-solid fa-magnifying-glass map-header-bar__search-icon"></i>
+    <input
+      id="places-search-box"
+      type="text"
+      placeholder="      検索"
+      class="map-header-bar__search-input"
+    >
+  </div>
+
+  <%# ピルボタン（🎚️ | 🔥） %>
+  <div class="map-header-bar__pill">
+    <button type="button"
+            class="map-header-bar__pill-left"
+            data-action="click->ui--popular-spots#openModal"
+            title="話題のスポットを探す">
+      <i class="bi bi-sliders"></i>
+    </button>
+    <button type="button"
+            class="map-header-bar__pill-right"
+            data-action="click->ui--popular-spots#show"
+            title="盛り上がってるスポット">
+      <i class="bi bi-fire"></i>
+    </button>
+  </div>
+
+  <%# ハンバーガーメニュー %>
+  <div class="map-header-bar__hamburger hamburger" id="Hamburger" data-ui--hamburger-target="button" data-action="click->ui--hamburger#toggle">
+    <div class="hamburger__container">
+      <span class="hamburger__top"></span>
+      <span class="hamburger__middle"></span>
+      <span class="hamburger__bottom"></span>
+    </div>
+  </div>
+
+  <%# 展開メニュー %>
+  <div class="sp__menu" data-ui--hamburger-target="menu">
+    <div class="sp__menu__container">
+      <div class="sp__menu__nav">
+        <ul id="menu__hamburger__nav" class="sp__menu__ul">
+          <% if current_user.present? %>
+            <li><%= link_to new_plan_path do %><i class="fa-solid fa-pen"></i><span>プランを作る</span><% end %></li>
+            <li><%= link_to community_path do %><i class="fa-solid fa-earth-asia"></i><span>みんなの旅</span><% end %></li>
+            <li><%= link_to favorites_path do %><i class="fa-solid fa-bookmark"></i><span>お気に入り</span><% end %></li>
+            <li><%= link_to plans_path do %><i class="fa-solid fa-route"></i><span>作ったプラン</span><% end %></li>
+            <li>
+              <%= link_to settings_path do %>
+                <i class="fa-solid fa-gear"></i>
+                <span class="menu-text-with-badge">
+                  設定
+                  <% if current_user.age_group.blank? || current_user.residence.blank? %>
+                    <span class="menu-badge"></span>
+                  <% end %>
+                </span>
+              <% end %>
+            </li>
+          <% else %>
+            <li><%= link_to unauthenticated_root_path do %><i class="fa-solid fa-house"></i><span>TOP</span><% end %></li>
+            <li><%= link_to new_user_registration_path do %><i class="fa-solid fa-user-plus"></i><span>新規登録</span><% end %></li>
+            <li><%= link_to new_user_session_path do %><i class="fa-solid fa-right-to-bracket"></i><span>ログイン</span><% end %></li>
+            <li><%= link_to guide_path do %><i class="fa-solid fa-circle-question"></i><span>使い方</span><% end %></li>
+          <% end %>
+        </ul>
+      </div>
+    </div>
+  </div>
+
+  <%# ジャンル選択モーダル %>
+  <div class="popular-spots-modal" hidden data-ui--popular-spots-target="modal">
+    <div class="popular-spots-modal__overlay" data-action="click->ui--popular-spots#closeModal"></div>
+    <div class="popular-spots-modal__dialog" data-ui--popular-spots-target="dialog">
+      <%# モバイル用ドラッグハンドル %>
+      <div class="popular-spots-modal__handle"
+           data-action="touchstart->ui--popular-spots#startDrag touchmove->ui--popular-spots#drag touchend->ui--popular-spots#endDrag">
+        <div class="popular-spots-modal__handle-bar"></div>
+      </div>
+      <div class="popular-spots-modal__header">
+        <h3 class="popular-spots-modal__title">話題のスポットを探す</h3>
+        <button type="button"
+                class="popular-spots-modal__close-btn"
+                data-action="click->ui--popular-spots#closeModal">
+          <i class="bi bi-x-lg"></i>
+        </button>
+      </div>
+
+      <div class="selection-list popular-spots-modal__list">
+        <% genres_by_category.each do |category, groups| %>
+          <div class="selection-list__region">
+            <div class="selection-list__region-label"><%= category %></div>
+            <% groups.each do |group| %>
+              <% genre = group[:genre] %>
+              <% children = group[:children] %>
+              <% if children.present? %>
+                <div class="selection-list__group" data-parent-group>
+                  <div class="selection-list__parent" data-action="click->ui--popular-spots#toggleParent">
+                    <input type="checkbox" data-parent-checkbox
+                           data-action="click->ui--popular-spots#selectParent">
+                    <span><%= genre.name %></span>
+                    <i class="bi bi-chevron-down selection-list__toggle"
+                       data-action="click->ui--popular-spots#toggleGroup"></i>
+                  </div>
+                  <div class="selection-list__children">
+                    <% children.each do |child| %>
+                      <label class="selection-list__item">
+                        <input type="checkbox" name="genre_ids[]" value="<%= child.id %>"
+                               data-action="change->ui--popular-spots#updateParent"
+                               data-ui--popular-spots-target="genreCheckbox">
+                        <span><%= child.name %></span>
+                      </label>
+                    <% end %>
+                  </div>
+                </div>
+              <% else %>
+                <label class="selection-list__item">
+                  <input type="checkbox" name="genre_ids[]" value="<%= genre.id %>"
+                         data-ui--popular-spots-target="genreCheckbox">
+                  <span><%= genre.name %></span>
+                </label>
+              <% end %>
+            <% end %>
+          </div>
+        <% end %>
+      </div>
+
+      <button type="button"
+              class="popular-spots-modal__submit-btn"
+              data-action="click->ui--popular-spots#submit">
+        <i class="bi bi-fire"></i>
+        決定
+      </button>
+    </div>
+  </div>
+</div>

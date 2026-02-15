@@ -5,6 +5,7 @@
 
 import { getMapInstance, setCurrentLocationMarker } from "map/state";
 import { COLORS } from "map/constants";
+import { panToVisualCenter } from "map/visual_center";
 
 export const addCurrentLocationMarker = async ({ panTo = false } = {}) => {
   const map = getMapInstance();
@@ -59,7 +60,7 @@ export const addCurrentLocationMarker = async ({ panTo = false } = {}) => {
       setCurrentLocationMarker(marker);
 
       if (panTo) {
-        latestMap.panTo(latLng);
+        panToVisualCenter(latLng);
       }
     },
     (error) => {

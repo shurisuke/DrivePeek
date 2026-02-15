@@ -6,41 +6,6 @@
 ========================================== */
 
 body.no-footer {
-  /* ハンバーガーメニューの位置・サイズ調整（scaleを使わず直接サイズ指定でぼやけ防止） */
-  .hamburger {
-    top: 10px;
-    right: 24px;
-    width: 45px !important;
-    height: 40px !important;
-    padding: 4px !important;
-    border: 1px solid #9a9a9a !important; /* 検索フォームと同じ色 */
-    border-radius: 6px;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important; /* 検索フォームと同じ影 */
-
-    /* 三本線を小さく */
-    .hamburger__top,
-    .hamburger__middle,
-    .hamburger__bottom {
-      width: 20px !important;
-      height: 2px !important;
-    }
-
-    .hamburger__middle {
-      margin: 5px 0 !important;
-    }
-
-    /* 展開後も検索フォームと同じ枠線・影を維持 */
-    &.js-menu-open {
-      border: 1px solid #9a9a9a !important;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
-
-      /* バツを中央で交差させる */
-      .hamburger__middle {
-        margin: -2px 0 !important;
-      }
-    }
-  }
-
   .plan-form {
     /* ✅ 将来拡張しやすいようにCSS変数化 Attachment */
     --navibar-width: 360px;
@@ -520,16 +485,18 @@ body.navibar-resizing .plan-form .plan-time-slot {
 }
 
 /* ==========================================
-   ✅ プランタブ用アクションボタン（ナビ・共有・保存）
+   ✅ プランタブ用アクションボタン（モバイル専用・左右密着型フッター）
 ========================================== */
 .plan-tab-actions {
   position: sticky;
   bottom: 0;
-  margin-top: auto; /* コンテンツ少ない時も下部に配置 */
+  margin-top: auto;
   display: flex;
   justify-content: center;
-  padding: 16px;
-  background: linear-gradient(to top, #fff 60%, transparent 100%);
+  padding: 0;
+  background: #fff;
+  border-top: 1px solid #e5e5ea;
+  border-bottom: 1px solid #e5e5ea;
   z-index: 10;
 
   /* デスクトップでは非表示（地図上のボタンを使用） */
@@ -540,48 +507,32 @@ body.navibar-resizing .plan-form .plan-time-slot {
 
 .plan-tab-actions__group {
   display: flex;
-  border-radius: 10px;
-  border: 1.5px solid rgba(0, 0, 0, 0.1);
-  overflow: hidden;
-  filter: drop-shadow(0 4px 12px rgba(0, 0, 0, 0.25));
+  width: 100%;
 }
 
 .plan-tab-actions__btn {
+  flex: 1;
   display: flex;
   align-items: center;
   justify-content: center;
-  padding: 14px 28px;
+  padding: 14px 0;
+  padding-bottom: calc(14px + env(safe-area-inset-bottom, 0px));
   border: none;
-  border-radius: 0;
-  font-size: 15px;
+  font-size: 17px;
   font-weight: 600;
+  background: #fff;
   color: #555;
   cursor: pointer;
   text-decoration: none;
-  transition: background-color 0.15s ease;
 
   &--nav {
-    background: #fff;
-    color: #555;
-    border-right: 1.5px solid rgba(0, 0, 0, 0.1);
-
-    &:hover { background: #f5f5f5; }
+    border-right: 1px solid #e5e5ea;
   }
 
   &--save {
-    background: #fff;
     color: var(--personal);
     font-weight: 700;
-    border-right: 1.5px solid rgba(0, 0, 0, 0.1);
-
-    &:hover { background: #f5f5f5; }
-  }
-
-  &--share {
-    background: #fff;
-    color: #555;
-
-    &:hover { background: #f5f5f5; }
+    border-right: 1px solid #e5e5ea;
   }
 }
 
@@ -591,14 +542,6 @@ body.navibar-resizing .plan-form .plan-time-slot {
 ========================================== */
 @media (max-width: 767px) {
   body.no-footer {
-    /* ハンバーガーメニューを検索ボックスと同じ高さに揃える */
-    .hamburger {
-      top: 10px;
-      right: 12px;
-      width: 40px !important;
-      height: 40px !important;
-    }
-
     .plan-form {
       /* CSS変数をモバイル用に上書き */
       --navibar-width: 100%;
@@ -633,7 +576,7 @@ body.navibar-resizing .plan-form .plan-time-slot {
         box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
         background: #fff;
 
-        z-index: 100;
+        z-index: 1000; /* InfoWindow(2000)より下 */
 
         /* ドラッグハンドル */
         .navibar__handle {
@@ -693,24 +636,6 @@ body.navibar-resizing .plan-form .plan-time-slot {
       /* モバイル用: flex: 1 を解除してボトムシート収納時に画面下に収納 */
       .plan-tab-wrapper {
         flex: none;
-      }
-
-      /* モバイル用アクションボタン: 横幅100%、左右10pxマージン */
-      .plan-tab-actions {
-        position: sticky;
-        bottom: 0;
-        padding-left: 20px;
-        padding-right: 20px;
-      }
-
-      .plan-tab-actions__group {
-        width: 100%;
-      }
-
-      .plan-tab-actions__btn {
-        flex: 1;
-        padding: 14px 0;
-        font-size: 17px;
       }
 
       /* トグルボタンの上下マージンを削除 */

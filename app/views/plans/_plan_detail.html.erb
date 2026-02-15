@@ -1,4 +1,5 @@
 <% content_for :body_class, "no-footer" %>
+<% content_for :hide_header, true %>
 
 <script>
   window.planData = <%= raw(json_escape(@plan.marker_data_for_public_view.to_json)) %>;
@@ -18,18 +19,8 @@
   <!-- 地図 -->
   <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-ui--navibar-resize-target="map"></div>
 
-  <!-- 検索バー（地図上部に重ねる用） -->
-  <div class="map-search-box">
-    <input
-      id="places-search-box"
-      type="text"
-      placeholder="地名やキーワードで検索"
-      class="form-control"
-    >
-  </div>
-
-  <%# 人気スポットボタン（ハンバーガーメニューの下） %>
-  <%= render "shared/popular_spots_button" %>
+  <%# 地図上部のヘッダーバー（検索 + ジャンル/盛り上がり + ハンバーガー） %>
+  <%= render "shared/map_header_bar" %>
 
   <!-- 検索結果クリアボタン -->
   <div class="map-floating-buttons">

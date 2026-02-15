@@ -12,14 +12,22 @@ import { showInfoWindowWithFrame, closeInfoWindow, closeMobileInfoWindow } from 
 import { getMapPadding } from "map/visual_center"
 
 export default class extends Controller {
-  static targets = ["modal", "genreCheckbox"]
+  static targets = ["modal", "genreCheckbox", "dialog"]
+
+  // ドラッグ用の状態
+  #dragStartY = 0
+  #dragStartHeight = 0
+  #isDragging = false
+
+  // 選択されたジャンルID（炎ボタンで再利用）
+  #selectedGenreIds = []
 
   // ============================================
   // 人気スポット表示（ジャンル指定なし）
   // ============================================
 
   show() {
-    this.#fetchAndShowSpots([])
+    this.#fetchAndShowSpots(this.#selectedGenreIds)
   }
 
   // ============================================
@@ -51,6 +59,46 @@ export default class extends Controller {
   closeModal() {
     this.modalTarget.hidden = true
     document.body.style.overflow = ""
+    // 高さをリセット
+    if (this.hasDialogTarget) {
+      this.dialogTarget.style.height = ""
+    }
+  }
+
+  // ============================================
+  // ドラッグでの高さ調節（モバイル用）
+  // ============================================
+
+  startDrag(event) {
+    if (!this.hasDialogTarget) return
+    this.#isDragging = true
+    this.#dragStartY = event.touches[0].clientY
+    this.#dragStartHeight = this.dialogTarget.offsetHeight
+    this.dialogTarget.style.transition = "none"
+  }
+
+  drag(event) {
+    if (!this.#isDragging) return
+    event.preventDefault()
+
+    const currentY = event.touches[0].clientY
+    const deltaY = this.#dragStartY - currentY
+    const newHeight = Math.min(
+      window.innerHeight * 0.8,
+      Math.max(200, this.#dragStartHeight + deltaY)
+    )
+    this.dialogTarget.style.height = `${newHeight}px`
+  }
+
+  endDrag() {
+    if (!this.#isDragging) return
+    this.#isDragging = false
+    this.dialogTarget.style.transition = ""
+
+    // 小さすぎたら閉じる
+    if (this.dialogTarget.offsetHeight < 150) {
+      this.closeModal()
+    }
   }
 
   // ============================================
@@ -58,12 +106,12 @@ export default class extends Controller {
   // ============================================
 
   submit() {
-    const selectedIds = this.genreCheckboxTargets
+    this.#selectedGenreIds = this.genreCheckboxTargets
       .filter(cb => cb.checked)
       .map(cb => cb.value)
 
     this.closeModal()
-    this.#fetchAndShowSpots(selectedIds)
+    this.#fetchAndShowSpots(this.#selectedGenreIds)
   }
 
   toggleGroup(event) {

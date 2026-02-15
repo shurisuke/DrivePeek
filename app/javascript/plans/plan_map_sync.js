@@ -121,6 +121,46 @@ const mergeSpotsFromDom = (planData) => {
   return { ...planData, spots }
 }
 
+// ✅ DOM から出発地点の位置を取得
+const getStartPointPositionFromDom = () => {
+  const el = document.querySelector(".start-point-block")
+  if (!el) return null
+
+  const lat = parseFloat(el.dataset.lat)
+  const lng = parseFloat(el.dataset.lng)
+  if (isNaN(lat) || isNaN(lng)) return null
+  return { lat, lng }
+}
+
+// ✅ DOM から帰宅地点の位置を取得
+const getGoalPointPositionFromDom = () => {
+  const el = document.querySelector(".goal-point-block")
+  if (!el) return null
+
+  const lat = parseFloat(el.dataset.lat)
+  const lng = parseFloat(el.dataset.lng)
+  if (isNaN(lat) || isNaN(lng)) return null
+  return { lat, lng }
+}
+
+// ✅ planData の start_point/goal_point を DOM から更新した新しいオブジェクトを返す
+const mergePointsFromDom = (planData) => {
+  const startPos = getStartPointPositionFromDom()
+  const goalPos = getGoalPointPositionFromDom()
+
+  const result = { ...planData }
+
+  if (startPos) {
+    result.start_point = { ...planData?.start_point, ...startPos }
+  }
+  if (goalPos) {
+    result.goal_point = { ...planData?.goal_point, ...goalPos }
+    result.end_point = { ...planData?.end_point, ...goalPos }
+  }
+
+  return result
+}
+
 const setGoalVisible = (visible) => {
   const mapEl = document.getElementById("map")
   if (!mapEl) return
@@ -197,9 +237,17 @@ export const bindPlanMapSync = () => {
     if (!freshPlanData && !cachedPlanData) return
 
     // ✅ DOM から取得した最新データを優先（turbo_stream で更新済み）
+    // start_point/goal_point も DOM から取得して確実に最新化
     const basePlanData = freshPlanData || cachedPlanData
-    const planData = mergeSpotsFromDom(basePlanData)
+    let planData = mergeSpotsFromDom(basePlanData)
+    planData = mergePointsFromDom(planData)
     cachedPlanData = planData
+
+    // ✅ window.planData も更新して一貫性を保つ
+    if (window.planData) {
+      window.planData = planData
+    }
+
     await renderAllMarkersSafe(planData)
 
     // ✅ 経路ポリラインも再描画（スポット削除時にクリアされるように）

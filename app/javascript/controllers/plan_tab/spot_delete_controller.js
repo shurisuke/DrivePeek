@@ -12,6 +12,12 @@ export default class extends Controller {
     event.preventDefault()
 
     // 1. 即座にDOMから削除（Optimistic UI）
+    // 対応する時刻レールブロックも削除
+    const timeRailBlock = document.querySelector(
+      `.time-rail-block--spot[data-plan-spot-id="${this.planSpotIdValue}"]`
+    )
+    if (timeRailBlock) timeRailBlock.remove()
+
     this.element.remove()
 
     // 2. 即座にマーカー再描画（番号更新含む）

@@ -1,0 +1,246 @@
+/* ==========================================
+   地図上部のヘッダーバー
+   検索 + ピルボタン（ジャンル|🔥） + ハンバーガー
+========================================== */
+
+.map-header-bar {
+  position: fixed;
+  top: 6px;
+  right: 6px;
+  left: 6px;
+  z-index: 3000; /* InfoWindow(2000)より上、展開メニュー(4000)より下 */
+
+  display: flex;
+  align-items: center;
+  gap: 2px;
+
+  // 検索バー
+  &__search {
+    flex: 1;
+    min-width: 0;
+    position: relative;
+  }
+
+  &__search-icon {
+    position: absolute;
+    left: 14px;
+    top: 50%;
+    transform: translateY(-50%);
+    color: #999;
+    font-size: 16px;
+    pointer-events: none;
+    transition: opacity 0.15s ease;
+  }
+
+
+  &__search-input {
+    width: 100%;
+    height: 40px;
+    padding: 0 14px;
+    font-size: 18px;
+    border: 1px solid #ccc;
+    border-radius: 8px;
+    background: rgba(255, 255, 255, 0.95);
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    outline: none;
+    transition: all 0.2s ease;
+
+    &::placeholder {
+      color: #999;
+      font-size: 16px;
+    }
+
+    &:focus {
+      border-color: #999;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.15);
+
+      &::placeholder {
+        opacity: 0;
+      }
+    }
+  }
+
+  // ピルボタン（🎚️ | 🔥）
+  &__pill {
+    display: flex;
+    height: 40px;
+    border-radius: 8px;
+    overflow: hidden;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+    flex-shrink: 0;
+  }
+
+  &__pill-left {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    background: rgba(255, 255, 255, 0.95);
+    border: 1px solid #ccc;
+    border-right: none;
+    border-radius: 8px 0 0 8px;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 16px;
+      color: #666;
+    }
+
+    &:hover {
+      background: #f5f5f5;
+    }
+  }
+
+  &__pill-right {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+    border: none;
+    border-radius: 0 8px 8px 0;
+    cursor: pointer;
+    transition: all 0.15s ease;
+
+    i {
+      font-size: 16px;
+      color: #fff;
+    }
+
+    &:hover {
+      background: linear-gradient(135deg, #EA580C 0%, #DC2626 100%);
+    }
+  }
+
+  // ハンバーガーメニュー（ヘッダーバー内用のスタイル上書き）
+  .hamburger.map-header-bar__hamburger {
+    position: static;
+    top: auto;
+    right: auto;
+    width: 40px;
+    height: 40px;
+    min-width: 40px;
+    min-height: 40px;
+    flex-shrink: 0;
+    border-radius: 8px;
+    padding: 0;
+    box-sizing: border-box;
+
+    .hamburger__top,
+    .hamburger__middle,
+    .hamburger__bottom {
+      width: 18px;
+    }
+
+    .hamburger__middle {
+      margin: 5px 0;
+    }
+
+    // 展開時のバツアニメーション
+    &.js-menu-open {
+      .hamburger__middle {
+        margin: -2px 0;
+      }
+    }
+  }
+}
+
+// デスクトップ: navibar考慮した配置
+@media (min-width: 768px) {
+  .map-header-bar {
+    // navibar分を左にオフセット
+    left: calc(var(--navibar-width, 350px) - var(--navibar-slide, 0px) + 6px);
+    right: 6px;
+    gap: 8px;
+
+    &__search-input {
+      height: 40px;
+      font-size: 18px;
+
+      &::placeholder {
+        font-size: 16px;
+      }
+    }
+
+    &__pill {
+      height: 40px;
+      border-radius: 8px;
+    }
+
+    &__pill-left {
+      width: 40px;
+      border-radius: 8px 0 0 8px;
+
+      i {
+        font-size: 18px;
+      }
+    }
+
+    &__pill-right {
+      width: 40px;
+      border-radius: 0 8px 8px 0;
+
+      i {
+        font-size: 18px;
+      }
+    }
+
+    .hamburger.map-header-bar__hamburger {
+      width: 40px;
+      height: 40px;
+      min-width: 40px;
+      min-height: 40px;
+      margin-right: 4px;
+
+      .hamburger__top,
+      .hamburger__middle,
+      .hamburger__bottom {
+        width: 20px;
+      }
+
+      .hamburger__middle {
+        margin: 6px 0;
+      }
+    }
+  }
+}
+
+// モバイル: iOS対応（44pxタッチターゲット、16px以上のフォント）
+@media (max-width: 767px) {
+  .map-header-bar {
+    gap: 4px;
+
+    &__search-input {
+      height: 44px;
+      font-size: 16px;
+    }
+
+    &__pill {
+      height: 44px;
+    }
+
+    &__pill-left,
+    &__pill-right {
+      width: 44px;
+    }
+
+    .hamburger.map-header-bar__hamburger {
+      width: 44px;
+      height: 44px;
+      min-width: 44px;
+      min-height: 44px;
+    }
+  }
+}
+
+// フォーカス時・入力時にアイコンを非表示（プレースホルダと同じ挙動）
+.map-header-bar__search:has(.map-header-bar__search-input:focus) .map-header-bar__search-icon,
+.map-header-bar__search:has(.map-header-bar__search-input:not(:placeholder-shown)) .map-header-bar__search-icon {
+  opacity: 0;
+}
+
+/* プランバーが80%を超えたらヘッダーバーを非表示 */
+body.no-footer .plan-form.navibar--wide .map-header-bar {
+  display: none;
+}

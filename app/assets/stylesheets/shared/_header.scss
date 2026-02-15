@@ -15,7 +15,7 @@ body {
   position: fixed;
   top: 20px;
   right: 24px;
-  z-index: 9999;
+  z-index: 4500; /* 展開メニュー(4000)より上、モーダル(5000)より下 */
 
   display: flex;
   align-items: center;
@@ -115,7 +115,7 @@ body {
   transition: .3s cubic-bezier(.11, .24, .64, 1);
 
   &.js-open {
-    z-index: 9998;
+    z-index: 4000; /* map-header-bar(3000)より上、モーダル(5000)より下 */
     opacity: 1;
     visibility: visible;
   }
