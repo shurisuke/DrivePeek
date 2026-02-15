@@ -10,7 +10,7 @@
 #
 # It's strongly recommended that you check this file into your version control system.
 
-ActiveRecord::Schema[8.1].define(version: 2026_02_13_160939) do
+ActiveRecord::Schema[8.1].define(version: 2026_02_15_091034) do
   # These are extensions that must be enabled in order to support this database
   enable_extension "pg_catalog.plpgsql"
 
@@ -245,6 +245,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_160939) do
     t.string "name", null: false
     t.string "place_id", null: false
     t.string "prefecture"
+    t.string "town"
     t.datetime "updated_at", null: false
     t.index ["city"], name: "index_spots_on_city"
     t.index ["place_id"], name: "index_spots_on_place_id", unique: true
@@ -264,6 +265,7 @@ ActiveRecord::Schema[8.1].define(version: 2026_02_13_160939) do
     t.text "polyline"
     t.string "prefecture"
     t.boolean "toll_used", default: false, null: false
+    t.string "town"
     t.datetime "updated_at", null: false
     t.index ["city"], name: "index_start_points_on_city"
     t.index ["plan_id"], name: "index_start_points_on_plan_id"
