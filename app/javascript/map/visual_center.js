@@ -35,6 +35,16 @@ const getBottomSheetHeight = () => {
 }
 
 /**
+ * モバイルInfoWindowの現在の高さを取得
+ */
+const getMobileInfoWindowHeight = () => {
+  if (!isMobile()) return 0
+  const sheet = document.querySelector(".mobile-infowindow__sheet")
+  if (!sheet) return 0
+  return sheet.offsetHeight
+}
+
+/**
  * モバイル上部の障害物の高さを取得（検索ボックス + フローティングボタン）
  */
 const getMobileTopHeight = () => {
@@ -42,6 +52,19 @@ const getMobileTopHeight = () => {
   const searchBox = document.querySelector(".map-search-box")
   const floatingButtons = document.querySelector(".map-floating-buttons")
   return (searchBox?.offsetHeight || 0) + (floatingButtons?.offsetHeight || 0)
+}
+
+/**
+ * モバイル時の障害物の高さを取得（上部・下部）
+ */
+const getMobileObstacles = () => {
+  if (!isMobile()) return { top: 0, bottom: 0 }
+
+  const top = getMobileTopHeight()
+  const bottomSheet = getBottomSheetHeight()
+  const infoWindow = getMobileInfoWindowHeight()
+
+  return { top, bottom: Math.max(bottomSheet, infoWindow) }
 }
 
 /**
@@ -84,9 +107,8 @@ export const panToVisualCenter = (position) => {
   // オフセットを計算
   let offsetY = 0
   if (isMobile()) {
-    const topHeight = getMobileTopHeight()
-    const bottomSheetHeight = getBottomSheetHeight()
-    offsetY = (bottomSheetHeight - topHeight) / 2
+    const { top, bottom } = getMobileObstacles()
+    offsetY = (bottom - top) / 2
   } else {
     offsetY = getDesktopOffsetY()
   }
@@ -113,12 +135,11 @@ export const panToVisualCenter = (position) => {
  */
 export const getMapPadding = () => {
   if (isMobile()) {
-    const topHeight = getMobileTopHeight()
-    const bottomSheetHeight = getBottomSheetHeight()
+    const { top, bottom } = getMobileObstacles()
     return {
-      top: topHeight > 0 ? topHeight + 16 : 60,
+      top: top > 0 ? top + 16 : 60,
       right: 16,
-      bottom: bottomSheetHeight > 0 ? bottomSheetHeight + 16 : 16,
+      bottom: bottom > 0 ? bottom + 16 : 16,
       left: 16
     }
   }
