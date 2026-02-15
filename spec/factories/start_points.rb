@@ -8,6 +8,7 @@ FactoryBot.define do
     lng { 139.7016 }
     prefecture { "東京都" }
     city { "渋谷区" }
+    town { "渋谷" }
     departure_time { Time.zone.parse("09:00") }
     toll_used { false }
     move_time { 30 }
@@ -27,6 +28,7 @@ FactoryBot.define do
       lng { 140.4467 }
       prefecture { "茨城県" }
       city { "水戸市" }
+      town { "中央" }
     end
   end
 end

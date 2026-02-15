@@ -154,14 +154,14 @@ class Spot < ApplicationRecord
 
   # 短縮住所（県+市+町）
   def short_address
-    [prefecture, city, town].compact_blank.join
+    [ prefecture, city, town ].compact_blank.join
   end
 
   private
 
-  # prefecture/city が未設定なら ReverseGeocoder で補完
+  # prefecture/city/town が未設定なら ReverseGeocoder で補完
   def geocode_if_needed
-    return if prefecture.present? && city.present?
+    return if prefecture.present? && city.present? && town.present?
     return unless lat.present? && lng.present?
 
     result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)

@@ -31,7 +31,7 @@ class StartPoint < ApplicationRecord
 
   # 短縮住所（県+市+町）
   def short_address
-    [prefecture, city, town].compact_blank.join
+    [ prefecture, city, town ].compact_blank.join
   end
 
   private
@@ -40,8 +40,8 @@ class StartPoint < ApplicationRecord
   def geocode_if_needed
     return unless lat.present? && lng.present?
 
-    # lat/lng が変更された場合は再 geocode
-    needs_geocode = lat_changed? || lng_changed? || prefecture.blank? || city.blank?
+    # lat/lng が変更された場合、または必須項目が未設定なら再 geocode
+    needs_geocode = lat_changed? || lng_changed? || prefecture.blank? || city.blank? || town.blank?
     return unless needs_geocode
 
     result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)

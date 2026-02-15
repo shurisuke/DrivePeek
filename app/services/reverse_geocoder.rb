@@ -93,7 +93,7 @@ class ReverseGeocoder
       # 町名（sublocality_level_2, sublocality_level_3, neighborhood等）
       town =
         components.find { |c|
-          (c["types"] & ["sublocality_level_2", "sublocality_level_3", "neighborhood"]).any?
+          (c["types"] & [ "sublocality_level_2", "sublocality_level_3", "neighborhood" ]).any?
         }&.dig("long_name")
 
       {
