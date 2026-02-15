@@ -21,10 +21,7 @@
 %>
 
 <div class="dp-infowindow dp-infowindow--mobile"
-     data-controller="infowindow--ui"
-     data-infowindow--ui-spot-id-value="<%= spot.id %>"
-     data-infowindow--ui-place-id-value="<%= spot.place_id %>"
-     data-infowindow--ui-photo-count-value="<%= urls.size %>">
+     data-controller="infowindow--ui">
 
   <%# タブ切り替え用ラジオボタン %>
   <% _default_tab = local_assigns[:default_tab] %>

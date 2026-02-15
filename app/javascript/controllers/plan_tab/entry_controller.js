@@ -5,7 +5,7 @@ import { Controller } from "@hotwired/stimulus"
 // 用途: 既存プランがない場合は自動でプラン作成を開始
 // ================================================================
 export default class extends Controller {
-  static targets = ["modal", "loading", "autoTrigger"]
+  static targets = ["autoTrigger"]
   static values = { hasPlan: Boolean }
 
   connect() {

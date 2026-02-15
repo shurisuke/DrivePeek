@@ -6,7 +6,6 @@ import { Carousel } from "bootstrap"
 export default class extends Controller {
   connect() {
     this.startX = 0
-    this.startY = 0
     this.isDragging = false
     this.threshold = 50
 
@@ -68,7 +67,6 @@ export default class extends Controller {
     if (e.target.closest("a, button")) return
 
     this.startX = e.clientX
-    this.startY = e.clientY
     this.isDragging = true
     this.element.style.cursor = "grabbing"
 

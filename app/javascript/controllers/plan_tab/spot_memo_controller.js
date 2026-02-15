@@ -57,9 +57,6 @@ export default class extends Controller {
   open(event) {
     event.preventDefault()
 
-    // ✅ メモを開く前に「他を閉じて」と通知（相互排他）
-    this.element.dispatchEvent(new CustomEvent("spot:memo-opened", { bubbles: true }))
-
     // ① spotDetail を開く（閉じてたら）
     this._showCollapse(this.detailTarget)
 

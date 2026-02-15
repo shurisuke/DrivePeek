@@ -187,15 +187,7 @@ export const addSpotToPlan = async (planId, spotId) => {
  * スポットをプランから削除
  * - API呼び出し + Turbo Stream適用
  * - navibar:updated（turboStreamRequest内で発火）
- * - plan:spot-deleted（マーカー再描画用）
  */
 export const removeSpotFromPlan = async (planSpotId, planId) => {
   await deleteTurboStream(`/plans/${planId}/plan_spots/${planSpotId}`)
-
-  // DOM更新完了後にイベント発火
-  requestAnimationFrame(() => {
-    requestAnimationFrame(() => {
-      document.dispatchEvent(new CustomEvent("plan:spot-deleted", { detail: { planId, planSpotId } }))
-    })
-  })
 }
