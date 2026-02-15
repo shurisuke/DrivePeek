@@ -19,7 +19,7 @@ class SuggestionsController < ApplicationController
   ].freeze
 
   def suggest
-    @result = SuggestionService.generate(**build_suggest_params)
+    @result = Suggestion::Generator.generate(**build_suggest_params)
     @result.merge!(area_data: area_data, mode: mode)
     save_and_respond
   end
@@ -58,7 +58,7 @@ class SuggestionsController < ApplicationController
 
   # --- 共通処理 ---
   def save_and_respond
-    @plan.suggestion_logs.create!(user: current_user, role: "assistant", content: @result.to_json)
+    @plan.suggestions.create!(user: current_user, role: "assistant", content: @result.to_json)
     respond_to do |format|
       format.turbo_stream
       format.html { redirect_to edit_plan_path(@plan) }
@@ -66,7 +66,7 @@ class SuggestionsController < ApplicationController
   end
 
   def last_message_is_mode_select?
-    @plan.suggestion_logs.order(created_at: :desc).first&.response_type == "mode_select"
+    @plan.suggestions.order(created_at: :desc).first&.response_type == "mode_select"
   end
 
   # --- スロット処理 ---

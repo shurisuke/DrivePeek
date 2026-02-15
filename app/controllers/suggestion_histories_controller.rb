@@ -5,7 +5,7 @@ class SuggestionHistoriesController < ApplicationController
 
   # DELETE /suggestion_history
   def destroy
-    @plan.suggestion_logs.destroy_all
+    @plan.suggestions.destroy_all
 
     respond_to do |format|
       format.turbo_stream
