@@ -1,9 +1,11 @@
+# frozen_string_literal: true
+
 # エリア選択による提案機能
 #
 # 円内スポット検索と、ジャンル指定による提案を行う
 # スポット検索は Suggestion::SpotFinder、プロンプト生成は Suggestion::PromptBuilder に委譲
 #
-class SuggestionService
+class Suggestion::Generator
   MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 1024
 
@@ -60,13 +62,13 @@ class SuggestionService
       build_suggest_response(ai_response, selected_spots, mode)
 
     rescue Faraday::Error => e
-      Rails.logger.error("[SuggestionService] Faraday error: #{e.class} - #{e.message}")
+      Rails.logger.error("[Suggestion::Generator] Faraday error: #{e.class} - #{e.message}")
       error_response("通信エラーが発生しました", mode: mode)
     rescue JSON::ParserError => e
-      Rails.logger.error("[SuggestionService] JSON parse error: #{e.message}")
+      Rails.logger.error("[Suggestion::Generator] JSON parse error: #{e.message}")
       error_response("応答の解析に失敗しました", mode: mode)
     rescue StandardError => e
-      Rails.logger.error("[SuggestionService] Unexpected error: #{e.class} - #{e.message}")
+      Rails.logger.error("[Suggestion::Generator] Unexpected error: #{e.class} - #{e.message}")
       Rails.logger.error(e.backtrace.first(5).join("\n"))
       error_response("エラーが発生しました", mode: mode)
     end
