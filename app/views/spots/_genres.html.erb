@@ -9,7 +9,7 @@
     </div>
   <% else %>
     <div class="spot-genres navibar-padding">
-      <% spot.genres.each do |genre| %>
+      <% spot.genres.limit(2).each do |genre| %>
         <span class="genre-chip"><%= genre.name %></span>
       <% end %>
     </div>
