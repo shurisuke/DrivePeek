@@ -33,7 +33,8 @@
 
       <%# 住所 %>
       <div class="goal-address navibar-padding">
-        <%= goal_point&.address.presence || "帰宅地点が未設定です" %>
+        <i class="bi bi-geo-alt"></i>
+        <%= goal_point&.display_address.presence || "帰宅地点が未設定です" %>
       </div>
     </div>
   </div>
