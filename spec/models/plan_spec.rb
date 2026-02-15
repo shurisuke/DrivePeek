@@ -13,7 +13,7 @@ RSpec.describe Plan, type: :model do
     it { should have_one(:goal_point).dependent(:destroy) }
     it { should have_many(:favorite_plans).dependent(:destroy) }
     it { should have_many(:liked_by_users).through(:favorite_plans).source(:user) }
-    it { should have_many(:suggestion_logs).dependent(:destroy) }
+    it { should have_many(:suggestions).dependent(:destroy) }
   end
 
   describe "factory" do

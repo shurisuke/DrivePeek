@@ -81,7 +81,7 @@ RSpec.describe "Suggestions", type: :request do
               mode: "plan",
               slots: [ { genre_id: genre_gourmet.id } ]
             ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-          }.to change { plan.suggestion_logs.count }.by(1)
+          }.to change { plan.suggestions.count }.by(1)
         end
 
         it "Turbo Stream形式でレスポンスを返す" do
@@ -222,14 +222,14 @@ RSpec.describe "Suggestions", type: :request do
 
     context "最後のメッセージがmode_selectでない場合" do
       before do
-        create(:suggestion_log, :assistant_conversation, user: user, plan: plan)
+        create(:suggestion, :assistant_conversation, user: user, plan: plan)
       end
 
       it "mode_selectメッセージを追加する" do
         expect {
           post finish_suggestions_path, params: { plan_id: plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.to change { plan.suggestion_logs.count }.by(1)
+        }.to change { plan.suggestions.count }.by(1)
 
         expect(response).to have_http_status(:ok)
       end
@@ -237,7 +237,7 @@ RSpec.describe "Suggestions", type: :request do
 
     context "最後のメッセージがmode_selectの場合" do
       before do
-        create(:suggestion_log, user: user, plan: plan, role: "assistant",
+        create(:suggestion, user: user, plan: plan, role: "assistant",
                content: { type: "mode_select", message: "test" }.to_json)
       end
 
@@ -245,7 +245,7 @@ RSpec.describe "Suggestions", type: :request do
         expect {
           post finish_suggestions_path, params: { plan_id: plan.id },
                headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.not_to change { plan.suggestion_logs.count }
+        }.not_to change { plan.suggestions.count }
 
         expect(response).to have_http_status(:no_content)
       end

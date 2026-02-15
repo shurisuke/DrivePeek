@@ -14,8 +14,8 @@ RSpec.describe "SuggestionHistory", type: :request do
 
   describe "DELETE /suggestion_history" do
     before do
-      create(:suggestion_log, :user_message, user: user, plan: plan)
-      create(:suggestion_log, :assistant_conversation, user: user, plan: plan)
+      create(:suggestion, :user_message, user: user, plan: plan)
+      create(:suggestion, :assistant_conversation, user: user, plan: plan)
     end
 
     context "ログイン済み・自分のプランの場合" do
@@ -25,7 +25,7 @@ RSpec.describe "SuggestionHistory", type: :request do
         expect {
           delete suggestion_history_path, params: { plan_id: plan.id },
                  headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.to change { plan.suggestion_logs.count }.from(2).to(0)
+        }.to change { plan.suggestions.count }.from(2).to(0)
 
         expect(response).to have_http_status(:ok)
       end
@@ -41,7 +41,7 @@ RSpec.describe "SuggestionHistory", type: :request do
     context "他人のプランの場合" do
       let(:other_plan) { create(:plan, user: other_user) }
       before do
-        create(:suggestion_log, :user_message, user: other_user, plan: other_plan)
+        create(:suggestion, :user_message, user: other_user, plan: other_plan)
         sign_in user
       end
 
@@ -55,7 +55,7 @@ RSpec.describe "SuggestionHistory", type: :request do
         expect {
           delete suggestion_history_path, params: { plan_id: other_plan.id },
                  headers: { "Accept" => "text/vnd.turbo-stream.html" }
-        }.not_to change { other_plan.suggestion_logs.count }
+        }.not_to change { other_plan.suggestions.count }
       end
     end
 
