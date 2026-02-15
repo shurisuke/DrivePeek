@@ -180,15 +180,15 @@ class CreateInitialSchema < ActiveRecord::Migration[8.1]
     add_index :favorite_plans, [ :user_id, :plan_id ], unique: true
 
     # ==========================================
-    # Suggestion Logs
+    # Suggestions
     # ==========================================
-    create_table :suggestion_logs do |t|
+    create_table :suggestions do |t|
       t.text :content, null: false
       t.references :plan, null: false, foreign_key: true
       t.string :role, null: false
       t.references :user, null: false, foreign_key: true
       t.timestamps
     end
-    add_index :suggestion_logs, [ :plan_id, :created_at ]
+    add_index :suggestions, [ :plan_id, :created_at ]
   end
 end
