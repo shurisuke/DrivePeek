@@ -1,3 +1,5 @@
+# frozen_string_literal: true
+
 # 提案ログ（AIチャットの会話履歴）
 #
 # content の形式:
@@ -13,7 +15,7 @@
 #       mode: "plan" | "spots"
 #     }
 #
-class SuggestionLog < ApplicationRecord
+class Suggestion < ApplicationRecord
   belongs_to :user
   belongs_to :plan
 
