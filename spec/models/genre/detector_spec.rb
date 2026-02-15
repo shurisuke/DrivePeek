@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe GenreDetector do
+RSpec.describe Genre::Detector do
   let(:spot) { create(:spot, name: "テストラーメン店", address: "東京都渋谷区") }
 
   describe ".detect" do
@@ -13,7 +13,7 @@ RSpec.describe GenreDetector do
       end
 
       it "空配列を返す" do
-        expect(GenreDetector.detect(spot)).to eq([])
+        expect(Genre::Detector.detect(spot)).to eq([])
       end
     end
 
@@ -38,7 +38,7 @@ RSpec.describe GenreDetector do
         end
 
         it "ジャンルIDの配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to contain_exactly(ramen_genre.id, night_view_genre.id)
         end
       end
@@ -53,7 +53,7 @@ RSpec.describe GenreDetector do
         end
 
         it "1つのジャンルIDを返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([ ramen_genre.id ])
         end
       end
@@ -68,7 +68,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end
@@ -83,7 +83,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end
@@ -100,7 +100,7 @@ RSpec.describe GenreDetector do
         end
 
         it "指定した件数まで返す" do
-          result = GenreDetector.detect(spot, count: 2)
+          result = Genre::Detector.detect(spot, count: 2)
           expect(result.size).to eq(2)
         end
       end
@@ -118,7 +118,7 @@ RSpec.describe GenreDetector do
         end
 
         it "観光名所を除外して返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([ shrine_temple.id ])
         end
       end
@@ -129,7 +129,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end
@@ -142,7 +142,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end
@@ -153,7 +153,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end
@@ -164,7 +164,7 @@ RSpec.describe GenreDetector do
         end
 
         it "空配列を返す" do
-          result = GenreDetector.detect(spot)
+          result = Genre::Detector.detect(spot)
           expect(result).to eq([])
         end
       end

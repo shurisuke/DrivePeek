@@ -137,7 +137,7 @@ class Spot < ApplicationRecord
   def detect_genres!
     return false if genres.exists?
 
-    detected_ids = GenreDetector.detect(self, count: 2)
+    detected_ids = Genre::Detector.detect(self, count: 2)
 
     # AI失敗時は facility をフォールバック（無限ループ防止）
     if detected_ids.empty?
