@@ -1,35 +1,43 @@
 <%# 地図上部のヘッダーバー: 検索 + ピルボタン（ジャンル|🔥） + ハンバーガー %>
 <% genres_by_category = Genre.grouped_by_category %>
 
-<div class="map-header-bar" data-controller="ui--popular-spots ui--hamburger" data-action="keydown.esc->ui--popular-spots#closeModal">
-  <%# 検索バー %>
-  <div class="map-header-bar__search">
-    <i class="fa-solid fa-magnifying-glass map-header-bar__search-icon"></i>
-    <input
-      id="places-search-box"
-      type="text"
-      placeholder="      検索"
-      class="map-header-bar__search-input"
-    >
+<%# コントローラーのスコープ（スタッキングコンテキストを作らない） %>
+<div data-controller="ui--popular-spots ui--hamburger" data-action="keydown.esc->ui--popular-spots#closeModal">
+  <%# ヘッダーバー本体 %>
+  <div class="map-header-bar">
+    <%# 検索バー %>
+    <div class="map-header-bar__search">
+      <i class="fa-solid fa-magnifying-glass map-header-bar__search-icon"></i>
+      <input
+        id="places-search-box"
+        type="text"
+        placeholder="      検索"
+        class="map-header-bar__search-input"
+      >
+    </div>
+
+    <%# ピルボタン（🎚️ | 🔥） %>
+    <div class="map-header-bar__pill">
+      <button type="button"
+              class="map-header-bar__pill-left"
+              data-action="click->ui--popular-spots#openModal"
+              title="話題のスポットを探す">
+        <i class="bi bi-sliders"></i>
+      </button>
+      <button type="button"
+              class="map-header-bar__pill-right"
+              data-ui--popular-spots-target="fireButton"
+              data-action="click->ui--popular-spots#show"
+              title="盛り上がってるスポット">
+        <i class="bi bi-fire"></i>
+        <span class="map-header-bar__sparkles">
+          <span></span><span></span><span></span><span></span>
+        </span>
+      </button>
+    </div>
   </div>
 
-  <%# ピルボタン（🎚️ | 🔥） %>
-  <div class="map-header-bar__pill">
-    <button type="button"
-            class="map-header-bar__pill-left"
-            data-action="click->ui--popular-spots#openModal"
-            title="話題のスポットを探す">
-      <i class="bi bi-sliders"></i>
-    </button>
-    <button type="button"
-            class="map-header-bar__pill-right"
-            data-action="click->ui--popular-spots#show"
-            title="盛り上がってるスポット">
-      <i class="bi bi-fire"></i>
-    </button>
-  </div>
-
-  <%# ハンバーガーメニュー %>
+  <%# ハンバーガーメニュー（スタッキングコンテキスト外に配置） %>
   <div class="map-header-bar__hamburger hamburger" id="Hamburger" data-ui--hamburger-target="button" data-action="click->ui--hamburger#toggle">
     <div class="hamburger__container">
       <span class="hamburger__top"></span>
@@ -136,3 +144,4 @@
     </div>
   </div>
 </div>
+<%# コントローラースコープ終了 %>

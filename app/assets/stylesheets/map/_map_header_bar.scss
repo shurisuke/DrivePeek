@@ -6,9 +6,9 @@
 .map-header-bar {
   position: fixed;
   top: 6px;
-  right: 6px;
+  right: 54px; /* ハンバーガー分のスペース確保(44px + gap) */
   left: 6px;
-  z-index: 3000; /* InfoWindow(2000)より上、展開メニュー(4000)より下 */
+  z-index: 900; /* モーダル(1000)より下 */
 
   display: flex;
   align-items: center;
@@ -65,7 +65,6 @@
     display: flex;
     height: 40px;
     border-radius: 8px;
-    overflow: hidden;
     box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
     flex-shrink: 0;
   }
@@ -101,47 +100,101 @@
     border: none;
     border-radius: 0 8px 8px 0;
     cursor: pointer;
-    transition: all 0.15s ease;
+    position: relative;
+    overflow: visible;
+    -webkit-tap-highlight-color: transparent;
 
     i {
-      font-size: 16px;
+      font-size: 18px;
       color: #fff;
+      position: relative;
+      z-index: 1;
     }
 
-    &:hover {
-      background: linear-gradient(135deg, #EA580C 0%, #DC2626 100%);
+  }
+
+  // キラキラコンテナ
+  &__sparkles {
+    position: absolute;
+    inset: -10px;
+    pointer-events: none;
+
+    span {
+      position: absolute;
+      font-size: 9px;
+      opacity: 0;
+      color: #FEF08A;
+      text-shadow:
+        0 0 4px #FEF9C3,
+        0 0 8px rgba(254, 240, 138, 0.8);
+
+      &::before {
+        content: "✦";
+      }
+
+      // 無造作な配置
+      &:nth-child(1) { top: 5%; left: 32%; }
+      &:nth-child(2) { bottom: 18%; right: 12%; }
+      &:nth-child(3) { bottom: 5%; left: 53%; }
+      &:nth-child(4) { top: 15%; left: 10%; }
     }
   }
 
-  // ハンバーガーメニュー（ヘッダーバー内用のスタイル上書き）
-  .hamburger.map-header-bar__hamburger {
-    position: static;
-    top: auto;
-    right: auto;
-    width: 40px;
-    height: 40px;
-    min-width: 40px;
-    min-height: 40px;
-    flex-shrink: 0;
-    border-radius: 8px;
-    padding: 0;
-    box-sizing: border-box;
+  &__pill-right.is-sparkling &__sparkles span {
+    animation: sparkle-pop 0.45s ease-out forwards;
 
-    .hamburger__top,
-    .hamburger__middle,
-    .hamburger__bottom {
-      width: 18px;
-    }
+    &:nth-child(1) { animation-delay: 0s; }
+    &:nth-child(2) { animation-delay: 0.15s; }
+    &:nth-child(3) { animation-delay: 0.05s; }
+    &:nth-child(4) { animation-delay: 0.1s; }
+  }
+}
+
+@keyframes sparkle-pop {
+  0% {
+    opacity: 0;
+    transform: scale(0) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.5) rotate(90deg);
+  }
+  100% {
+    opacity: 0;
+    transform: scale(0.8) rotate(180deg);
+  }
+}
+
+// ハンバーガーメニュー（ヘッダーバー外に配置）
+.hamburger.map-header-bar__hamburger {
+  position: fixed;
+  top: 6px;
+  right: 6px;
+  z-index: 950; /* map-header-bar(900)より上 */
+  width: 40px;
+  height: 40px;
+  min-width: 40px;
+  min-height: 40px;
+  border-radius: 8px;
+  padding: 0;
+  box-sizing: border-box;
+
+  .hamburger__top,
+  .hamburger__middle,
+  .hamburger__bottom {
+    width: 18px;
+  }
+
+  .hamburger__middle {
+    margin: 5px 0;
+  }
+
+  // 展開時のバツアニメーション
+  &.js-menu-open {
+    z-index: 4100; /* sp__menu(4000)より上 */
 
     .hamburger__middle {
-      margin: 5px 0;
-    }
-
-    // 展開時のバツアニメーション
-    &.js-menu-open {
-      .hamburger__middle {
-        margin: -2px 0;
-      }
+      margin: -2px 0;
     }
   }
 }
@@ -186,22 +239,17 @@
       }
     }
 
-    .hamburger.map-header-bar__hamburger {
-      width: 40px;
-      height: 40px;
-      min-width: 40px;
-      min-height: 40px;
-      margin-right: 4px;
+  }
 
-      .hamburger__top,
-      .hamburger__middle,
-      .hamburger__bottom {
-        width: 20px;
-      }
+  .hamburger.map-header-bar__hamburger {
+    .hamburger__top,
+    .hamburger__middle,
+    .hamburger__bottom {
+      width: 20px;
+    }
 
-      .hamburger__middle {
-        margin: 6px 0;
-      }
+    .hamburger__middle {
+      margin: 6px 0;
     }
   }
 }
@@ -224,13 +272,14 @@
     &__pill-right {
       width: 44px;
     }
+  }
 
-    .hamburger.map-header-bar__hamburger {
-      width: 44px;
-      height: 44px;
-      min-width: 44px;
-      min-height: 44px;
-    }
+  .hamburger.map-header-bar__hamburger {
+    top: 6px;
+    width: 44px;
+    height: 44px;
+    min-width: 44px;
+    min-height: 44px;
   }
 }
 
