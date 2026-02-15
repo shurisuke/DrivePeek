@@ -69,6 +69,12 @@
   width: min(260px, calc(220px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
   margin-left: auto;
   margin-right: auto;
+
+  /* モバイル時：時刻レール + 入れ替えボタン分を考慮 */
+  @media (max-width: 767px) {
+    width: calc(100% - 70px);
+    max-width: 260px;
+  }
 }
 
 /* ------------------------------------------

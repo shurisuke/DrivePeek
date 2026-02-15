@@ -18,4 +18,16 @@ class GoalPoint < ApplicationRecord
   def schedule_affecting_changes?
     false
   end
+
+  # 表示用住所（出発地点と同じならshort_address、違えばaddress）
+  def display_address
+    start_point = plan.start_point
+    return address if start_point.blank?
+
+    if lat == start_point.lat && lng == start_point.lng
+      start_point.short_address.presence || address
+    else
+      address
+    end
+  end
 end

@@ -22,8 +22,8 @@
 @mixin genre-chip-sm {
   @include genre-chip-base;
 
-  padding: 2px 8px;
-  font-size: 0.7rem;
+  padding: 2px 10px;
+  font-size: 12px;
   color: #555;
 }
 
@@ -32,7 +32,7 @@
   @include genre-chip-base;
 
   padding: 5px 10px;
-  font-size: 11px;
+  font-size: 12px;
   font-weight: 400;
   color: #666;
   letter-spacing: 0.2px;

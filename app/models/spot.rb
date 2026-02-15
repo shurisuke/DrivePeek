@@ -152,17 +152,23 @@ class Spot < ApplicationRecord
     false
   end
 
+  # 短縮住所（県+市+町）
+  def short_address
+    [ prefecture, city, town ].compact_blank.join
+  end
+
   private
 
-  # prefecture/city が未設定なら ReverseGeocoder で補完
+  # prefecture/city/town が未設定なら ReverseGeocoder で補完
   def geocode_if_needed
-    return if prefecture.present? && city.present?
+    return if prefecture.present? && city.present? && town.present?
     return unless lat.present? && lng.present?
 
     result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)
     updates = {}
     updates[:prefecture] = result[:prefecture] if prefecture.blank? && result[:prefecture].present?
     updates[:city] = result[:city] if city.blank? && result[:city].present?
+    updates[:town] = result[:town] if town.blank? && result[:town].present?
     update_columns(updates) if updates.any?
   end
 

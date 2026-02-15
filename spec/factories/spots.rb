@@ -9,10 +9,12 @@ FactoryBot.define do
     lng { 139.7016 + rand(-0.1..0.1) }
     prefecture { "東京都" }
     city { "渋谷区" }
+    town { "渋谷" }
 
     trait :in_tokyo do
       prefecture { "東京都" }
       city { "渋谷区" }
+      town { "渋谷" }
       lat { 35.6580 }
       lng { 139.7016 }
     end
@@ -20,6 +22,7 @@ FactoryBot.define do
     trait :in_ibaraki do
       prefecture { "茨城県" }
       city { "ひたちなか市" }
+      town { "磯崎町" }
       address { "茨城県ひたちなか市磯崎町8252-3" }
       lat { 36.3964 }
       lng { 140.5347 }
@@ -28,6 +31,7 @@ FactoryBot.define do
     trait :in_oarai do
       prefecture { "茨城県" }
       city { "東茨城郡大洗町" }
+      town { "磯浜町" }
       address { "茨城県東茨城郡大洗町磯浜町8252-3" }
       lat { 36.3133 }
       lng { 140.5764 }

@@ -90,12 +90,19 @@ class ReverseGeocoder
       city =
         components.find { |c| c["types"].include?("locality") || c["types"].include?("sublocality_level_1") }&.dig("long_name")
 
+      # 町名（sublocality_level_2, sublocality_level_3, neighborhood等）
+      town =
+        components.find { |c|
+          (c["types"] & [ "sublocality_level_2", "sublocality_level_3", "neighborhood" ]).any?
+        }&.dig("long_name")
+
       {
         lat: lat,
         lng: lng,
         address: address, # ← ここに「栃木県宇都宮市叶谷町４７−１１１」だけ入る
         prefecture: prefecture || "不明",
-        city: city || "不明"
+        city: city || "不明",
+        town: town
       }
     else
       Rails.logger.error "Geocoding API error: #{json["status"]}"

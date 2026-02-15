@@ -46,7 +46,7 @@
 
       <%# 住所 %>
       <% if spot.address.present? %>
-        <div class="spot-address navibar-padding"><%= spot.address %></div>
+        <div class="spot-address navibar-padding"><%= spot.short_address.presence || spot.address %></div>
       <% end %>
 
       <%# メモ表示（閲覧専用） %>
@@ -62,7 +62,7 @@
       <%# 次の場所まで %>
       <% unless is_last_spot %>
         <div class="spot-next-move">
-          <span class="label">次の場所<span class="label-unit">まで</span></span>
+          <span class="label"><span class="label-hide-mobile">次の場所まで</span><span class="label-show-mobile">次まで</span></span>
           <span class="separator"></span>
           <span class="km">
             <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>

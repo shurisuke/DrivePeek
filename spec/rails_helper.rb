@@ -47,6 +47,11 @@ RSpec.configure do |config|
   # ActionMailer: テスト前に配信キューをクリア
   config.before(:each) do
     ActionMailer::Base.deliveries.clear
+
+    # ReverseGeocoder をスタブ（外部API呼び出し防止）
+    allow(ReverseGeocoder).to receive(:lookup_address) do |lat:, lng:|
+      { lat: lat, lng: lng, address: "東京都渋谷区渋谷1-1-1", prefecture: "東京都", city: "渋谷区", town: "渋谷" }
+    end
   end
 
   # フィクスチャ無効化（FactoryBot使用）

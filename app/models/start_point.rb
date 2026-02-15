@@ -4,6 +4,9 @@ class StartPoint < ApplicationRecord
 
   validates :lat, :lng, :address, presence: true
 
+  # Callbacks
+  before_save :geocode_if_needed
+
   # 経路計算に影響する属性
   ROUTE_AFFECTING_ATTRIBUTES = %w[lat lng address toll_used].freeze
 
@@ -24,5 +27,26 @@ class StartPoint < ApplicationRecord
   # スケジュールに影響する変更があったか
   def schedule_affecting_changes?
     saved_change_to_departure_time?
+  end
+
+  # 短縮住所（県+市+町）
+  def short_address
+    [ prefecture, city, town ].compact_blank.join
+  end
+
+  private
+
+  # lat/lng 変更時、または prefecture/city/town が未設定なら ReverseGeocoder で補完
+  def geocode_if_needed
+    return unless lat.present? && lng.present?
+
+    # lat/lng が変更された場合、または必須項目が未設定なら再 geocode
+    needs_geocode = lat_changed? || lng_changed? || prefecture.blank? || city.blank? || town.blank?
+    return unless needs_geocode
+
+    result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)
+    self.prefecture = result[:prefecture] if result[:prefecture].present?
+    self.city = result[:city] if result[:city].present?
+    self.town = result[:town] if result[:town].present?
   end
 end

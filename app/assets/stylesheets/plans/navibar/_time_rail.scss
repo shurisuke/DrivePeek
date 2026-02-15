@@ -57,7 +57,7 @@
 
 /* スポットブロック用（spot-block と高さ同期） */
 .time-rail-block--spot {
-  height: 234.19px;
+  height: 238px;
 }
 
 /* 帰宅ブロック用（goal-point-block と高さ同期） */
@@ -123,7 +123,7 @@ body.goal-point-visible .time-rail-block--goal {
 }
 
 .time-display[data-plan-time-role="spot-departure"] {
-  margin-bottom: 24px;
+  margin-bottom: 26px;
 }
 
 /* スポットの到着ラベルの上に余白 */
@@ -145,10 +145,14 @@ body.goal-point-visible .time-rail-block--goal {
 }
 
 .time-display__value {
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   color: #555;
   font-variant-numeric: tabular-nums;
+
+  @media (max-width: 767px) {
+    font-size: 16px;
+  }
 }
 
 /* ==========================================
@@ -196,7 +200,7 @@ body.goal-point-visible .time-rail-block--goal {
   justify-content: center;
 
   color: #555;
-  font-size: 14px;
+  font-size: 15px;
   font-weight: 500;
   letter-spacing: 0.02em;
   white-space: nowrap;

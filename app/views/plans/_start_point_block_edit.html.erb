@@ -41,13 +41,14 @@
 
     <%# 住所 %>
     <div class="start-address navibar-padding">
-      <%= plan.start_point&.address.presence || "出発地点が未設定です" %>
+      <i class="bi bi-geo-alt"></i>
+      <%= plan.start_point&.short_address.presence || plan.start_point&.address.presence || "出発地点が未設定です" %>
     </div>
 
     <%# ✅ スポットが1件以上の場合のみ「次の場所まで」を表示 %>
     <% if plan.plan_spots.exists? %>
       <div class="start-next-move" data-plan-time-role="start-next-move">
-        <span class="label">次の場所<span class="label-unit">まで</span></span>
+        <span class="label"><span class="label-hide-mobile">次の場所まで</span><span class="label-show-mobile">次まで</span></span>
         <span class="separator"></span>
         <span class="km">
           <% if start_point&.move_distance.present? %>
