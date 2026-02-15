@@ -7,12 +7,19 @@
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, clearPopularSpotMarkers, setPopularSpotMarkers } from "map/state"
+import {
+  getMapInstance,
+  clearPopularSpotMarkers,
+  setPopularSpotMarkers,
+  getPlanSpotMarkers,
+  getCommunityPreviewMarkers,
+  getSuggestionMarkers
+} from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow, closeMobileInfoWindow } from "map/infowindow"
 import { getMapPadding } from "map/visual_center"
 
 export default class extends Controller {
-  static targets = ["modal", "genreCheckbox", "dialog"]
+  static targets = ["modal", "genreCheckbox", "dialog", "fireButton"]
 
   // ドラッグ用の状態
   #dragStartY = 0
@@ -27,6 +34,14 @@ export default class extends Controller {
   // ============================================
 
   show() {
+    // キラキラエフェクト
+    if (this.hasFireButtonTarget) {
+      this.fireButtonTarget.classList.add("is-sparkling")
+      setTimeout(() => {
+        this.fireButtonTarget.classList.remove("is-sparkling")
+      }, 600)
+    }
+
     this.#fetchAndShowSpots(this.#selectedGenreIds)
   }
 
@@ -205,12 +220,56 @@ export default class extends Controller {
 
     if (spots.length === 0) return
 
-    const markers = spots.map(spot => this.#createMarker(map, spot))
+    // 既存マーカーと重複するスポットを除外
+    const filteredSpots = this.#filterExistingMarkerSpots(spots)
+    if (filteredSpots.length === 0) return
+
+    const markers = filteredSpots.map(spot => this.#createMarker(map, spot))
     setPopularSpotMarkers(markers)
 
     // クリアボタンを表示
     const clearBtn = document.getElementById("popular-spots-clear")
     if (clearBtn) clearBtn.hidden = false
+  }
+
+  // 既存マーカーの位置にあるスポットを除外
+  #filterExistingMarkerSpots(spots) {
+    const existingPositions = this.#collectExistingMarkerPositions()
+    if (existingPositions.length === 0) return spots
+
+    const threshold = 0.0001 // 約10m
+
+    return spots.filter(spot => {
+      return !existingPositions.some(pos =>
+        Math.abs(spot.lat - pos.lat) < threshold &&
+        Math.abs(spot.lng - pos.lng) < threshold
+      )
+    })
+  }
+
+  // 既存マーカー（プラン・プレビュー・提案）の位置を収集
+  #collectExistingMarkerPositions() {
+    const positions = []
+
+    // プランスポットマーカー
+    getPlanSpotMarkers().forEach(marker => {
+      const pos = marker.getPosition()
+      if (pos) positions.push({ lat: pos.lat(), lng: pos.lng() })
+    })
+
+    // コミュニティプレビューマーカー
+    getCommunityPreviewMarkers().forEach(marker => {
+      const pos = marker.getPosition()
+      if (pos) positions.push({ lat: pos.lat(), lng: pos.lng() })
+    })
+
+    // 提案マーカー
+    getSuggestionMarkers().forEach(marker => {
+      const pos = marker.getPosition()
+      if (pos) positions.push({ lat: pos.lat(), lng: pos.lng() })
+    })
+
+    return positions
   }
 
   #getVisibleBounds(map, bounds) {
