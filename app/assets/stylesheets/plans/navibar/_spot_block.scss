@@ -162,7 +162,6 @@
 
   &:hover {
     color: var(--personal);
-    text-decoration: underline;
   }
 
   &:focus-visible {
@@ -200,13 +199,18 @@
   box-sizing: border-box;
 
   color: rgba(82, 82, 82, 0.78);
-  font-size: 12px;
+  font-size: 13px;
   text-align: center;
   line-height: 1.2;
 
   white-space: nowrap;
   overflow: hidden;
   text-overflow: ellipsis;
+
+  i {
+    font-size: 14px;
+    margin-right: 2px;
+  }
 }
 
 /* ------------------------------------------
@@ -624,7 +628,7 @@
 }
 
 .spot-block--drag {
-  z-index: 9999;
+  z-index: 5500; /* ドラッグ中はモーダル(5000)より上 */
 }
 
 .spot-block--chosen {

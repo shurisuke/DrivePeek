@@ -94,7 +94,6 @@
   .goal-icon {
     flex-shrink: 0;
     margin-top: -10px;
-    margin-left: 3px;
 
     width: 40px;
     height: 43px;
@@ -152,7 +151,6 @@
 
     &:hover {
       color: var(--personal);
-      text-decoration: underline;
     }
 
     &:focus-visible {
@@ -162,24 +160,27 @@
     }
   }
 
-  /* ------------------------------------------
-     住所
-  ------------------------------------------ */
+  /* 住所 */
   .goal-address {
     width: 100%;
     margin: 0 auto;
-    padding-top: 0;
-    padding-bottom: 0;
+    padding-top: 5px;
+    padding-bottom: 5px;
     box-sizing: border-box;
 
     color: rgba(82, 82, 82, 0.78);
-    font-size: 12px;
+    font-size: 13px;
     text-align: center;
     line-height: 1.2;
 
     white-space: nowrap;
     overflow: hidden;
     text-overflow: ellipsis;
+
+    i {
+      font-size: 14px;
+      margin-right: 2px;
+    }
   }
 }
 
