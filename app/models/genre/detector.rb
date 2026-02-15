@@ -1,10 +1,12 @@
+# frozen_string_literal: true
+
 # OpenAI API を使用してスポットのジャンルを判定する
 #
 # 使い方:
-#   genre_ids = GenreDetector.detect(spot)
+#   genre_ids = Genre::Detector.detect(spot)
 #   # => [5, 9] (海・海岸, 絶景・展望 のID)
 #
-class GenreDetector
+class Genre::Detector
   MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 256
 
@@ -18,10 +20,10 @@ class GenreDetector
       response = call_api(spot, count: count)
       parse_response(response, count: count)
     rescue Faraday::Error => e
-      Rails.logger.error "[GenreDetector] OpenAI API error: #{e.message}"
+      Rails.logger.error "[Genre::Detector] OpenAI API error: #{e.message}"
       []
     rescue StandardError => e
-      Rails.logger.error "[GenreDetector] Unexpected error: #{e.class} - #{e.message}"
+      Rails.logger.error "[Genre::Detector] Unexpected error: #{e.class} - #{e.message}"
       []
     end
 

@@ -32,7 +32,7 @@
     </div>
 
     <%# 保存済み会話履歴を表示（時系列順：古い→新しい） %>
-    <% plan.suggestion_logs.chronological.each do |msg| %>
+    <% plan.suggestions.chronological.each do |msg| %>
       <%= render "suggestions/message",
                  content: msg.display_message,
                  role: msg.role,

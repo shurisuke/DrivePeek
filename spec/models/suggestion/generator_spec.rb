@@ -2,7 +2,7 @@
 
 require "rails_helper"
 
-RSpec.describe SuggestionService, type: :service do
+RSpec.describe Suggestion::Generator do
   let(:plan) { create(:plan) }
   let(:center_lat) { 35.6762 }
   let(:center_lng) { 139.6503 }

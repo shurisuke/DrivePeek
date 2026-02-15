@@ -78,24 +78,16 @@ class InfowindowsController < ApplicationController
 
     if spot.new_record?
       # Google API で name/address を取得
-      @place_details = PlaceDetailsService.fetch(place_id: params[:place_id], include_photos: true)
-      spot.assign_attributes(spot_params)
-      spot.save!
+      @place_details = Spot::GoogleClient.fetch_details(params[:place_id], include_photos: true)
+      spot.update!(
+        name: @place_details&.dig(:name) || params[:name] || "名称不明",
+        address: @place_details&.dig(:address) || params[:address] || "住所不明",
+        lat: params[:lat],
+        lng: params[:lng]
+      )
     end
 
     spot
-  end
-
-  def spot_params
-    name = @place_details&.dig(:name) || params[:name]
-    address = @place_details&.dig(:address) || params[:address]
-
-    {
-      name: name || "名称不明",
-      address: address || "住所不明",
-      lat: params[:lat],
-      lng: params[:lng]
-    }
   end
 
   # 写真URLを取得（spotId/placeId どちらでも対応）
@@ -107,7 +99,7 @@ class InfowindowsController < ApplicationController
     place_id = @spot&.place_id || params[:place_id]
     return [] if place_id.blank?
 
-    details = PlaceDetailsService.fetch(place_id: place_id, include_photos: true)
+    details = Spot::GoogleClient.fetch_details(place_id, include_photos: true)
     details&.dig(:photo_urls) || []
   end
 

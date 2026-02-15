@@ -45,7 +45,7 @@ class Spot < ApplicationRecord
     return existing if existing
 
     # 2. Google Places APIで検索
-    place = GooglePlacesAdapter.find_place(name: name, lat: lat, lng: lng)
+    place = Spot::GoogleClient.find_by_name(name, lat: lat, lng: lng)
     return nil unless place
 
     # 3. place_idで検索、なければ作成
@@ -137,7 +137,7 @@ class Spot < ApplicationRecord
   def detect_genres!
     return false if genres.exists?
 
-    detected_ids = GenreDetector.detect(self, count: 2)
+    detected_ids = Genre::Detector.detect(self, count: 2)
 
     # AI失敗時は facility をフォールバック（無限ループ防止）
     if detected_ids.empty?

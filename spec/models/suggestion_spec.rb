@@ -2,59 +2,59 @@
 
 require "rails_helper"
 
-RSpec.describe SuggestionLog, type: :model do
+RSpec.describe Suggestion, type: :model do
   let(:user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
 
   describe "バリデーション" do
     it "有効なデータで作成できる" do
-      log = build(:suggestion_log, user: user, plan: plan, role: "user", content: "テスト")
+      log = build(:suggestion, user: user, plan: plan, role: "user", content: "テスト")
       expect(log).to be_valid
     end
 
     it "roleがuserまたはassistantでないと無効" do
-      log = build(:suggestion_log, user: user, plan: plan, role: "invalid", content: "テスト")
+      log = build(:suggestion, user: user, plan: plan, role: "invalid", content: "テスト")
       expect(log).not_to be_valid
     end
 
     it "contentが空だと無効" do
-      log = build(:suggestion_log, user: user, plan: plan, role: "user", content: "")
+      log = build(:suggestion, user: user, plan: plan, role: "user", content: "")
       expect(log).not_to be_valid
     end
   end
 
   describe "スコープ" do
     before do
-      create(:suggestion_log, user: user, plan: plan, role: "user", content: "古い", created_at: 1.hour.ago)
-      create(:suggestion_log, user: user, plan: plan, role: "assistant", content: "{}", created_at: 30.minutes.ago)
-      create(:suggestion_log, user: user, plan: plan, role: "user", content: "新しい", created_at: Time.current)
+      create(:suggestion, user: user, plan: plan, role: "user", content: "古い", created_at: 1.hour.ago)
+      create(:suggestion, user: user, plan: plan, role: "assistant", content: "{}", created_at: 30.minutes.ago)
+      create(:suggestion, user: user, plan: plan, role: "user", content: "新しい", created_at: Time.current)
     end
 
     it "recentは新しい順にソート" do
-      logs = plan.suggestion_logs.recent
+      logs = plan.suggestions.recent
       expect(logs.first.content).to eq("新しい")
     end
 
     it "chronologicalは古い順にソート" do
-      logs = plan.suggestion_logs.chronological
+      logs = plan.suggestions.chronological
       expect(logs.first.content).to eq("古い")
     end
   end
 
   describe "#assistant?" do
     it "roleがassistantならtrue" do
-      log = build(:suggestion_log, role: "assistant", content: "{}")
+      log = build(:suggestion, role: "assistant", content: "{}")
       expect(log.assistant?).to be true
     end
 
     it "roleがuserならfalse" do
-      log = build(:suggestion_log, role: "user", content: "テスト")
+      log = build(:suggestion, role: "user", content: "テスト")
       expect(log.assistant?).to be false
     end
   end
 
   describe "userロールの場合" do
-    let(:log) { create(:suggestion_log, user: user, plan: plan, role: "user", content: "ユーザーメッセージ") }
+    let(:log) { create(:suggestion, user: user, plan: plan, role: "user", content: "ユーザーメッセージ") }
 
     it "#display_messageはcontentをそのまま返す" do
       expect(log.display_message).to eq("ユーザーメッセージ")
@@ -108,7 +108,7 @@ RSpec.describe SuggestionLog, type: :model do
         }.to_json
       end
 
-      let(:log) { create(:suggestion_log, user: user, plan: plan, role: "assistant", content: content) }
+      let(:log) { create(:suggestion, user: user, plan: plan, role: "assistant", content: content) }
 
       it "#display_messageはmessageを返す" do
         expect(log.display_message).to eq("おすすめスポットです")
@@ -153,7 +153,7 @@ RSpec.describe SuggestionLog, type: :model do
         }.to_json
       end
 
-      let(:log) { create(:suggestion_log, user: user, plan: plan, role: "assistant", content: content) }
+      let(:log) { create(:suggestion, user: user, plan: plan, role: "assistant", content: content) }
 
       it "#display_planはプラン情報を返す" do
         expect(log.display_plan).to eq({
@@ -167,25 +167,25 @@ RSpec.describe SuggestionLog, type: :model do
     context "typeがない場合のフォールバック" do
       it "themeがあればplanと判定" do
         content = { theme: "テーマ" }.to_json
-        log = create(:suggestion_log, user: user, plan: plan, role: "assistant", content: content)
+        log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
         expect(log.response_type).to eq("plan")
       end
 
       it "introとspotsがあればspotsと判定" do
         content = { intro: "導入", spots: [ { id: 1 } ] }.to_json
-        log = create(:suggestion_log, user: user, plan: plan, role: "assistant", content: content)
+        log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
         expect(log.response_type).to eq("spots")
       end
 
       it "どちらもなければconversationと判定" do
         content = { message: "普通の会話" }.to_json
-        log = create(:suggestion_log, user: user, plan: plan, role: "assistant", content: content)
+        log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
         expect(log.response_type).to eq("conversation")
       end
     end
 
     context "不正なJSON" do
-      let(:log) { create(:suggestion_log, user: user, plan: plan, role: "assistant", content: "不正なJSON{{{") }
+      let(:log) { create(:suggestion, user: user, plan: plan, role: "assistant", content: "不正なJSON{{{") }
 
       it "#display_messageはcontentをそのまま返す" do
         expect(log.display_message).to eq("不正なJSON{{{")

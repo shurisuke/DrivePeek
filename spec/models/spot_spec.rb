@@ -147,8 +147,8 @@ RSpec.describe Spot, type: :model do
     before do
       stub_google_places_api
       stub_google_geocoding_api
-      # GooglePlacesAdapterのモック
-      allow(GooglePlacesAdapter).to receive(:find_place).and_return({
+      # Spot::GoogleClientのモック
+      allow(Spot::GoogleClient).to receive(:find_by_name).and_return({
         place_id: "ChIJtest_new_place",
         name: name,
         lat: lat,
@@ -237,8 +237,8 @@ RSpec.describe Spot, type: :model do
     end
 
     context "ジャンルが2つ未満の場合" do
-      it "GenreDetectorを呼び出す" do
-        allow(GenreDetector).to receive(:detect).and_return([ genre1.id, genre2.id ])
+      it "Genre::Detectorを呼び出す" do
+        allow(Genre::Detector).to receive(:detect).and_return([ genre1.id, genre2.id ])
 
         result = spot.detect_genres!
 
@@ -258,9 +258,9 @@ RSpec.describe Spot, type: :model do
       end
     end
 
-    context "GenreDetectorが空配列を返す場合" do
+    context "Genre::Detectorが空配列を返す場合" do
       it "facilityジャンルをフォールバックとして設定する" do
-        allow(GenreDetector).to receive(:detect).and_return([])
+        allow(Genre::Detector).to receive(:detect).and_return([])
 
         spot.detect_genres!
 
