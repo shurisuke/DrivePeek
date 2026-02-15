@@ -45,7 +45,7 @@ class Spot < ApplicationRecord
     return existing if existing
 
     # 2. Google Places APIで検索
-    place = GooglePlacesAdapter.find_place(name: name, lat: lat, lng: lng)
+    place = Spot::GoogleClient.find_by_name(name, lat: lat, lng: lng)
     return nil unless place
 
     # 3. place_idで検索、なければ作成

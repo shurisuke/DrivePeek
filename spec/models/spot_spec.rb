@@ -147,8 +147,8 @@ RSpec.describe Spot, type: :model do
     before do
       stub_google_places_api
       stub_google_geocoding_api
-      # GooglePlacesAdapterのモック
-      allow(GooglePlacesAdapter).to receive(:find_place).and_return({
+      # Spot::GoogleClientのモック
+      allow(Spot::GoogleClient).to receive(:find_by_name).and_return({
         place_id: "ChIJtest_new_place",
         name: name,
         lat: lat,
