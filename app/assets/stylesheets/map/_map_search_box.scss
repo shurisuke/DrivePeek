@@ -1,49 +1,16 @@
 /* ==========================================
-     地図上の検索ボックス
+     地図上のフローティングボタン群
 ========================================== */
-.map-search-box {
-    position: fixed;
-    top: 10px;
-    /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
-    left: calc(
-      (var(--navibar-width) - var(--navibar-slide)) +
-      (100% - (var(--navibar-width) - var(--navibar-slide))) / 2 - 30px
-    );
-    transform: translateX(-50%);
-    z-index: 10;
-    width: min(600px, calc((100% - (var(--navibar-width) - var(--navibar-slide))) * 0.6));
 
-  input.form-control {
-    width: 100%;
-    padding: 0.5rem 0.9rem;
-    border-radius: 6px !important;
-    font-size: 0.9rem;
-    border: 1px solid #9a9a9a !important;
-    box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
-    background-color: rgba(255, 255, 255, 0.9) !important;
-
-    &::placeholder {
-      font-size: 0.85rem;
-    }
-
-    &:focus {
-      border: 1px solid #9a9a9a !important;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2) !important;
-      outline: none !important;
-    }
-  }
-}
-
-/* プランバーが80%を超えたら検索バー・保存ボタンを非表示 */
-body.no-footer .plan-form.navibar--wide .map-search-box,
+/* プランバーが80%を超えたら保存ボタンを非表示 */
 body.no-footer .plan-form.navibar--wide .plan-save {
   display: none;
 }
 
-/* 地図上のフローティングボタン群 */
+/* フローティングボタン群 */
 .map-floating-buttons {
   position: absolute;
-  top: 60px;
+  top: 54px; /* ヘッダーバー（6px top + 40px height + 8px gap） */
   /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
   left: calc(
     (var(--navibar-width) - var(--navibar-slide)) +
@@ -57,33 +24,12 @@ body.no-footer .plan-form.navibar--wide .plan-save {
 }
 
 /* ==========================================
-   モバイルレスポンシブ（検索バー・フローティングボタン）
+   モバイルレスポンシブ（フローティングボタン）
 ========================================== */
 @media (max-width: 767px) {
-  .map-search-box {
-    /* 上部中央に固定（画面幅いっぱい） */
-    top: 10px;
-    left: 12px;
-    right: 60px; /* ハンバーガーメニュー分のスペース確保 */
-    width: auto;
-    transform: none;
-
-    input.form-control {
-      padding: 8px 14px;
-      font-size: 16px; /* iOSでのズーム防止 */
-      height: 40px; /* ハンバーガーメニューと高さを揃える */
-      box-sizing: border-box;
-      border-radius: 8px !important;
-
-      &::placeholder {
-        font-size: 14px;
-      }
-    }
-  }
-
   .map-floating-buttons {
-    /* 検索バーの下に配置 */
-    top: 56px;
+    /* ヘッダーバーの下に配置（6px top + 44px height + 8px gap） */
+    top: 58px;
     left: 12px;
     transform: none;
     gap: 8px;
@@ -166,7 +112,7 @@ body.no-footer .plan-form.navibar--wide .plan-save {
 ========================================== */
 .map-bottom-actions {
   position: absolute;
-  bottom: 12px;
+  bottom: 6px;
   top: auto;
   /* 地図の中央に配置（--navibar-slideを考慮して常に追従） */
   left: calc(
@@ -175,6 +121,8 @@ body.no-footer .plan-form.navibar--wide .plan-save {
   );
   transform: translateX(-50%);
   z-index: 10;
+  width: 270px;
+  max-width: calc((100% - (var(--navibar-width) - var(--navibar-slide))) * 0.9);
 
   display: flex;
   border-radius: 10px;
@@ -184,16 +132,21 @@ body.no-footer .plan-form.navibar--wide .plan-save {
 
   &__btn {
     display: flex;
+    flex: 1 1 0;
+    min-width: 0;
     align-items: center;
     justify-content: center;
     gap: 6px;
-    padding: 14px 28px;
+    padding: 14px 0;
     border: none;
     border-radius: 0;
     font-size: 15px;
     font-weight: 600;
     cursor: pointer;
     text-decoration: none;
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
     transition: background-color 0.15s ease;
 
     i {
