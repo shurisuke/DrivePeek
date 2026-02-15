@@ -36,12 +36,10 @@ RSpec.describe "FavoritePlans", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        post favorite_plans_path, params: { plan_id: plan.id }
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :post,
+                    -> { favorite_plans_path },
+                    params: { plan_id: 1 }
   end
 
   describe "DELETE /favorite_plans/:id" do
@@ -67,11 +65,8 @@ RSpec.describe "FavoritePlans", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        delete favorite_plan_path(favorite_plan)
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :delete,
+                    -> { favorite_plan_path(favorite_plan) }
   end
 end

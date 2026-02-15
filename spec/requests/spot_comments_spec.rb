@@ -42,14 +42,10 @@ RSpec.describe "SpotComments", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        post spot_comments_path(spot),
-             params: { spot_comment: { body: "テストコメントです。" } }
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :post,
+                    -> { spot_comments_path(spot) },
+                    params: { spot_comment: { body: "テストコメント" } }
   end
 
   describe "DELETE /spots/:spot_id/comments/:id" do
@@ -85,11 +81,8 @@ RSpec.describe "SpotComments", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログインページにリダイレクトする" do
-        delete spot_comment_path(spot, comment)
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :delete,
+                    -> { spot_comment_path(spot, comment) }
   end
 end

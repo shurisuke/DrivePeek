@@ -49,13 +49,7 @@ RSpec.describe "Plans", type: :request do
       end
     end
 
-    context "未ログインの場合" do
-      it "ログイン画面にリダイレクトする" do
-        get new_plan_path
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { new_plan_path }
   end
 
   describe "POST /plans" do
@@ -74,6 +68,15 @@ RSpec.describe "Plans", type: :request do
         post plans_path, params: { lat: 35.6762, lng: 139.6503 }
 
         expect(Plan.last.user).to eq(user)
+      end
+
+      it "作成に失敗した場合はリダイレクトしてエラーメッセージを表示する" do
+        allow(Plan).to receive(:create_with_location).and_raise(StandardError.new("テストエラー"))
+
+        post plans_path, params: { lat: 35.6762, lng: 139.6503 }
+
+        expect(response).to redirect_to(authenticated_root_path)
+        expect(flash[:alert]).to include("プランの作成に失敗しました")
       end
     end
 
@@ -94,6 +97,7 @@ RSpec.describe "Plans", type: :request do
 
   describe "GET /plans/:id/edit" do
     let(:plan) { create(:plan, user: user) }
+    let(:other_plan) { create(:plan, user: other_user) }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -106,26 +110,17 @@ RSpec.describe "Plans", type: :request do
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        get edit_plan_path(other_plan)
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否", :get, -> { edit_plan_path(other_plan) }
     end
 
-    context "未ログインの場合" do
-      it "ログイン画面にリダイレクトする" do
-        get edit_plan_path(plan)
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { edit_plan_path(plan) }
   end
 
   describe "PATCH /plans/:id" do
     let(:plan) { create(:plan, user: user, title: "元のタイトル") }
+    let(:other_plan) { create(:plan, user: other_user) }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -144,29 +139,36 @@ RSpec.describe "Plans", type: :request do
         expect(response.parsed_body["success"]).to be true
         expect(plan.reload.title).to eq("JSONタイトル")
       end
+
+      it "更新失敗時はJSON形式でエラーを返す" do
+        plan.errors.add(:base, "テストエラー")
+        allow_any_instance_of(Plan).to receive(:update).and_return(false)
+
+        patch plan_path(plan), params: { plan: { title: "" } }, as: :json
+
+        expect(response).to have_http_status(:unprocessable_entity)
+        expect(response.parsed_body["success"]).to be false
+      end
     end
 
     context "他人のプランの場合" do
-      let(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
-      it "404エラーを返す" do
-        patch plan_path(other_plan), params: { plan: { title: "変更" } }
-        expect(response).to have_http_status(:not_found)
-      end
+      it_behaves_like "他人のリソースへのアクセス拒否",
+                      :patch,
+                      -> { plan_path(other_plan) },
+                      params: { plan: { title: "変更" } }
     end
 
-    context "未ログインの場合" do
-      it "ログイン画面にリダイレクトする" do
-        patch plan_path(plan), params: { plan: { title: "変更" } }
-
-        expect(response).to redirect_to(new_user_session_path)
-      end
-    end
+    it_behaves_like "要認証エンドポイント（リダイレクト）",
+                    :patch,
+                    -> { plan_path(plan) },
+                    params: { plan: { title: "変更" } }
   end
 
   describe "DELETE /plans/:id" do
     let!(:plan) { create(:plan, user: user) }
+    let!(:other_plan) { create(:plan, user: other_user) }
 
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -185,7 +187,6 @@ RSpec.describe "Plans", type: :request do
     end
 
     context "他人のプランの場合" do
-      let!(:other_plan) { create(:plan, user: other_user) }
       before { sign_in user }
 
       it "404エラーを返す" do

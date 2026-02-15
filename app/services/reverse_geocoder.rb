@@ -8,7 +8,8 @@ class ReverseGeocoder
     lng: 139.767125,
     address: "東京都千代田区丸の内一丁目",
     prefecture: "東京都",
-    city: "千代田区"
+    city: "千代田区",
+    town: "丸の内"
   }
 
   GOOGLE_GEOCODING_API_URL = "https://maps.googleapis.com/maps/api/geocode/json"

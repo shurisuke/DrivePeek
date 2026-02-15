@@ -26,4 +26,12 @@ RSpec.describe "Static Pages", type: :system do
       expect(page).to have_content("プライバシーポリシー")
     end
   end
+
+  describe "使い方ガイド" do
+    it "ガイドページが表示される" do
+      visit guide_path
+
+      expect(page).to have_content("DrivePeekへようこそ")
+    end
+  end
 end

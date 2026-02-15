@@ -65,6 +65,23 @@ RSpec.describe Plan, type: :model do
       end
     end
 
+    describe ".filter_by_cities" do
+      let!(:tokyo_spot) { create(:spot, prefecture: "東京都", city: "渋谷区") }
+      let!(:plan_with_tokyo) { create(:plan, user: user) }
+
+      before do
+        create(:plan_spot, plan: plan_with_tokyo, spot: tokyo_spot)
+      end
+
+      it "都道府県/市区町村形式で絞り込む" do
+        expect(Plan.filter_by_cities([ "東京都/渋谷区" ])).to include(plan_with_tokyo)
+      end
+
+      it "都道府県のみでも絞り込む" do
+        expect(Plan.filter_by_cities([ "東京都" ])).to include(plan_with_tokyo)
+      end
+    end
+
     describe ".liked_by" do
       let(:other_user) { create(:user) }
       let!(:liked_plan) { create(:plan, user: user) }

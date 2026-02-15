@@ -32,10 +32,14 @@ RSpec.configure do |config|
 
   # DatabaseCleaner
   config.before(:suite) do
-    DatabaseCleaner.strategy = :transaction
     DatabaseCleaner.clean_with(:truncation)
     # Deviseのルーティングを確実にロード
     Rails.application.reload_routes!
+  end
+
+  config.before(:each) do |example|
+    # System specはSeleniumを使うため、truncation必須
+    DatabaseCleaner.strategy = example.metadata[:type] == :system ? :truncation : :transaction
   end
 
   config.around(:each) do |example|

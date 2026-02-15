@@ -9,8 +9,8 @@ RSpec.describe Plan::Route, type: :model do
   let(:goal_point) { create(:goal_point, plan: plan, lat: 35.6762, lng: 139.6503) }
   let(:spot1) { create(:spot, lat: 35.7, lng: 139.7) }
   let(:spot2) { create(:spot, lat: 35.8, lng: 139.8) }
-  let!(:plan_spot1) { create(:plan_spot, plan: plan, spot: spot1, position: 0) }
-  let!(:plan_spot2) { create(:plan_spot, plan: plan, spot: spot2, position: 1) }
+  let!(:plan_spot1) { create(:plan_spot, plan: plan, spot: spot1, position: 1) }
+  let!(:plan_spot2) { create(:plan_spot, plan: plan, spot: spot2, position: 2) }
 
   let(:route) { described_class.new(plan) }
 
