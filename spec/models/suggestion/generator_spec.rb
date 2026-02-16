@@ -130,7 +130,7 @@ RSpec.describe Suggestion::Generator do
     end
 
     context "該当スポットがない場合" do
-      let!(:genre) { create(:genre, name: "温泉", slug: "onsen") }
+      let!(:genre) { create(:genre, name: "温泉", slug: "bath") }
 
       before do
         allow(ENV).to receive(:[]).and_call_original
@@ -201,7 +201,7 @@ RSpec.describe Suggestion::Generator do
 
     context "フォールバック動作" do
       let!(:genre1) { create(:genre, name: "グルメ", slug: "gourmet") }
-      let!(:genre2) { create(:genre, name: "温泉", slug: "onsen") }
+      let!(:genre2) { create(:genre, name: "温泉", slug: "bath") }
       let!(:spot1) { create(:spot, lat: 35.6770, lng: 139.6510, name: "グルメスポット") }
       let!(:spot2) { create(:spot, lat: 35.6780, lng: 139.6520, name: "温泉スポット") }
 

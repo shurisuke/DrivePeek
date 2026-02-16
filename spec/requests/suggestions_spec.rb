@@ -24,7 +24,7 @@ RSpec.describe "Suggestions", type: :request do
   describe "POST /suggestions/suggest" do
     context "プランモード" do
       let!(:genre_gourmet) { create(:genre, name: "グルメ", slug: "gourmet") }
-      let!(:genre_onsen) { create(:genre, name: "温泉", slug: "onsen") }
+      let!(:genre_bath) { create(:genre, name: "温泉", slug: "bath") }
       let!(:spot) do
         create(:spot, lat: 35.6770, lng: 139.6510, name: "テストスポット").tap do |s|
           s.genres << genre_gourmet
@@ -55,12 +55,12 @@ RSpec.describe "Suggestions", type: :request do
         end
 
         it "複数スロットでAI提案を取得する" do
-          spot_onsen = create(:spot, lat: 35.6780, lng: 139.6520)
-          spot_onsen.genres << genre_onsen
+          spot_bath = create(:spot, lat: 35.6780, lng: 139.6520)
+          spot_bath.genres << genre_bath
 
           post suggest_suggestions_path, params: area_params.merge(
             mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id }, { genre_id: genre_onsen.id } ]
+            slots: [ { genre_id: genre_gourmet.id }, { genre_id: genre_bath.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response).to have_http_status(:ok)

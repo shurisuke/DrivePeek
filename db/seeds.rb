@@ -81,11 +81,9 @@ GENRES = [
   { name: "記念館・資料館", slug: "memorial_hall", category: "見る", visible: true, parent_slug: "museum_category", emoji: "🏛️" },
 
   # ==========================================
-  # お風呂
+  # 温まる
   # ==========================================
-  { name: "温泉", slug: "onsen", category: "お風呂", visible: true, emoji: "♨️" },
-  { name: "サウナ", slug: "sauna", category: "お風呂", visible: true, emoji: "♨️" },
-  { name: "スパ銭", slug: "super_sento", category: "お風呂", visible: true, emoji: "♨️" },
+  { name: "温泉", slug: "bath", category: "温まる", visible: true, emoji: "♨️" },
 
   # ==========================================
   # 動物
