@@ -17,6 +17,7 @@ SimpleCov.start "rails" do
   add_filter "app/jobs/application_job.rb"
   add_filter "app/mailers/application_mailer.rb"
 
+
   # グループ分け
   add_group "Models", "app/models"
   add_group "Controllers", "app/controllers"
