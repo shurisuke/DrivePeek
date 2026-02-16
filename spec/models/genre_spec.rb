@@ -62,7 +62,7 @@ RSpec.describe Genre, type: :model do
     end
 
     it "CATEGORY_ORDER順で並ぶ" do
-      create(:genre, name: "温泉", category: "お風呂", visible: true, parent: nil)
+      create(:genre, name: "温泉", category: "温まる", visible: true, parent: nil)
 
       result = Genre.grouped_by_category
 

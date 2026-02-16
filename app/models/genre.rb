@@ -1,7 +1,7 @@
 # app/models/genre.rb
 class Genre < ApplicationRecord
   # カテゴリの表示順序
-  CATEGORY_ORDER = %w[食べる 見る 買う お風呂 動物 自然 遊ぶ 泊まる].freeze
+  CATEGORY_ORDER = %w[食べる 見る 買う 温まる 動物 自然 遊ぶ 泊まる].freeze
 
   # 親子関係
   belongs_to :parent, class_name: "Genre", optional: true

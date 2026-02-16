@@ -12,9 +12,9 @@ FactoryBot.define do
       slug { "gourmet" }
     end
 
-    trait :onsen do
-      name { "温泉・スパ" }
-      slug { "onsen" }
+    trait :bath do
+      name { "温泉" }
+      slug { "bath" }
     end
 
     trait :sightseeing do

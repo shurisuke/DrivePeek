@@ -10,7 +10,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
     let(:finder) { described_class.new(center_lat, center_lng, radius_km) }
 
     let!(:genre_gourmet) { create(:genre, name: "グルメ", slug: "gourmet") }
-    let!(:genre_onsen) { create(:genre, name: "温泉", slug: "onsen") }
+    let!(:genre_bath) { create(:genre, name: "温泉", slug: "bath") }
 
     context "円内にスポットがある場合" do
       let!(:spot_in_circle) do
@@ -36,10 +36,10 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "複数スロットに対応する" do
-        spot_onsen = create(:spot, lat: 35.6780, lng: 139.6520)
-        spot_onsen.genres << genre_onsen
+        spot_bath = create(:spot, lat: 35.6780, lng: 139.6520)
+        spot_bath.genres << genre_bath
 
-        slots = [ { genre_id: genre_gourmet.id }, { genre_id: genre_onsen.id } ]
+        slots = [ { genre_id: genre_gourmet.id }, { genre_id: genre_bath.id } ]
         result = finder.fetch_for_slots(slots)
 
         expect(result.length).to eq(2)
