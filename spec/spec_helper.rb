@@ -17,8 +17,6 @@ SimpleCov.start "rails" do
   add_filter "app/jobs/application_job.rb"
   add_filter "app/mailers/application_mailer.rb"
 
-  # libディレクトリ（rakeタスク、インポートロジック）
-  add_filter "/lib/"
 
   # グループ分け
   add_group "Models", "app/models"
