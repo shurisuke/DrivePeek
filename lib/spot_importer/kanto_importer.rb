@@ -77,12 +77,7 @@ module SpotImporter
 
       print "\r[#{grid_index}/#{total_grids}] #{grid[:lat]}, #{grid[:lng]} - #{query.ljust(20)}"
 
-      results = Spot::GoogleClient.text_search(
-        query,
-        lat: grid[:lat],
-        lng: grid[:lng],
-        radius: SEARCH_RADIUS
-      )
+      results = fetch_with_retry(query, grid)
 
       results.each do |result|
         save_spot(result, genre_slug)
@@ -90,6 +85,29 @@ module SpotImporter
     rescue StandardError => e
       @stats[:errors] += 1
       puts "\nError at grid #{grid_index}: #{e.message}"
+    end
+
+    # リトライ付きAPI呼び出し（最大3回、指数バックオフ）
+    def fetch_with_retry(query, grid, max_retries: 3)
+      retries = 0
+      begin
+        Spot::GoogleClient.text_search(
+          query,
+          lat: grid[:lat],
+          lng: grid[:lng],
+          radius: SEARCH_RADIUS
+        )
+      rescue StandardError => e
+        retries += 1
+        if retries <= max_retries
+          sleep_time = 2**retries # 2, 4, 8秒
+          puts "\n  Retry #{retries}/#{max_retries} after #{sleep_time}s: #{e.message}"
+          sleep(sleep_time)
+          retry
+        else
+          raise e
+        end
+      end
     end
 
     def save_spot(result, genre_slug)
