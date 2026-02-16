@@ -33,7 +33,7 @@ module SpotImporter
       # テスト用: 東京駅周辺の1グリッドのみ
       # @return [Array<Hash>]
       def test_grids
-        [{ lat: 35.6812, lng: 139.7671 }]
+        [ { lat: 35.6812, lng: 139.7671 } ]
       end
 
       private
