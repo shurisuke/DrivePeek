@@ -8,6 +8,7 @@ require "json"
 # スポット検索と詳細取得を統合
 class Spot::GoogleClient
   FIND_PLACE_API_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
+  TEXT_SEARCH_API_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json"
   DETAILS_API_URL = "https://maps.googleapis.com/maps/api/place/details/json"
   PHOTO_API_URL = "https://maps.googleapis.com/maps/api/place/photo"
 
@@ -41,6 +42,23 @@ class Spot::GoogleClient
     rescue StandardError => e
       Rails.logger.error "[Spot::GoogleClient] fetch_details error: #{e.message}"
       nil
+    end
+
+    # テキスト検索で複数スポットを取得
+    # @param query [String] 検索クエリ（例: "ラーメン"）
+    # @param lat [Float] 中心緯度
+    # @param lng [Float] 中心経度
+    # @param radius [Integer] 検索半径（メートル、最大50000）
+    # @return [Array<Hash>] [{ place_id:, name:, address:, lat:, lng: }, ...]
+    def text_search(query, lat:, lng:, radius: 5000)
+      return [] if query.blank?
+
+      uri = build_text_search_uri(query, lat, lng, radius)
+      json = fetch_json(uri)
+      parse_text_search_response(json)
+    rescue StandardError => e
+      Rails.logger.error "[Spot::GoogleClient] text_search error: #{e.message}"
+      []
     end
 
     private
@@ -151,6 +169,40 @@ class Spot::GoogleClient
       a.sub!(/\A〒\s*\d{3}[‐-‒–—−-]\d{4}\s*/u, "")
       a.sub!(/\A[、,\s]+/u, "")
       a.strip
+    end
+
+    # --- text_search 関連 ---
+
+    def build_text_search_uri(query, lat, lng, radius)
+      uri = URI.parse(TEXT_SEARCH_API_URL)
+
+      uri.query = URI.encode_www_form({
+        query: query,
+        location: "#{lat},#{lng}",
+        radius: radius,
+        language: "ja",
+        key: api_key
+      })
+      uri
+    end
+
+    def parse_text_search_response(json)
+      unless json["status"] == "OK" || json["status"] == "ZERO_RESULTS"
+        Rails.logger.warn "[Spot::GoogleClient] text_search API status: #{json['status']}"
+        return []
+      end
+
+      results = json["results"] || []
+      results.map do |result|
+        location = result.dig("geometry", "location")
+        {
+          place_id: result["place_id"],
+          name: result["name"],
+          address: normalize_address(result["formatted_address"]),
+          lat: location&.dig("lat"),
+          lng: location&.dig("lng")
+        }
+      end
     end
   end
 end
