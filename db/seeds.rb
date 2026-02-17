@@ -8,63 +8,12 @@ GENRES = [
   { name: "グルメ", slug: "gourmet", category: "食べる", visible: true, emoji: "🍴" },
   { name: "カフェ・スイーツ", slug: "cafe", category: "食べる", visible: true, emoji: "☕" },
   { name: "バー", slug: "bar", category: "食べる", visible: false, emoji: "🍷" },
-  # グルメ系 - 人気の定番
-  { name: "ラーメン", slug: "ramen", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "寿司", slug: "sushi", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "焼肉", slug: "yakiniku", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "カレー", slug: "curry", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  # グルメ系 - 和食
-  { name: "和食", slug: "washoku", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "うどん・そば", slug: "udon_soba", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "天ぷら", slug: "tempura", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "とんかつ", slug: "tonkatsu", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "焼き鳥", slug: "yakitori", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "海鮮", slug: "seafood", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "お好み焼き", slug: "okonomiyaki", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "たこ焼き", slug: "takoyaki", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "牛丼", slug: "gyudon", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  # グルメ系 - 洋食
-  { name: "イタリアン", slug: "italian", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "フレンチ", slug: "french", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ステーキ", slug: "steak", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ハンバーガー", slug: "hamburger", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ハンバーグ", slug: "hamburg", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ピザ", slug: "pizza", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ファミレス", slug: "family_restaurant", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  # グルメ系 - 中華・アジア
-  { name: "中華料理", slug: "chinese", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "餃子", slug: "gyoza", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "韓国料理", slug: "korean", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "タイ料理", slug: "thai", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "インド料理", slug: "indian", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "ベトナム料理", slug: "vietnamese", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  # グルメ系 - その他
-  { name: "ファストフード", slug: "fastfood", category: "食べる", visible: true, parent_slug: "gourmet", emoji: "🍴" },
-  # グルメ系 - 非表示
-  { name: "鍋", slug: "nabe", category: "食べる", visible: false, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "定食", slug: "teishoku", category: "食べる", visible: false, parent_slug: "gourmet", emoji: "🍴" },
-  { name: "しゃぶしゃぶ", slug: "shabu_shabu", category: "食べる", visible: false, parent_slug: "gourmet", emoji: "🍴" },
-  # カフェ・スイーツ系
-  { name: "カフェ", slug: "cafe_shop", category: "食べる", visible: true, parent_slug: "cafe", emoji: "☕" },
-  { name: "喫茶店", slug: "kissaten", category: "食べる", visible: true, parent_slug: "cafe", emoji: "☕" },
-  { name: "パンケーキ", slug: "pancake", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🥞" },
-  { name: "ケーキ屋", slug: "cake_shop", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🍰" },
-  { name: "パン屋", slug: "bakery", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🥐" },
-  { name: "タピオカ", slug: "tapioca", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🧋" },
-  { name: "ドーナツ", slug: "donut", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🍩" },
-  { name: "アイスクリーム", slug: "icecream", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🍦" },
-  { name: "クレープ", slug: "crepe", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🥞" },
-  { name: "和菓子", slug: "wagashi", category: "食べる", visible: true, parent_slug: "cafe", emoji: "🍡" },
-  # バー系
-  { name: "居酒屋", slug: "izakaya", category: "食べる", visible: false, parent_slug: "bar", emoji: "🍴" },
-  { name: "スナック", slug: "snack_bar", category: "食べる", visible: false, parent_slug: "bar", emoji: "🍷" },
 
   # ==========================================
   # 見る
   # ==========================================
   # 親ジャンル
   { name: "観光名所", slug: "sightseeing", category: "見る", visible: true, emoji: "🏛️" },
-  { name: "ミュージアム", slug: "museum_category", category: "見る", visible: true, emoji: "🏛️" },
   # 独立ジャンル
   { name: "神社仏閣", slug: "shrine_temple", category: "見る", visible: true, emoji: "⛩️" },
   { name: "映画館", slug: "movie_theater", category: "見る", visible: false },
@@ -74,11 +23,7 @@ GENRES = [
   { name: "城", slug: "castle", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏯" },
   { name: "史跡", slug: "historic_site", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
   { name: "絶景", slug: "scenic_view", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🌅" },
-  # ミュージアムの子ジャンル
-  { name: "美術館", slug: "art_gallery", category: "見る", visible: true, parent_slug: "museum_category", emoji: "🏛️" },
-  { name: "博物館", slug: "museum", category: "見る", visible: true, parent_slug: "museum_category", emoji: "🏛️" },
-  { name: "科学館", slug: "science_museum", category: "見る", visible: true, parent_slug: "museum_category", emoji: "🏛️" },
-  { name: "記念館・資料館", slug: "memorial_hall", category: "見る", visible: true, parent_slug: "museum_category", emoji: "🏛️" },
+  { name: "ミュージアム", slug: "museum_category", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
 
   # ==========================================
   # 温まる

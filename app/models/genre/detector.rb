@@ -47,8 +47,8 @@ class Genre::Detector
       )
     end
 
-    # スポットに紐付けない親ジャンル（分類用のみ）
-    PARENT_SLUGS = %w[gourmet cafe shopping museum_category sports_ground].freeze
+    # スポットに紐付けない親ジャンル（子ジャンルを選ばせる）
+    PARENT_SLUGS = %w[shopping sports_ground].freeze
 
     # 観光名所と同時選択された場合、観光名所を外すジャンル
     EXCLUDE_SIGHTSEEING_WITH = %w[park shrine_temple mountain].freeze
