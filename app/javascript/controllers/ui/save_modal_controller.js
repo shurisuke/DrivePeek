@@ -60,7 +60,7 @@ export default class extends Controller {
     modal.querySelector(".btn-cancel").addEventListener("click", () => this.close())
     modal.querySelector(".btn-primary").addEventListener("click", () => this.save())
     modal.querySelector(".plan-save-modal__input").addEventListener("keydown", (e) => {
-      if (e.key === "Enter") this.save()
+      if (e.key === "Enter" && !e.isComposing) this.save()
     })
 
     return modal
