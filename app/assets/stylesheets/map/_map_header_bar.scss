@@ -204,7 +204,7 @@
   .map-header-bar {
     // navibar分を左にオフセット
     left: calc(var(--navibar-width, 350px) - var(--navibar-slide, 0px) + 6px);
-    right: 6px;
+    right: 54px; // ハンバーガー分のスペース確保（40px + 余白）
     gap: 8px;
 
     &__search-input {
