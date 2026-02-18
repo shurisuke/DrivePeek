@@ -321,7 +321,7 @@ RSpec.describe Spot, type: :model do
       end
 
       it "各スポットの統計情報を返す" do
-        result = Spot.preload_card_data([spot1, spot2], user)
+        result = Spot.preload_card_data([ spot1, spot2 ], user)
 
         expect(result[:spot_stats][spot1.id]).to eq({
           plans_count: 2,
@@ -340,14 +340,14 @@ RSpec.describe Spot, type: :model do
       let!(:favorite) { create(:favorite_spot, spot: spot1, user: user) }
 
       it "ユーザーのお気に入り情報を返す" do
-        result = Spot.preload_card_data([spot1, spot2], user)
+        result = Spot.preload_card_data([ spot1, spot2 ], user)
 
         expect(result[:user_favorite_spots][spot1.id]).to eq(favorite)
         expect(result[:user_favorite_spots][spot2.id]).to be_nil
       end
 
       it "ユーザーがnilの場合は空ハッシュを返す" do
-        result = Spot.preload_card_data([spot1, spot2], nil)
+        result = Spot.preload_card_data([ spot1, spot2 ], nil)
 
         expect(result[:user_favorite_spots]).to eq({})
       end
