@@ -30,7 +30,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "指定ジャンルのスロット候補を返す" do
-        slots = [{ genre_id: genre_food.id }]
+        slots = [ { genre_id: genre_food.id } ]
         result = finder.fetch_for_slots(slots)
 
         expect(result.length).to eq(1)
@@ -39,7 +39,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "複数スロットに対応する" do
-        slots = [{ genre_id: genre_food.id }, { genre_id: genre_bath.id }]
+        slots = [ { genre_id: genre_food.id }, { genre_id: genre_bath.id } ]
         result = finder.fetch_for_slots(slots)
 
         expect(result.length).to eq(2)
@@ -49,7 +49,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       it "円外のスポットは含まない" do
         create(:spot, lat: out_circle_lat, lng: out_circle_lng).tap { |s| s.genres << genre_food }
 
-        slots = [{ genre_id: genre_food.id }]
+        slots = [ { genre_id: genre_food.id } ]
         result = finder.fetch_for_slots(slots)
 
         expect(result.first[:candidates].length).to eq(1)
@@ -70,8 +70,8 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "空スロット（genre_id: nil）はキューの先頭ジャンルを使う" do
-        slots = [{ genre_id: nil }]
-        priority_genre_ids = [genre_sightseeing.id, genre_food.id]
+        slots = [ { genre_id: nil } ]
+        priority_genre_ids = [ genre_sightseeing.id, genre_food.id ]
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: priority_genre_ids)
 
@@ -80,8 +80,8 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "キューは順番に消費される" do
-        slots = [{ genre_id: nil }, { genre_id: nil }]
-        priority_genre_ids = [genre_sightseeing.id, genre_food.id]
+        slots = [ { genre_id: nil }, { genre_id: nil } ]
+        priority_genre_ids = [ genre_sightseeing.id, genre_food.id ]
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: priority_genre_ids)
 
@@ -91,8 +91,8 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "ユーザー選択済みジャンルはキューから除外される" do
-        slots = [{ genre_id: genre_sightseeing.id }, { genre_id: nil }]
-        priority_genre_ids = [genre_sightseeing.id, genre_food.id]
+        slots = [ { genre_id: genre_sightseeing.id }, { genre_id: nil } ]
+        priority_genre_ids = [ genre_sightseeing.id, genre_food.id ]
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: priority_genre_ids)
 
@@ -111,7 +111,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "キューが空の場合はお任せ（全ジャンル）にフォールバックする" do
-        slots = [{ genre_id: nil }]
+        slots = [ { genre_id: nil } ]
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: [])
 
@@ -121,8 +121,8 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "キューのジャンルに該当スポットがない場合もフォールバックする" do
-        slots = [{ genre_id: nil }]
-        priority_genre_ids = [genre_bath.id]  # 温泉スポットは存在しない
+        slots = [ { genre_id: nil } ]
+        priority_genre_ids = [ genre_bath.id ]  # 温泉スポットは存在しない
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: priority_genre_ids)
 
@@ -143,7 +143,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "同じ主要ジャンルのスポットは2回目以降のスロットで除外される" do
-        slots = [{ genre_id: nil }, { genre_id: nil }]
+        slots = [ { genre_id: nil }, { genre_id: nil } ]
 
         result = finder.fetch_for_slots(slots, priority_genre_ids: [])
 
@@ -163,7 +163,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
         end
 
         it "主要ジャンル（最初のジャンル）で重複判定される" do
-          slots = [{ genre_id: genre_sightseeing.id }, { genre_id: nil }]
+          slots = [ { genre_id: genre_sightseeing.id }, { genre_id: nil } ]
 
           result = finder.fetch_for_slots(slots, priority_genre_ids: [])
 
@@ -189,7 +189,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       end
 
       it "同じスポットは複数スロットに含まれない" do
-        slots = [{ genre_id: genre_food.id }, { genre_id: genre_sightseeing.id }]
+        slots = [ { genre_id: genre_food.id }, { genre_id: genre_sightseeing.id } ]
 
         result = finder.fetch_for_slots(slots)
 
@@ -202,7 +202,7 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
       let!(:genre) { create(:genre, name: "存在しない", slug: "nonexistent", visible: true) }
 
       it "そのスロットをスキップする" do
-        slots = [{ genre_id: genre.id }]
+        slots = [ { genre_id: genre.id } ]
         result = finder.fetch_for_slots(slots)
 
         expect(result).to be_empty

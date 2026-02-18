@@ -38,7 +38,7 @@ class Suggestion::SpotFinder
 
   # 指定ジャンル → キュー → 全ジャンル の順で候補を探す
   def find_first_available(preferred_id, queue, used_spot_ids, used_genre_ids)
-    genre_ids_to_try = [preferred_id, *queue].compact
+    genre_ids_to_try = [ preferred_id, *queue ].compact
     genre_ids_to_try << nil  # お任せフォールバック
 
     genre_ids_to_try.each do |genre_id|
