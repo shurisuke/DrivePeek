@@ -4,31 +4,36 @@ GENRES = [
   # ==========================================
   # 食べる
   # ==========================================
-  # 親ジャンル
-  { name: "グルメ", slug: "gourmet", category: "食べる", visible: true, emoji: "🍴" },
-  { name: "カフェ・スイーツ", slug: "cafe", category: "食べる", visible: true, emoji: "☕" },
-  { name: "バー", slug: "bar", category: "食べる", visible: false, emoji: "🍷" },
+  { name: "ごはん", slug: "food", category: "食べる", visible: true, emoji: "🍴" },
+  { name: "カフェ・スイーツ", slug: "sweets_cafe", category: "食べる", visible: true, emoji: "☕" },
 
   # ==========================================
   # 見る
   # ==========================================
-  # 親ジャンル
   { name: "観光名所", slug: "sightseeing", category: "見る", visible: true, emoji: "🏛️" },
-  # 独立ジャンル
+  { name: "ミュージアム", slug: "museum_category", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
   { name: "神社仏閣", slug: "shrine_temple", category: "見る", visible: true, emoji: "⛩️" },
   { name: "映画館", slug: "movie_theater", category: "見る", visible: false },
-  # 観光名所の子ジャンル
   { name: "文化財", slug: "cultural_property", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
   { name: "夜景スポット", slug: "night_view", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🌃" },
   { name: "城", slug: "castle", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏯" },
   { name: "史跡", slug: "historic_site", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
   { name: "絶景", slug: "scenic_view", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🌅" },
-  { name: "ミュージアム", slug: "museum_category", category: "見る", visible: true, parent_slug: "sightseeing", emoji: "🏛️" },
+  { name: "ダム", slug: "dam", category: "その他", visible: false, emoji: "💧" },
 
   # ==========================================
-  # 温まる
+  # 買う
   # ==========================================
-  { name: "温泉", slug: "bath", category: "温まる", visible: true, emoji: "♨️" },
+  { name: "道の駅・SA/PA", slug: "roadside_station", category: "買う", visible: true, emoji: "🚗" },
+  # ショッピング（親ジャンル・子ジャンルは非表示）
+  { name: "ショッピング", slug: "shopping", category: "買う", visible: true, emoji: "🛍️" },
+  { name: "雑貨屋", slug: "variety_store", category: "買う", visible: false, parent_slug: "shopping", emoji: "🛍️" },
+  { name: "お土産屋", slug: "souvenir_shop", category: "買う", visible: false, parent_slug: "shopping", emoji: "🛍️" },
+  { name: "デパート", slug: "department_store", category: "買う", visible: false, parent_slug: "shopping", emoji: "🏬" },
+  { name: "アウトレット", slug: "outlet", category: "買う", visible: false, parent_slug: "shopping", emoji: "👗" },
+  { name: "直売所", slug: "farm_stand", category: "買う", visible: false, parent_slug: "shopping", emoji: "🥬" },
+  { name: "酒屋", slug: "liquor_store", category: "買う", visible: false, parent_slug: "shopping", emoji: "🍾" },
+  { name: "市場・朝市", slug: "market", category: "買う", visible: false, parent_slug: "shopping", emoji: "🛒" },
 
   # ==========================================
   # 動物
@@ -39,14 +44,11 @@ GENRES = [
   # ==========================================
   # 自然
   # ==========================================
-  { name: "海・海岸", slug: "sea_coast", category: "自然", visible: true, emoji: "🏖️" },
-  { name: "山・高原", slug: "mountain", category: "自然", visible: true, emoji: "⛰️" },
-  { name: "公園", slug: "park", category: "自然", visible: true, emoji: "🌳" },
-  { name: "花・庭園", slug: "garden_flower", category: "自然", visible: true, emoji: "🌳" },
-  { name: "湖・滝", slug: "lake_waterfall", category: "自然", visible: true, emoji: "💧" },
+  { name: "海スポット", slug: "sea_coast", category: "自然", visible: true, emoji: "🏖️" },
+  { name: "山スポット", slug: "mountain", category: "自然", visible: true, emoji: "⛰️" },
+  { name: "湖・滝スポット", slug: "lake_waterfall", category: "自然", visible: true, emoji: "💧" },
   { name: "洞窟", slug: "cave", category: "自然", visible: true, emoji: "🕳️" },
-  { name: "鍾乳洞", slug: "limestone_cave", category: "自然", visible: true, emoji: "🕳️" },
-  { name: "ダム", slug: "dam", category: "自然", visible: true, emoji: "💧" },
+  { name: "公園", slug: "park", category: "自然", visible: true, emoji: "🌳" },
 
   # ==========================================
   # 遊ぶ
@@ -57,31 +59,23 @@ GENRES = [
   { name: "釣り堀", slug: "fishing_pond", category: "遊ぶ", visible: true, emoji: "🎣" },
 
   # ==========================================
-  # 買う
-  # ==========================================
-  { name: "道の駅・SA/PA", slug: "roadside_station", category: "買う", visible: true, emoji: "🚗" },
-  { name: "ショッピング", slug: "shopping", category: "買う", visible: true, emoji: "🛍️" },
-  # ショッピングの子ジャンル
-  { name: "雑貨屋", slug: "variety_store", category: "買う", visible: true, parent_slug: "shopping", emoji: "🛍️" },
-  { name: "お土産屋", slug: "souvenir_shop", category: "買う", visible: true, parent_slug: "shopping", emoji: "🛍️" },
-  { name: "コンビニ", slug: "convenience_store", category: "買う", visible: true, parent_slug: "shopping", emoji: "🏪" },
-  { name: "スーパー", slug: "supermarket", category: "買う", visible: true, parent_slug: "shopping", emoji: "🛒" },
-  { name: "デパート", slug: "department_store", category: "買う", visible: true, parent_slug: "shopping", emoji: "🏬" },
-  { name: "アウトレット", slug: "outlet", category: "買う", visible: true, parent_slug: "shopping", emoji: "👗" },
-  { name: "直売所", slug: "farm_stand", category: "買う", visible: true, parent_slug: "shopping", emoji: "🥬" },
-  { name: "洋服屋", slug: "clothing_store", category: "買う", visible: true, parent_slug: "shopping", emoji: "👚" },
-  { name: "花屋", slug: "flower_shop", category: "買う", visible: true, parent_slug: "shopping", emoji: "💐" },
-  { name: "酒屋", slug: "liquor_store", category: "買う", visible: true, parent_slug: "shopping", emoji: "🍾" },
-  { name: "市場・朝市", slug: "market", category: "買う", visible: true, parent_slug: "shopping", emoji: "🛒" },
-
-  # ==========================================
   # 泊まる
   # ==========================================
   { name: "宿泊施設", slug: "accommodation", category: "泊まる", visible: true, emoji: "🏨" },
 
   # ==========================================
+  # 温まる
+  # ==========================================
+  { name: "温泉", slug: "bath", category: "温まる", visible: true, emoji: "♨️" },
+
+  # ==========================================
   # その他（非表示・AI判定用）
   # ==========================================
+  { name: "バー", slug: "bar", category: "その他", visible: false, emoji: "🍷" },
+  { name: "コンビニ", slug: "convenience_store", category: "その他", visible: false, emoji: "🏪" },
+  { name: "スーパー", slug: "supermarket", category: "その他", visible: false, emoji: "🛒" },
+  { name: "洋服屋", slug: "clothing_store", category: "その他", visible: false, emoji: "👚" },
+  { name: "花屋", slug: "flower_shop", category: "その他", visible: false, emoji: "💐" },
   { name: "施設", slug: "facility", category: "その他", visible: false },
   { name: "駅", slug: "station", category: "その他", visible: false, emoji: "🚉" },
   { name: "空港", slug: "airport", category: "その他", visible: false, emoji: "✈️" },
@@ -102,7 +96,6 @@ GENRES = [
   { name: "カーショップ", slug: "car_shop", category: "その他", visible: false, emoji: "🚗" },
   { name: "事業所", slug: "office", category: "その他", visible: false, emoji: "🏢" },
   { name: "家具屋", slug: "furniture_store", category: "その他", visible: false, emoji: "🪑" },
-  # 元「遊ぶ」から移動（非表示）
   { name: "カラオケ", slug: "karaoke", category: "その他", visible: false, emoji: "🎤" },
   { name: "ゲームセンター", slug: "game_center", category: "その他", visible: false, emoji: "🎮" },
   { name: "スポーツショップ", slug: "sports_shop", category: "その他", visible: false, emoji: "✨" },
@@ -115,13 +108,12 @@ GENRES = [
   { name: "農園", slug: "farm", category: "その他", visible: false, emoji: "🌾" },
   { name: "牧場", slug: "ranch", category: "その他", visible: false, emoji: "🐄" },
   { name: "ロープウェイ・ケーブルカー", slug: "ropeway", category: "その他", visible: false, emoji: "🚡" },
-  # 運動場（親ジャンル）
   { name: "運動場", slug: "sports_ground", category: "その他", visible: false, emoji: "⚽" },
-  { name: "ゴルフ場", slug: "golf_course", category: "その他", visible: false, parent_slug: "sports_ground", emoji: "⛳" },
-  { name: "スキー場", slug: "ski_resort", category: "その他", visible: false, parent_slug: "sports_ground", emoji: "⛷️" },
-  { name: "スケート場", slug: "skating_rink", category: "その他", visible: false, parent_slug: "sports_ground", emoji: "⛸️" },
-  { name: "フットサル場", slug: "futsal_court", category: "その他", visible: false, parent_slug: "sports_ground", emoji: "⚽" },
-  { name: "ボウリング場", slug: "bowling", category: "その他", visible: false, parent_slug: "sports_ground", emoji: "🎳" }
+  { name: "ゴルフ場", slug: "golf_course", category: "その他", visible: false, emoji: "⛳" },
+  { name: "スキー場", slug: "ski_resort", category: "その他", visible: false, emoji: "⛷️" },
+  { name: "スケート場", slug: "skating_rink", category: "その他", visible: false, emoji: "⛸️" },
+  { name: "フットサル場", slug: "futsal_court", category: "その他", visible: false, emoji: "⚽" },
+  { name: "ボウリング場", slug: "bowling", category: "その他", visible: false, emoji: "🎳" }
 ].freeze
 
 # 全ジャンルを作成・更新（parent_id なし）

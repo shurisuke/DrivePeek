@@ -13,8 +13,8 @@ module SpotImporter
     # query: Google Text Search用のクエリ
     # genre_slug: 紐付けるジャンルのslug（nilの場合はAI判定）
     SEARCH_GENRES = [
-      { query: "グルメ 飲食店", genre_slug: "gourmet" },
-      { query: "カフェ スイーツ", genre_slug: "cafe" },
+      { query: "グルメ 飲食店", genre_slug: "food" },
+      { query: "カフェ スイーツ", genre_slug: "sweets_cafe" },
       { query: "観光名所", genre_slug: "sightseeing" },
       { query: "文化財", genre_slug: "cultural_property" },
       { query: "夜景スポット", genre_slug: "night_view" },
