@@ -99,6 +99,34 @@ RSpec.describe Plan, type: :model do
         expect(Plan.liked_by(nil)).to be_empty
       end
     end
+
+    describe ".within_circle" do
+      let!(:center_spot) { create(:spot, lat: 35.6762, lng: 139.6503) }
+      let!(:far_spot) { create(:spot, lat: 36.0, lng: 140.0) }
+      let!(:plan_in_circle) { create(:plan, user: user) }
+      let!(:plan_out_of_circle) { create(:plan, user: user) }
+
+      before do
+        create(:plan_spot, plan: plan_in_circle, spot: center_spot)
+        create(:plan_spot, plan: plan_out_of_circle, spot: far_spot)
+      end
+
+      it "円内のスポットを含むプランを返す" do
+        result = Plan.within_circle(35.6762, 139.6503, 5)
+        expect(result).to include(plan_in_circle)
+        expect(result).not_to include(plan_out_of_circle)
+      end
+
+      it "半径を広げると遠いプランも含まれる" do
+        result = Plan.within_circle(35.6762, 139.6503, 100)
+        expect(result).to include(plan_in_circle, plan_out_of_circle)
+      end
+
+      it "パラメータがnilの場合は全件返す" do
+        result = Plan.within_circle(nil, 139.6503, 5)
+        expect(result).to include(plan_in_circle, plan_out_of_circle)
+      end
+    end
   end
 
   describe "#total_distance" do

@@ -11,6 +11,47 @@ RSpec.describe "Plans", type: :request do
     stub_google_directions_api
   end
 
+  describe "GET /plans" do
+    context "ログイン済みの場合" do
+      before { sign_in user }
+
+      let!(:old_plan) { create(:plan, user: user, title: "古いプラン", created_at: 2.days.ago) }
+      let!(:new_plan) { create(:plan, user: user, title: "新しいプラン", created_at: 1.day.ago) }
+
+      it "自分のプラン一覧を表示する" do
+        get plans_path
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("古いプラン")
+        expect(response.body).to include("新しいプラン")
+      end
+
+      it "他人のプランは表示されない" do
+        other_plan = create(:plan, user: other_user, title: "他人のプラン")
+        get plans_path
+        expect(response.body).not_to include("他人のプラン")
+      end
+
+      context "ソート機能" do
+        it "デフォルトは新しい順" do
+          get plans_path
+          expect(response.body.index("新しいプラン")).to be < response.body.index("古いプラン")
+        end
+
+        it "sort=oldestで古い順に並ぶ" do
+          get plans_path, params: { sort: "oldest" }
+          expect(response.body.index("古いプラン")).to be < response.body.index("新しいプラン")
+        end
+
+        it "無効なsortパラメータはデフォルト（newest）になる" do
+          get plans_path, params: { sort: "invalid" }
+          expect(response).to have_http_status(:ok)
+        end
+      end
+    end
+
+    it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { plans_path }
+  end
+
   describe "GET /plans/:id" do
     context "公開プランの場合" do
       let(:plan) { create(:plan, user: other_user) }
