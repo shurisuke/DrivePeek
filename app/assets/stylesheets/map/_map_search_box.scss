@@ -194,11 +194,13 @@ body.no-footer .plan-form.navibar--wide .plan-save {
   &--empty {
     background: rgba(255, 255, 255, 0.9);
     padding: 12px 24px;
+    justify-content: center;
   }
 
   &__message {
     font-size: 14px;
     color: #888;
+    text-align: center;
   }
 }
 

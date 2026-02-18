@@ -80,6 +80,24 @@ RSpec.describe "Favorites", type: :request do
           expect(response).to have_http_status(:ok)
         end
       end
+
+      context "ソート機能" do
+        let(:old_spot) { create(:spot, name: "古いスポット", created_at: 2.days.ago) }
+        let(:new_spot) { create(:spot, name: "新しいスポット", created_at: 1.day.ago) }
+        let!(:fav_old) { create(:favorite_spot, user: user, spot: old_spot) }
+        let!(:fav_new) { create(:favorite_spot, user: user, spot: new_spot) }
+
+        it "sort=oldestで古い順に並ぶ" do
+          get favorites_path, params: { search_type: "spot", sort: "oldest" }
+          expect(response).to have_http_status(:ok)
+          expect(response.body.index("古いスポット")).to be < response.body.index("新しいスポット")
+        end
+
+        it "無効なsortパラメータはデフォルト（newest）になる" do
+          get favorites_path, params: { search_type: "spot", sort: "invalid" }
+          expect(response).to have_http_status(:ok)
+        end
+      end
     end
 
     it_behaves_like "要認証エンドポイント（リダイレクト）", :get, -> { favorites_path }

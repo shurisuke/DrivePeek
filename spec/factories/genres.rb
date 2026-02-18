@@ -7,9 +7,9 @@ FactoryBot.define do
     sequence(:position) { |n| n }
     visible { true }
 
-    trait :gourmet do
-      name { "グルメ" }
-      slug { "gourmet" }
+    trait :food do
+      name { "ごはん" }
+      slug { "food" }
     end
 
     trait :bath do

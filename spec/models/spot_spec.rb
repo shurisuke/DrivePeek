@@ -53,6 +53,29 @@ RSpec.describe Spot, type: :model do
       end
     end
 
+    describe ".within_circle" do
+      let!(:center_spot) { create(:spot, lat: 35.6762, lng: 139.6503) }
+      let!(:nearby_spot) { create(:spot, lat: 35.68, lng: 139.65) }  # 約0.5km
+      let!(:far_spot) { create(:spot, lat: 36.0, lng: 140.0) }       # 約50km
+
+      it "円内のスポットを返す" do
+        result = Spot.within_circle(35.6762, 139.6503, 5)
+        expect(result).to include(center_spot, nearby_spot)
+        expect(result).not_to include(far_spot)
+      end
+
+      it "半径を広げると遠いスポットも含まれる" do
+        result = Spot.within_circle(35.6762, 139.6503, 100)
+        expect(result).to include(center_spot, nearby_spot, far_spot)
+      end
+
+      it "パラメータがnilの場合は空のRelationを返す" do
+        expect(Spot.within_circle(nil, 139.6503, 5)).to be_empty
+        expect(Spot.within_circle(35.6762, nil, 5)).to be_empty
+        expect(Spot.within_circle(35.6762, 139.6503, nil)).to be_empty
+      end
+    end
+
     describe ".search_keyword" do
       let!(:spot) { create(:spot, name: "東京タワー", address: "東京都港区") }
 
@@ -272,6 +295,78 @@ RSpec.describe Spot, type: :model do
   describe "PROXIMITY_THRESHOLD" do
     it "0.001度である" do
       expect(Spot::PROXIMITY_THRESHOLD).to eq(0.001)
+    end
+  end
+
+  describe ".preload_card_data" do
+    let(:user) { create(:user) }
+    let!(:spot1) { create(:spot) }
+    let!(:spot2) { create(:spot) }
+
+    context "統計情報の取得" do
+      before do
+        # spot1: プラン2件、コメント3件、お気に入り1件
+        plan1 = create(:plan)
+        plan2 = create(:plan)
+        create(:plan_spot, plan: plan1, spot: spot1)
+        create(:plan_spot, plan: plan2, spot: spot1)
+        3.times { create(:spot_comment, spot: spot1) }
+        create(:favorite_spot, spot: spot1, user: user)
+
+        # spot2: プラン1件、コメント0件、お気に入り2件
+        plan3 = create(:plan)
+        create(:plan_spot, plan: plan3, spot: spot2)
+        create(:favorite_spot, spot: spot2)
+        create(:favorite_spot, spot: spot2)
+      end
+
+      it "各スポットの統計情報を返す" do
+        result = Spot.preload_card_data([ spot1, spot2 ], user)
+
+        expect(result[:spot_stats][spot1.id]).to eq({
+          plans_count: 2,
+          comments_count: 3,
+          favorites_count: 1
+        })
+        expect(result[:spot_stats][spot2.id]).to eq({
+          plans_count: 1,
+          comments_count: 0,
+          favorites_count: 2
+        })
+      end
+    end
+
+    context "ユーザーのお気に入り情報" do
+      let!(:favorite) { create(:favorite_spot, spot: spot1, user: user) }
+
+      it "ユーザーのお気に入り情報を返す" do
+        result = Spot.preload_card_data([ spot1, spot2 ], user)
+
+        expect(result[:user_favorite_spots][spot1.id]).to eq(favorite)
+        expect(result[:user_favorite_spots][spot2.id]).to be_nil
+      end
+
+      it "ユーザーがnilの場合は空ハッシュを返す" do
+        result = Spot.preload_card_data([ spot1, spot2 ], nil)
+
+        expect(result[:user_favorite_spots]).to eq({})
+      end
+    end
+
+    context "空の配列の場合" do
+      it "空のハッシュを返す" do
+        result = Spot.preload_card_data([], user)
+
+        expect(result).to eq({ spot_stats: {}, user_favorite_spots: {} })
+      end
+    end
+
+    context "nilの場合" do
+      it "空のハッシュを返す" do
+        result = Spot.preload_card_data(nil, user)
+
+        expect(result).to eq({ spot_stats: {}, user_favorite_spots: {} })
+      end
     end
   end
 end

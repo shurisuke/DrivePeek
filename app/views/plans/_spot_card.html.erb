@@ -1,13 +1,21 @@
 <%# スポットカード（検索結果表示用の共通部品） %>
-<%# locals: spot:, favorite_spot: nil, preview_mode: false %>
+<%# locals: spot:, favorite_spot: nil, preview_mode: false, spot_stats: nil %>
 
 <%
   _preview_mode = local_assigns.fetch(:preview_mode, false)
+  _spot_stats = local_assigns.fetch(:spot_stats, nil)
   spot_location = [spot.prefecture, spot.city].compact.reject(&:blank?).join("/")
-  plans_count = spot.plans.count
-  comment_count = spot.spot_comments.count
-  favorite_count = spot.favorite_spots.count
-  favorite_spot ||= current_user&.favorite_spots&.find_by(spot: spot)
+
+  # プリロード済みデータがあれば使用（N+1回避）
+  if _spot_stats
+    plans_count = _spot_stats[:plans_count]
+    comment_count = _spot_stats[:comments_count]
+    favorite_count = _spot_stats[:favorites_count]
+  else
+    plans_count = spot.plans.count
+    comment_count = spot.spot_comments.count
+    favorite_count = spot.favorite_spots.count
+  end
 %>
 
 <div class="spot-card">

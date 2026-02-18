@@ -48,3 +48,19 @@
     font-size: 14px;
   }
 }
+
+/* デモ注意書き */
+.demo-notice {
+  background-color: #fff3cd;
+  border: 1px solid #ffc107;
+  border-left: none;
+  border-right: none;
+  border-radius: 0;
+  padding: 8px 12px;
+  margin-bottom: 16px;
+  width: 100vw;
+  margin-left: calc(-50vw + 50%);
+  font-size: 13px;
+  color: #856404;
+  text-align: center;
+}

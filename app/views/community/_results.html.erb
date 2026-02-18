@@ -16,20 +16,23 @@
                  search_query: @search_query,
                  show_favorites_toggle: true,
                  favorites_only: @favorites_only,
+                 circle: @circle,
                  button_class: "search-button--blue" %>
 
-      <div class="results-divider">
-        <span class="results-label">検索結果</span>
-      </div>
+      <%= render "shared/results_bar",
+                 count: @search_type == "spot" ? @spots_count : @plans_count,
+                 count_label: @search_type == "spot" ? "スポット" : "プラン",
+                 sort: @sort,
+                 sort_options: [["newest", "新しい順"], ["oldest", "古い順"], ["popular", "人気順"]],
+                 show_suffix: true %>
   <% end %>
 
   <% if @search_type == "spot" %>
     <%# スポット検索結果 %>
     <% if @community_spots.present? %>
-      <% favorite_spots_map = FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: @community_spots.map(&:id)) %>
       <div class="list-page__cards">
         <% @community_spots.each do |spot| %>
-          <%= render "plans/spot_card", spot: spot, favorite_spot: favorite_spots_map[spot.id], preview_mode: turbo_frame %>
+          <%= render "plans/spot_card", spot: spot, favorite_spot: @user_favorite_spots[spot.id], spot_stats: @spot_stats[spot.id], preview_mode: turbo_frame %>
         <% end %>
       </div>
 

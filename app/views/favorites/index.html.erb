@@ -14,6 +14,12 @@
                genres_by_category: @genres_by_category,
                selected_genre_ids: @selected_genre_ids,
                search_query: @search_query %>
+
+    <%= render "shared/results_bar",
+               count: @search_type == "spot" ? @spots_count : @plans_count,
+               count_label: @search_type == "spot" ? "スポット" : "プラン",
+               sort: @sort,
+               sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
   </div>
 
   <%# 右メイン: カード一覧 + ページネーション %>
@@ -21,10 +27,9 @@
   <% if @search_type == "spot" %>
       <%# スポット一覧 %>
       <% if @spots.present? %>
-        <% favorite_spots_map = FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: @spots.map(&:id)) %>
         <div class="list-page__cards">
           <% @spots.each do |spot| %>
-            <%= render "plans/spot_card", spot: spot, favorite_spot: favorite_spots_map[spot.id] %>
+            <%= render "plans/spot_card", spot: spot, favorite_spot: @user_favorite_spots[spot.id], spot_stats: @spot_stats[spot.id] %>
           <% end %>
         </div>
 

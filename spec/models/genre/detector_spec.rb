@@ -89,7 +89,7 @@ RSpec.describe Genre::Detector do
       end
 
       context "countを指定した場合" do
-        let!(:cafe_genre) { create(:genre, slug: "cafe", name: "カフェ") }
+        let!(:cafe_genre) { create(:genre, slug: "sweets_cafe", name: "カフェ・スイーツ") }
 
         before do
           allow(openai_client).to receive(:chat).and_return({

@@ -273,7 +273,8 @@ $card-text-muted: #999;
   }
 }
 
-.plan-card__unit {
+.plan-card__unit,
+.plan-card__total-item .plan-summary__unit {
   font-size: 12px;
   font-weight: 400;
   color: $card-text-secondary;

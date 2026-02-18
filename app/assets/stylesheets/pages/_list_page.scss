@@ -5,7 +5,7 @@
 
 /* 一覧ページ共通コンテナ */
 .list-page {
-  padding: 20px 16px 16px 16px;
+  padding: 16px;
   background: linear-gradient(180deg, #f5f6f5 0%, #fafbfa 100%);
   min-height: 100%;
   container-type: inline-size;
@@ -184,12 +184,12 @@
 
       /* アクティブページ */
       &.active .page-link {
-        background: #506d53;
+        background: linear-gradient(135deg, #4A90D9, #2C5FA0);
         color: #fff;
         font-weight: 600;
 
         &:hover {
-          background: #45604a;
+          background: linear-gradient(135deg, #3d7fc7, #265291);
         }
       }
 
@@ -200,4 +200,5 @@
       }
     }
   }
+
 }

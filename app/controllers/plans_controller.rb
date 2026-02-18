@@ -1,4 +1,6 @@
 class PlansController < ApplicationController
+  SORT_OPTIONS = %w[newest oldest].freeze
+
   before_action :authenticate_user!, except: %i[show]
 
   def index
@@ -10,9 +12,11 @@ class PlansController < ApplicationController
       .filter_by_cities(@selected_cities)
       .filter_by_genres(@selected_genre_ids)
       .includes(:start_point, plan_spots: { spot: :genres })
-      .order(updated_at: :desc)
+      .sort_by_option(@sort)
       .page(params[:page])
       .per(10)
+
+    @plans_count = @plans.total_count
   end
 
   def show
@@ -71,6 +75,7 @@ class PlansController < ApplicationController
     @search_query = params[:q]
     @selected_cities = Array(params[:cities]).reject(&:blank?)
     @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
+    @sort = SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "newest"
     @genres_by_category = Genre.grouped_by_category
     @cities_by_prefecture = Spot.cities_by_prefecture
   end

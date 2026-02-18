@@ -4,9 +4,8 @@ import {
   setCommunityPreviewMarkers,
   setCommunityPreviewPolylines,
   clearCommunityPreview,
+  clearSuggestionMarkers,
   getPlanSpotMarkers,
-  getStartPointMarker,
-  getEndPointMarker,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
@@ -77,7 +76,11 @@ export default class extends Controller {
 
   hide() {
     clearCommunityPreview()
+    clearSuggestionMarkers()  // 円エリアもクリア
     hideCloseButton()
+
+    // search_filters_controller に円クリアを通知
+    document.dispatchEvent(new CustomEvent("community:circleCleared"))
   }
 
   // --- Private methods ---
@@ -161,7 +164,7 @@ export default class extends Controller {
       }
     })
 
-    // 自分のプランのスポット
+    // 自分のプランのスポット（出発・帰宅地点は個人情報保護のため除外）
     getPlanSpotMarkers().forEach((marker) => {
       const pos = marker.getPosition()
       if (pos) {
@@ -169,20 +172,6 @@ export default class extends Controller {
         pointCount++
       }
     })
-
-    // 出発地点
-    const startMarker = getStartPointMarker()
-    if (startMarker?.getPosition()) {
-      bounds.extend(startMarker.getPosition())
-      pointCount++
-    }
-
-    // 帰宅地点
-    const endMarker = getEndPointMarker()
-    if (endMarker?.getPosition()) {
-      bounds.extend(endMarker.getPosition())
-      pointCount++
-    }
 
     if (pointCount === 0) return
 

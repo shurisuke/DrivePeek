@@ -137,10 +137,10 @@ export const getMapPadding = () => {
   if (isMobile()) {
     const { top, bottom } = getMobileObstacles()
     return {
-      top: top > 0 ? top + 16 : 60,
-      right: 16,
-      bottom: bottom > 0 ? bottom + 16 : 16,
-      left: 16
+      top: top > 0 ? top : 100,
+      right: 0,
+      bottom: bottom > 0 ? bottom : 0,
+      left: 0
     }
   }
 

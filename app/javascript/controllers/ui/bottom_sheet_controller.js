@@ -50,7 +50,7 @@ export default class extends Controller {
 
     // エリア描画開始時に最小化
     this.boundAreaDrawStart = () => this.collapse()
-    document.addEventListener("suggestion:startAreaDraw", this.boundAreaDrawStart)
+    document.addEventListener("ui:startAreaDraw", this.boundAreaDrawStart)
   }
 
   // モバイル判定（768px未満）
@@ -79,7 +79,7 @@ export default class extends Controller {
     document.removeEventListener("touchmove", this.boundTouchMove)
     document.removeEventListener("touchend", this.boundTouchEnd)
     window.removeEventListener("resize", this.boundResize)
-    document.removeEventListener("suggestion:startAreaDraw", this.boundAreaDrawStart)
+    document.removeEventListener("ui:startAreaDraw", this.boundAreaDrawStart)
   }
 
   // タッチイベント

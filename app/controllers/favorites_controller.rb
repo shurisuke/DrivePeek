@@ -1,4 +1,6 @@
 class FavoritesController < ApplicationController
+  SORT_OPTIONS = %w[newest oldest].freeze
+
   before_action :authenticate_user!
 
   def index
@@ -10,16 +12,25 @@ class FavoritesController < ApplicationController
         .filter_by_cities(@selected_cities)
         .filter_by_genres(@selected_genre_ids)
         .includes(:genres)
-        .order(created_at: :desc)
+        .sort_by_option(@sort)
         .page(params[:page]).per(10)
+
+      # スポットカード用データをプリロード（N+1回避）
+      preload_data = Spot.preload_card_data(@spots, current_user)
+      @spot_stats = preload_data[:spot_stats]
+      @user_favorite_spots = preload_data[:user_favorite_spots]
+
+      @spots_count = @spots.total_count
     else
       @plans = current_user.liked_plans
         .search_keyword(@search_query)
         .filter_by_cities(@selected_cities)
         .filter_by_genres(@selected_genre_ids)
         .includes(:user, :start_point, :goal_point, plan_spots: { spot: :genres })
-        .order(created_at: :desc)
+        .sort_by_option(@sort)
         .page(params[:page]).per(10)
+
+      @plans_count = @plans.total_count
     end
   end
 
@@ -30,6 +41,7 @@ class FavoritesController < ApplicationController
     @search_query = params[:q]
     @selected_cities = Array(params[:cities]).reject(&:blank?)
     @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
+    @sort = SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "newest"
     @genres_by_category = Genre.grouped_by_category
     @cities_by_prefecture = Spot.cities_by_prefecture
   end

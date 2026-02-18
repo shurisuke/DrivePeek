@@ -15,9 +15,21 @@ class Plan < ApplicationRecord
   }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
+  # 円内のスポットを含むプランを検索
+  # @param center_lat [Float] 中心緯度
+  # @param center_lng [Float] 中心経度
+  # @param radius_km [Float] 半径（km）
+  scope :within_circle, ->(center_lat, center_lng, radius_km) {
+    return all if center_lat.blank? || center_lng.blank? || radius_km.blank?
+
+    joins(:spots).merge(Spot.within_circle(center_lat, center_lng, radius_km)).distinct
+  }
+
   # みんなのプラン用のベースRelation（検索・includes・並び順を含む）
   # スポットが2つ以上あるプランのみ表示
-  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil) {
+  # @param circle [Hash, nil] { center_lat:, center_lng:, radius_km: }
+  # @param sort [String] "newest" | "oldest" | "popular"
+  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil, circle: nil, sort: "newest") {
     base = publicly_visible
       .with_multiple_spots
       .search_keyword(keyword)
@@ -25,9 +37,22 @@ class Plan < ApplicationRecord
       .filter_by_genres(genre_ids)
 
     base = base.liked_by(liked_by_user) if liked_by_user
+    base = base.within_circle(circle[:center_lat], circle[:center_lng], circle[:radius_km]) if circle.present?
 
     base.includes(:user, :start_point, plan_spots: { spot: :genres })
-        .order(updated_at: :desc)
+        .sort_by_option(sort)
+  }
+
+  # ソートオプション
+  scope :sort_by_option, ->(sort) {
+    case sort
+    when "oldest"
+      order(created_at: :asc)
+    when "popular"
+      order(Arel.sql("(SELECT COUNT(*) FROM favorite_plans WHERE favorite_plans.plan_id = plans.id) DESC, plans.created_at DESC"))
+    else # newest
+      order(created_at: :desc)
+    end
   }
 
   # 市区町村で絞り込み（複数対応）
