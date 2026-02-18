@@ -10,13 +10,17 @@
 <% area_data = local_assigns.fetch(:area_data, {}) %>
 <% condition_data = local_assigns.fetch(:condition_data, {}) %>
 
-<% is_plan_mode = response_type == "plan" && spots.present? %>
-<% is_spot_mode = response_type == "spots" && spots.present? %>
+<%# スポット関連データを一括プリロード（N+1回避） %>
+<% spot_ids = spots.map { |s| s[:spot_id] }.compact %>
+<% spot_data = preload_spot_data(spot_ids, current_user) %>
+<% preloaded_spots = spot_data[:preloaded_spots] %>
+<% user_favorite_spots = spot_data[:user_favorite_spots] %>
 
-<% if is_plan_mode || is_spot_mode %>
-  <%# ========== 提案モード共通レイアウト ========== %>
-  <%# モードに応じた変数設定 %>
-  <% mode = is_plan_mode ? "plan" : "spots" %>
+<% is_plan_mode = response_type == "plan" && spots.present? %>
+
+<% if is_plan_mode %>
+  <%# ========== プラン提案モード ========== %>
+  <% mode = "plan" %>
   <% intro_text = intro %>
   <% spot_list = spots %>
 
@@ -38,37 +42,24 @@
     <% end %>
 
     <%# スポットカード（全幅・中央寄せ） %>
-    <% if is_plan_mode %>
-      <div class="suggestion__spots-fullwidth"
-           data-controller="suggestion-tab--plan-adopt"
-           data-suggestion-tab--plan-adopt-plan-id-value="<%= plan&.id %>"
-           data-suggestion-tab--plan-adopt-auto-show-value="<%= auto_show_value %>">
-        <div class="suggestion__spots-inner" data-suggestion-tab--plan-adopt-target="spots">
-          <% spot_list.each_with_index do |spot, index| %>
-            <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
-          <% end %>
-        </div>
-        <div class="suggestion-plan-card__actions">
-          <button type="button"
-                  class="suggestion-plan-card__adopt-btn"
-                  data-action="click->suggestion-tab--plan-adopt#adoptPlan"
-                  data-suggestion-tab--plan-adopt-target="adoptBtn">
-            <i class="bi bi-check-circle"></i> このプランを採用
-          </button>
-        </div>
+    <div class="suggestion__spots-fullwidth"
+         data-controller="suggestion-tab--plan-adopt"
+         data-suggestion-tab--plan-adopt-plan-id-value="<%= plan&.id %>"
+         data-suggestion-tab--plan-adopt-auto-show-value="<%= auto_show_value %>">
+      <div class="suggestion__spots-inner" data-suggestion-tab--plan-adopt-target="spots">
+        <% spot_list.each_with_index do |spot, index| %>
+          <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids, preloaded_spots: preloaded_spots, user_favorite_spots: user_favorite_spots %>
+        <% end %>
       </div>
-    <% else %>
-      <div class="suggestion__spots-fullwidth"
-           data-suggestion-target="spotSuggestions"
-           data-controller="suggestion-tab--spots-batch"
-           data-suggestion-tab--spots-batch-auto-show-value="<%= auto_show_value %>">
-        <div class="suggestion__spots-inner">
-          <% spot_list.each_with_index do |spot, index| %>
-            <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, existing_place_ids: existing_place_ids %>
-          <% end %>
-        </div>
+      <div class="suggestion-plan-card__actions">
+        <button type="button"
+                class="suggestion-plan-card__adopt-btn"
+                data-action="click->suggestion-tab--plan-adopt#adoptPlan"
+                data-suggestion-tab--plan-adopt-target="adoptBtn">
+          <i class="bi bi-check-circle"></i> このプランを採用
+        </button>
       </div>
-    <% end %>
+    </div>
 
     <%# 締め + アクションボタン（アイコン + テキスト） %>
     <div class="suggestion__msg suggestion__msg--assistant">
@@ -112,7 +103,7 @@
             <div class="suggestion__related-spots">
               <small class="suggestion__related-label">関連スポット</small>
               <% spots.each_with_index do |spot, index| %>
-                <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids %>
+                <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids, preloaded_spots: preloaded_spots, user_favorite_spots: user_favorite_spots %>
               <% end %>
             </div>
           <% end %>

@@ -20,14 +20,14 @@ RSpec.describe Suggestion::Generator do
           radius_km: radius_km
         )
 
-        expect(result[:type]).to eq("plan")
+        expect(result[:type]).to eq("error")
         expect(result[:message]).to include("API設定エラー")
         expect(result[:spots]).to eq([])
       end
     end
 
     context "プランモード" do
-      let!(:genre) { create(:genre, name: "グルメ", slug: "gourmet") }
+      let!(:genre) { create(:genre, name: "ごはん", slug: "food") }
       let!(:spot) do
         create(:spot, lat: 35.6770, lng: 139.6510, name: "テストスポット").tap do |s|
           s.genres << genre
@@ -51,8 +51,7 @@ RSpec.describe Suggestion::Generator do
           center_lat: center_lat,
           center_lng: center_lng,
           radius_km: radius_km,
-          slots: [ { genre_id: genre.id } ],
-          mode: "plan"
+          slots: [ { genre_id: genre.id } ]
         )
 
         expect(result[:type]).to eq("plan")
@@ -67,65 +66,13 @@ RSpec.describe Suggestion::Generator do
           center_lat: center_lat,
           center_lng: center_lng,
           radius_km: radius_km,
-          slots: [ { genre_id: genre.id } ],
-          mode: "plan"
+          slots: [ { genre_id: genre.id } ]
         )
 
         spot_result = result[:spots].first
         expect(spot_result[:spot_id]).to eq(spot.id)
         expect(spot_result[:name]).to eq("テストスポット")
         expect(spot_result[:description]).to eq("おすすめの理由です")
-      end
-    end
-
-    context "スポットモード" do
-      let!(:genre) { create(:genre, name: "ラーメン", slug: "ramen") }
-      let!(:spot1) { create(:spot, lat: 35.6770, lng: 139.6510, name: "ラーメン屋1") }
-      let!(:spot2) { create(:spot, lat: 35.6780, lng: 139.6520, name: "ラーメン屋2") }
-
-      before do
-        spot1.genres << genre
-        spot2.genres << genre
-
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
-
-        stub_openai_chat(response_content: {
-          intro: "人気のラーメン店です",
-          closing: "ぜひ追加してください"
-        }.to_json)
-      end
-
-      it "提案を生成する" do
-        result = described_class.generate(
-          plan: plan,
-          center_lat: center_lat,
-          center_lng: center_lng,
-          radius_km: radius_km,
-          mode: "spots",
-          genre_id: genre.id,
-          count: 2
-        )
-
-        expect(result[:type]).to eq("spots")
-        expect(result[:intro]).to eq("人気のラーメン店です")
-        expect(result[:spots].length).to eq(2)
-      end
-
-      it "ジャンルが見つからない場合エラーを返す" do
-        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
-
-        result = described_class.generate(
-          plan: plan,
-          center_lat: center_lat,
-          center_lng: center_lng,
-          radius_km: radius_km,
-          mode: "spots",
-          genre_id: 99999,
-          count: 5
-        )
-
-        expect(result[:message]).to include("ジャンルが見つかりません")
       end
     end
 
@@ -143,8 +90,7 @@ RSpec.describe Suggestion::Generator do
           center_lat: center_lat,
           center_lng: center_lng,
           radius_km: radius_km,
-          slots: [ { genre_id: genre.id } ],
-          mode: "plan"
+          slots: [ { genre_id: genre.id } ]
         )
 
         expect(result[:message]).to include("スポットが見つかりませんでした")
@@ -152,27 +98,8 @@ RSpec.describe Suggestion::Generator do
       end
     end
 
-    context "不正なモードの場合" do
-      before do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
-      end
-
-      it "エラーを返す" do
-        result = described_class.generate(
-          plan: plan,
-          center_lat: center_lat,
-          center_lng: center_lng,
-          radius_km: radius_km,
-          mode: "invalid"
-        )
-
-        expect(result[:message]).to include("不正なモード")
-      end
-    end
-
     context "API通信エラーの場合" do
-      let!(:genre) { create(:genre, name: "グルメ", slug: "gourmet") }
+      let!(:genre) { create(:genre, name: "ごはん", slug: "food") }
       let!(:spot) do
         create(:spot, lat: 35.6770, lng: 139.6510).tap { |s| s.genres << genre }
       end
@@ -190,8 +117,7 @@ RSpec.describe Suggestion::Generator do
           center_lat: center_lat,
           center_lng: center_lng,
           radius_km: radius_km,
-          slots: [ { genre_id: genre.id } ],
-          mode: "plan"
+          slots: [ { genre_id: genre.id } ]
         )
 
         expect(result[:message]).to include("通信エラー")
@@ -200,7 +126,7 @@ RSpec.describe Suggestion::Generator do
     end
 
     context "フォールバック動作" do
-      let!(:genre1) { create(:genre, name: "グルメ", slug: "gourmet") }
+      let!(:genre1) { create(:genre, name: "ごはん", slug: "food") }
       let!(:genre2) { create(:genre, name: "温泉", slug: "bath") }
       let!(:spot1) { create(:spot, lat: 35.6770, lng: 139.6510, name: "グルメスポット") }
       let!(:spot2) { create(:spot, lat: 35.6780, lng: 139.6520, name: "温泉スポット") }
@@ -226,8 +152,7 @@ RSpec.describe Suggestion::Generator do
           center_lat: center_lat,
           center_lng: center_lng,
           radius_km: radius_km,
-          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id } ],
-          mode: "plan"
+          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id } ]
         )
 
         expect(result[:spots].length).to eq(2)

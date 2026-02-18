@@ -245,6 +245,13 @@
   font-size: 14px;
 }
 
+.suggestion__bubble-sub {
+  display: block;
+  margin-top: 4px;
+  color: #666;
+  font-size: 12px;
+}
+
 /* AI側（枠なし、テキストのみ） */
 .suggestion__msg--assistant .suggestion__bubble {
   background-color: transparent;
@@ -499,6 +506,7 @@
     background-color: rgba(0, 122, 255, 0.15);
     transform: scale(0.97);
   }
+
 }
 
 .suggestion__input-row {
@@ -630,7 +638,7 @@
   max-width: 500px;
 }
 
-/* スポットモード用のバブルスタイル */
+/* イントロ・クロージングのバブルスタイル */
 /* イントロバブル（常時適用） */
 .suggestion__msg--assistant .suggestion__bubble--intro {
   padding: 16px 20px;
@@ -660,36 +668,6 @@
 
 .suggestion__bubble--closing {
   color: #8e8e93;
-}
-
-/* ==========================================
-   提案ピン パルスアニメーション
-   ※ ピクセル単位で一貫した表示を実現するためCSS採用
-   ※ 位置制御: app/javascript/controllers/suggestion_spots_batch_controller.js
-========================================== */
-.suggestion-pulse-overlay {
-  position: absolute;
-  pointer-events: none;
-  transform: translate(-50%, -50%);
-}
-
-.suggestion-pulse-ring {
-  width: 40px;
-  height: 40px;
-  border-radius: 50%;
-  background-color: rgba(118, 75, 162, 0.4);
-  animation: suggestionPulse 2s ease-out infinite;
-}
-
-@keyframes suggestionPulse {
-  0% {
-    transform: scale(0.5);
-    opacity: 0.5;
-  }
-  100% {
-    transform: scale(2.5);
-    opacity: 0;
-  }
 }
 
 /* ==========================================

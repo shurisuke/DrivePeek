@@ -1,6 +1,15 @@
 <%# 提案スポットカード（spot-cardを再利用） %>
 <% compact = local_assigns.fetch(:compact, false) %>
 <% existing_place_ids = local_assigns.fetch(:existing_place_ids, []) %>
+<% preloaded_spots = local_assigns.fetch(:preloaded_spots, {}) %>
+<% user_favorite_spots = local_assigns.fetch(:user_favorite_spots, {}) %>
+<%
+  # プリロード済みデータを使用（N+1回避）
+  actual_spot = spot[:spot_id].present? ? preloaded_spots[spot[:spot_id]] : nil
+  favorite_spot = actual_spot ? user_favorite_spots[actual_spot.id] : nil
+  comment_count = actual_spot&.comments_count || 0
+  favorite_count = actual_spot&.favorites_count || 0
+%>
 <div class="spot-card spot-card--suggestion<%= ' spot-card--compact' if compact %>"
      data-controller="suggestion-tab--suggested-spot"
      data-suggestion-tab--suggested-spot-name-value="<%= spot[:name] %>"
@@ -11,14 +20,46 @@
      data-suggestion-tab--suggested-spot-lng-value="<%= spot[:lng] %>"
      data-suggestion-tab--suggested-spot-place-id-value="<%= spot[:place_id] %>">
 
-  <%# ヘッダー: 番号 + 名前 %>
+  <%# ヘッダー: 番号 + 名前 + アクションボタン %>
   <div class="spot-card__header">
     <div class="spot-card__title-block">
       <h3 class="spot-card__name">
         <span class="spot-card__number"><%= number %></span>
         <%= spot[:name] %>
       </h3>
+      <% if actual_spot&.genres&.any? %>
+        <div class="spot-card__genres">
+          <% actual_spot.genres.each do |genre| %>
+            <span class="spot-card__genre"><%= genre.name %></span>
+          <% end %>
+        </div>
+      <% end %>
     </div>
+    <% if actual_spot %>
+      <div class="spot-card__actions-zone">
+        <%# お気に入りボタン（数値付き） %>
+        <div class="spot-card__stat">
+          <%= render "favorite_spots/button", spot: actual_spot, favorite_spot: favorite_spot %>
+          <span id="<%= dom_id(actual_spot, :favorite_count) %>" class="spot-card__stat-count"><%= favorite_count %></span>
+        </div>
+        <%# コメントボタン（数値付き） %>
+        <div class="spot-card__stat">
+          <button type="button"
+                  class="spot-card__comment-btn"
+                  data-controller="infowindow--comment-open"
+                  data-infowindow--comment-open-spot-id-value="<%= actual_spot.id %>"
+                  data-infowindow--comment-open-place-id-value="<%= actual_spot.place_id %>"
+                  data-infowindow--comment-open-lat-value="<%= actual_spot.lat %>"
+                  data-infowindow--comment-open-lng-value="<%= actual_spot.lng %>"
+                  data-infowindow--comment-open-name-value="<%= actual_spot.name %>"
+                  data-infowindow--comment-open-address-value="<%= actual_spot.address %>"
+                  data-action="click->infowindow--comment-open#openComment">
+            <i class="bi bi-chat"></i>
+          </button>
+          <span id="<%= dom_id(actual_spot, :comment_count) %>" class="spot-card__stat-count"><%= comment_count %></span>
+        </div>
+      </div>
+    <% end %>
   </div>
 
   <%# 住所 %>

@@ -23,11 +23,11 @@ RSpec.describe "Suggestions", type: :request do
 
   describe "POST /suggestions/suggest" do
     context "プランモード" do
-      let!(:genre_gourmet) { create(:genre, name: "グルメ", slug: "gourmet") }
+      let!(:genre_food) { create(:genre, name: "ごはん", slug: "food") }
       let!(:genre_bath) { create(:genre, name: "温泉", slug: "bath") }
       let!(:spot) do
         create(:spot, lat: 35.6770, lng: 139.6510, name: "テストスポット").tap do |s|
-          s.genres << genre_gourmet
+          s.genres << genre_food
         end
       end
 
@@ -47,8 +47,7 @@ RSpec.describe "Suggestions", type: :request do
 
         it "ジャンル指定でAI提案を取得する" do
           post suggest_suggestions_path, params: area_params.merge(
-            mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id } ]
+            slots: [ { genre_id: genre_food.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response).to have_http_status(:ok)
@@ -59,8 +58,7 @@ RSpec.describe "Suggestions", type: :request do
           spot_bath.genres << genre_bath
 
           post suggest_suggestions_path, params: area_params.merge(
-            mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id }, { genre_id: genre_bath.id } ]
+            slots: [ { genre_id: genre_food.id }, { genre_id: genre_bath.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response).to have_http_status(:ok)
@@ -68,8 +66,7 @@ RSpec.describe "Suggestions", type: :request do
 
         it "おまかせスロット（genre_id: nil）でも動作する" do
           post suggest_suggestions_path, params: area_params.merge(
-            mode: "plan",
-            slots: [ { genre_id: nil }, { genre_id: genre_gourmet.id } ]
+            slots: [ { genre_id: nil }, { genre_id: genre_food.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response).to have_http_status(:ok)
@@ -78,16 +75,14 @@ RSpec.describe "Suggestions", type: :request do
         it "提案ログが保存される" do
           expect {
             post suggest_suggestions_path, params: area_params.merge(
-              mode: "plan",
-              slots: [ { genre_id: genre_gourmet.id } ]
+              slots: [ { genre_id: genre_food.id } ]
             ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
           }.to change { plan.suggestions.count }.by(1)
         end
 
         it "Turbo Stream形式でレスポンスを返す" do
           post suggest_suggestions_path, params: area_params.merge(
-            mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id } ]
+            slots: [ { genre_id: genre_food.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response.content_type).to include("text/vnd.turbo-stream.html")
@@ -101,8 +96,7 @@ RSpec.describe "Suggestions", type: :request do
         it "404エラーを返す" do
           post suggest_suggestions_path, params: area_params.merge(
             plan_id: other_plan.id,
-            mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id } ]
+            slots: [ { genre_id: genre_food.id } ]
           ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
 
           expect(response).to have_http_status(:not_found)
@@ -112,54 +106,11 @@ RSpec.describe "Suggestions", type: :request do
       context "未ログインの場合" do
         it "ログイン画面にリダイレクトする" do
           post suggest_suggestions_path, params: area_params.merge(
-            mode: "plan",
-            slots: [ { genre_id: genre_gourmet.id } ]
+            slots: [ { genre_id: genre_food.id } ]
           )
 
           expect(response).to redirect_to(new_user_session_path)
         end
-      end
-    end
-
-    context "スポットモード" do
-      let!(:genre) { create(:genre, name: "ラーメン", slug: "ramen") }
-      let!(:spot1) { create(:spot, lat: 35.6770, lng: 139.6510, name: "ラーメン屋1") }
-      let!(:spot2) { create(:spot, lat: 35.6780, lng: 139.6520, name: "ラーメン屋2") }
-
-      before do
-        spot1.genres << genre
-        spot2.genres << genre
-
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
-
-        stub_openai_chat(response_content: {
-          intro: "人気のラーメン店です",
-          closing: "ぜひ追加してください"
-        }.to_json)
-
-        sign_in user
-      end
-
-      it "ジャンル・件数指定でスポット提案を取得する" do
-        post suggest_suggestions_path, params: area_params.merge(
-          mode: "spots",
-          genre_id: genre.id,
-          count: 3
-        ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
-        expect(response).to have_http_status(:ok)
-      end
-
-      it "存在しないジャンルでもエラーにならない" do
-        post suggest_suggestions_path, params: area_params.merge(
-          mode: "spots",
-          genre_id: 99999,
-          count: 3
-        ), headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
-        # エラーメッセージ付きで200を返す（500にはならない）
-        expect(response).to have_http_status(:ok)
       end
     end
 
@@ -192,27 +143,6 @@ RSpec.describe "Suggestions", type: :request do
 
         expect(response).to have_http_status(:unprocessable_entity)
         expect(response.parsed_body["errors"]).to include(/radius_km/)
-      end
-
-      it "countが範囲外の場合422を返す" do
-        post suggest_suggestions_path, params: area_params.merge(mode: "spots", genre_id: 1, count: 100)
-
-        expect(response).to have_http_status(:unprocessable_entity)
-        expect(response.parsed_body["errors"]).to include(/count/)
-      end
-
-      it "countが未指定の場合は検証をスキップする" do
-        allow(ENV).to receive(:[]).and_call_original
-        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
-        stub_openai_chat(response_content: { intro: "test", closing: "test" }.to_json)
-
-        genre = create(:genre)
-        create(:spot, lat: 35.6770, lng: 139.6510).tap { |s| s.genres << genre }
-
-        post suggest_suggestions_path, params: area_params.merge(mode: "spots", genre_id: genre.id),
-             headers: { "Accept" => "text/vnd.turbo-stream.html" }
-
-        expect(response).to have_http_status(:ok)
       end
     end
   end

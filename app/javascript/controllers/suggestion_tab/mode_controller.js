@@ -6,13 +6,13 @@ import { postTurboStream } from "services/navibar_api"
 // ================================================================
 // SuggestModeController
 // 用途: 提案モード選択・アクションボタン制御
-// - 初期モード選択（まるっとプラン提案/かこんでスポット検索）
+// - 初期モード選択（まるっとプラン提案）
 // - 応答後アクション（エリア選び直し/条件変更/終了）
 // ================================================================
 
 export default class extends Controller {
   static values = {
-    mode: String,        // "plan" | "spots"
+    mode: String,        // "plan"
     area: Object,        // { center_lat, center_lng, radius_km }
     condition: Object,   // { slot_count, slots: [...] }
     planId: Number,      // プランID（終了API用）
@@ -25,11 +25,6 @@ export default class extends Controller {
   // まるっとプラン提案
   startPlanMode() {
     this.#dispatchAreaDraw("plan")
-  }
-
-  // かこんでスポット検索
-  startSpotMode() {
-    this.#dispatchAreaDraw("spots")
   }
 
   // ============================================
@@ -125,7 +120,7 @@ export default class extends Controller {
   // ============================================
 
   #dispatchAreaDraw(mode, options = {}) {
-    document.dispatchEvent(new CustomEvent("suggestion:startAreaDraw", {
+    document.dispatchEvent(new CustomEvent("ui:startAreaDraw", {
       detail: { mode, ...options }
     }))
   }
