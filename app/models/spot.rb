@@ -35,6 +35,17 @@ class Spot < ApplicationRecord
       .where(lng: (lng - threshold)..(lng + threshold))
   }
 
+  # 円内のスポットを検索（緯度1度≈111km、経度1度≈91km で概算）
+  # @param center_lat [Float] 中心緯度
+  # @param center_lng [Float] 中心経度
+  # @param radius_km [Float] 半径（km）
+  scope :within_circle, ->(center_lat, center_lng, radius_km) {
+    return none if center_lat.blank? || center_lng.blank? || radius_km.blank?
+
+    distance_sql = "SQRT(POW((spots.lat - ?) * 111.0, 2) + POW((spots.lng - ?) * 91.0, 2))"
+    where("#{distance_sql} <= ?", center_lat, center_lng, radius_km)
+  }
+
   # 座標から既存Spotを検索、なければPlaces APIで検索して作成
   # @return [Spot, nil]
   def self.find_or_create_from_location(name:, address:, lat:, lng:)
@@ -64,15 +75,30 @@ class Spot < ApplicationRecord
   CITIES_CACHE_KEY = "spots/cities_by_prefecture".freeze
 
   # みんなのスポット用のベースRelation（検索・includes・並び順を含む）
-  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil) {
+  # @param circle [Hash, nil] { center_lat:, center_lng:, radius_km: }
+  # @param sort [String] "newest" | "oldest" | "popular"
+  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil, circle: nil, sort: "newest") {
     base = search_keyword(keyword)
       .filter_by_cities(cities)
       .filter_by_genres(genre_ids)
 
     base = base.liked_by(liked_by_user) if liked_by_user
+    base = base.within_circle(circle[:center_lat], circle[:center_lng], circle[:radius_km]) if circle.present?
 
     base.includes(:genres)
-        .order(updated_at: :desc)
+        .sort_by_option(sort)
+  }
+
+  # ソートオプション
+  scope :sort_by_option, ->(sort) {
+    case sort
+    when "oldest"
+      order(created_at: :asc)
+    when "popular"
+      order(Arel.sql("(SELECT COUNT(*) FROM favorite_spots WHERE favorite_spots.spot_id = spots.id) DESC, spots.created_at DESC"))
+    else # newest
+      order(created_at: :desc)
+    end
   }
 
   # 市区町村で絞り込み（複数対応）
@@ -155,6 +181,33 @@ class Spot < ApplicationRecord
   # 短縮住所（県+市+町）
   def short_address
     [ prefecture, city, town ].compact_blank.join
+  end
+
+  # スポットカード表示用データを一括プリロード（N+1回避）
+  # @param spots [Array<Spot>] スポット配列
+  # @param user [User, nil] ログインユーザー
+  # @return [Hash] { spot_stats: Hash, user_favorite_spots: Hash }
+  def self.preload_card_data(spots, user)
+    return { spot_stats: {}, user_favorite_spots: {} } if spots.blank?
+
+    spot_ids = spots.map(&:id)
+
+    # 各種カウントを一括取得
+    plans_counts = PlanSpot.where(spot_id: spot_ids).group(:spot_id).count
+    comments_counts = SpotComment.where(spot_id: spot_ids).group(:spot_id).count
+    favorites_counts = FavoriteSpot.where(spot_id: spot_ids).group(:spot_id).count
+
+    spot_stats = spot_ids.each_with_object({}) do |spot_id, hash|
+      hash[spot_id] = {
+        plans_count: plans_counts[spot_id] || 0,
+        comments_count: comments_counts[spot_id] || 0,
+        favorites_count: favorites_counts[spot_id] || 0
+      }
+    end
+
+    user_favorite_spots = user ? user.favorite_spots.where(spot_id: spot_ids).index_by(&:spot_id) : {}
+
+    { spot_stats: spot_stats, user_favorite_spots: user_favorite_spots }
   end
 
   private

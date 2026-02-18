@@ -13,7 +13,14 @@
                  cities_by_prefecture: @cities_by_prefecture,
                  genres_by_category: @genres_by_category,
                  selected_genre_ids: @selected_genre_ids,
-                 search_query: @search_query %>
+                 search_query: @search_query,
+                 circle: @circle %>
+
+      <%= render "shared/results_bar",
+                 count: @search_type == "spot" ? @spots_count : @plans_count,
+                 count_label: @search_type == "spot" ? "スポット" : "プラン",
+                 sort: @sort,
+                 sort_options: [["newest", "新しい順"], ["oldest", "古い順"], ["popular", "人気順"]] %>
     </div>
 
     <%# 右メイン: カード一覧 + ページネーション %>

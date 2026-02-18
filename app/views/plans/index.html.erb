@@ -14,6 +14,12 @@
                genres_by_category: @genres_by_category,
                selected_genre_ids: @selected_genre_ids,
                search_query: @search_query %>
+
+    <%= render "shared/results_bar",
+               count: @plans_count,
+               count_label: "プラン",
+               sort: @sort,
+               sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
   </div>
 
   <%# 右メイン: カード一覧 + ページネーション %>
