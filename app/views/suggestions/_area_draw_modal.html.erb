@@ -1,67 +1,67 @@
 <%# エリア描画モーダル（3つの状態を切り替え） %>
-<div class="suggestion-area-draw-overlay"
+<div class="area-draw-overlay"
      hidden
-     data-suggestion-tab--area-draw-target="modal">
+     data-ui--area-draw-target="modal">
 
   <%# 移動モード: 地図を移動させてからエリア選択へ %>
-  <div class="suggestion-area-draw-guide" data-suggestion-tab--area-draw-target="moveMode">
-    <div class="suggestion-area-draw-guide__header">
-      <div class="suggestion-area-draw-guide__icon">
+  <div class="area-draw-guide" data-ui--area-draw-target="moveMode">
+    <div class="area-draw-guide__header">
+      <div class="area-draw-guide__icon">
         <i class="bi bi-geo-alt"></i>
       </div>
-      <div class="suggestion-area-draw-guide__text">
+      <div class="area-draw-guide__text">
         選択したいエリアまで<br>地図を移動してください
       </div>
     </div>
-    <div class="suggestion-area-draw-guide__actions">
+    <div class="area-draw-guide__actions">
       <button type="button"
-              class="suggestion-area-draw-guide__cancel-btn"
-              data-action="click->suggestion-tab--area-draw#cancel">
+              class="area-draw-guide__cancel-btn"
+              data-action="click->ui--area-draw#cancel">
         キャンセル
       </button>
       <button type="button"
-              class="suggestion-area-draw-guide__start-btn"
-              data-action="click->suggestion-tab--area-draw#startDrawingMode">
+              class="area-draw-guide__start-btn"
+              data-action="click->ui--area-draw#startDrawingMode">
         描き始める
       </button>
     </div>
   </div>
 
   <%# 描画モード: フリーハンドで円を描く %>
-  <div class="suggestion-area-draw-guide" data-suggestion-tab--area-draw-target="drawMode" hidden>
-    <div class="suggestion-area-draw-guide__header">
-      <div class="suggestion-area-draw-guide__icon">
+  <div class="area-draw-guide" data-ui--area-draw-target="drawMode" hidden>
+    <div class="area-draw-guide__header">
+      <div class="area-draw-guide__icon">
         <i class="bi bi-hand-index"></i>
       </div>
-      <div class="suggestion-area-draw-guide__text">
+      <div class="area-draw-guide__text">
         地図上で円を描くように<br>エリアをなぞってください
       </div>
     </div>
-    <div class="suggestion-area-draw-guide__actions">
+    <div class="area-draw-guide__actions">
       <button type="button"
-              class="suggestion-area-draw-guide__cancel-btn"
-              data-action="click->suggestion-tab--area-draw#backToMoveMode">
+              class="area-draw-guide__cancel-btn"
+              data-action="click->ui--area-draw#backToMoveMode">
         戻る
       </button>
     </div>
   </div>
 
   <%# 確定モード: 描画結果を確認して確定 %>
-  <div class="suggestion-area-draw-confirm" data-suggestion-tab--area-draw-target="confirmMode" hidden>
-    <div class="suggestion-area-draw-confirm__info">
-      <span class="suggestion-area-draw-confirm__radius" data-suggestion-tab--area-draw-target="radiusDisplay">
+  <div class="area-draw-confirm" data-ui--area-draw-target="confirmMode" hidden>
+    <div class="area-draw-confirm__info">
+      <span class="area-draw-confirm__radius" data-ui--area-draw-target="radiusDisplay">
         半径: -- km
       </span>
     </div>
-    <div class="suggestion-area-draw-confirm__actions">
+    <div class="area-draw-confirm__actions">
       <button type="button"
-              class="suggestion-area-draw-btn suggestion-area-draw-btn--secondary"
-              data-action="click->suggestion-tab--area-draw#redraw">
+              class="area-draw-btn area-draw-btn--secondary"
+              data-action="click->ui--area-draw#redraw">
         やり直す
       </button>
       <button type="button"
-              class="suggestion-area-draw-btn suggestion-area-draw-btn--primary"
-              data-action="click->suggestion-tab--area-draw#confirmArea">
+              class="area-draw-btn area-draw-btn--primary"
+              data-action="click->ui--area-draw#confirmArea">
         決定
       </button>
     </div>
