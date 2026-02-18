@@ -1,0 +1,250 @@
+/* ==========================================
+   Area Draw - エリア描画モード
+   地図上でエリアを描画するUI（共通コンポーネント）
+========================================== */
+
+@use "../suggestions/suggestion_button" as btn;
+
+.area-draw-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 1100;
+  pointer-events: none;
+}
+
+/* エリア描画モード（body クラスで一括制御） */
+body.area-draw-active {
+  .map-search-box,
+  .hamburger,
+  .map-floating-buttons,
+  .map-bottom-actions {
+    display: none !important;
+  }
+
+  .navibar {
+    position: relative;
+
+    &::after {
+      content: "";
+      position: absolute;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.4);
+      z-index: 1000;
+      pointer-events: auto; /* クリック防止 */
+      border-radius: inherit;
+    }
+  }
+}
+
+/* モード別カラーテーマ */
+body.area-draw--suggestion {
+  --area-draw-gradient: linear-gradient(135deg, #764ba2 0%, #667eea 100%);
+  --area-draw-gradient-hover: linear-gradient(135deg, #6a4299 0%, #5a72d8 100%);
+  --area-draw-ripple-color: #667eea;
+}
+
+body.area-draw--community {
+  --area-draw-gradient: linear-gradient(135deg, #4A90D9, #2C5FA0);
+  --area-draw-gradient-hover: linear-gradient(135deg, #3d7fc7, #265291);
+  --area-draw-ripple-color: #4A90D9;
+}
+
+/* 波紋エフェクト */
+@keyframes rippleGlow {
+  0% {
+    box-shadow: 0 0 0 0 var(--area-draw-ripple-color, #667eea);
+    opacity: 0;
+  }
+  15% {
+    box-shadow: 0 0 5px 3px var(--area-draw-ripple-color, #667eea);
+    opacity: 0.5;
+  }
+  100% {
+    box-shadow: 0 0 30px 20px var(--area-draw-ripple-color, #667eea);
+    opacity: 0;
+  }
+}
+
+/* Mixin: パネル共通スタイル */
+@mixin area-draw-panel {
+  position: fixed;
+  z-index: 1200;
+  background: #fff;
+  padding: 16px 24px;
+  border-radius: 16px;
+  box-shadow: 0 4px 20px rgba(0, 0, 0, 0.2);
+  pointer-events: auto;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+
+  /* デスクトップ: 地図下部中央 */
+  bottom: 20px;
+  left: calc(
+    (var(--navibar-width, 350px) - var(--navibar-slide, 0px)) +
+    (100% - (var(--navibar-width, 350px) - var(--navibar-slide, 0px))) / 2
+  );
+  transform: translateX(-50%);
+
+  /* 波紋エフェクト */
+  &::before,
+  &::after {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    pointer-events: none;
+    animation: rippleGlow 2.5s ease-out infinite;
+  }
+
+  &::after {
+    animation-delay: 1.25s;
+  }
+
+  @media (max-width: 767px) {
+    bottom: 0;
+    left: 0;
+    right: 0;
+    transform: none;
+    padding: 16px;
+    padding-bottom: calc(16px + env(safe-area-inset-bottom, 0px));
+    border-radius: 16px 16px 0 0;
+    box-shadow: 0 -4px 20px rgba(0, 0, 0, 0.15);
+  }
+}
+
+/* ガイドカード */
+.area-draw-guide {
+  @include area-draw-panel;
+  align-items: center;
+}
+
+.area-draw-guide__header {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+}
+
+.area-draw-guide__icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 50%;
+  background: var(--area-draw-gradient, linear-gradient(135deg, #764ba2 0%, #667eea 100%));
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #fff;
+  font-size: 20px;
+  flex-shrink: 0;
+  animation: pulseIcon 1.5s ease-in-out infinite;
+
+  @media (max-width: 767px) {
+    width: 36px;
+    height: 36px;
+    font-size: 16px;
+  }
+}
+
+@keyframes pulseIcon {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(1.1); }
+}
+
+.area-draw-guide__text {
+  font-size: 14px;
+  line-height: 1.5;
+  color: #1c1c1e;
+}
+
+.area-draw-guide__actions {
+  display: flex;
+  gap: 8px;
+  justify-content: center;
+}
+
+.area-draw-guide__cancel-btn {
+  @include btn.btn-base;
+  @include btn.btn-secondary;
+  @include btn.btn-sm;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  @media (max-width: 767px) {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+.area-draw-guide__start-btn {
+  @include btn.btn-base;
+  @include btn.btn-sm;
+  background: var(--area-draw-gradient, linear-gradient(135deg, #764ba2 0%, #667eea 100%));
+  color: #fff;
+  border: none;
+  flex-shrink: 0;
+  white-space: nowrap;
+
+  &:hover {
+    opacity: 0.9;
+  }
+
+  &:active {
+    transform: scale(0.97);
+  }
+
+  @media (max-width: 767px) {
+    padding: 8px 12px;
+    font-size: 12px;
+  }
+}
+
+/* 確定パネル */
+.area-draw-confirm {
+  @include area-draw-panel;
+}
+
+.area-draw-confirm__info {
+  text-align: center;
+}
+
+.area-draw-confirm__radius {
+  font-size: 16px;
+  font-weight: 600;
+  color: #1c1c1e;
+}
+
+.area-draw-confirm__actions {
+  display: flex;
+  gap: 10px;
+  justify-content: center;
+}
+
+.area-draw-btn {
+  @include btn.btn-base;
+  @include btn.btn-md;
+  white-space: nowrap;
+
+  &--primary {
+    background: var(--area-draw-gradient, linear-gradient(135deg, #764ba2 0%, #667eea 100%));
+    color: #fff;
+    border: none;
+
+    &:hover {
+      opacity: 0.9;
+    }
+
+    &:active {
+      transform: scale(0.97);
+    }
+  }
+
+  &--secondary {
+    background: #f5f5f7;
+    color: #636366;
+    border: none;
+
+    &:hover {
+      background: #e5e5ea;
+    }
+  }
+}
