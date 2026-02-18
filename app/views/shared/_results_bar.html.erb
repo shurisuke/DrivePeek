@@ -1,0 +1,37 @@
+<%# 結果バー（件数表示 + ソートドロップダウン） %>
+<%#
+  必須変数:
+    count: 件数
+    count_label: 件数ラベル（例: "プラン", "スポット"）
+    sort: 現在のソート値
+    sort_options: ソートオプション配列（例: [["newest", "新しい順"], ["oldest", "古い順"]]）
+  オプション:
+    form_id: 送信先フォームID（デフォルト: "community-search-form"）
+    show_suffix: true の場合、「を表示」を末尾に追加
+%>
+<%
+  form_id = local_assigns.fetch(:form_id, "community-search-form")
+  show_suffix = local_assigns.fetch(:show_suffix, false)
+%>
+
+<div class="results-bar" data-controller="ui--sort-dropdown">
+  <span class="results-bar__count"><%= count %>件の<%= count_label %><%= "を表示" if show_suffix %></span>
+  <button type="button"
+          class="results-bar__sort"
+          data-action="click->ui--sort-dropdown#toggle"
+          data-ui--sort-dropdown-target="toggle">
+    <span data-ui--sort-dropdown-target="label"><%= sort_options.to_h[sort] %></span>
+    <i class="bi bi-chevron-down"></i>
+  </button>
+  <div class="results-bar__menu" hidden data-ui--sort-dropdown-target="menu">
+    <% sort_options.each do |value, label| %>
+      <button type="button"
+              class="results-bar__option <%= 'is-active' if sort == value %>"
+              data-action="click->ui--sort-dropdown#select"
+              data-value="<%= value %>">
+        <%= label %>
+      </button>
+    <% end %>
+  </div>
+  <%= hidden_field_tag :sort, sort, data: { "ui--sort-dropdown-target": "input" }, form: form_id %>
+</div>
