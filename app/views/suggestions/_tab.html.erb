@@ -18,6 +18,10 @@
 <div class="suggestion" data-controller="suggestion">
   <%# メッセージ一覧エリア %>
   <div class="suggestion__messages" id="suggestion-messages" data-suggestion-target="messages">
+    <div class="demo-notice">
+      ※ 現在、関東地方のみデモデータを導入しています
+    </div>
+
     <%# AI側: 案内文 + モード選択（初期表示） %>
     <div class="suggestion__msg suggestion__msg--assistant">
       <div class="suggestion__icon">
@@ -25,7 +29,8 @@
       </div>
       <div class="suggestion__content">
         <div class="suggestion__bubble">
-          こんにちは！ドライブプランのAIアシスタントです。
+          こんにちは！ドライブプランのAIアシスタントです。<br>
+          <small class="suggestion__bubble-sub">気になるエリアを選ぶと、人気スポットを組み合わせたドライブプランを提案します。<br>下のボタンから始めてみましょう！</small>
         </div>
         <%= render "suggestions/mode_select" %>
       </div>

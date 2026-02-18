@@ -4,7 +4,6 @@
 #
 # 使い方:
 #   prompt = Suggestion::PromptBuilder.plan_mode(slot_data, 10.0)
-#   prompt = Suggestion::PromptBuilder.spot_mode(candidates, genre, 10.0)
 #
 class Suggestion::PromptBuilder
   # 季節ガイド（ドライブの雰囲気づくり + 避けるべきもの）
@@ -60,33 +59,6 @@ class Suggestion::PromptBuilder
 
         ■ JSON
         {"picks":[{"n":番号,"d":"1文"},...], "intro":"1文", "closing":"1文"}
-      PROMPT
-    end
-
-    # スポットモード用プロンプトを生成
-    # @param candidates [Array<Hash>] [spot_hash, ...]
-    # @param genre [Genre] 対象ジャンル
-    # @param radius_km [Float] 半径
-    # @return [String] プロンプト
-    def spot_mode(candidates, genre, radius_km)
-      area_name = candidates.first&.dig(:city) || "選択エリア"
-      spots_list = candidates.map { |s| s[:name] }.join("、")
-      genre_name = genre&.name || "おまかせ（全ジャンル）"
-
-      <<~PROMPT
-        あなたはドライブスポット紹介AIです。
-
-        ■ #{area_name}周辺（半径#{radius_km.round(1)}km）
-        ■ ジャンル: #{genre_name}
-
-        ■ 人気スポット
-        #{spots_list}
-
-        ■ タスク
-        上記の人気スポットをシンプルに紹介。
-
-        ■ JSON
-        {"intro":"紹介文（1〜2文）","closing":"気になるスポットの追加を促す一言"}
       PROMPT
     end
   end

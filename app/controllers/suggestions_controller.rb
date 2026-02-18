@@ -7,20 +7,13 @@ class SuggestionsController < ApplicationController
   LAT_RANGE = (-90.0..90.0).freeze
   LNG_RANGE = (-180.0..180.0).freeze
   RADIUS_RANGE = (1.0..50.0).freeze
-  COUNT_RANGE = (1..10).freeze
 
-  # おまかせ時の優先ジャンルキュー
-  PRIORITY_GENRE_IDS = [
-    1,   # グルメ
-    16,  # 温泉・スパ
-    9,   # 観光名所
-    18,  # 道の駅・SA/PA
-    87   # 歴史・文化
-  ].freeze
+  # おまかせ時の優先ジャンル（slug）
+  PRIORITY_GENRE_SLUGS = %w[sightseeing food roadside_station bath].freeze
 
   def suggest
     @result = Suggestion::Generator.generate(**build_suggest_params)
-    @result.merge!(area_data: area_data, mode: mode)
+    @result.merge!(area_data: area_data)
     save_and_respond
   end
 
@@ -41,18 +34,12 @@ class SuggestionsController < ApplicationController
     }
   end
 
-  def mode
-    @mode ||= params[:mode] || "plan"
-  end
-
   def build_suggest_params
     {
       plan: @plan,
       **area_data,
-      slots: mode == "plan" ? fill_empty_slots(params[:slots]) : [],
-      mode: mode,
-      genre_id: params[:genre_id]&.to_i,
-      count: params[:count]&.to_i
+      slots: normalize_slots(params[:slots]),
+      priority_genre_ids: priority_genre_ids
     }
   end
 
@@ -70,16 +57,18 @@ class SuggestionsController < ApplicationController
   end
 
   # --- スロット処理 ---
-  def fill_empty_slots(slots)
+  def normalize_slots(slots)
     return [] if slots.blank?
 
-    selected_ids = slots.map { |s| s[:genre_id] || s["genre_id"] }.compact.map(&:to_i)
-    available_queue = PRIORITY_GENRE_IDS - selected_ids
+    slots.map { |s| { genre_id: (s[:genre_id] || s["genre_id"])&.to_i.presence } }
+  end
 
-    slots.map do |slot|
-      genre_id = slot[:genre_id] || slot["genre_id"]
-      { genre_id: genre_id.present? ? genre_id.to_i : available_queue.shift }
-    end.compact
+  def priority_genre_ids
+    @priority_genre_ids ||= Genre.where(slug: PRIORITY_GENRE_SLUGS)
+                                 .index_by(&:slug)
+                                 .values_at(*PRIORITY_GENRE_SLUGS)
+                                 .compact
+                                 .map(&:id)
   end
 
   def set_plan
@@ -91,7 +80,6 @@ class SuggestionsController < ApplicationController
     errors << "center_lat must be between -90 and 90" unless LAT_RANGE.cover?(params[:center_lat].to_f)
     errors << "center_lng must be between -180 and 180" unless LNG_RANGE.cover?(params[:center_lng].to_f)
     errors << "radius_km must be between 1 and 50" unless RADIUS_RANGE.cover?(params[:radius_km].to_f)
-    errors << "count must be between 1 and 10" if params[:count].present? && !COUNT_RANGE.cover?(params[:count].to_i)
 
     return if errors.empty?
 

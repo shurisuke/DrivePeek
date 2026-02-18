@@ -4,27 +4,32 @@ import { postTurboStream } from "services/navibar_api"
 
 // ================================================================
 // SuggestionConditionModalController
-// 用途: 提案条件設定モーダルの制御（プランモード/スポットモード対応）
+// 用途: 提案条件設定モーダルの制御
 // - プランモード: エリア選択 → スロットごとにジャンル指定
-// - スポットモード: エリア選択 → 単一ジャンル + 件数指定
 // ================================================================
 
 export default class extends Controller {
   static values = {
-    planId: Number,
-    mode: String  // "plan" | "spots"
+    planId: Number
   }
   static targets = [
     "title",
     "mainView", "genreView",
-    "planContent", "areaInfo", "spotCount", "slot", "slotBtn", "slotInput",
-    "spotContent", "spotGenreBtn", "spotGenreInput", "spotResultCount",
+    "areaInfo", "spotCount", "slot", "slotBtn", "slotInput",
     "submitBtn", "loading"
   ]
 
   connect() {
     this.areaData = null
-    this.editingSlotIndex = null  // 編集中のスロットインデックス（null = スポットモード）
+    this.editingSlotIndex = null  // 編集中のスロットインデックス
+
+    // エリア選択完了イベントを監視
+    this.boundOpen = this.open.bind(this)
+    document.addEventListener("suggestion:areaSelected", this.boundOpen)
+  }
+
+  disconnect() {
+    document.removeEventListener("suggestion:areaSelected", this.boundOpen)
   }
 
   // ============================================
@@ -35,24 +40,13 @@ export default class extends Controller {
     const detail = event.detail || {}
     if (!detail.radius_km) return
 
-    this.modeValue = detail.mode || "plan"
     this.areaData = {
       center_lat: detail.center_lat,
       center_lng: detail.center_lng,
       radius_km: detail.radius_km
     }
 
-    // モードに応じてUI切り替え
-    if (this.modeValue === "spots") {
-      this.titleTarget.textContent = "スポット提案の条件"
-      this.planContentTarget.hidden = true
-      this.spotContentTarget.hidden = false
-    } else {
-      this.titleTarget.textContent = "プラン条件を設定"
-      this.planContentTarget.hidden = false
-      this.spotContentTarget.hidden = true
-    }
-
+    this.titleTarget.textContent = "プラン条件を設定"
     this.areaInfoTarget.textContent = `選択エリア（半径 ${this.areaData.radius_km.toFixed(1)} km）`
     this.#showModal()
   }
@@ -108,13 +102,8 @@ export default class extends Controller {
     const { genreId, genreName } = event.currentTarget.dataset
 
     if (this.editingSlotIndex !== null) {
-      // プランモード: スロットを更新
       this.slotBtnTargets[this.editingSlotIndex].querySelector("span").textContent = genreName
       this.slotInputTargets[this.editingSlotIndex].value = genreId
-    } else {
-      // スポットモード
-      this.spotGenreBtnTarget.querySelector("span").textContent = genreName
-      this.spotGenreInputTarget.value = genreId
     }
 
     this.closeGenreSelect()
@@ -125,11 +114,7 @@ export default class extends Controller {
   // ============================================
 
   async submit() {
-    if (this.modeValue === "plan") {
-      await this.#submitPlanMode()
-    } else {
-      await this.#submitSpotMode()
-    }
+    await this.#submitPlanMode()
   }
 
   // ============================================
@@ -152,19 +137,6 @@ export default class extends Controller {
       })
 
     await this.#submitWithLoading({ ...this.areaData, slots })
-  }
-
-  async #submitSpotMode() {
-    if (!this.areaData) return
-
-    const genreId = this.spotGenreInputTarget.value
-
-    await this.#submitWithLoading({
-      ...this.areaData,
-      mode: "spots",
-      genre_id: genreId ? parseInt(genreId, 10) : null,
-      count: parseInt(this.spotResultCountTarget.value, 10)
-    })
   }
 
   async #submitWithLoading(body) {

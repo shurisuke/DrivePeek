@@ -81,58 +81,6 @@ RSpec.describe Suggestion::PromptBuilder, type: :service do
     end
   end
 
-  describe ".spot_mode" do
-    let(:candidates) do
-      [
-        { id: 1, name: "ラーメン一郎", city: "新宿区" },
-        { id: 2, name: "ラーメン二郎", city: "新宿区" },
-        { id: 3, name: "ラーメン三郎", city: "新宿区" }
-      ]
-    end
-    let(:genre) { create(:genre, name: "ラーメン") }
-    let(:radius_km) { 15.0 }
-
-    it "プロンプトを生成する" do
-      prompt = described_class.spot_mode(candidates, genre, radius_km)
-
-      expect(prompt).to include("ドライブスポット紹介AI")
-      expect(prompt).to include("半径15.0km")
-      expect(prompt).to include("新宿区周辺")
-    end
-
-    it "ジャンル名を含める" do
-      prompt = described_class.spot_mode(candidates, genre, radius_km)
-
-      expect(prompt).to include("ジャンル: ラーメン")
-    end
-
-    it "人気スポット一覧を含める" do
-      prompt = described_class.spot_mode(candidates, genre, radius_km)
-
-      expect(prompt).to include("ラーメン一郎")
-      expect(prompt).to include("ラーメン二郎")
-      expect(prompt).to include("ラーメン三郎")
-    end
-
-    it "JSON形式の指示を含める" do
-      prompt = described_class.spot_mode(candidates, genre, radius_km)
-
-      expect(prompt).to include("JSON")
-      expect(prompt).to include("intro")
-      expect(prompt).to include("closing")
-    end
-
-    context "候補が空の場合" do
-      let(:empty_candidates) { [] }
-
-      it "エリア名をデフォルトにする" do
-        prompt = described_class.spot_mode(empty_candidates, genre, radius_km)
-
-        expect(prompt).to include("選択エリア周辺")
-      end
-    end
-  end
-
   describe "SEASON_GUIDE" do
     it "12ヶ月分の季節ガイドを持つ" do
       expect(described_class::SEASON_GUIDE.keys).to contain_exactly(*(1..12))

@@ -15,35 +15,22 @@ class Suggestion::Generator
     # @param center_lat [Float] 中心緯度
     # @param center_lng [Float] 中心経度
     # @param radius_km [Float] 半径（km）
-    # @param slots [Array<Hash>] [{ genre_id: 5 }, ...] プランモード用
-    # @param mode [String] "plan" | "spots"
-    # @param genre_id [Integer] スポットモード用ジャンルID
-    # @param count [Integer] スポットモード用件数
+    # @param slots [Array<Hash>] [{ genre_id: 5 }, ...] スロットごとのジャンル指定
     # @return [Hash] { type:, message:, spots:, closing: }
-    def generate(plan:, center_lat:, center_lng:, radius_km:, slots: [], mode: "plan", genre_id: nil, count: nil)
-      return error_response("API設定エラー", mode: mode) unless api_key_configured?
+    def generate(plan:, center_lat:, center_lng:, radius_km:, slots: [], priority_genre_ids: [])
+      return error_response("API設定エラー") unless api_key_configured?
 
       finder = Suggestion::SpotFinder.new(center_lat, center_lng, radius_km)
 
-      # モードに応じて候補スポットを取得
-      case mode
-      when "plan"
-        slot_data = finder.fetch_for_slots(slots)
-        all_spots = slot_data.flat_map { |slot| slot[:candidates] }
-        slot_sizes = slot_data.map { |slot| slot[:candidates].size }
-        prompt = Suggestion::PromptBuilder.plan_mode(slot_data, radius_km)
-      when "spots"
-        genre = genre_id.present? ? Genre.find_by(id: genre_id) : nil
-        return error_response("ジャンルが見つかりません", mode: mode) if genre_id.present? && genre.nil?
-        all_spots = finder.fetch_for_genre(genre, count)
-        prompt = Suggestion::PromptBuilder.spot_mode(all_spots, genre, radius_km)
-      else
-        return error_response("不正なモードです", mode: nil)
-      end
+      # スロットごとに候補スポットを取得
+      slot_data = finder.fetch_for_slots(slots, priority_genre_ids: priority_genre_ids)
+      all_spots = slot_data.flat_map { |slot| slot[:candidates] }
+      slot_sizes = slot_data.map { |slot| slot[:candidates].size }
+      prompt = Suggestion::PromptBuilder.plan_mode(slot_data, radius_km)
 
       if all_spots.empty?
         return {
-          type: mode,
+          type: "plan",
           message: "指定されたエリア・ジャンルでスポットが見つかりませんでした。条件を変更してお試しください。",
           spots: [],
           closing: ""
@@ -52,25 +39,20 @@ class Suggestion::Generator
 
       # API呼び出し → 選出
       ai_response = call_openai_api(prompt)
-      selected_spots = case mode
-      when "plan"
-                         select_plan_spots(ai_response, all_spots, slot_sizes)
-      when "spots"
-                         all_spots
-      end
+      selected_spots = select_plan_spots(ai_response, all_spots, slot_sizes)
 
-      build_suggest_response(ai_response, selected_spots, mode)
+      build_suggest_response(ai_response, selected_spots)
 
     rescue Faraday::Error => e
       Rails.logger.error("[Suggestion::Generator] Faraday error: #{e.class} - #{e.message}")
-      error_response("通信エラーが発生しました", mode: mode)
+      error_response("通信エラーが発生しました")
     rescue JSON::ParserError => e
       Rails.logger.error("[Suggestion::Generator] JSON parse error: #{e.message}")
-      error_response("応答の解析に失敗しました", mode: mode)
+      error_response("応答の解析に失敗しました")
     rescue StandardError => e
       Rails.logger.error("[Suggestion::Generator] Unexpected error: #{e.class} - #{e.message}")
       Rails.logger.error(e.backtrace.first(5).join("\n"))
-      error_response("エラーが発生しました", mode: mode)
+      error_response("エラーが発生しました")
     end
 
     private
@@ -132,7 +114,7 @@ class Suggestion::Generator
     end
 
     # 提案レスポンスを構築
-    def build_suggest_response(ai_result, selected_spots, mode = "plan")
+    def build_suggest_response(ai_result, selected_spots)
       intro = ai_result[:intro] || ""
 
       spots_for_response = selected_spots.map do |spot|
@@ -148,7 +130,7 @@ class Suggestion::Generator
       end
 
       {
-        type: mode,
+        type: "plan",
         intro: intro,
         spots: spots_for_response,
         closing: ai_result[:closing] || "気になるスポットがあればプランに追加してください！"
@@ -159,9 +141,9 @@ class Suggestion::Generator
       @openai_client ||= OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
     end
 
-    def error_response(message, mode: nil)
+    def error_response(message)
       {
-        type: mode || "error",
+        type: "error",
         message: "申し訳ありません。#{message}。しばらく経ってからもう一度お試しください。",
         spots: [],
         closing: ""
