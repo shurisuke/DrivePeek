@@ -4,11 +4,11 @@ import { closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
-// SuggestionAreaDrawController
+// AreaDrawController
 // 用途: 地図上でフリーハンド描画 → 円変換してエリア選択
-// - suggestion:startAreaDraw イベントで描画モード開始
+// - ui:startAreaDraw イベントで描画モード開始
 // - フリーハンド描画 → 円に変換
-// - suggestion:areaSelected イベントで結果を通知
+// - モードに応じて suggestion:areaSelected / community:areaSelected を発火
 // ================================================================
 
 export default class extends Controller {
@@ -28,11 +28,11 @@ export default class extends Controller {
 
   connect() {
     this.handleStart = this.handleStart.bind(this)
-    document.addEventListener("suggestion:startAreaDraw", this.handleStart)
+    document.addEventListener("ui:startAreaDraw", this.handleStart)
   }
 
   disconnect() {
-    document.removeEventListener("suggestion:startAreaDraw", this.handleStart)
+    document.removeEventListener("ui:startAreaDraw", this.handleStart)
     this.cleanup()
   }
 
@@ -269,7 +269,9 @@ export default class extends Controller {
 
   showModal() {
     // エリア描画モード開始（CSS一括制御）
-    document.body.classList.add("suggestion-area-draw-active")
+    document.body.classList.add("area-draw-active")
+    // モードに応じた色テーマ
+    document.body.classList.add(this.mode === "community" ? "area-draw--community" : "area-draw--suggestion")
 
     // モーダル表示（移動モード）
     this.modalTarget.hidden = false
@@ -279,7 +281,7 @@ export default class extends Controller {
   }
 
   hideModal() {
-    document.body.classList.remove("suggestion-area-draw-active")
+    document.body.classList.remove("area-draw-active", "area-draw--community", "area-draw--suggestion")
     this.modalTarget.hidden = true
   }
 
@@ -344,11 +346,18 @@ export default class extends Controller {
     this.circles.push(shadow)
 
     // グラデーション風の太い縁（外側から内側へ色を重ねる）
-    const strokeLayers = [
-      { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
-      { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
-      { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
-    ]
+    // モードに応じて色を変更: suggestion=紫、community=青
+    const strokeLayers = this.mode === "community"
+      ? [
+          { offset: 8, color: "#1565C0", opacity: 0.3 },  // 外側：濃い青
+          { offset: 4, color: "#1E88E5", opacity: 0.5 },  // 中間
+          { offset: 0, color: "#42A5F5", opacity: 0.9 },  // 内側：明るい青
+        ]
+      : [
+          { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
+          { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
+          { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
+        ]
 
     strokeLayers.forEach((layer, index) => {
       const circle = new google.maps.Circle({
@@ -384,7 +393,12 @@ export default class extends Controller {
       this.circle = null
     }
 
-    document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
+    // モードに応じたイベントを発火
+    const eventName = this.mode === "community"
+      ? "community:areaSelected"
+      : "suggestion:areaSelected"
+
+    document.dispatchEvent(new CustomEvent(eventName, {
       detail: {
         mode: this.mode,
         center_lat: this.circleData.center.lat,
