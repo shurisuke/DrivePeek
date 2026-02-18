@@ -1,11 +1,23 @@
 <%# 検索フォーム（モード切替式） %>
 <%# 必要な変数: form_url, selected_cities, cities_by_prefecture, genres_by_category, selected_genre_ids, search_query %>
+<%# オプション: circle（円エリア検索パラメータ） %>
 
-<div class="search-box" data-controller="community-tab--search-mode">
-  <%= form_with url: form_url, method: :get, local: true, data: local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame } : {} do %>
+<%
+  # 円エリア検索の状態
+  circle = local_assigns[:circle]
+  has_circle = circle.present?
+%>
+
+<div class="search-box" data-controller="community-tab--search-filters">
+  <%= form_with url: form_url, method: :get, local: true, id: "community-search-form", data: local_assigns[:turbo_frame] ? { turbo_frame: turbo_frame } : {} do %>
+
+    <%# 円エリア検索用hidden fields %>
+    <%= hidden_field_tag :center_lat, circle&.dig(:center_lat), data: { "community-tab--search-filters-target": "centerLat" } %>
+    <%= hidden_field_tag :center_lng, circle&.dig(:center_lng), data: { "community-tab--search-filters-target": "centerLng" } %>
+    <%= hidden_field_tag :radius_km, circle&.dig(:radius_km), data: { "community-tab--search-filters-target": "radiusKm" } %>
 
     <%# ========== 通常モード ========== %>
-    <div data-community-tab--search-mode-target="main">
+    <div data-community-tab--search-filters-target="main">
       <% if local_assigns.fetch(:show_tabs, true) %>
         <div class="search-tabs">
           <label class="search-tabs__tab <%= 'is-active' if local_assigns[:search_type] != 'spot' %>">
@@ -21,16 +33,41 @@
         </div>
       <% end %>
 
-      <div class="search-filters">
-        <%# エリア選択ボタン %>
-        <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-mode#showArea">
-          <span data-community-tab--search-mode-target="areaLabel"><%= format_selected_cities(selected_cities, cities_by_prefecture) %></span>
-          <i class="bi bi-plus"></i>
+      <%# 円エリア検索（編集画面のナビバーからのみ表示） %>
+      <% if local_assigns[:turbo_frame] %>
+        <%# 初期状態：エリアを囲んで選択 %>
+        <button type="button"
+                class="search-filters__select-btn"
+                <%= 'hidden' if has_circle %>
+                data-community-tab--search-filters-target="circleDrawButton"
+                data-action="click->community-tab--search-filters#startCircleDraw">
+          <span>エリアをかこんで選択</span>
+          <i class="bi bi-geo-alt"></i>
         </button>
 
+        <%# 選択後：解除ボタン %>
+        <button type="button"
+                class="search-filters__select-btn"
+                <%= 'hidden' unless has_circle %>
+                data-community-tab--search-filters-target="circleClearButton"
+                data-action="click->community-tab--search-filters#clearCircle">
+          <span>エリア選択中（半径 <%= circle&.dig(:radius_km)&.round(1) || 0 %> km）</span>
+          <i class="bi bi-x"></i>
+        </button>
+      <% end %>
+
+      <div class="search-filters">
+        <%# エリア選択ボタン（ナビバーでは円エリア検索を使うため非表示） %>
+        <% unless local_assigns[:turbo_frame] %>
+          <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-filters#showArea">
+            <span data-community-tab--search-filters-target="areaLabel"><%= format_selected_cities(selected_cities, cities_by_prefecture) %></span>
+            <i class="bi bi-plus"></i>
+          </button>
+        <% end %>
+
         <%# ジャンル選択ボタン %>
-        <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-mode#showGenre">
-          <span data-community-tab--search-mode-target="genreLabel"><%= format_selected_genres(selected_genre_ids, genres_by_category) %></span>
+        <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-filters#showGenre">
+          <span data-community-tab--search-filters-target="genreLabel"><%= format_selected_genres(selected_genre_ids, genres_by_category) %></span>
           <i class="bi bi-plus"></i>
         </button>
       </div>
@@ -54,7 +91,7 @@
     </div>
 
     <%# ========== エリア選択モード ========== %>
-    <div hidden data-community-tab--search-mode-target="area">
+    <div hidden data-community-tab--search-filters-target="area">
       <div class="selection-list">
         <% PlansHelper::PREFECTURES_BY_REGION.each do |region, prefs| %>
           <div class="selection-list__region">
@@ -63,19 +100,19 @@
               <% cities = cities_by_prefecture[pref] || [] %>
               <% if cities.any? %>
                 <div class="selection-list__group" data-parent-group>
-                  <div class="selection-list__parent" data-action="click->community-tab--search-mode#toggleParent">
+                  <div class="selection-list__parent" data-action="click->community-tab--search-filters#toggleParent">
                     <input type="checkbox" data-parent-checkbox
-                           data-action="click->community-tab--search-mode#selectParent">
+                           data-action="click->community-tab--search-filters#selectParent">
                     <span><%= pref %></span>
                     <i class="bi bi-chevron-down selection-list__toggle"
-                       data-action="click->community-tab--search-mode#toggleGroup"></i>
+                       data-action="click->community-tab--search-filters#toggleGroup"></i>
                   </div>
                   <div class="selection-list__children">
                     <% cities.each do |city| %>
                       <% city_value = "#{pref}/#{city}" %>
                       <label class="selection-list__item">
                         <input type="checkbox" name="cities[]" value="<%= city_value %>"
-                               data-action="change->community-tab--search-mode#updateParent"
+                               data-action="change->community-tab--search-filters#updateParent"
                                <%= 'checked' if selected_cities&.include?(city_value) %>>
                         <span><%= city %></span>
                       </label>
@@ -88,13 +125,13 @@
         <% end %>
       </div>
 
-      <button type="button" class="selection-done-btn" data-action="click->community-tab--search-mode#back">
+      <button type="button" class="selection-done-btn" data-action="click->community-tab--search-filters#back">
         エリアを決定
       </button>
     </div>
 
     <%# ========== ジャンル選択モード ========== %>
-    <div hidden data-community-tab--search-mode-target="genre">
+    <div hidden data-community-tab--search-filters-target="genre">
       <div class="selection-list">
         <% genres_by_category.each do |category, genre_groups| %>
           <div class="selection-list__region">
@@ -104,18 +141,18 @@
               <% children = group[:children] %>
               <% if children.present? %>
                 <div class="selection-list__group" data-parent-group>
-                  <div class="selection-list__parent" data-action="click->community-tab--search-mode#toggleParent">
+                  <div class="selection-list__parent" data-action="click->community-tab--search-filters#toggleParent">
                     <input type="checkbox" data-parent-checkbox
-                           data-action="click->community-tab--search-mode#selectParent">
+                           data-action="click->community-tab--search-filters#selectParent">
                     <span><%= genre.name %></span>
                     <i class="bi bi-chevron-down selection-list__toggle"
-                       data-action="click->community-tab--search-mode#toggleGroup"></i>
+                       data-action="click->community-tab--search-filters#toggleGroup"></i>
                   </div>
                   <div class="selection-list__children">
                     <% children.each do |child| %>
                       <label class="selection-list__item">
                         <input type="checkbox" name="genre_ids[]" value="<%= child.id %>"
-                               data-action="change->community-tab--search-mode#updateParent"
+                               data-action="change->community-tab--search-filters#updateParent"
                                <%= 'checked' if selected_genre_ids&.include?(child.id) %>>
                         <span><%= child.name %></span>
                       </label>
@@ -134,7 +171,7 @@
         <% end %>
       </div>
 
-      <button type="button" class="selection-done-btn" data-action="click->community-tab--search-mode#back">
+      <button type="button" class="selection-done-btn" data-action="click->community-tab--search-filters#back">
         ジャンルを決定
       </button>
     </div>
