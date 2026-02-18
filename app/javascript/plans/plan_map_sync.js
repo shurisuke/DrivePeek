@@ -14,7 +14,7 @@
 // ================================================================
 
 import { getPlanDataFromPage } from "plans/plan_data"
-import { getMapInstance, setRoutePolylines, clearRoutePolylines, clearSearchHitMarkers } from "map/state"
+import { getMapInstance, setRoutePolylines, clearRoutePolylines } from "map/state"
 import { isEditPage } from "map/utils"
 import { ROUTE_POLYLINE_STYLE } from "map/constants"
 
@@ -253,12 +253,6 @@ export const bindPlanMapSync = () => {
 
     // ✅ 帰宅地点の表示状態に応じて polyline を再描画
     renderRoutePolylines()
-  })
-
-  // スポット追加時：検索ヒットマーカーをクリア
-  document.addEventListener("plan:spot-added", () => {
-    // ✅ 検索ヒットマーカーをクリア（スポット追加後は検索結果を消す）
-    clearSearchHitMarkers()
   })
 
   // ✅ 経路更新後：polyline を再描画する

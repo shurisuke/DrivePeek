@@ -95,6 +95,10 @@ export default class extends Controller {
     setSpotPinMarker(marker)
     panToVisualCenter(position)
     this.#showInfoWindow(marker)
+
+    // クリアボタンを表示
+    const clearBtn = document.getElementById("community-preview-close")
+    if (clearBtn) clearBtn.hidden = false
   }
 
   #showInfoWindow(marker) {
