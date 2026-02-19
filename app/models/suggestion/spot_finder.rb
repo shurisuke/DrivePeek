@@ -87,8 +87,8 @@ genre_ids_to_try = [ preferred_id, *queue ].compact
       expanded_ids = Genre.expand_family([ genre_id ])
       scope = scope.joins(:spot_genres).where(spot_genres: { genre_id: expanded_ids })
     else
-      # お任せ（genre_id=nil）の場合は「その他」カテゴリと使用済みジャンルを除外
-      ids_to_exclude = Genre.where(category: "その他").pluck(:id)
+      # お任せ（genre_id=nil）の場合は「その他」「泊まる」カテゴリと使用済みジャンルを除外
+      ids_to_exclude = Genre.where(category: %w[その他 泊まる]).pluck(:id)
       ids_to_exclude += excluded_genre_ids.to_a if excluded_genre_ids.present?
       scope = scope.joins(:spot_genres).where.not(spot_genres: { genre_id: ids_to_exclude })
     end
