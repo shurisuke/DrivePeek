@@ -1,11 +1,11 @@
 # app/models/plan/recalculator.rb
 # frozen_string_literal: true
 
-# 責務: Route と Schedule を適切な順序で呼び出す薄いオーケストレータ
+# 責務: Driving と Timetable を適切な順序で呼び出す薄いオーケストレータ
 #
 # 実行順序（絶対条件）:
-#   1. 経路再計算（Plan::Route）— move_time 等を確定
-#   2. 時刻再計算（Plan::Schedule）— 確定した move_time を読んで時刻を計算
+#   1. 経路再計算（Plan::Driving）— move_time 等を確定
+#   2. 時刻再計算（Plan::Timetable）— 確定した move_time を読んで時刻を計算
 #
 # 呼び出し元: Controller（必要なタイミングで明示的に呼ぶ）
 #
@@ -31,14 +31,14 @@ class Plan::Recalculator
     ActiveRecord::Base.transaction do
       # 必ず route → schedule の順（route で move_time が決まってから schedule）
       if route
-        unless Plan::Route.new(plan).recalculate!
+        unless Plan::Driving.new(plan).recalculate!
           success = false
           raise ActiveRecord::Rollback
         end
       end
 
       if schedule
-        unless Plan::Schedule.new(plan).recalculate!
+        unless Plan::Timetable.new(plan).recalculate!
           success = false
           raise ActiveRecord::Rollback
         end

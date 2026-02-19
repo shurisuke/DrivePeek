@@ -129,57 +129,6 @@ RSpec.describe Plan, type: :model do
     end
   end
 
-  describe "#total_distance" do
-    let(:plan) { create(:plan, user: user) }
-    let(:start_point) { create(:start_point, plan: plan, move_distance: 10.5) }
-    let(:spot) { create(:spot) }
-    let!(:plan_spot) { create(:plan_spot, plan: plan, spot: spot, move_distance: 15.3) }
-
-    before { plan.update!(start_point: start_point) }
-
-    it "合計走行距離を計算する" do
-      expect(plan.total_distance).to eq(25.8)
-    end
-  end
-
-  describe "#total_move_time" do
-    let(:plan) { create(:plan, user: user) }
-    let(:start_point) { create(:start_point, plan: plan, move_time: 30) }
-    let(:spot) { create(:spot) }
-    let!(:plan_spot) { create(:plan_spot, plan: plan, spot: spot, move_time: 45) }
-
-    before { plan.update!(start_point: start_point) }
-
-    it "合計移動時間を計算する" do
-      expect(plan.total_move_time).to eq(75)
-    end
-  end
-
-  describe "#formatted_move_time" do
-    let(:plan) { create(:plan, user: user) }
-
-    context "0分の場合" do
-      it "「0分」を返す" do
-        allow(plan).to receive(:total_move_time).and_return(0)
-        expect(plan.formatted_move_time).to eq("0分")
-      end
-    end
-
-    context "60分未満の場合" do
-      it "分のみを返す" do
-        allow(plan).to receive(:total_move_time).and_return(45)
-        expect(plan.formatted_move_time).to eq("45分")
-      end
-    end
-
-    context "60分以上の場合" do
-      it "時間と分を返す" do
-        allow(plan).to receive(:total_move_time).and_return(90)
-        expect(plan.formatted_move_time).to eq("1時間30分")
-      end
-    end
-  end
-
   describe ".create_with_location" do
     before do
       stub_google_geocoding_api
@@ -246,6 +195,110 @@ RSpec.describe Plan, type: :model do
       data = plan.marker_data_for_edit
 
       expect(data[:start_point]).to eq({ lat: 35.0, lng: 139.0 })
+    end
+  end
+
+  describe ".filter_by_genres" do
+    let!(:genre) { create(:genre, slug: "gourmet") }
+    let!(:spot_with_genre) { create(:spot) }
+    let!(:spot_without_genre) { create(:spot) }
+    let!(:plan_with_genre) { create(:plan, user: user) }
+    let!(:plan_without_genre) { create(:plan, user: user) }
+
+    before do
+      create(:spot_genre, spot: spot_with_genre, genre: genre)
+      create(:plan_spot, plan: plan_with_genre, spot: spot_with_genre)
+      create(:plan_spot, plan: plan_without_genre, spot: spot_without_genre)
+    end
+
+    it "指定ジャンルのスポットを含むプランを返す" do
+      result = Plan.filter_by_genres([ genre.id ])
+
+      expect(result).to include(plan_with_genre)
+      expect(result).not_to include(plan_without_genre)
+    end
+
+    it "空の配列の場合は全件返す" do
+      result = Plan.filter_by_genres([])
+
+      expect(result).to include(plan_with_genre, plan_without_genre)
+    end
+  end
+
+  describe "#copy_spots_from" do
+    let(:source_plan) { create(:plan, user: user, title: "元のプラン") }
+    let(:target_plan) { create(:plan, user: user, title: "") }
+    let(:start_point) { create(:start_point, plan: target_plan) }
+    let(:goal_point) { create(:goal_point, plan: target_plan) }
+    let(:spots) { create_list(:spot, 2) }
+
+    before do
+      target_plan.update!(start_point: start_point, goal_point: goal_point)
+      spots.each_with_index do |spot, i|
+        create(:plan_spot, plan: source_plan, spot: spot, position: i + 1, stay_duration: 60)
+      end
+      stub_google_directions_api
+    end
+
+    it "source_planのスポットをコピーする" do
+      target_plan.copy_spots_from(source_plan)
+
+      expect(target_plan.plan_spots.count).to eq(2)
+    end
+
+    it "タイトルが空の場合はコピー元のタイトルをコピーする" do
+      target_plan.copy_spots_from(source_plan)
+
+      expect(target_plan.reload.title).to eq("元のプラン")
+    end
+
+    it "タイトルがある場合はコピーしない" do
+      target_plan.update!(title: "既存のタイトル")
+      target_plan.copy_spots_from(source_plan)
+
+      expect(target_plan.reload.title).to eq("既存のタイトル")
+    end
+
+    it "sourceがnilの場合は何もしない" do
+      expect { target_plan.copy_spots_from(nil) }.not_to change { target_plan.plan_spots.count }
+    end
+
+    it "stay_durationもコピーする" do
+      target_plan.copy_spots_from(source_plan)
+
+      expect(target_plan.plan_spots.first.stay_duration).to eq(60)
+    end
+  end
+
+  describe "#related_plans" do
+    let!(:tokyo_spot) { create(:spot, prefecture: "東京都", city: "渋谷区") }
+    let!(:osaka_spot) { create(:spot, prefecture: "大阪府", city: "大阪市") }
+    let(:plan) { create(:plan, :with_spots, user: user) }
+    let!(:related_plan) { create(:plan, user: create(:user, status: :active)) }
+    let!(:unrelated_plan) { create(:plan, user: create(:user, status: :active)) }
+
+    before do
+      # planに東京のスポットを追加
+      create(:plan_spot, plan: plan, spot: tokyo_spot)
+      # related_planに東京のスポット2つを追加（with_multiple_spots条件を満たす）
+      create(:plan_spot, plan: related_plan, spot: tokyo_spot)
+      create(:plan_spot, plan: related_plan, spot: create(:spot, prefecture: "東京都", city: "渋谷区"))
+      # unrelated_planには大阪のスポット2つを追加
+      create(:plan_spot, plan: unrelated_plan, spot: osaka_spot)
+      create(:plan_spot, plan: unrelated_plan, spot: create(:spot, prefecture: "大阪府", city: "大阪市"))
+    end
+
+    it "同じ市区町村のスポットを含むプランを返す" do
+      result = plan.related_plans
+
+      expect(result).to include(related_plan)
+      expect(result).not_to include(unrelated_plan)
+    end
+
+    it "自分自身は含まない" do
+      result = plan.related_plans
+
+      expect(result).not_to include(plan)
     end
   end
 end
