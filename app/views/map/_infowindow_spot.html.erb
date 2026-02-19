@@ -130,9 +130,23 @@
       <div class="dp-infowindow__name"><%= safe_name %></div>
       <div class="dp-infowindow__address"><%= safe_address %></div>
 
-      <% if map_mode == "show" && user_signed_in? %>
-        <%= link_to "プランを作る", authenticated_root_path, class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
+      <% if map_mode == "show" %>
+        <%# プラン詳細画面: ボタンなし（地図下部の「このプランで作る」ボタンを使用） %>
+      <% elsif map_mode == "spot_show" %>
+        <%# スポット詳細画面: ここからプランを作る %>
+        <% if user_signed_in? %>
+          <button type="button"
+                  class="dp-infowindow__btn dp-infowindow__btn--create"
+                  data-controller="ui--create-plan-trigger"
+                  data-ui--create-plan-trigger-url-value="<%= plans_path(add_spot: spot.id) %>"
+                  data-action="click->ui--create-plan-trigger#create">
+            ここからプランを作る
+          </button>
+        <% else %>
+          <%= link_to "ここからプランを作る", new_user_session_path, class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
+        <% end %>
       <% elsif show_button && plan_id.present? %>
+        <%# 編集画面: プランに追加/削除 %>
         <% plan_spot = plan_spot_id.present? ? PlanSpot.find_by(id: plan_spot_id) : nil %>
         <%= render "map/infowindow_spot_button", spot: spot, plan_id: plan_id, plan_spot: plan_spot %>
       <% end %>

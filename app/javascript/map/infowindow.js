@@ -103,17 +103,34 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
 
   // ボタン
   const currentMapMode = getMapMode()
+  const buttonSlot = clone.querySelector('[data-slot="button"]')
+
   if (currentMapMode === "show") {
-    const buttonSlot = clone.querySelector('[data-slot="button"]')
+    // プラン詳細画面: ボタンなし（地図下部の「このプランで作る」ボタンを使用）
     if (buttonSlot) {
-      buttonSlot.innerHTML = `<a href="/plans/new"
-        class="dp-infowindow__btn dp-infowindow__btn--create"
-        data-turbo-frame="_top">
-        プランを作る
-      </a>`
+      buttonSlot.innerHTML = ""
+    }
+  } else if (currentMapMode === "spot_show") {
+    // スポット詳細画面: 「ここからプランを作る」
+    if (buttonSlot && spotId) {
+      if (isUserSignedIn()) {
+        buttonSlot.innerHTML = `<a href="/plans?add_spot=${spotId}"
+          class="dp-infowindow__btn dp-infowindow__btn--create"
+          data-controller="ui--create-plan-trigger"
+          data-ui--create-plan-trigger-url-value="/plans?add_spot=${spotId}"
+          data-action="click->ui--create-plan-trigger#create">
+          ここからプランを作る
+        </a>`
+      } else {
+        buttonSlot.innerHTML = `<a href="/users/sign_in"
+          class="dp-infowindow__btn dp-infowindow__btn--create"
+          data-turbo-frame="_top">
+          ここからプランを作る
+        </a>`
+      }
     }
   } else if (showButton && planId) {
-    const buttonSlot = clone.querySelector('[data-slot="button"]')
+    // 編集画面: プランに追加/削除
     if (buttonSlot) {
       if (planSpotId) {
         buttonSlot.innerHTML = `<button type="button"
@@ -156,8 +173,14 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
 // POIクリック時にGoogle Places APIをスキップして即時表示
 // ================================================================
 
-// 地図モード取得（"show" = 詳細画面）
+// 地図モード取得（"show" = プラン詳細画面, "spot_show" = スポット詳細画面）
 const getMapMode = () => document.getElementById("map")?.dataset?.mapMode || null
+
+// ユーザーログイン状態を取得
+const isUserSignedIn = () => document.getElementById("map")?.dataset?.userSignedIn === "true"
+
+// プランIDを取得（プラン詳細画面用）
+const getPlanIdFromMap = () => document.getElementById("map")?.dataset?.planId || null
 
 // モバイル判定（768px未満）
 const isMobile = () => window.innerWidth < 768
@@ -310,6 +333,13 @@ export const showInfoWindowWithFrame = ({
 
   // ナビバー・ボトムシートを考慮した中央表示
   panToVisualCenter(anchorPos)
+
+  // スポット詳細画面: 地図下部のボタンを更新するためのイベント発火
+  if (desktopMapMode === "spot_show" && spotId) {
+    document.dispatchEvent(new CustomEvent("spotShow:spotChanged", {
+      detail: { spotId }
+    }))
+  }
 
   // Turbo Frame ロード後にStimulusイベントリスナーを設定
   google.maps.event.addListenerOnce(iw, "domready", () => {

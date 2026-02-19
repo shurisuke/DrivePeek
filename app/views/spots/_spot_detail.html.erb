@@ -1,4 +1,5 @@
 <% content_for :body_class, "no-footer" %>
+<% content_for :hide_header, true %>
 
 <script>
   window.spotData = {
@@ -22,7 +23,32 @@
   <%= render "map/infowindow_skeleton" %>
 
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="spot_show" data-spot-id="<%= @spot.id %>" data-ui--navibar-resize-target="map"></div>
+  <div id="map" class="map"
+       data-map-mode="spot_show"
+       data-spot-id="<%= @spot.id %>"
+       data-user-signed-in="<%= user_signed_in? %>"
+       data-ui--navibar-resize-target="map"></div>
+
+  <%# 地図上部のヘッダーバー（検索 + ジャンル/盛り上がり + ハンバーガー） %>
+  <%= render "shared/map_header_bar" %>
+
+  <!-- デスクトップ用：地図下部中央のアクションボタン -->
+  <div class="map-bottom-actions">
+    <% if current_user %>
+      <button type="button"
+              class="map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single"
+              data-controller="ui--create-plan-trigger"
+              data-ui--create-plan-trigger-url-value="<%= plans_path(add_spot: @spot.id) %>"
+              data-ui--create-plan-trigger-listen-spot-change-value="true"
+              data-action="click->ui--create-plan-trigger#create">
+        ここからプランを作る
+      </button>
+    <% else %>
+      <%= link_to new_user_session_path, class: "map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single" do %>
+        ここからプランを作る
+      <% end %>
+    <% end %>
+  </div>
 
   <!-- リサイズハンドル -->
   <div class="navibar-resize-handle"

@@ -4,13 +4,34 @@ import { getCsrfToken } from "services/api_client"
 // ================================================================
 // プラン作成トリガー
 // 用途: プラン作成ボタン押下時に位置情報を取得してからplans#create に誘導
+// スポット詳細画面では、マーカークリック時にスポットIDを動的に更新
 // ================================================================
 export default class extends Controller {
   static values = {
     url: { type: String, default: "/plans" },
     defaultLat: { type: Number, default: 35.681236 },
     defaultLng: { type: Number, default: 139.767125 },
-    copyFrom: { type: Number, default: 0 }
+    listenSpotChange: { type: Boolean, default: false }
+  }
+
+  connect() {
+    if (this.listenSpotChangeValue) {
+      this.boundHandleSpotChange = this.handleSpotChange.bind(this)
+      document.addEventListener("spotShow:spotChanged", this.boundHandleSpotChange)
+    }
+  }
+
+  disconnect() {
+    if (this.boundHandleSpotChange) {
+      document.removeEventListener("spotShow:spotChanged", this.boundHandleSpotChange)
+    }
+  }
+
+  handleSpotChange(event) {
+    const { spotId } = event.detail
+    if (spotId) {
+      this.urlValue = `/plans?add_spot=${spotId}`
+    }
   }
 
   create(event) {
@@ -35,9 +56,6 @@ export default class extends Controller {
 
   sendRequest(lat, lng) {
     const body = { lat, lng }
-    if (this.copyFromValue > 0) {
-      body.copy_from = this.copyFromValue
-    }
 
     // NOTE: リダイレクトレスポンスを期待するため api_client.post は使用しない
     fetch(this.urlValue, {
