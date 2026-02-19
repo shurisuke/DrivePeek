@@ -3,9 +3,6 @@
 
 <%# ✅ 出発地点から最初のスポットまでの区間情報は start_point に保存される %>
 <% start_point = plan.start_point %>
-<% move_minutes = start_point&.move_time.to_i %>
-<% hours = move_minutes / 60 %>
-<% minutes = move_minutes % 60 %>
 
 <div class="start-point-block"
      data-polyline="<%= plan.start_point&.polyline %>"
@@ -60,7 +57,7 @@
         <span class="separator"></span>
         <span class="time">
           <% if start_point&.move_time.present? %>
-            <% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span>
+            <%= format_move_time_simple(start_point.move_time) %>
           <% else %>
             —
           <% end %>
