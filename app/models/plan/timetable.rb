@@ -1,4 +1,4 @@
-# app/models/plan/schedule.rb
+# app/models/plan/timetable.rb
 # frozen_string_literal: true
 
 # 責務: DBの move_time / stay_duration を読み、時刻カラムを計算・保存する
@@ -13,7 +13,7 @@
 #   - plan_spots.arrival_time / departure_time
 #   - goal_points.arrival_time
 #
-# move_time の保存先ルール（Route と共通）:
+# move_time の保存先ルール（Driving と共通）:
 #   - 「次の区間までの情報は出発側に保存する」
 #   - start_point.move_time = start → first_spot
 #   - plan_spot[n].move_time = spot[n] → spot[n+1] or goal
@@ -22,7 +22,7 @@
 #   - 外部API禁止（move_time を取りに行かない）
 #   - 時刻計算は「分（整数）」で行い、保存時のみ Time に戻す
 #
-class Plan::Schedule
+class Plan::Timetable
   DUMMY_DATE = Date.new(2000, 1, 1)
 
   attr_reader :plan
@@ -35,7 +35,7 @@ class Plan::Schedule
   # @return [Boolean] 成功したか（計算スキップも成功扱い）
   def recalculate!
     # 出発時間が未設定の場合は計算をスキップ（成功扱い）
-    # ※ Route の計算結果をロールバックさせないため
+    # ※ Driving の計算結果をロールバックさせないため
     return true unless valid_for_calculation?
 
     ActiveRecord::Base.transaction do
@@ -72,8 +72,6 @@ class Plan::Schedule
     end
 
     true
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
   private
@@ -86,7 +84,7 @@ class Plan::Schedule
   # @param time [Time, nil]
   # @return [Integer]
   def time_to_minutes(time)
-    return 0 if time.nil?
+    return 0 if time.blank?
     (time.seconds_since_midnight / 60).to_i
   end
 

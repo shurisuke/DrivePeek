@@ -2,13 +2,13 @@
 
 require "rails_helper"
 
-RSpec.describe Plan::Schedule, type: :model do
+RSpec.describe Plan::Timetable, type: :model do
   describe "#initialize" do
     let(:plan) { create(:plan, user: create(:user)) }
 
     it "planを設定する" do
-      schedule = described_class.new(plan)
-      expect(schedule.plan).to eq(plan)
+      timetable = described_class.new(plan)
+      expect(timetable.plan).to eq(plan)
     end
   end
 
@@ -32,13 +32,13 @@ RSpec.describe Plan::Schedule, type: :model do
       end
 
       it "trueを返す" do
-        schedule = described_class.new(plan.reload)
-        expect(schedule.recalculate!).to be true
+        timetable = described_class.new(plan.reload)
+        expect(timetable.recalculate!).to be true
       end
 
       it "plan_spotsの到着時刻を計算する" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         # 出発9:00 + 移動30分 = 9:30到着
         ps1 = plan.plan_spots.order(:position).first
@@ -47,8 +47,8 @@ RSpec.describe Plan::Schedule, type: :model do
       end
 
       it "plan_spotsの出発時刻を計算する" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         # 到着9:30 + 滞在45分 = 10:15出発
         ps1 = plan.plan_spots.order(:position).first
@@ -57,8 +57,8 @@ RSpec.describe Plan::Schedule, type: :model do
       end
 
       it "2番目のスポットの時刻を計算する" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         ps2 = plan.plan_spots.order(:position).second
         # spot1出発10:15 + 移動30分 = 10:45到着
@@ -68,16 +68,16 @@ RSpec.describe Plan::Schedule, type: :model do
       end
 
       it "goal_pointの到着時刻を計算する" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         # spot2出発11:30 + 移動30分 = 12:00到着
         expect(plan.goal_point.arrival_time.strftime("%H:%M")).to eq("12:00")
       end
 
       it "計算順序が正しい（arrival < departure）" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         plan.plan_spots.each do |ps|
           expect(ps.departure_time).to be > ps.arrival_time
@@ -92,13 +92,13 @@ RSpec.describe Plan::Schedule, type: :model do
       end
 
       it "trueを返す（計算スキップも成功扱い）" do
-        schedule = described_class.new(plan.reload)
-        expect(schedule.recalculate!).to be true
+        timetable = described_class.new(plan.reload)
+        expect(timetable.recalculate!).to be true
       end
 
       it "時刻を更新しない" do
-        schedule = described_class.new(plan.reload)
-        schedule.recalculate!
+        timetable = described_class.new(plan.reload)
+        timetable.recalculate!
 
         ps1 = plan.plan_spots.first
         expect(ps1.arrival_time).to be_nil
@@ -107,8 +107,8 @@ RSpec.describe Plan::Schedule, type: :model do
 
     context "start_pointがない場合" do
       it "trueを返す（計算スキップも成功扱い）" do
-        schedule = described_class.new(plan)
-        expect(schedule.recalculate!).to be true
+        timetable = described_class.new(plan)
+        expect(timetable.recalculate!).to be true
       end
     end
   end
@@ -133,8 +133,8 @@ RSpec.describe Plan::Schedule, type: :model do
     end
 
     it "24時間で丸め込まれる" do
-      schedule = described_class.new(plan.reload)
-      schedule.recalculate!
+      timetable = described_class.new(plan.reload)
+      timetable.recalculate!
 
       ps = plan.plan_spots.first
       # 23:00 + 90分 = 24:30 → 00:30

@@ -1,4 +1,22 @@
+# 責務: ドライブプラン全体を管理し、関連モデルの操作を統括
+#
+# 構造:
+#   - start_point: 出発地点（1つ）
+#   - plan_spots: 経由スポット（0個以上、position順）
+#   - goal_point: 到着地点（1つ）
+#
+# 再計算の委譲:
+#   - 経路計算 → Plan::Driving
+#   - 時刻計算 → Plan::Timetable
+#   - 統括     → Plan::Recalculator
+#
+# 原則:
+#   - スポット操作（追加・削除・並替）後は recalculate_for! を呼ぶ
+#   - 集計（総距離・総時間）は Plan::Totals concern で提供
+#
 class Plan < ApplicationRecord
+  include Plan::Totals
+
   # Associations
   belongs_to :user
   has_many :plan_spots, dependent: :destroy
@@ -120,79 +138,21 @@ class Plan < ApplicationRecord
     }
   end
 
-  # ✅ 合計走行距離（km）
-  # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
-  def total_distance
-    distance = start_point&.move_distance.to_f
-    distance += if plan_spots.loaded?
-                  plan_spots.sum(&:move_distance)
-    else
-                  plan_spots.sum(:move_distance)
-    end
-    distance.round(1)
-  end
+  # 関連プラン（同じcityを含むプラン）
+  def related_plans(limit: 5)
+    cities = spots.pluck(:prefecture, :city)
+                  .filter { |pref, city| pref.present? && city.present? }
+                  .map { |pref, city| "#{pref}/#{city}" }
+                  .uniq
+    return Plan.none if cities.empty?
 
-  # ✅ 合計移動時間（分）
-  # preload済みのplan_spotsがあればRubyで計算、なければSQLで計算
-  def total_move_time
-    time = start_point&.move_time.to_i
-    time += if plan_spots.loaded?
-              plan_spots.sum(&:move_time)
-    else
-              plan_spots.sum(:move_time)
-    end
-    time
-  end
-
-  # ✅ スポット間のみの合計距離（公開用：start→spot1 と lastSpot→goal を除く）
-  def spots_only_distance
-    spots = ordered_plan_spots
-    return 0.0 if spots.size < 2
-
-    spots[0..-2].sum(&:move_distance).to_f.round(1)
-  end
-
-  # ✅ スポット間のみの合計時間（公開用：start→spot1 と lastSpot→goal を除く）
-  def spots_only_move_time
-    spots = ordered_plan_spots
-    return 0 if spots.size < 2
-
-    spots[0..-2].sum(&:move_time).to_i
-  end
-
-  # ✅ 出発地点→最後のスポットまでの距離（帰宅地点を除く）
-  def start_to_last_spot_distance
-    spots = ordered_plan_spots
-    return 0.0 if spots.empty?
-
-    distance = start_point&.move_distance.to_f
-    distance += spots[0..-2].sum(&:move_distance) if spots.size > 1
-    distance.round(1)
-  end
-
-  # ✅ 出発地点→最後のスポットまでの時間（帰宅地点を除く）
-  def start_to_last_spot_move_time
-    spots = ordered_plan_spots
-    return 0 if spots.empty?
-
-    time = start_point&.move_time.to_i
-    time += spots[0..-2].sum(&:move_time) if spots.size > 1
-    time
-  end
-
-  # ✅ 合計移動時間（フォーマット済み文字列）
-  def formatted_move_time
-    minutes = total_move_time
-    return "0分" if minutes.zero?
-
-    hours = minutes / 60
-    remaining_minutes = minutes % 60
-
-    if hours.positive?
-      "#{hours}時間#{remaining_minutes}分"
-    else
-      "#{remaining_minutes}分"
-    end
+    Plan.publicly_visible
+        .with_multiple_spots
+        .filter_by_cities(cities)
+        .where.not(id: id)
+        .includes(:user, plan_spots: { spot: :genres })
+        .order(created_at: :desc)
+        .limit(limit)
   end
 
   # ================================================================
@@ -219,6 +179,27 @@ class Plan < ApplicationRecord
   # ================================================================
   # スポット操作（採用・並び替え）
   # ================================================================
+
+  # 他のプランからスポットをコピー
+  # @param source [Plan] コピー元プラン
+  def copy_spots_from(source)
+    return if source.blank?
+
+    transaction do
+      self.title = source.title if title.blank?
+      save! if title_changed?
+
+      source.plan_spots.order(:position).each do |ps|
+        plan_spots.create!(
+          spot_id: ps.spot_id,
+          position: ps.position,
+          stay_duration: ps.stay_duration
+        )
+      end
+
+      recalculate_for!(nil, action: :create)
+    end
+  end
 
   # スポットを一括置換して経路再計算（AI提案の採用）
   # @param spot_ids [Array<Integer>] spot ID配列（検証済み）
@@ -277,7 +258,7 @@ class Plan < ApplicationRecord
   end
 
   def lat_lng_hash(record)
-    return nil unless record&.lat.present? && record&.lng.present?
+    return nil unless record&.lat && record&.lng
     { lat: record.lat, lng: record.lng }
   end
 end

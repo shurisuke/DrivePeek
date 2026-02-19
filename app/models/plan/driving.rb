@@ -1,4 +1,4 @@
-# app/models/plan/route.rb
+# app/models/plan/driving.rb
 # frozen_string_literal: true
 
 # 責務: 経路情報（move_time / move_distance / polyline）を計算・保存
@@ -10,14 +10,14 @@
 #   - goal_point は「到着側」であり、区間情報は保持しない
 #
 # 制約:
-#   - arrival_time / departure_time には一切触らない（時刻計算は Plan::Schedule の責務）
+#   - arrival_time / departure_time には一切触らない（時刻計算は Plan::Timetable の責務）
 #
 # Phase 2:
 #   - Google Directions API を呼び出して経路計算
 #   - 同一区間（segment_key）はキャッシュして1回だけAPI呼び出し
 #   - toll_used を区間ごとに反映
 #
-class Plan::Route
+class Plan::Driving
   attr_reader :plan, :segment_cache, :api_call_count
 
   # フォールバック結果（API呼び出し失敗時）
@@ -44,8 +44,6 @@ class Plan::Route
     end
 
     true
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
   # 指定された区間のみ再計算して保存
@@ -59,8 +57,6 @@ class Plan::Route
     end
 
     true
-  rescue ActiveRecord::RecordInvalid
-    false
   end
 
   private
@@ -172,11 +168,11 @@ class Plan::Route
   def calculate_route(segment)
     @api_call_count += 1
 
-    Plan::DirectionsClient.fetch(
+    GoogleApi::Directions.fetch(
       origin: segment[:from_location],
       destination: segment[:to_location],
       toll_used: segment[:toll_used]
-    )
+    ) || FALLBACK_ROUTE_DATA.dup
   end
 
   # 経路データを出発側レコードに保存
