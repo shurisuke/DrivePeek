@@ -4,7 +4,7 @@
 <%
   _preview_mode = local_assigns.fetch(:preview_mode, false)
   _spot_stats = local_assigns.fetch(:spot_stats, nil)
-  spot_location = [spot.prefecture, spot.city].compact.reject(&:blank?).join("/")
+  spot_location = format_spot_location(spot)
 
   # プリロード済みデータがあれば使用（N+1回避）
   if _spot_stats
