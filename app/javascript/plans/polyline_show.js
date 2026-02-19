@@ -8,7 +8,7 @@
 // ================================================================
 
 import { getMapInstance } from "map/state"
-import { COMMUNITY_ROUTE_STYLE } from "map/constants"
+import { ROUTE_POLYLINE_STYLE } from "map/constants"
 
 /**
  * スポット間の経路線を描画する（詳細画面用）
@@ -44,7 +44,7 @@ export const renderRoutePolylinesForShow = () => {
       new google.maps.Polyline({
         path,
         map,
-        ...COMMUNITY_ROUTE_STYLE,
+        ...ROUTE_POLYLINE_STYLE,
       })
     } catch (e) {
       console.warn("[polyline_show] Failed to decode polyline:", e)

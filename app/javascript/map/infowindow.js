@@ -277,20 +277,27 @@ export const showInfoWindowWithFrame = ({
     return
   }
 
-  // スポット用: スケルトン + Turbo Frame で即時表示
-  const skeletonContent = buildSkeletonContent({
-    src: `/infowindow?${params.toString()}`,
-    zoomScale,
-    name,
-    address,
-    genres,
-    showButton,
-    planId,
-    planSpotId,
-    spotId,
-    placeId
-  })
-  iw.setContent(skeletonContent)
+  // コメントタブ直接表示の場合はスケルトン不要（コンテンツ読み込みまで非表示）
+  if (defaultTab === "comment") {
+    iw.setContent(`
+      <turbo-frame id="infowindow-content" src="/infowindow?${params.toString()}"></turbo-frame>
+    `)
+  } else {
+    // スポット用: スケルトン + Turbo Frame で即時表示
+    const skeletonContent = buildSkeletonContent({
+      src: `/infowindow?${params.toString()}`,
+      zoomScale,
+      name,
+      address,
+      genres,
+      showButton,
+      planId,
+      planSpotId,
+      spotId,
+      placeId
+    })
+    iw.setContent(skeletonContent)
+  }
 
   // Marker か LatLng かで開き方を分岐
   const anchorPos = anchor instanceof google.maps.Marker ? anchor.getPosition() : anchor
