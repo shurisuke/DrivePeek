@@ -129,6 +129,30 @@ RSpec.describe Suggestion::SpotFinder, type: :service do
         expect(result.length).to eq(1)
         expect(result.first[:genre_name]).to eq("おすすめ")
       end
+
+      it "「その他」カテゴリのスポットは除外される" do
+        genre_other = create(:genre, name: "駐車場", slug: "parking", visible: true, category: "その他")
+        create(:spot, lat: in_circle_lat + 0.002, lng: in_circle_lng).tap { |s| s.genres << genre_other }
+
+        slots = [ { genre_id: nil } ]
+        result = finder.fetch_for_slots(slots, priority_genre_ids: [])
+
+        # 「その他」カテゴリのスポットは含まれず、グルメスポットのみ
+        expect(result.first[:candidates].map { |c| c[:id] }).not_to include(Spot.last.id)
+        expect(result.first[:candidates].map { |c| c[:id] }).to include(food_spot.id)
+      end
+
+      it "「泊まる」カテゴリのスポットは除外される" do
+        genre_stay = create(:genre, name: "宿泊施設", slug: "accommodation", visible: true, category: "泊まる")
+        stay_spot = create(:spot, lat: in_circle_lat + 0.003, lng: in_circle_lng).tap { |s| s.genres << genre_stay }
+
+        slots = [ { genre_id: nil } ]
+        result = finder.fetch_for_slots(slots, priority_genre_ids: [])
+
+        # 「泊まる」カテゴリのスポットは含まれない
+        expect(result.first[:candidates].map { |c| c[:id] }).not_to include(stay_spot.id)
+        expect(result.first[:candidates].map { |c| c[:id] }).to include(food_spot.id)
+      end
     end
 
     context "ジャンル重複防止" do
