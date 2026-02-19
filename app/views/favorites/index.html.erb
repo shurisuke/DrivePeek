@@ -53,26 +53,7 @@
         <% favorite_plans_map = FavoritePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
         <div class="list-page__cards">
           <% @plans.each do |plan| %>
-            <%
-              spots_data = plan.plan_spots.sort_by(&:position).map do |ps|
-                spot = ps.spot
-                {
-                  name: spot.name,
-                  address: spot.address,
-                  prefecture: spot.prefecture,
-                  city: spot.city
-                }
-              end
-              genre_names = plan.plan_spots.flat_map { |ps| ps.spot.genres.map(&:name) }.uniq
-            %>
-            <%= render "plans/plan_card",
-                       plan_title: plan_title(plan),
-                       spots: spots_data,
-                       genres: genre_names,
-                       total_duration: format_move_time(plan.spots_only_move_time),
-                       total_distance: format_distance(plan.spots_only_distance),
-                       plan: plan,
-                       favorite_plan: favorite_plans_map[plan.id] %>
+            <%= render "plans/plan_card", plan: plan, favorite_plan: favorite_plans_map[plan.id] %>
           <% end %>
         </div>
 
