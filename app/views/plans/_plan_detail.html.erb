@@ -17,20 +17,30 @@
   <%= render "map/infowindow_skeleton" %>
 
   <!-- 地図 -->
-  <div id="map" class="map" data-map-mode="show" data-plan-id="<%= @plan.id %>" data-ui--navibar-resize-target="map"></div>
+  <div id="map" class="map"
+       data-map-mode="show"
+       data-plan-id="<%= @plan.id %>"
+       data-user-signed-in="<%= user_signed_in? %>"
+       data-ui--navibar-resize-target="map"></div>
 
   <%# 地図上部のヘッダーバー（検索 + ジャンル/盛り上がり + ハンバーガー） %>
   <%= render "shared/map_header_bar" %>
 
   <!-- デスクトップ用：地図下部中央のアクションボタン -->
   <div class="map-bottom-actions">
-    <button type="button"
-            class="map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single"
-            data-controller="ui--create-plan-trigger"
-            data-ui--create-plan-trigger-copy-from-value="<%= @plan.id %>"
-            data-action="click->ui--create-plan-trigger#create">
-      このプランで作る
-    </button>
+    <% if current_user %>
+      <button type="button"
+              class="map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single"
+              data-controller="ui--create-plan-trigger"
+              data-ui--create-plan-trigger-url-value="<%= plans_path(copy_from: @plan.id) %>"
+              data-action="click->ui--create-plan-trigger#create">
+        このプランで作る
+      </button>
+    <% else %>
+      <%= link_to new_user_session_path, class: "map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single" do %>
+        このプランで作る
+      <% end %>
+    <% end %>
   </div>
 
   <!-- 検索結果クリアボタン -->

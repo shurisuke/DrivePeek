@@ -36,10 +36,19 @@ class PlansController < ApplicationController
 
     @plan = Plan.create_with_location(user: current_user, lat: lat, lng: lng)
 
-    # コピー元があればスポットをコピー
+    # プラン詳細画面「このプランで作る」ボタン
     if params[:copy_from].present?
       source = Plan.publicly_visible.find_by(id: params[:copy_from])
       @plan.copy_spots_from(source) if source
+    end
+
+    # スポット詳細画面「ここからプランを作る」ボタン
+    if params[:add_spot].present?
+      spot = Spot.find_by(id: params[:add_spot])
+      if spot
+        @plan.plan_spots.create!(spot: spot)
+        @plan.recalculate_for!(nil, action: :create)
+      end
     end
 
     redirect_to edit_plan_path(@plan)
