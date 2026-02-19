@@ -7,11 +7,6 @@ RSpec.describe "FavoritePlans", type: :request do
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: other_user) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "POST /favorite_plans" do
     context "ログイン済みの場合" do
       before { sign_in user }

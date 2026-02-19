@@ -6,11 +6,6 @@ RSpec.describe "Community", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "GET /community" do
     # for_communityスコープは2スポット以上のプランのみ表示
     let!(:public_plan) { create(:plan, :with_spots, user: other_user, title: "公開プラン") }
@@ -51,6 +46,45 @@ RSpec.describe "Community", type: :request do
 
       it "無効なsortパラメータはデフォルト（newest）になる" do
         get community_path, params: { sort: "invalid" }
+        expect(response).to have_http_status(:ok)
+      end
+    end
+
+    context "スポット検索" do
+      let!(:spot) { create(:spot, name: "テストスポット") }
+
+      it "search_type=spotでスポット一覧を表示する" do
+        get community_path, params: { search_type: "spot" }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("テストスポット")
+      end
+    end
+
+    context "円エリア検索" do
+      let!(:near_spot) { create(:spot, lat: 35.68, lng: 139.76, name: "近いスポット") }
+      let!(:far_spot) { create(:spot, lat: 40.0, lng: 140.0, name: "遠いスポット") }
+
+      it "circle パラメータで円内検索する" do
+        get community_path, params: {
+          search_type: "spot",
+          center_lat: 35.68,
+          center_lng: 139.76,
+          radius_km: 10
+        }
+
+        expect(response).to have_http_status(:ok)
+        expect(response.body).to include("近いスポット")
+        expect(response.body).not_to include("遠いスポット")
+      end
+    end
+
+    context "Turbo Frameリクエスト" do
+      let!(:plan) { create(:plan, :with_spots, user: other_user, title: "Turboテスト") }
+
+      it "Turbo Frameの場合はパーシャルを返す" do
+        get community_path, headers: { "Turbo-Frame" => "community_results" }
+
         expect(response).to have_http_status(:ok)
       end
     end

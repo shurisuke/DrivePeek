@@ -72,9 +72,21 @@ module ApiMocks
     alias_method :stub_google_directions_api, :stub_directions_api
     alias_method :stub_google_geocoding_api, :stub_geocoding_api
     alias_method :stub_google_places_api, :stub_places_api
+
+    # 全APIを一括スタブ
+    def stub_all_google_apis
+      stub_google_geocoding_api
+      stub_google_directions_api
+      stub_google_places_api
+    end
   end
 end
 
 RSpec.configure do |config|
   config.include ApiMocks::GoogleMaps
+
+  # request specでは自動的に全Google APIをスタブ
+  config.before(:each, type: :request) do
+    stub_all_google_apis
+  end
 end

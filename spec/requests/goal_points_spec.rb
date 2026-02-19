@@ -8,11 +8,6 @@ RSpec.describe "GoalPoints", type: :request do
   let(:plan) { create(:plan, user: user) }
   let(:other_plan) { create(:plan, user: other_user) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "PATCH /plans/:plan_id/goal_point" do
     let(:goal_point_params) do
       {

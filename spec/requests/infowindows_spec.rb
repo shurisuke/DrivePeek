@@ -7,11 +7,6 @@ RSpec.describe "Infowindows", type: :request do
   let(:plan) { create(:plan, user: user) }
   let(:spot) { create(:spot) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_places_api
-  end
-
   describe "GET /infowindow" do
     context "ログイン済みの場合" do
       before { sign_in user }
