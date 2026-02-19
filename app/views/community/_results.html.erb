@@ -57,9 +57,12 @@
       <% favorite_plans_map = FavoritePlan.index_by_plan_id(user: current_user, plan_ids: @community_plans.map(&:id)) %>
       <div class="list-page__cards">
         <% @community_plans.each do |plan| %>
+          <% is_owner = current_user&.id == plan.user_id %>
           <%= render "plans/plan_card",
                      plan: plan,
                      favorite_plan: favorite_plans_map[plan.id],
+                     can_edit: is_owner,
+                     can_delete: is_owner,
                      preview_mode: turbo_frame %>
         <% end %>
       </div>
