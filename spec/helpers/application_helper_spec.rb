@@ -27,4 +27,15 @@ RSpec.describe ApplicationHelper, type: :helper do
       expect(helper.avatar_color_for(user1)).to eq(helper.avatar_color_for(user2))
     end
   end
+
+  describe "#format_datetime" do
+    it "時刻をフォーマットする" do
+      time = Time.zone.local(2024, 1, 15, 12, 30)
+      expect(helper.format_datetime(time)).to eq("2024/01/15 12:30")
+    end
+
+    it "nilの場合はnilを返す" do
+      expect(helper.format_datetime(nil)).to be_nil
+    end
+  end
 end

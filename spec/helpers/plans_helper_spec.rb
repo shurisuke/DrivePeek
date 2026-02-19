@@ -209,4 +209,26 @@ RSpec.describe PlansHelper, type: :helper do
       expect(result).to be_a(String)
     end
   end
+
+  describe "#format_move_time_simple" do
+    it "1時間未満の場合は分のみ表示" do
+      result = helper.format_move_time_simple(45)
+      expect(result).to include("45")
+      expect(result).to include("分")
+      expect(result).not_to include("時間")
+    end
+
+    it "1時間以上の場合は時間と分を表示" do
+      result = helper.format_move_time_simple(90)
+      expect(result).to include("1")
+      expect(result).to include("時間")
+      expect(result).to include("30")
+      expect(result).to include("分")
+    end
+
+    it "カスタムunit_classを適用できる" do
+      result = helper.format_move_time_simple(90, unit_class: "custom-unit")
+      expect(result).to include("custom-unit")
+    end
+  end
 end
