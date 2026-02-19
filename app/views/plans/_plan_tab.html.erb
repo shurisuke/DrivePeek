@@ -28,7 +28,7 @@
         <div id="plan-spots-sortable" data-sortable="plan-spots">
           <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
           <% plan_spots.each_with_index do |plan_spot, index| %>
-            <%= render "plans/spot_block_edit",
+            <%= render "plans/spot_block",
                        plan_spot: plan_spot,
                        favorite_spot: favorite_spots_map[plan_spot.spot_id],
                        is_first: index == 0,

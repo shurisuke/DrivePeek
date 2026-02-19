@@ -335,6 +335,11 @@
   margin-bottom: 0;
 }
 
+/* ✅ readonly モードでは toll row がないので上に余白を追加 */
+.spot-block--readonly .spot-detail-actions__buttons {
+  padding-top: 12px;
+}
+
 /* 中央揃え崩れ対策 */
 .spot-block .spot-detail-actions__buttons > * {
   flex: 0 0 auto;
@@ -474,6 +479,11 @@
   @include next-move-grid;
   margin-top: 10px;
   margin-bottom: 0;
+
+  /* readonly最後のスポット用スペーサー（高さ維持） */
+  &--spacer {
+    min-height: 24px; /* 実際のコンテンツ高さに合わせる */
+  }
 }
 
 /* ✅ 距離計算中のスケルトン表示 */

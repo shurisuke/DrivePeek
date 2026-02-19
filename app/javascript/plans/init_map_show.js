@@ -47,7 +47,7 @@ document.addEventListener("turbo:load", async () => {
   if (!planData) return
 
   const { renderPlanMarkers } = await import("plans/render_plan_markers")
-  renderPlanMarkers(planData, { pinColor: COLORS.COMMUNITY })
+  renderPlanMarkers(planData, { pinColor: COLORS.MY_PLAN })
 
   // スポット間の経路線を描画
   renderRoutePolylinesForShow()

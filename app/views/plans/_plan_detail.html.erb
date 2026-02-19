@@ -22,6 +22,17 @@
   <%# 地図上部のヘッダーバー（検索 + ジャンル/盛り上がり + ハンバーガー） %>
   <%= render "shared/map_header_bar" %>
 
+  <!-- デスクトップ用：地図下部中央のアクションボタン -->
+  <div class="map-bottom-actions">
+    <button type="button"
+            class="map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single"
+            data-controller="ui--create-plan-trigger"
+            data-ui--create-plan-trigger-copy-from-value="<%= @plan.id %>"
+            data-action="click->ui--create-plan-trigger#create">
+      このプランで作る
+    </button>
+  </div>
+
   <!-- 検索結果クリアボタン -->
   <div class="map-floating-buttons">
     <button type="button"
@@ -72,25 +83,70 @@
           </button>
         </div>
         <div class="navibar__blocks">
-          <%= render "plans/plan_content_show", plan: @plan %>
+          <%# ✅ 2カラムレイアウト: スポットブロック + 時刻レール（readonly） %>
+          <div class="plan-tab-layout plan-tab-layout--readonly" data-controller="plan-tab--time-rail-sync">
+            <%# 左カラム: スポットブロック %>
+            <div class="plan-tab-content">
+              <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
+              <% spot_ids = plan_spots.map(&:spot_id) %>
+              <% favorite_spots_map = current_user ? FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) : {} %>
+              <% plan_spots.each_with_index do |plan_spot, index| %>
+                <%= render "plans/spot_block",
+                           plan_spot: plan_spot,
+                           favorite_spot: favorite_spots_map[plan_spot.spot_id],
+                           readonly: true,
+                           is_first: index == 0,
+                           is_last: index == plan_spots.size - 1 %>
+              <% end %>
+
+              <%# 帰宅ラベル（時刻レール用スペーサー付き） %>
+              <div class="goal-point-block goal-point-block--label-only"
+                   data-plan-tab--time-rail-sync-target="content"
+                   data-time-rail-sync="goal-label">
+                <div class="goal-content">
+                  <div class="goal-header">
+                    <span class="goal-icon" aria-hidden="true"></span>
+                    <span class="goal-title">帰宅</span>
+                    <div class="goal-spacer" aria-hidden="true"></div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <%# 右カラム: 時刻レール %>
+            <div class="plan-tab-time-rail">
+              <%= render "plans/time_rail", plan: @plan, readonly: true %>
+            </div>
+          </div>
+
+          <%# 関連プラン %>
+          <% if @related_plans.any? %>
+            <div class="related-section">
+              <h2 class="related-section__title">このエリアの他のプラン</h2>
+              <div class="related-section__list">
+                <% @related_plans.each do |related_plan| %>
+                  <%= render "plans/plan_card", plan: related_plan, preview_mode: true %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>
 
     <div class="navibar__footer">
-      <% if @plan.plan_spots.size >= 2 %>
-        <div class="plan-summary">
-          <div class="plan-summary__item">
-            <i class="bi bi-signpost-2" aria-hidden="true"></i>
-            <span class="plan-summary__value"><%= @plan.spots_only_distance %></span>
-            <span class="plan-summary__unit">km</span>
-          </div>
-          <div class="plan-summary__item">
-            <i class="bi bi-clock" aria-hidden="true"></i>
-            <span class="plan-summary__value"><%= format_move_time(@plan.spots_only_move_time) %></span>
-          </div>
+      <%# ✅ アクションボタン（plan-tab-actions と同じ形式） %>
+      <div class="plan-tab-actions">
+        <div class="plan-tab-actions__group">
+          <button type="button"
+                  class="plan-tab-actions__btn plan-tab-actions__btn--copy plan-tab-actions__btn--single"
+                  data-controller="ui--create-plan-trigger"
+                  data-ui--create-plan-trigger-copy-from-value="<%= @plan.id %>"
+                  data-action="click->ui--create-plan-trigger#create">
+            このプランで作る
+          </button>
         </div>
-      <% end %>
+      </div>
     </div>
   </aside>
 

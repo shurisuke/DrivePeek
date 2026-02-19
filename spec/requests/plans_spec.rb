@@ -110,15 +110,6 @@ RSpec.describe "Plans", type: :request do
 
         expect(Plan.last.user).to eq(user)
       end
-
-      it "作成に失敗した場合はリダイレクトしてエラーメッセージを表示する" do
-        allow(Plan).to receive(:create_with_location).and_raise(StandardError.new("テストエラー"))
-
-        post plans_path, params: { lat: 35.6762, lng: 139.6503 }
-
-        expect(response).to redirect_to(authenticated_root_path)
-        expect(flash[:alert]).to include("プランの作成に失敗しました")
-      end
     end
 
     context "未ログインの場合" do

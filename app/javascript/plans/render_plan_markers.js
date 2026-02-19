@@ -22,12 +22,19 @@ import { COLORS } from "map/constants"
 // ================================================================
 
 const createNumberedPinSvg = (number, color = COLORS.MY_PLAN) => {
-  // コミュニティカラーの場合はグラデーション
-  const isGradient = color === COLORS.COMMUNITY
-  const fillDef = isGradient
-    ? `<defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4A90D9"/><stop offset="100%" style="stop-color:#2C5FA0"/></linearGradient></defs>`
-    : ""
-  const fillAttr = isGradient ? "url(#cg)" : color
+  // カラーに応じたグラデーション定義
+  let fillDef = ""
+  let fillAttr = color
+
+  if (color === COLORS.MY_PLAN) {
+    // オレンジグラデーション（ナビバーアイコンと統一）
+    fillDef = `<defs><linearGradient id="og" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#FF8C00"/><stop offset="100%" style="stop-color:#EF6C00"/></linearGradient></defs>`
+    fillAttr = "url(#og)"
+  } else if (color === COLORS.COMMUNITY) {
+    // 青グラデーション（コミュニティ用）
+    fillDef = `<defs><linearGradient id="cg" x1="0%" y1="0%" x2="100%" y2="100%"><stop offset="0%" style="stop-color:#4A90D9"/><stop offset="100%" style="stop-color:#2C5FA0"/></linearGradient></defs>`
+    fillAttr = "url(#cg)"
+  }
 
   const svg = `
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">

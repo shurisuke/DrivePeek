@@ -1,104 +1,106 @@
 <%# app/views/plans/_time_rail.html.erb %>
-<%# locals: plan: %>
+<%# locals: plan:, readonly: false %>
 <%# 時刻レール: 出発時間 + 各スポットの到着/滞在/出発時間 + 帰宅時間 %>
+<% readonly = local_assigns.fetch(:readonly, false) %>
 
 <%# ✅ 内部ラッパー（左オフセット担当） %>
 <div class="time-rail-inner">
 
-<%# ✅ 出発地点の時刻パネル %>
-<div class="time-rail-block time-rail-block--start"
-       data-time-rail-for="start-point"
-       data-plan-tab--time-rail-sync-target="rail">
-  <div class="time-rail-block__main">
-    <%
-      departure_time_value =
-        if plan.start_point&.respond_to?(:departure_time) && plan.start_point.departure_time.present?
-          plan.start_point.departure_time.strftime("%H:%M")
-        else
-          nil
-        end
-    %>
-    <div
-      class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %><%= ' start-departure-time--no-spots' unless plan.plan_spots.exists? %>"
-      data-controller="plan-tab--departure-time"
-      data-plan-tab--departure-time-plan-id-value="<%= plan.id %>"
-      data-plan-tab--departure-time-current-value="<%= departure_time_value %>"
-    >
-      <button
-        type="button"
-        class="start-departure-time__help-btn"
-        data-controller="ui--help-dialog"
-        data-ui--help-dialog-title-value="時間の変更"
-        data-ui--help-dialog-body-value="時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
-        data-action="click->ui--help-dialog#show"
-        aria-label="ヘルプ"
-      >?</button>
-
-      <button
-        type="button"
-        class="start-departure-time__main"
-        data-action="click->plan-tab--departure-time#openPicker"
-        data-plan-tab--departure-time-target="trigger"
+<% unless readonly %>
+  <%# ✅ 出発地点の時刻パネル（編集時のみ表示） %>
+  <div class="time-rail-block time-rail-block--start"
+         data-time-rail-for="start-point"
+         data-plan-tab--time-rail-sync-target="rail">
+    <div class="time-rail-block__main">
+      <%
+        departure_time_value =
+          if plan.start_point&.respond_to?(:departure_time) && plan.start_point.departure_time.present?
+            plan.start_point.departure_time.strftime("%H:%M")
+          else
+            nil
+          end
+      %>
+      <div
+        class="start-departure-time<%= ' start-departure-time--set' if departure_time_value.present? %><%= ' start-departure-time--no-spots' unless plan.plan_spots.exists? %>"
+        data-controller="plan-tab--departure-time"
+        data-plan-tab--departure-time-plan-id-value="<%= plan.id %>"
+        data-plan-tab--departure-time-current-value="<%= departure_time_value %>"
       >
-        <span class="time-display__label">出発</span>
-        <span class="time-display__value">
-          <%= departure_time_value.presence || "09:00" %>
-        </span>
-      </button>
-    </div>
-  </div>
+        <button
+          type="button"
+          class="start-departure-time__help-btn"
+          data-controller="ui--help-dialog"
+          data-ui--help-dialog-title-value="時間の変更"
+          data-ui--help-dialog-body-value="時刻をタップで変更可能。<br>滞在時間も設定すると<br>より正確なスケジュールに"
+          data-action="click->ui--help-dialog#show"
+          aria-label="ヘルプ"
+        >?</button>
 
-  <%# ✅ スポットが追加されている時のみ矢印を表示 %>
-  <% if plan.plan_spots.exists? %>
-    <div class="time-rail-block__toggle-area">
-      <div class="time-rail-block__arrow">
-        <i class="bi bi-arrow-down-short" aria-hidden="true"></i>
+        <button
+          type="button"
+          class="start-departure-time__main"
+          data-action="click->plan-tab--departure-time#openPicker"
+          data-plan-tab--departure-time-target="trigger"
+        >
+          <span class="time-display__label">出発</span>
+          <span class="time-display__value">
+            <%= departure_time_value.presence || "09:00" %>
+          </span>
+        </button>
       </div>
     </div>
-  <% end %>
-</div>
+
+    <%# ✅ スポットが追加されている時のみ矢印を表示 %>
+    <% if plan.plan_spots.exists? %>
+      <div class="time-rail-block__toggle-area">
+        <div class="time-rail-block__arrow">
+          <i class="bi bi-arrow-down-short" aria-hidden="true"></i>
+        </div>
+      </div>
+    <% end %>
+  </div>
+<% end %>
 
 <%# ✅ 各スポットの時刻パネル %>
-<% plan.plan_spots.includes(:spot).order(:position).each do |plan_spot| %>
-  <div class="time-rail-block time-rail-block--spot"
+<% plan.plan_spots.includes(:spot).order(:position).each_with_index do |plan_spot, index| %>
+  <% is_last_spot = index == plan.plan_spots.size - 1 %>
+  <div class="time-rail-block time-rail-block--spot<%= ' time-rail-block--readonly' if readonly %>"
        data-time-rail-for="<%= dom_id(plan_spot) %>"
        data-plan-spot-id="<%= plan_spot.id %>"
        data-plan-tab--time-rail-sync-target="rail">
     <div class="time-rail-block__main">
       <div class="time-display">
         <span class="time-display__label">到着</span>
-        <span class="time-display__value"><%= plan_spot.arrival_time&.strftime("%H:%M") || "--:--" %></span>
+        <span class="time-display__value"><%= format_time_or_blank(plan_spot.arrival_time) %></span>
       </div>
 
       <%# ✅ 滞在時間選択（iOS風ホイールピッカー） %>
-      <%
-        stay_minutes = plan_spot.stay_duration.to_i
-        stay_hours = stay_minutes / 60
-        stay_mins = stay_minutes % 60
-      %>
-      <button
-        type="button"
-        class="spot-stay-duration<%= ' spot-stay-duration--set' if stay_minutes > 0 %>"
-        data-controller="plan-tab--stay-duration"
-        data-plan-tab--stay-duration-plan-id-value="<%= plan_spot.plan_id %>"
-        data-plan-tab--stay-duration-plan-spot-id-value="<%= plan_spot.id %>"
-        data-plan-tab--stay-duration-current-value="<%= stay_minutes %>"
-        data-action="click->plan-tab--stay-duration#openPicker"
-        data-plan-tab--stay-duration-target="trigger"
-      >
-        <span class="spot-stay-duration__label">滞在</span>
-        <span class="spot-stay-duration__value">
-          <% if stay_minutes > 0 %>
-            <% if stay_hours > 0 %><%= stay_hours %><span class="spot-stay-duration__unit">時間</span><% end %><% if stay_mins > 0 %><%= stay_mins %><span class="spot-stay-duration__unit">分</span><% end %>
-          <% else %>
-            --
-          <% end %>
-        </span>
-      </button>
+      <% stay_minutes = plan_spot.stay_duration.to_i %>
+      <% if readonly %>
+        <%# readonly: 滞在時間を表示のみ %>
+        <div class="spot-stay-duration spot-stay-duration--readonly<%= ' spot-stay-duration--set' if stay_minutes > 0 %>">
+          <span class="spot-stay-duration__label">滞在</span>
+          <span class="spot-stay-duration__value"><%= format_stay_duration(stay_minutes) %></span>
+        </div>
+      <% else %>
+        <button
+          type="button"
+          class="spot-stay-duration<%= ' spot-stay-duration--set' if stay_minutes > 0 %>"
+          data-controller="plan-tab--stay-duration"
+          data-plan-tab--stay-duration-plan-id-value="<%= plan_spot.plan_id %>"
+          data-plan-tab--stay-duration-plan-spot-id-value="<%= plan_spot.id %>"
+          data-plan-tab--stay-duration-current-value="<%= stay_minutes %>"
+          data-action="click->plan-tab--stay-duration#openPicker"
+          data-plan-tab--stay-duration-target="trigger"
+        >
+          <span class="spot-stay-duration__label">滞在</span>
+          <span class="spot-stay-duration__value"><%= format_stay_duration(stay_minutes) %></span>
+        </button>
+      <% end %>
 
       <div class="time-display" data-plan-time-role="spot-departure">
         <span class="time-display__label">出発</span>
-        <span class="time-display__value"><%= plan_spot.departure_time&.strftime("%H:%M") || "--:--" %></span>
+        <span class="time-display__value"><%= format_time_or_blank(plan_spot.departure_time) %></span>
       </div>
     </div>
 
@@ -110,18 +112,27 @@
   </div>
 <% end %>
 
-<%# ✅ 帰宅地点の時刻パネル %>
-<% goal_point = plan.goal_point %>
-<div class="time-rail-block time-rail-block--goal"
-       data-time-rail-for="goal-point"
+<% if readonly %>
+  <%# ✅ 詳細画面用：帰宅ラベルのスペーサー（高さ同期用） %>
+  <div class="time-rail-block time-rail-block--spacer"
+       data-time-rail-for="goal-label"
        data-plan-tab--time-rail-sync-target="rail">
-  <div class="time-rail-block__main">
-    <div class="time-display">
-      <span class="time-display__label">到着</span>
-      <span class="time-display__value"><%= goal_point&.arrival_time&.strftime("%H:%M") || "--:--" %></span>
+    <div class="time-rail-block__main"></div>
+  </div>
+<% else %>
+  <%# ✅ 帰宅地点の時刻パネル（編集時のみ表示） %>
+  <% goal_point = plan.goal_point %>
+  <div class="time-rail-block time-rail-block--goal"
+         data-time-rail-for="goal-point"
+         data-plan-tab--time-rail-sync-target="rail">
+    <div class="time-rail-block__main">
+      <div class="time-display">
+        <span class="time-display__label">到着</span>
+        <span class="time-display__value"><%= format_time_or_blank(goal_point&.arrival_time) %></span>
+      </div>
     </div>
   </div>
-</div>
+<% end %>
 
 </div>
 <%# /.time-rail-inner %>

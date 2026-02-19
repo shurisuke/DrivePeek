@@ -50,28 +50,34 @@
           <%= link_to :back, class: "spot-detail__back-link" do %>
             <i class="bi bi-chevron-left" aria-hidden="true"></i>
           <% end %>
-          <h1 class="navibar__title"><%= @spot.name %></h1>
-          <div class="spot-detail__header-like">
-            <%= render "favorite_spots/button", spot: @spot, favorite_spot: @favorite_spot %>
-          </div>
+          <h1 class="navibar__title">スポット詳細</h1>
+          <div class="spot-detail__header-spacer"></div>
         </div>
 
         <!-- コンテンツ -->
         <div class="navibar__blocks">
           <div class="spot-detail__main">
-            <% if @spot.address.present? %>
-              <div class="spot-detail__address"><%= @spot.address %></div>
-            <% end %>
-
-            <% if @spot.genres.any? %>
-              <div class="spot-detail__genres">
-                <% @spot.genres.each do |genre| %>
-                  <span class="spot-detail__genre"><%= genre.name %></span>
-                <% end %>
-              </div>
-            <% end %>
+            <%= render "plans/spot_card",
+                       spot: @spot,
+                       favorite_spot: @favorite_spot,
+                       preview_mode: false %>
           </div>
 
+          <%# 関連スポット %>
+          <% if @related_spots.any? %>
+            <div class="related-section">
+              <h2 class="related-section__title">近くの似たスポット</h2>
+              <div class="related-section__list">
+                <% @related_spots.each do |related_spot| %>
+                  <%= render "plans/spot_card",
+                             spot: related_spot,
+                             favorite_spot: @related_preload[:user_favorite_spots][related_spot.id],
+                             spot_stats: @related_preload[:spot_stats][related_spot.id],
+                             preview_mode: true %>
+                <% end %>
+              </div>
+            </div>
+          <% end %>
         </div>
       </div>
     </div>

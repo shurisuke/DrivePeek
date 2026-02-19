@@ -13,15 +13,15 @@
           <div class="plan-entry-modal__latest-info">
             <p class="plan-entry-modal__latest-label">前回のプラン</p>
             <p class="plan-entry-modal__latest-title"><%= plan_title(@latest_plan) %></p>
-            <p class="plan-entry-modal__latest-date"><%= @latest_plan.updated_at.strftime("%Y/%m/%d %H:%M") %> 更新</p>
+            <p class="plan-entry-modal__latest-date"><%= format_datetime(@latest_plan.updated_at) %> 更新</p>
           </div>
         </div>
 
         <div class="plan-entry-modal__actions">
           <button type="button"
                   class="btn plan-entry-modal__btn plan-entry-modal__btn--new"
-                  data-controller="community-tab--create-plan-trigger"
-                  data-action="click->community-tab--create-plan-trigger#create">
+                  data-controller="ui--create-plan-trigger"
+                  data-action="click->ui--create-plan-trigger#create">
             <i class="fa-solid fa-plus me-2"></i>新規作成
           </button>
           <%= link_to edit_plan_path(@latest_plan), class: "btn plan-entry-modal__btn plan-entry-modal__btn--continue" do %>
@@ -44,7 +44,7 @@
   <button type="button"
           class="d-none"
           data-plan-tab--entry-target="autoTrigger"
-          data-controller="community-tab--create-plan-trigger"
-          data-action="click->community-tab--create-plan-trigger#create">
+          data-controller="ui--create-plan-trigger"
+          data-action="click->ui--create-plan-trigger#create">
   </button>
 </div>

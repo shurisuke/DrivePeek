@@ -1,15 +1,18 @@
-<%# app/views/plans/_spot_block_edit.html.erb %>
-<%# locals: plan_spot:, favorite_spot: nil, is_first: false, is_last: false %>
+<%# app/views/plans/_spot_block.html.erb %>
+<%# locals: plan_spot:, favorite_spot: nil, is_first: false, is_last: false, readonly: false %>
+<% readonly = local_assigns.fetch(:readonly, false) %>
 
 <% spot = plan_spot.spot %>
 
 <div
   id="<%= dom_id(plan_spot) %>"
-  class="spot-block"
+  class="spot-block<%= ' spot-block--readonly' if readonly %>"
+  <% unless readonly %>
   data-controller="plan-tab--spot-memo plan-tab--spot-delete"
   data-plan-tab--spot-memo-url-value="<%= plan_plan_spot_path(plan_spot.plan, plan_spot) %>"
   data-plan-tab--spot-delete-plan-id-value="<%= plan_spot.plan_id %>"
   data-plan-tab--spot-delete-plan-spot-id-value="<%= plan_spot.id %>"
+  <% end %>
   data-spot-id="<%= spot.id %>"
   data-plan-spot-id="<%= plan_spot.id %>"
   data-plan-id="<%= plan_spot.plan_id %>"
@@ -36,21 +39,23 @@
                  role="button"
                  tabindex="0"
                  aria-label="スポットを地図で表示"></div>
-            <%# モバイル用並び替えボタン（first/lastで表示制御） %>
-            <div class="spot-reorder-buttons">
-              <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_first %>"
-                      data-reorder-direction="up"
-                      aria-label="上に移動"
-                      <%= 'disabled' if is_first %>>
-                <i class="bi bi-chevron-up"></i>
-              </button>
-              <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_last %>"
-                      data-reorder-direction="down"
-                      aria-label="下に移動"
-                      <%= 'disabled' if is_last %>>
-                <i class="bi bi-chevron-down"></i>
-              </button>
-            </div>
+            <% unless readonly %>
+              <%# モバイル用並び替えボタン（first/lastで表示制御） %>
+              <div class="spot-reorder-buttons">
+                <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_first %>"
+                        data-reorder-direction="up"
+                        aria-label="上に移動"
+                        <%= 'disabled' if is_first %>>
+                  <i class="bi bi-chevron-up"></i>
+                </button>
+                <button type="button" class="spot-reorder-btn<%= ' is-hidden' if is_last %>"
+                        data-reorder-direction="down"
+                        aria-label="下に移動"
+                        <%= 'disabled' if is_last %>>
+                  <i class="bi bi-chevron-down"></i>
+                </button>
+              </div>
+            <% end %>
           </div>
 
           <% if spot.name.present? %>
@@ -73,44 +78,56 @@
         <% end %>
 
         <%# メモ表示 %>
-        <div class="spot-memo spot-memo--pin navibar-padding <%= "d-none" if plan_spot.memo.blank? %>"
-             data-plan-tab--spot-memo-target="memoDisplay">
-          <div class="spot-memo__content" data-plan-tab--spot-memo-target="memoContent">
-            <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
-            <%= simple_format(h(plan_spot.memo.to_s)) %>
+        <% if readonly %>
+          <% if plan_spot.memo.present? %>
+            <div class="spot-memo spot-memo--pin navibar-padding">
+              <div class="spot-memo__content">
+                <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
+                <%= simple_format(h(plan_spot.memo)) %>
+              </div>
+            </div>
+          <% end %>
+        <% else %>
+          <div class="spot-memo spot-memo--pin navibar-padding <%= "d-none" if plan_spot.memo.blank? %>"
+               data-plan-tab--spot-memo-target="memoDisplay">
+            <div class="spot-memo__content" data-plan-tab--spot-memo-target="memoContent">
+              <i class="bi bi-sticky spot-memo__icon" aria-hidden="true"></i>
+              <%= simple_format(h(plan_spot.memo.to_s)) %>
+            </div>
+
+            <button type="button"
+                    class="spot-memo__delete"
+                    aria-label="メモを削除"
+                    data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#clear">
+              ×
+            </button>
           </div>
+        <% end %>
 
-          <button type="button"
-                  class="spot-memo__delete"
-                  aria-label="メモを削除"
-                  data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#clear">
-            ×
-          </button>
-        </div>
-
-        <%# 次の場所まで %>
-        <% move_minutes = plan_spot.move_time.to_i %>
-        <% hours = move_minutes / 60 %>
-        <% minutes = move_minutes % 60 %>
-
-        <div class="spot-next-move" data-plan-time-role="spot-next-move">
-          <span class="label"><span class="label-hide-mobile">次の場所まで</span><span class="label-show-mobile">次まで</span></span>
-          <span class="separator"></span>
-          <span class="km">
-            <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
-          </span>
-          <span class="separator"></span>
-          <span class="time"><% if hours > 0 %><%= hours %><span class="time-unit">時間</span><% end %><%= minutes %><span class="time-unit">分</span></span>
-        </div>
+        <%# 次の場所まで（readonly時は最後のスポットでは空白で高さを維持） %>
+        <% if readonly && is_last %>
+          <div class="spot-next-move spot-next-move--spacer" aria-hidden="true"></div>
+        <% else %>
+          <div class="spot-next-move" data-plan-time-role="spot-next-move">
+            <span class="label"><span class="label-hide-mobile">次の場所まで</span><span class="label-show-mobile">次まで</span></span>
+            <span class="separator"></span>
+            <span class="km">
+              <%= format_distance(plan_spot.move_distance) %><span class="km-unit">km</span>
+            </span>
+            <span class="separator"></span>
+            <span class="time"><%= format_move_time_simple(plan_spot.move_time) %></span>
+          </div>
+        <% end %>
       </div>
       <%# /.spot-content %>
 
       <%# ✅ 下部：トグル詳細コンテンツ %>
       <div class="collapse spot-detail<%= ' show' if is_open %>"
            id="spotDetail-<%= plan_spot.id %>"
-           data-plan-tab--spot-memo-target="detail">
+           <%= 'data-plan-tab--spot-memo-target="detail"' unless readonly %>>
 
-          <%# 有料道路設定行 %>
+        <% unless readonly %>
+          <%# 有料道路設定行（編集時のみ） %>
           <div class="spot-toll-row">
             <span class="label">有料道路</span>
             <input
@@ -127,7 +144,7 @@
             >
           </div>
 
-          <%# メモ編集エリア %>
+          <%# メモ編集エリア（編集時のみ） %>
           <div class="spot-memo spot-memo--pin spot-memo--editor d-none"
                data-plan-tab--spot-memo-target="editor"
                data-action="pointerdown->plan-tab--spot-memo#stopPropagation click->plan-tab--spot-memo#stopPropagation">
@@ -153,26 +170,28 @@
               </div>
             </form>
           </div>
+        <% end %>
 
-          <%# アクションボタン %>
-          <div class="spot-detail-actions__buttons">
-              <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
+        <%# アクションボタン（お気に入り・コメントは常に表示、メモ編集・削除は編集時のみ） %>
+        <div class="spot-detail-actions__buttons">
+            <%= render "favorite_spots/button", spot: spot, favorite_spot: favorite_spot %>
 
-              <%# コメントボタン（InfoWindowのコメントタブを開く） %>
-              <button type="button"
-                      class="btn btn-outline-secondary btn-sm"
-                      data-controller="infowindow--comment-open"
-                      data-infowindow--comment-open-spot-id-value="<%= spot.id %>"
-                      data-infowindow--comment-open-place-id-value="<%= spot.place_id %>"
-                      data-infowindow--comment-open-lat-value="<%= spot.lat %>"
-                      data-infowindow--comment-open-lng-value="<%= spot.lng %>"
-                      data-infowindow--comment-open-name-value="<%= spot.name %>"
-                      data-infowindow--comment-open-address-value="<%= spot.address %>"
-                      data-action="click->infowindow--comment-open#openComment"
-                      aria-label="コメントを見る">
-                <i class="bi bi-chat" aria-hidden="true"></i>
-              </button>
+            <%# コメントボタン（InfoWindowのコメントタブを開く） %>
+            <button type="button"
+                    class="btn btn-outline-secondary btn-sm"
+                    data-controller="infowindow--comment-open"
+                    data-infowindow--comment-open-spot-id-value="<%= spot.id %>"
+                    data-infowindow--comment-open-place-id-value="<%= spot.place_id %>"
+                    data-infowindow--comment-open-lat-value="<%= spot.lat %>"
+                    data-infowindow--comment-open-lng-value="<%= spot.lng %>"
+                    data-infowindow--comment-open-name-value="<%= spot.name %>"
+                    data-infowindow--comment-open-address-value="<%= spot.address %>"
+                    data-action="click->infowindow--comment-open#openComment"
+                    aria-label="コメントを見る">
+              <i class="bi bi-chat" aria-hidden="true"></i>
+            </button>
 
+            <% unless readonly %>
               <button type="button"
                       class="btn btn-outline-secondary btn-sm"
                       data-action="click->plan-tab--spot-memo#open"
@@ -186,22 +205,23 @@
                       data-action="click->plan-tab--spot-delete#delete pointerdown->plan-tab--spot-memo#stopPropagation">
                 <i class="bi bi-x-lg spot-delete-icon" aria-hidden="true"></i>
               </button>
-          </div>
+            <% end %>
+        </div>
 
-    </div>
-    <%# /.spot-detail %>
+      </div>
+      <%# /.spot-detail %>
   </div>
   <%# /.spot-info-group %>
 
-    <%# ✅ トグルボタン %>
-    <button
-      type="button"
-      class="detail-toggle"
-      data-bs-toggle="collapse"
-      data-bs-target="#spotDetail-<%= plan_spot.id %>"
-      aria-expanded="<%= is_open ? 'true' : 'false' %>"
-      aria-controls="spotDetail-<%= plan_spot.id %>"
-    >
-      <i class="bi bi-caret-down-fill"></i>
+  <%# ✅ トグルボタン %>
+  <button
+    type="button"
+    class="detail-toggle"
+    data-bs-toggle="collapse"
+    data-bs-target="#spotDetail-<%= plan_spot.id %>"
+    aria-expanded="<%= is_open ? 'true' : 'false' %>"
+    aria-controls="spotDetail-<%= plan_spot.id %>"
+  >
+    <i class="bi bi-caret-down-fill"></i>
   </button>
 </div>

@@ -167,4 +167,56 @@ module PlansHelper
   def plan_preview_polylines_json(plan)
     plan.plan_spots.order(:position).to_a[0..-2].map(&:polyline).compact.to_json
   end
+
+  # ================================================================
+  # 滞在時間フォーマット（分 → "X時間Y分" or "Y分"）
+  # - unit_class: 単位のspanに付けるCSSクラス（デフォルト: spot-stay-duration__unit）
+  # ================================================================
+  def format_stay_duration(minutes, unit_class: "spot-stay-duration__unit")
+    minutes = minutes.to_i
+    return "--" if minutes <= 0
+
+    hours = minutes / 60
+    mins = minutes % 60
+
+    parts = []
+    if hours.positive?
+      parts << hours.to_s
+      parts << content_tag(:span, "時間", class: unit_class)
+    end
+    if mins.positive?
+      parts << mins.to_s
+      parts << content_tag(:span, "分", class: unit_class)
+    end
+
+    safe_join(parts)
+  end
+
+  # ================================================================
+  # 移動時間フォーマット（シンプル版 - 単位クラス指定可能）
+  # - unit_class: 単位のspanに付けるCSSクラス（デフォルト: time-unit）
+  # ================================================================
+  def format_move_time_simple(minutes, unit_class: "time-unit")
+    minutes = minutes.to_i
+    hours = minutes / 60
+    mins = minutes % 60
+
+    parts = []
+    if hours.positive?
+      parts << hours.to_s
+      parts << content_tag(:span, "時間", class: unit_class)
+    end
+    parts << mins.to_s
+    parts << content_tag(:span, "分", class: unit_class)
+
+    safe_join(parts)
+  end
+
+  # ================================================================
+  # 長時間判定（10時間以上かどうか）
+  # - 分数から直接判定（HTMLパース不要）
+  # ================================================================
+  def long_duration?(minutes)
+    minutes.to_i >= 600 # 10時間 = 600分
+  end
 end
