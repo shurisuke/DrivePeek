@@ -25,5 +25,8 @@ module DrivePeek
     #
     config.time_zone = "Tokyo"
     # config.eager_load_paths << Rails.root.join("extras")
+
+    # 外部APIクライアント用ディレクトリをautoloadに追加
+    config.autoload_paths << Rails.root.join("app/clients")
   end
 end

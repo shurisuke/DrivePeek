@@ -7,7 +7,6 @@
 #   # => [5, 9] (海・海岸, 絶景・展望 のID)
 #
 class Genre::Detector
-  MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 256
 
   class << self
@@ -15,7 +14,7 @@ class Genre::Detector
     # @param count [Integer] 判定するジャンル数（デフォルト: 2）
     # @return [Array<Integer>] 判定された Genre の ID 配列
     def detect(spot, count: 2)
-      return [] unless api_key_configured?
+      return [] unless Openai.configured?
 
       response = call_api(spot, count: count)
       parse_response(response, count: count)
@@ -29,21 +28,10 @@ class Genre::Detector
 
     private
 
-    def api_key_configured?
-      ENV["OPENAI_API_KEY"].present?
-    end
-
     def call_api(spot, count:)
-      client = OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
-
-      client.chat(
-        parameters: {
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          messages: [
-            { role: "user", content: build_prompt(spot, count: count) }
-          ]
-        }
+      Openai.chat(
+        messages: [ { role: "user", content: build_prompt(spot, count: count) } ],
+        max_tokens: MAX_TOKENS
       )
     end
 
@@ -78,7 +66,7 @@ class Genre::Detector
     end
 
     def parse_response(response, count:)
-      return [] if response.nil?
+      return [] if response.blank?
 
       content = response.dig("choices", 0, "message", "content")
       return [] if content.blank?

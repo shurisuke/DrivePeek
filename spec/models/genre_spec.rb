@@ -3,6 +3,32 @@
 require "rails_helper"
 
 RSpec.describe Genre, type: :model do
+  describe "#parent_genre?" do
+    let!(:parent) { create(:genre, parent: nil) }
+    let!(:child) { create(:genre, parent: parent) }
+
+    it "子ジャンルがある場合trueを返す" do
+      expect(parent.parent_genre?).to be true
+    end
+
+    it "子ジャンルがない場合falseを返す" do
+      expect(child.parent_genre?).to be false
+    end
+  end
+
+  describe "#child_genre?" do
+    let!(:parent) { create(:genre, parent: nil) }
+    let!(:child) { create(:genre, parent: parent) }
+
+    it "親ジャンルがある場合trueを返す" do
+      expect(child.child_genre?).to be true
+    end
+
+    it "親ジャンルがない場合falseを返す" do
+      expect(parent.child_genre?).to be false
+    end
+  end
+
   describe ".expand_family" do
     let!(:parent) { create(:genre, parent: nil) }
     let!(:child1) { create(:genre, parent: parent) }
