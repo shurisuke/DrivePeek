@@ -23,6 +23,7 @@ class PlansController < ApplicationController
     @plan = Plan.publicly_visible
                 .includes(:user, :start_point, :goal_point, plan_spots: { spot: :genres })
                 .find(params[:id])
+    @related_plans = @plan.related_plans(limit: 5)
   end
 
   def new
@@ -34,9 +35,14 @@ class PlansController < ApplicationController
     lng = params[:lng]
 
     @plan = Plan.create_with_location(user: current_user, lat: lat, lng: lng)
+
+    # コピー元があればスポットをコピー
+    if params[:copy_from].present?
+      source = Plan.publicly_visible.find_by(id: params[:copy_from])
+      @plan.copy_spots_from(source) if source
+    end
+
     redirect_to edit_plan_path(@plan)
-  rescue => e
-    redirect_to authenticated_root_path(@plan), alert: "プランの作成に失敗しました: #{e.message}"
   end
 
   def edit
