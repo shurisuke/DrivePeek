@@ -3,6 +3,38 @@ module ApplicationHelper
     ((sent_at + duration - Time.current) / 60).ceil
   end
 
+  # ================================================================
+  # 時刻・日付フォーマット
+  # ================================================================
+
+  # 時刻表示（nil時は "--:--" を返す）
+  def format_time_or_blank(time)
+    time&.strftime("%H:%M") || "--:--"
+  end
+
+  # 日時フォーマット: "2024/01/15 12:30"
+  def format_datetime(time)
+    time&.strftime("%Y/%m/%d %H:%M")
+  end
+
+  # 短い日付フォーマット: "1/15"
+  def format_date_short(date)
+    date&.strftime("%-m/%-d")
+  end
+
+  # ================================================================
+  # 場所表示
+  # ================================================================
+
+  # 都道府県/市区町村 を結合して表示
+  # - Hash または オブジェクト を受け付ける
+  def format_spot_location(spot)
+    prefecture = spot.is_a?(Hash) ? spot[:prefecture] : spot.prefecture
+    city = spot.is_a?(Hash) ? spot[:city] : spot.city
+
+    [ prefecture, city ].compact.reject(&:blank?).join("/")
+  end
+
   # ユーザーIDからアバター色を生成（50色）
   AVATAR_COLORS = %w[
     #FF6B6B #FF8E72 #FFA07A #FFB347 #FFCC5C
