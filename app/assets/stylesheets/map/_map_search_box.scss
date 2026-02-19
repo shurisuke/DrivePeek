@@ -175,6 +175,21 @@ body.no-footer .plan-form.navibar--wide .plan-save {
       }
     }
 
+    &--copy {
+      background: #fff;
+      color: var(--personal);
+      font-weight: 700;
+      border-right: 1.5px solid rgba(0, 0, 0, 0.1);
+
+      &:hover {
+        background: #f5f5f5;
+      }
+    }
+
+    &--single {
+      border-right: none;
+    }
+
     &--share {
       background: #fff;
       color: #555;

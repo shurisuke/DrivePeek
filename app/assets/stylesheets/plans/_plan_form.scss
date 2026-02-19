@@ -534,6 +534,20 @@ body.navibar-resizing .plan-form .plan-time-slot {
     font-weight: 700;
     border-right: 1px solid #e5e5ea;
   }
+
+  &--copy {
+    color: var(--personal);
+    font-weight: 700;
+    border-right: 1px solid #e5e5ea;
+  }
+
+  &--single {
+    border-right: none;
+  }
+
+  &--share {
+    color: #555;
+  }
 }
 
 /* ==========================================

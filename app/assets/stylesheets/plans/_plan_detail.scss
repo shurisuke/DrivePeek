@@ -136,6 +136,12 @@ body.no-footer .plan-detail {
     background: #fff;
     flex-shrink: 0;
     z-index: 10;
+
+    /* plan-tab-actions を含む場合はパディング不要 */
+    &:has(.plan-tab-actions) {
+      padding: 0;
+      border-top: none;
+    }
   }
 
   .navibar__content-scroll {
@@ -157,6 +163,21 @@ body.no-footer .plan-detail {
   .navibar__blocks {
     width: 100%;
     box-sizing: border-box;
+  }
+
+  /* ✅ 最後のスポットの下マージンを削除 */
+  .spot-block--readonly:last-of-type .spot-info-group {
+    margin-bottom: 0;
+  }
+
+  /* ✅ 詳細画面用の帰宅ラベル（既存スタイル再利用） */
+  .goal-point-block--label-only {
+    margin: 0; /* 外部マージンを削除 */
+    border-bottom: none;
+
+    .goal-content {
+      padding-top: 24px; /* 内部パディングで余白確保 */
+    }
   }
 
   /* ✅ 詳細画面用の出発地点ブロック */
@@ -260,60 +281,32 @@ body.no-footer .plan-detail {
     font-size: 1.75rem;
   }
 
-  /* ✅ 詳細画面用の帰宅地点ブロック */
-  .goal-point-block--show {
-    padding: 16px 24px;
-    border-bottom: 1px solid #f0f0f0;
+  /* ✅ 関連プランセクション */
+  .related-section {
+    margin-top: 40px;
+    padding: 28px 20px 32px;
+    background: linear-gradient(180deg, #f5f7f9 0%, #fff 100%);
+    border-top: 1px solid #e8e8e8;
 
-    .goal-point-main {
-      width: 100%;
+    &__title {
+      font-size: 0.85rem;
+      font-weight: 600;
+      color: #888;
+      letter-spacing: 0.05em;
+      text-align: center;
+      margin: 0 0 20px;
     }
 
-    .goal-label__row {
+    &__list {
       display: flex;
-      align-items: flex-start;
+      flex-direction: column;
       gap: 12px;
     }
 
-    .icon {
-      width: 24px;
-      height: 24px;
-      background: #dc3545;
-      border-radius: 50%;
-      flex-shrink: 0;
-      position: relative;
-      margin-top: 2px;
-
-      &::after {
-        content: "";
-        position: absolute;
-        top: 50%;
-        left: 50%;
-        transform: translate(-50%, -50%);
-        width: 8px;
-        height: 8px;
-        background: #fff;
-        border-radius: 50%;
-      }
-    }
-
-    .goal-text {
-      flex: 1;
-    }
-
-    .goal-title {
-      display: block;
-      font-size: 0.85rem;
-      font-weight: 600;
-      color: #dc3545;
-      margin-bottom: 4px;
-    }
-
-    .address {
-      display: block;
-      font-size: 0.9rem;
-      color: #333;
-      line-height: 1.5;
+    /* plan-card の調整 */
+    .plan-card {
+      margin: 0 auto;
+      box-shadow: 0 2px 12px rgba(0, 0, 0, 0.08);
     }
   }
 

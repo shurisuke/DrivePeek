@@ -101,9 +101,13 @@ $card-text-muted: #999;
     color: $card-text-secondary;
   }
 
-  &--delete:hover {
-    color: #dc3545;
-    background: rgba(220, 53, 69, 0.08);
+  &--delete {
+    color: #e57373;
+
+    &:hover {
+      color: #dc3545;
+      background: rgba(220, 53, 69, 0.08);
+    }
   }
 
   &--share {
