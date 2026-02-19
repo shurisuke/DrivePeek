@@ -1,6 +1,5 @@
 <%# app/views/favorite_plans/_button.html.erb %>
 <%# locals: plan:, favorite_plan: nil, animate: false %>
-
 <%
   _animate = local_assigns.fetch(:animate, false)
   active_classes = "fav-button fav-button--star fav-button--sm fav-button--active"
@@ -8,7 +7,14 @@
 %>
 
 <%= turbo_frame_tag dom_id(plan, :favorite_button) do %>
-  <% if favorite_plan.present? %>
+  <% if !current_user %>
+    <button type="button"
+            class="fav-button fav-button--star fav-button--sm"
+            aria-label="お気に入り登録（ログインが必要です）"
+            disabled>
+      <i class="bi bi-star" aria-hidden="true"></i>
+    </button>
+  <% elsif favorite_plan.present? %>
     <%= button_to favorite_plan_path(favorite_plan),
                   method: :delete,
                   class: active_classes,
