@@ -1,3 +1,16 @@
+# 責務: 観光スポット・飲食店などの場所情報を管理
+#
+# 主な機能:
+#   - Google Places API との連携（検索・詳細取得）
+#   - 位置情報による検索（円内検索・近傍検索）
+#   - ジャンル・市区町村によるフィルタリング
+#   - AIによるジャンル自動判定
+#
+# 関連モデル:
+#   - Plan: plan_spots を通じて多対多
+#   - Genre: spot_genres を通じて多対多
+#   - User: favorite_spots を通じてお気に入り
+#
 class Spot < ApplicationRecord
   # Associations
   has_many :favorite_spots, dependent: :destroy
@@ -46,6 +59,28 @@ class Spot < ApplicationRecord
     where("#{distance_sql} <= ?", center_lat, center_lng, radius_km)
   }
 
+  # place_idからSpotを検索/作成し、写真URLも返す
+  # @param place_id [String] Google Place ID
+  # @param fallback [Hash] { name:, address:, lat:, lng: } 新規作成時のフォールバック値
+  # @return [Array(Spot, Array)] [spot, photo_urls]
+  def self.find_or_create_with_photos(place_id:, fallback: {})
+    return [ nil, [] ] if place_id.blank?
+
+    spot = find_or_initialize_by(place_id: place_id)
+    details = GoogleApi::Places.fetch_details(place_id, include_photos: true)
+
+    if spot.new_record?
+      spot.update!(
+        name: details&.dig(:name) || fallback[:name] || "名称不明",
+        address: details&.dig(:address) || fallback[:address] || "住所不明",
+        lat: fallback[:lat],
+        lng: fallback[:lng]
+      )
+    end
+
+    [ spot, details&.dig(:photo_urls) || [] ]
+  end
+
   # 座標から既存Spotを検索、なければPlaces APIで検索して作成
   # @return [Spot, nil]
   def self.find_or_create_from_location(name:, address:, lat:, lng:)
@@ -56,7 +91,7 @@ class Spot < ApplicationRecord
     return existing if existing
 
     # 2. Google Places APIで検索
-    place = Spot::GoogleClient.find_by_name(name, lat: lat, lng: lng)
+    place = GoogleApi::Places.find_by_name(name, lat: lat, lng: lng)
     return nil unless place
 
     # 3. place_idで検索、なければ作成
@@ -183,6 +218,17 @@ class Spot < ApplicationRecord
     [ prefecture, city, town ].compact_blank.join
   end
 
+  # 関連スポット（近く + 同じジャンル）
+  def related_spots(limit: 5)
+    return Spot.none if lat.blank? || lng.blank? || genre_ids.blank?
+
+    Spot.within_circle(lat, lng, 5)
+        .filter_by_genres(genre_ids)
+        .where.not(id: id)
+        .includes(:genres)
+        .limit(limit)
+  end
+
   # スポットカード表示用データを一括プリロード（N+1回避）
   # @param spots [Array<Spot>] スポット配列
   # @param user [User, nil] ログインユーザー
@@ -212,12 +258,14 @@ class Spot < ApplicationRecord
 
   private
 
-  # prefecture/city/town が未設定なら ReverseGeocoder で補完
+  # prefecture/city/town が未設定なら GoogleApi::Geocoder で補完
   def geocode_if_needed
     return if prefecture.present? && city.present? && town.present?
     return unless lat.present? && lng.present?
 
-    result = ReverseGeocoder.lookup_address(lat: lat, lng: lng)
+    result = GoogleApi::Geocoder.reverse(lat: lat, lng: lng)
+    return unless result
+
     updates = {}
     updates[:prefecture] = result[:prefecture] if prefecture.blank? && result[:prefecture].present?
     updates[:city] = result[:city] if city.blank? && result[:city].present?

@@ -16,8 +16,7 @@ class InfowindowsController < ApplicationController
   # POST /infowindow
   # JS fetch用（既存互換：クライアントから photo_urls を受け取る）
   def create
-    @place_details = nil
-    @spot = find_or_create_spot
+    @spot, _ = find_spot_and_photos
     @photo_urls = params[:photo_urls] || []
     @show_button = params[:show_button].to_s != "false"
     @button_label = params[:button_label]
@@ -39,8 +38,7 @@ class InfowindowsController < ApplicationController
   end
 
   def render_spot
-    @spot = find_or_create_spot
-    @photo_urls = fetch_photo_urls
+    @spot, @photo_urls = find_spot_and_photos
     @show_button = params[:show_button].to_s != "false"
     @button_label = params[:button_label]
     @map_mode = params[:map_mode]
@@ -67,40 +65,21 @@ class InfowindowsController < ApplicationController
     @zoom_scale ||= MapHelper::INFOWINDOW_ZOOM_SCALES[zoom_index] || "md"
   end
 
-  def find_or_create_spot
-    # spot_idが指定されていれば既存spotを返す
-    return Spot.find(params[:spot_id]) if params[:spot_id].present?
-
-    # place_idで検索/作成
-    return nil if params[:place_id].blank?
-
-    spot = Spot.find_or_initialize_by(place_id: params[:place_id])
-
-    if spot.new_record?
-      # Google API で name/address を取得
-      @place_details = Spot::GoogleClient.fetch_details(params[:place_id], include_photos: true)
-      spot.update!(
-        name: @place_details&.dig(:name) || params[:name] || "名称不明",
-        address: @place_details&.dig(:address) || params[:address] || "住所不明",
-        lat: params[:lat],
-        lng: params[:lng]
+  # spot_id または place_id から Spot と写真URLを取得
+  # @return [Array(Spot, Array)] [spot, photo_urls]
+  def find_spot_and_photos
+    if params[:spot_id].present?
+      spot = Spot.find(params[:spot_id])
+      details = GoogleApi::Places.fetch_details(spot.place_id, include_photos: true)
+      [ spot, details&.dig(:photo_urls) || [] ]
+    elsif params[:place_id].present?
+      Spot.find_or_create_with_photos(
+        place_id: params[:place_id],
+        fallback: { name: params[:name], address: params[:address], lat: params[:lat], lng: params[:lng] }
       )
+    else
+      [ nil, [] ]
     end
-
-    spot
-  end
-
-  # 写真URLを取得（spotId/placeId どちらでも対応）
-  def fetch_photo_urls
-    # 新規spot作成時は @place_details から取得済み
-    return @place_details[:photo_urls] if @place_details&.dig(:photo_urls).present?
-
-    # 既存spotの場合、place_id で写真を取得
-    place_id = @spot&.place_id || params[:place_id]
-    return [] if place_id.blank?
-
-    details = Spot::GoogleClient.fetch_details(place_id, include_photos: true)
-    details&.dig(:photo_urls) || []
   end
 
   def find_plan_spot_id

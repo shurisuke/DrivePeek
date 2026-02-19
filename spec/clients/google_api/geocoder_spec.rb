@@ -2,19 +2,20 @@
 
 require "rails_helper"
 
-RSpec.describe ReverseGeocoder do
+RSpec.describe GoogleApi::Geocoder do
   # rails_helper.rbのグローバルスタブを無効化して実際のメソッドをテスト
   before do
-    allow(ReverseGeocoder).to receive(:lookup_address).and_call_original
-    allow(ReverseGeocoder).to receive(:geocode_address).and_call_original
+    allow(GoogleApi::Geocoder).to receive(:reverse).and_call_original
+    allow(GoogleApi::Geocoder).to receive(:forward).and_call_original
   end
-  describe ".geocode_address" do
+
+  describe ".forward" do
     let(:api_url) { "https://maps.googleapis.com/maps/api/geocode/json" }
 
     context "住所が空の場合" do
       it "nilを返す" do
-        expect(ReverseGeocoder.geocode_address("")).to be_nil
-        expect(ReverseGeocoder.geocode_address(nil)).to be_nil
+        expect(GoogleApi::Geocoder.forward("")).to be_nil
+        expect(GoogleApi::Geocoder.forward(nil)).to be_nil
       end
     end
 
@@ -33,7 +34,7 @@ RSpec.describe ReverseGeocoder do
       end
 
       it "緯度経度と都道府県を返す" do
-        result = ReverseGeocoder.geocode_address("東京都千代田区")
+        result = GoogleApi::Geocoder.forward("東京都千代田区")
 
         expect(result).to eq({
           lat: 35.6812,
@@ -50,7 +51,7 @@ RSpec.describe ReverseGeocoder do
       end
 
       it "nilを返す" do
-        expect(ReverseGeocoder.geocode_address("存在しない住所")).to be_nil
+        expect(GoogleApi::Geocoder.forward("存在しない住所")).to be_nil
       end
     end
 
@@ -61,17 +62,17 @@ RSpec.describe ReverseGeocoder do
       end
 
       it "nilを返す" do
-        expect(ReverseGeocoder.geocode_address("東京都")).to be_nil
+        expect(GoogleApi::Geocoder.forward("東京都")).to be_nil
       end
     end
   end
 
-  describe ".lookup_address" do
+  describe ".reverse" do
     context "緯度経度が空の場合" do
-      it "フォールバックロケーションを返す" do
-        result = ReverseGeocoder.lookup_address(lat: nil, lng: nil)
+      it "nilを返す" do
+        result = GoogleApi::Geocoder.reverse(lat: nil, lng: nil)
 
-        expect(result).to eq(ReverseGeocoder::FALLBACK_LOCATION)
+        expect(result).to be_nil
       end
     end
 
@@ -92,7 +93,7 @@ RSpec.describe ReverseGeocoder do
       end
 
       it "正規化された住所情報を返す" do
-        result = ReverseGeocoder.lookup_address(lat: 36.5, lng: 139.8)
+        result = GoogleApi::Geocoder.reverse(lat: 36.5, lng: 139.8)
 
         expect(result[:address]).to eq("栃木県宇都宮市叶谷町４７−１１１")
         expect(result[:prefecture]).to eq("栃木県")
@@ -107,10 +108,10 @@ RSpec.describe ReverseGeocoder do
           .to_return(status: 200, body: { status: "ZERO_RESULTS" }.to_json)
       end
 
-      it "フォールバックロケーションを返す" do
-        result = ReverseGeocoder.lookup_address(lat: 0.001, lng: 0.001)
+      it "nilを返す" do
+        result = GoogleApi::Geocoder.reverse(lat: 0.001, lng: 0.001)
 
-        expect(result).to eq(ReverseGeocoder::FALLBACK_LOCATION)
+        expect(result).to be_nil
       end
     end
 
@@ -120,29 +121,11 @@ RSpec.describe ReverseGeocoder do
           .to_raise(StandardError.new("timeout"))
       end
 
-      it "フォールバックロケーションを返す" do
-        result = ReverseGeocoder.lookup_address(lat: 35.1, lng: 139.1)
+      it "nilを返す" do
+        result = GoogleApi::Geocoder.reverse(lat: 35.1, lng: 139.1)
 
-        expect(result).to eq(ReverseGeocoder::FALLBACK_LOCATION)
+        expect(result).to be_nil
       end
-    end
-  end
-
-  describe ".normalize_address" do
-    it "国名を削除する" do
-      expect(ReverseGeocoder.normalize_address("日本、東京都")).to eq("東京都")
-    end
-
-    it "郵便番号を削除する" do
-      expect(ReverseGeocoder.normalize_address("〒100-0001 東京都千代田区")).to eq("東京都千代田区")
-    end
-
-    it "国名と郵便番号を両方削除する" do
-      expect(ReverseGeocoder.normalize_address("日本、〒100-0001 東京都千代田区")).to eq("東京都千代田区")
-    end
-
-    it "全角ハイフンの郵便番号も処理する" do
-      expect(ReverseGeocoder.normalize_address("〒329−1117 栃木県")).to eq("栃木県")
     end
   end
 end

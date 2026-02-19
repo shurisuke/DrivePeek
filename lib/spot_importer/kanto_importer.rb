@@ -90,7 +90,7 @@ module SpotImporter
     def fetch_with_retry(query, grid, max_retries: 3)
       retries = 0
       begin
-        Spot::GoogleClient.text_search(
+        GoogleApi::Places.text_search(
           query,
           lat: grid[:lat],
           lng: grid[:lng],

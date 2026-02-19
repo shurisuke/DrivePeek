@@ -6,7 +6,6 @@
 # スポット検索は Suggestion::SpotFinder、プロンプト生成は Suggestion::PromptBuilder に委譲
 #
 class Suggestion::Generator
-  MODEL = "gpt-4o-mini".freeze
   MAX_TOKENS = 1024
 
   class << self
@@ -18,7 +17,7 @@ class Suggestion::Generator
     # @param slots [Array<Hash>] [{ genre_id: 5 }, ...] スロットごとのジャンル指定
     # @return [Hash] { type:, message:, spots:, closing: }
     def generate(plan:, center_lat:, center_lng:, radius_km:, slots: [], priority_genre_ids: [])
-      return error_response("API設定エラー") unless api_key_configured?
+      return error_response("API設定エラー") unless Openai.configured?
 
       finder = Suggestion::SpotFinder.new(center_lat, center_lng, radius_km)
 
@@ -57,20 +56,13 @@ class Suggestion::Generator
 
     private
 
-    def api_key_configured?
-      ENV["OPENAI_API_KEY"].present?
-    end
-
     # OpenAI API呼び出し（純粋なAPI通信のみ）
     # @return [Hash] パース済みJSONレスポンス
     def call_openai_api(prompt)
-      response = openai_client.chat(
-        parameters: {
-          model: MODEL,
-          max_tokens: MAX_TOKENS,
-          response_format: { type: "json_object" },
-          messages: [ { role: "system", content: prompt } ]
-        }
+      response = Openai.chat(
+        messages: [ { role: "system", content: prompt } ],
+        max_tokens: MAX_TOKENS,
+        response_format: { type: "json_object" }
       )
 
       content = response.dig("choices", 0, "message", "content")
@@ -135,10 +127,6 @@ class Suggestion::Generator
         spots: spots_for_response,
         closing: ai_result[:closing] || "気になるスポットがあればプランに追加してください！"
       }
-    end
-
-    def openai_client
-      @openai_client ||= OpenAI::Client.new(access_token: ENV["OPENAI_API_KEY"])
     end
 
     def error_response(message)

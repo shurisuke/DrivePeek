@@ -23,7 +23,7 @@ RSpec.describe SpotImporter::KantoImporter do
 
   describe "#run" do
     before do
-      allow(Spot::GoogleClient).to receive(:text_search).and_return([ api_result ])
+      allow(GoogleApi::Places).to receive(:text_search).and_return([ api_result ])
     end
 
     context "テストモード" do
@@ -54,7 +54,7 @@ RSpec.describe SpotImporter::KantoImporter do
   describe "リトライロジック" do
     it "一時的なエラー後にリトライで成功する" do
       first_call = true
-      allow(Spot::GoogleClient).to receive(:text_search) do
+      allow(GoogleApi::Places).to receive(:text_search) do
         if first_call
           first_call = false
           raise StandardError, "API error"
@@ -72,7 +72,7 @@ RSpec.describe SpotImporter::KantoImporter do
     end
 
     it "3回リトライ後も失敗したらエラーをカウントする" do
-      allow(Spot::GoogleClient).to receive(:text_search).and_raise(StandardError, "Persistent error")
+      allow(GoogleApi::Places).to receive(:text_search).and_raise(StandardError, "Persistent error")
       allow(importer).to receive(:sleep)
 
       # エラーが発生してもクラッシュしない

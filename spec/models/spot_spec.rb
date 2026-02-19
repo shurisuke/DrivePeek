@@ -170,8 +170,8 @@ RSpec.describe Spot, type: :model do
     before do
       stub_google_places_api
       stub_google_geocoding_api
-      # Spot::GoogleClientのモック
-      allow(Spot::GoogleClient).to receive(:find_by_name).and_return({
+      # GoogleApi::Placesのモック
+      allow(GoogleApi::Places).to receive(:find_by_name).and_return({
         place_id: "ChIJtest_new_place",
         name: name,
         lat: lat,

@@ -1,12 +1,13 @@
 # frozen_string_literal: true
 
-require "net/http"
-require "uri"
-require "json"
-
-# Google Places API クライアント
-# スポット検索と詳細取得を統合
-class Spot::GoogleClient
+# 責務: Google Places API を呼び出し、スポット情報を取得する
+#
+# 提供メソッド:
+#   - find_by_name: 名前からスポットを検索
+#   - fetch_details: place_idから詳細を取得
+#   - text_search: テキスト検索で複数スポットを取得
+#
+class GoogleApi::Places
   FIND_PLACE_API_URL = "https://maps.googleapis.com/maps/api/place/findplacefromtext/json"
   TEXT_SEARCH_API_URL = "https://maps.googleapis.com/maps/api/place/textsearch/json"
   DETAILS_API_URL = "https://maps.googleapis.com/maps/api/place/details/json"
@@ -22,10 +23,10 @@ class Spot::GoogleClient
       return nil if name.blank?
 
       uri = build_find_place_uri(name, lat, lng)
-      json = fetch_json(uri)
+      json = GoogleApi.fetch_json(uri)
       parse_find_place_response(json)
     rescue StandardError => e
-      Rails.logger.error "[Spot::GoogleClient] find_by_name error: #{e.message}"
+      Rails.logger.error "[GoogleApi::Places] find_by_name error: #{e.message}"
       nil
     end
 
@@ -37,10 +38,10 @@ class Spot::GoogleClient
       return nil if place_id.blank?
 
       uri = build_details_uri(place_id, include_photos)
-      json = fetch_json(uri)
+      json = GoogleApi.fetch_json(uri)
       parse_details_response(json, place_id)
     rescue StandardError => e
-      Rails.logger.error "[Spot::GoogleClient] fetch_details error: #{e.message}"
+      Rails.logger.error "[GoogleApi::Places] fetch_details error: #{e.message}"
       nil
     end
 
@@ -54,31 +55,14 @@ class Spot::GoogleClient
       return [] if query.blank?
 
       uri = build_text_search_uri(query, lat, lng, radius)
-      json = fetch_json(uri)
+      json = GoogleApi.fetch_json(uri)
       parse_text_search_response(json)
     rescue StandardError => e
-      Rails.logger.error "[Spot::GoogleClient] text_search error: #{e.message}"
+      Rails.logger.error "[GoogleApi::Places] text_search error: #{e.message}"
       []
     end
 
     private
-
-    # 共通HTTP処理
-    def fetch_json(uri)
-      http = Net::HTTP.new(uri.host, uri.port)
-      http.use_ssl = true
-      http.open_timeout = 5
-      http.read_timeout = 5
-
-      request = Net::HTTP::Get.new(uri.request_uri)
-      response = http.request(request)
-
-      JSON.parse(response.body)
-    end
-
-    def api_key
-      ENV["GOOGLE_MAPS_API_KEY"]
-    end
 
     # --- find_by_name 関連 ---
 
@@ -90,7 +74,7 @@ class Spot::GoogleClient
         inputtype: "textquery",
         fields: "place_id,name,geometry",
         language: "ja",
-        key: api_key
+        key: GoogleApi.api_key
       }
 
       # 位置バイアス（指定座標付近を優先）
@@ -102,7 +86,7 @@ class Spot::GoogleClient
 
     def parse_find_place_response(json)
       unless json["status"] == "OK"
-        Rails.logger.warn "[Spot::GoogleClient] find_by_name API status: #{json['status']}"
+        Rails.logger.warn "[GoogleApi::Places] find_by_name API status: #{json['status']}"
         return nil
       end
 
@@ -130,7 +114,7 @@ class Spot::GoogleClient
       uri.query = URI.encode_www_form({
         place_id: place_id,
         fields: fields.join(","),
-        key: api_key,
+        key: GoogleApi.api_key,
         language: "ja"
       })
       uri
@@ -138,14 +122,14 @@ class Spot::GoogleClient
 
     def parse_details_response(json, place_id)
       unless json["status"] == "OK"
-        Rails.logger.warn "[Spot::GoogleClient] fetch_details API error: #{json['status']} for place_id=#{place_id}"
+        Rails.logger.warn "[GoogleApi::Places] fetch_details API error: #{json['status']} for place_id=#{place_id}"
         return nil
       end
 
       result = json["result"]
       {
         name: result["name"],
-        address: normalize_address(result["formatted_address"]),
+        address: GoogleApi.normalize_address(result["formatted_address"]),
         photo_urls: build_photo_urls(result["photos"])
       }
     end
@@ -157,18 +141,8 @@ class Spot::GoogleClient
         ref = photo["photo_reference"]
         next if ref.blank?
 
-        "#{PHOTO_API_URL}?maxwidth=#{max_width}&photo_reference=#{ref}&key=#{api_key}"
+        "#{PHOTO_API_URL}?maxwidth=#{max_width}&photo_reference=#{ref}&key=#{GoogleApi.api_key}"
       end
-    end
-
-    def normalize_address(address)
-      return nil if address.blank?
-
-      a = address.dup
-      a.sub!(/\A日本[、,\s]*/u, "")
-      a.sub!(/\A〒\s*\d{3}[‐-‒–—−-]\d{4}\s*/u, "")
-      a.sub!(/\A[、,\s]+/u, "")
-      a.strip
     end
 
     # --- text_search 関連 ---
@@ -181,14 +155,14 @@ class Spot::GoogleClient
         location: "#{lat},#{lng}",
         radius: radius,
         language: "ja",
-        key: api_key
+        key: GoogleApi.api_key
       })
       uri
     end
 
     def parse_text_search_response(json)
       unless json["status"] == "OK" || json["status"] == "ZERO_RESULTS"
-        Rails.logger.warn "[Spot::GoogleClient] text_search API status: #{json['status']}"
+        Rails.logger.warn "[GoogleApi::Places] text_search API status: #{json['status']}"
         return []
       end
 
@@ -198,7 +172,7 @@ class Spot::GoogleClient
         {
           place_id: result["place_id"],
           name: result["name"],
-          address: normalize_address(result["formatted_address"]),
+          address: GoogleApi.normalize_address(result["formatted_address"]),
           lat: location&.dig("lat"),
           lng: location&.dig("lng")
         }
