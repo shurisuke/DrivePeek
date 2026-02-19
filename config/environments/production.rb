@@ -3,9 +3,11 @@ require "active_support/core_ext/integer/time"
 Rails.application.configure do
   # ホスト制限対策
   config.hosts << "drivepeek.onrender.com"
+  config.hosts << "drivepeek.app"
+  config.hosts << "www.drivepeek.app"
 
   # デフォルトURL設定（OGP等の絶対URL生成用）
-  config.action_controller.default_url_options = { host: "drivepeek.onrender.com", protocol: "https" }
+  config.action_controller.default_url_options = { host: "drivepeek.app", protocol: "https" }
 
   # Settings specified here will take precedence over those in config/application.rb.
 
@@ -64,7 +66,7 @@ Rails.application.configure do
   # config.action_mailer.raise_delivery_errors = false
 
   # Set host to be used by links generated in mailer templates.
-  config.action_mailer.default_url_options = { host: "drivepeek.onrender.com", protocol: "https" }
+  config.action_mailer.default_url_options = { host: "drivepeek.app", protocol: "https" }
 
   # Resend でメール送信
   config.action_mailer.delivery_method = :resend
