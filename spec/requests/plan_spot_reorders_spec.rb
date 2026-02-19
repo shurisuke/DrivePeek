@@ -13,11 +13,6 @@ RSpec.describe "PlanSpotReorders", type: :request do
   let!(:plan_spot2) { create(:plan_spot, plan: plan, spot: spot2, position: 2) }
   let!(:plan_spot3) { create(:plan_spot, plan: plan, spot: spot3, position: 3) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "PATCH /plans/:plan_id/plan_spots/reorder" do
     let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 

@@ -10,11 +10,6 @@ RSpec.describe "PlanSpots", type: :request do
   let(:spot) { create(:spot) }
   let(:turbo_stream_headers) { { "Accept" => "text/vnd.turbo-stream.html" } }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "POST /plans/:plan_id/plan_spots" do
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
@@ -73,78 +68,13 @@ RSpec.describe "PlanSpots", type: :request do
     context "ログイン済み・自分のプランの場合" do
       before { sign_in user }
 
-      describe "toll_used更新" do
-        it "有料道路設定をtrueに更新する" do
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { toll_used: true },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.toll_used).to be true
-        end
-
-        it "有料道路設定をfalseに更新する" do
-          plan_spot.update!(toll_used: true)
-
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { toll_used: false },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.toll_used).to be false
-        end
-      end
-
-      describe "memo更新" do
-        it "メモを更新する" do
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { memo: "ここでランチ" },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.memo).to eq("ここでランチ")
-        end
-
-        it "メモを空にする" do
-          plan_spot.update!(memo: "既存メモ")
-
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { memo: "" },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.memo).to eq("")
-        end
-      end
-
-      describe "stay_duration更新" do
-        it "滞在時間を更新する" do
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { stay_duration: 60 },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.stay_duration).to eq(60)
-        end
-
-        it "滞在時間を0にする" do
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { stay_duration: 0 },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.stay_duration).to eq(0)
-        end
-
-        it "滞在時間を空にする（nil）" do
-          patch plan_plan_spot_path(plan, plan_spot),
-                params: { stay_duration: "" },
-                headers: turbo_stream_headers
-
-          expect(response).to have_http_status(:ok)
-          expect(plan_spot.reload.stay_duration).to be_nil
-        end
-      end
+      it_behaves_like "PlanSpot属性更新", :toll_used, true
+      it_behaves_like "PlanSpot属性更新", :toll_used, false
+      it_behaves_like "PlanSpot属性更新", :memo, "ここでランチ"
+      it_behaves_like "PlanSpot属性更新", :memo, ""
+      it_behaves_like "PlanSpot属性更新", :stay_duration, 60
+      it_behaves_like "PlanSpot属性更新", :stay_duration, 0
+      it_behaves_like "PlanSpot属性をnilに更新", :stay_duration
     end
 
     context "他人のプランのplan_spotの場合" do

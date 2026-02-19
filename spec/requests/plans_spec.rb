@@ -6,11 +6,6 @@ RSpec.describe "Plans", type: :request do
   let(:user) { create(:user) }
   let(:other_user) { create(:user) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "GET /plans" do
     context "ログイン済みの場合" do
       before { sign_in user }
@@ -109,6 +104,24 @@ RSpec.describe "Plans", type: :request do
         post plans_path, params: { lat: 35.6762, lng: 139.6503 }
 
         expect(Plan.last.user).to eq(user)
+      end
+
+      context "copy_fromパラメータがある場合" do
+        let!(:source_plan) { create(:plan, :with_spots, user: other_user, title: "コピー元プラン") }
+
+        it "コピー元プランのスポットをコピーする" do
+          post plans_path, params: { lat: 35.6762, lng: 139.6503, copy_from: source_plan.id }
+
+          new_plan = Plan.last
+          expect(new_plan.plan_spots.count).to eq(source_plan.plan_spots.count)
+          expect(new_plan.title).to eq("コピー元プラン")
+        end
+
+        it "存在しないcopy_fromは無視される" do
+          post plans_path, params: { lat: 35.6762, lng: 139.6503, copy_from: 999999 }
+
+          expect(Plan.last.plan_spots.count).to eq(0)
+        end
       end
     end
 

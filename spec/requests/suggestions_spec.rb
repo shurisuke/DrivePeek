@@ -16,11 +16,6 @@ RSpec.describe "Suggestions", type: :request do
     }
   end
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "POST /suggestions/suggest" do
     context "プランモード" do
       let!(:genre_food) { create(:genre, name: "ごはん", slug: "food") }

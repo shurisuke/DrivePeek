@@ -7,11 +7,6 @@ RSpec.describe "SuggestionHistory", type: :request do
   let(:other_user) { create(:user) }
   let(:plan) { create(:plan, user: user) }
 
-  before do
-    stub_google_geocoding_api
-    stub_google_directions_api
-  end
-
   describe "DELETE /suggestion_history" do
     before do
       create(:suggestion, :user_message, user: user, plan: plan)
