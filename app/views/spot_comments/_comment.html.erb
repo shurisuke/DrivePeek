@@ -26,7 +26,7 @@
       <span class="dp-comment__profile">
         <%= current_user == comment.user ? "自分" : (comment.user.comment_profile.presence || "ユーザー") %>
       </span>
-      <span class="dp-comment__date"><%= comment.created_at.strftime("%-m/%-d") %></span>
+      <span class="dp-comment__date"><%= format_date_short(comment.created_at) %></span>
     </div>
   </div>
 </div>

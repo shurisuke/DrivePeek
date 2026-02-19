@@ -9,11 +9,13 @@ export default class extends Controller {
   static values = {
     url: { type: String, default: "/plans" },
     defaultLat: { type: Number, default: 35.681236 },
-    defaultLng: { type: Number, default: 139.767125 }
+    defaultLng: { type: Number, default: 139.767125 },
+    copyFrom: { type: Number, default: 0 }
   }
 
   create(event) {
     event.preventDefault()
+    this.showLoading()
 
     if (navigator.geolocation) {
       navigator.geolocation.getCurrentPosition(
@@ -32,6 +34,11 @@ export default class extends Controller {
   }
 
   sendRequest(lat, lng) {
+    const body = { lat, lng }
+    if (this.copyFromValue > 0) {
+      body.copy_from = this.copyFromValue
+    }
+
     // NOTE: リダイレクトレスポンスを期待するため api_client.post は使用しない
     fetch(this.urlValue, {
       method: "POST",
@@ -39,13 +46,42 @@ export default class extends Controller {
         "Content-Type": "application/json",
         "X-CSRF-Token": getCsrfToken()
       },
-      body: JSON.stringify({ lat, lng })
+      body: JSON.stringify(body)
     }).then((response) => {
       if (response.redirected) {
         window.location.href = response.url
       } else {
+        this.hideLoading()
         alert("プラン作成に失敗しました")
       }
+    }).catch(() => {
+      this.hideLoading()
+      alert("プラン作成に失敗しました")
     })
+  }
+
+  showLoading() {
+    // 既存のローディング要素があれば使用、なければ作成
+    let overlay = document.getElementById("create-plan-loading")
+    if (!overlay) {
+      overlay = document.createElement("div")
+      overlay.id = "create-plan-loading"
+      overlay.className = "create-plan-loading"
+      overlay.innerHTML = `
+        <div class="create-plan-loading__content">
+          <i class="fa-solid fa-spinner fa-spin fa-2x"></i>
+          <p>プランを準備しています...</p>
+        </div>
+      `
+      document.body.appendChild(overlay)
+    }
+    overlay.hidden = false
+  }
+
+  hideLoading() {
+    const overlay = document.getElementById("create-plan-loading")
+    if (overlay) {
+      overlay.hidden = true
+    }
   }
 }
