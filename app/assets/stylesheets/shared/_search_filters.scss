@@ -467,6 +467,20 @@
   }
 }
 
+/* 円エリア検索: デフォルト非表示、plan-form内で表示 */
+.search-filters__circle-area {
+  display: none;
+}
+
+.plan-form .search-filters__circle-area {
+  display: block;
+}
+
+/* エリア選択ボタン: デフォルト表示、plan-form内で非表示 */
+.plan-form .search-filters__area-btn {
+  display: none;
+}
+
 /* 選択リスト（iOS/Mac風） */
 $ios-blue: #007AFF;
 $ios-separator: rgba(60, 60, 67, 0.12);
