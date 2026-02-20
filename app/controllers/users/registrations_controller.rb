@@ -1,6 +1,12 @@
 class Users::RegistrationsController < Devise::RegistrationsController
   before_action :configure_permitted_parameters
 
+  # 新規登録画面表示時にリダイレクト先をセッションに保存
+  def new
+    store_redirect_path
+    super
+  end
+
   # /users/edit へのアクセスは設定画面にリダイレクト
   def edit
     redirect_to settings_path
@@ -46,6 +52,12 @@ class Users::RegistrationsController < Devise::RegistrationsController
   end
 
   private
+
+  # redirect_toパラメータをセッションに保存
+  def store_redirect_path
+    path = params[:redirect_to]
+    session[:redirect_after_auth] = path if path.present? && path.start_with?("/")
+  end
 
   def sign_in_after_change_password?
     Devise.sign_in_after_change_password

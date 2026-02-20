@@ -3,7 +3,7 @@
 
     <% if params[:method] == "email" %>
       <div class="auth-header">
-        <%= link_to new_user_session_path, class: "auth-back-link" do %>
+        <%= link_to new_user_session_path(redirect_to: params[:redirect_to]), class: "auth-back-link" do %>
           <i class="bi bi-arrow-left"></i>
         <% end %>
         <h2 class="auth-title">ログイン</h2>
@@ -44,7 +44,7 @@
       <div class="auth-divider">または</div>
 
       <div class="auth-links">
-        <%= link_to "アカウントを作成", new_user_registration_path %>
+        <%= link_to "アカウントを作成", new_user_registration_path(redirect_to: params[:redirect_to]) %>
         <%= link_to "パスワードをお忘れですか？", new_user_password_path %>
       </div>
 
@@ -52,7 +52,7 @@
       <p class="auth-description">ログイン方法を選択してください</p>
 
       <div class="auth-buttons">
-        <%= link_to new_user_session_path(method: :email), class: "auth-btn auth-btn--email" do %>
+        <%= link_to new_user_session_path(method: :email, redirect_to: params[:redirect_to]), class: "auth-btn auth-btn--email" do %>
           <i class="bi bi-envelope"></i>メールアドレスでログイン
         <% end %>
 
@@ -72,7 +72,7 @@
       <div class="auth-divider">または</div>
 
       <div class="auth-links">
-        <%= link_to "アカウントを作成", new_user_registration_path %>
+        <%= link_to "アカウントを作成", new_user_registration_path(redirect_to: params[:redirect_to]) %>
       </div>
     <% end %>
   </div>

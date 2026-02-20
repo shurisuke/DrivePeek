@@ -2,9 +2,15 @@ class Users::SessionsController < Devise::SessionsController
   # ログイン時に自動でremember_meを有効化
   before_action :configure_sign_in_params, only: [ :create ]
 
-  # ログイン後のリダイレクト先をプラン作成エントリー画面に変更
+  # ログイン画面表示時にリダイレクト先をセッションに保存
+  def new
+    store_redirect_path
+    super
+  end
+
+  # ログイン後のリダイレクト先
   def after_sign_in_path_for(resource)
-    new_plan_path
+    session.delete(:redirect_after_auth) || new_plan_path
   end
 
   # ログアウト後のリダイレクト先をログイン前トップページへ変更
@@ -18,5 +24,11 @@ class Users::SessionsController < Devise::SessionsController
   def configure_sign_in_params
     params[:user] ||= {}
     params[:user][:remember_me] = "1"
+  end
+
+  # redirect_toパラメータをセッションに保存
+  def store_redirect_path
+    path = params[:redirect_to]
+    session[:redirect_after_auth] = path if path.present? && path.start_with?("/")
   end
 end

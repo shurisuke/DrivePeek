@@ -2,7 +2,7 @@
   <div class="auth-card">
     <% if params[:method] == "email" || resource.errors.any? %>
       <div class="auth-header">
-        <%= link_to new_user_registration_path, class: "auth-back-link" do %>
+        <%= link_to new_user_registration_path(redirect_to: params[:redirect_to]), class: "auth-back-link" do %>
           <i class="bi bi-arrow-left"></i>
         <% end %>
         <h2 class="auth-title">新規登録</h2>
@@ -55,7 +55,7 @@
       <p class="auth-description">登録方法を選択してください</p>
 
       <div class="auth-buttons">
-        <%= link_to new_user_registration_path(method: :email), class: "auth-btn auth-btn--email" do %>
+        <%= link_to new_user_registration_path(method: :email, redirect_to: params[:redirect_to]), class: "auth-btn auth-btn--email" do %>
           <i class="bi bi-envelope"></i>メールアドレスで登録
         <% end %>
 
@@ -75,7 +75,7 @@
       <div class="auth-divider">または</div>
 
       <div class="auth-links">
-        <%= link_to "すでにアカウントをお持ちですか？", new_user_session_path %>
+        <%= link_to "すでにアカウントをお持ちですか？", new_user_session_path(redirect_to: params[:redirect_to]) %>
       </div>
     <% end %>
   </div>

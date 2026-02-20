@@ -33,14 +33,15 @@ class Users::OmniauthCallbacksController < Devise::OmniauthCallbacksController
       # 既存ユーザー：通常ログイン
       flash[:notice] = "#{provider_name}でログインしました"
       sign_in @user, event: :authentication
-      redirect_to new_plan_path
+      redirect_path = session.delete(:redirect_after_auth) || new_plan_path
+      redirect_to redirect_path
     else
       # 新規ユーザー：直接登録
       @user = User.create_from_omniauth(auth)
       if @user.persisted?
         flash[:notice] = "#{provider_name}で登録しました"
         sign_in @user, event: :authentication
-        # 新規登録後はプロフィール設定ページへ
+        # 新規登録後はプロフィール設定ページへ（セッションはそのまま保持）
         redirect_to profile_settings_path(from: "signup")
       else
         # エラー詳細を表示
