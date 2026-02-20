@@ -134,6 +134,11 @@
 }
 
 .tab-community {
+  /* ナビバー内ではcontainer queryを無効化（Turbo Frame更新時のがたつき防止） */
+  .list-page {
+    container-type: normal;
+  }
+
   .list-page__cards {
     justify-items: center;
   }
