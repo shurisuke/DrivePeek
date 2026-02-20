@@ -1,5 +1,7 @@
 <%# みんなのプランタブ: Turbo Frame で CommunityController から読み込み %>
 
 <div class="community-tab-content">
-  <%= turbo_frame_tag "community_content", src: community_path, autoscroll: true %>
+  <%= turbo_frame_tag "community_content",
+                      src: community_path,
+                      data: { controller: "community-tab--scroll" } %>
 </div>
