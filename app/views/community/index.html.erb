@@ -3,7 +3,7 @@
 <div class="list-page list-page--two-column">
   <h1 class="list-page__title">みんなの旅</h1>
 
-  <%= turbo_frame_tag "community_content" do %>
+  <%= turbo_frame_tag "community_content", data: { controller: "community-tab--scroll" } do %>
     <div class="list-page__content">
       <%# 左サイドバー: 検索フォーム %>
       <div class="list-page__sidebar">
