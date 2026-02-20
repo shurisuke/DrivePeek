@@ -85,8 +85,7 @@
           <div class="spot-detail__main">
             <%= render "shared/spot_card",
                        spot: @spot,
-                       favorite_spot: @favorite_spot,
-                       preview_mode: false %>
+                       favorite_spot: @favorite_spot %>
           </div>
 
           <%# 関連スポット %>
@@ -98,8 +97,7 @@
                   <%= render "shared/spot_card",
                              spot: related_spot,
                              favorite_spot: @related_preload[:user_favorite_spots][related_spot.id],
-                             spot_stats: @related_preload[:spot_stats][related_spot.id],
-                             preview_mode: true %>
+                             spot_stats: @related_preload[:spot_stats][related_spot.id] %>
                 <% end %>
               </div>
             </div>
