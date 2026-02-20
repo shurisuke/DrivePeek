@@ -3,76 +3,41 @@
 <div class="list-page list-page--two-column">
   <h1 class="list-page__title">お気に入り</h1>
 
-  <div class="list-page__content">
-  <%# 左サイドバー: 検索フォーム %>
-  <div class="list-page__sidebar">
-    <%= render "shared/search_form",
-               form_url: favorites_path,
-               search_type: @search_type,
-               selected_cities: @selected_cities,
-               cities_by_prefecture: @cities_by_prefecture,
-               genres_by_category: @genres_by_category,
-               selected_genre_ids: @selected_genre_ids,
-               search_query: @search_query %>
+  <%= turbo_frame_tag "favorites_content" do %>
+    <div class="list-page__content">
+      <%# 左サイドバー: 検索フォーム %>
+      <div class="list-page__sidebar">
+        <%= render "shared/search_form",
+                   form_url: favorites_path,
+                   turbo_frame: "favorites_content",
+                   search_type: @search_type,
+                   selected_cities: @selected_cities,
+                   cities_by_prefecture: @cities_by_prefecture,
+                   genres_by_category: @genres_by_category,
+                   selected_genre_ids: @selected_genre_ids,
+                   search_query: @search_query %>
 
-    <%= render "shared/results_bar",
-               count: @search_type == "spot" ? @spots_count : @plans_count,
-               count_label: @search_type == "spot" ? "スポット" : "プラン",
-               sort: @sort,
-               sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
-  </div>
+        <%= render "shared/results_bar",
+                   count: @search_type == "spot" ? @spots_count : @plans_count,
+                   count_label: @search_type == "spot" ? "スポット" : "プラン",
+                   sort: @sort,
+                   sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
+      </div>
 
-  <%# 右メイン: カード一覧 + ページネーション %>
-  <div class="list-page__main">
-  <% if @search_type == "spot" %>
-      <%# スポット一覧 %>
-      <% if @spots.present? %>
-        <div class="list-page__cards">
-          <% @spots.each do |spot| %>
-            <%= render "plans/spot_card", spot: spot, favorite_spot: @user_favorite_spots[spot.id], spot_stats: @spot_stats[spot.id] %>
-          <% end %>
-        </div>
-
-        <% if @spots.total_pages > 1 %>
-          <div class="list-page__pagination">
-            <%= paginate @spots %>
-          </div>
+      <%# 右メイン: カード一覧 + ページネーション %>
+      <div class="list-page__main">
+        <% if @search_type == "plan" %>
+          <%= render "shared/plan_card_list",
+                     plans: @plans,
+                     empty_message: "お気に入りプランがありません",
+                     empty_search_message: "条件に一致するお気に入りプランが見つかりませんでした" %>
+        <% else %>
+          <%= render "shared/spot_card_list",
+                     spots: @spots,
+                     empty_message: "お気に入りスポットがありません",
+                     empty_search_message: "条件に一致するお気に入りスポットが見つかりませんでした" %>
         <% end %>
-      <% else %>
-        <div class="list-page__empty">
-          <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
-            <p>条件に一致するお気に入りスポットが見つかりませんでした</p>
-          <% else %>
-            <p>お気に入りスポットがありません</p>
-          <% end %>
-        </div>
-      <% end %>
-    <% else %>
-      <%# プラン一覧 %>
-      <% if @plans.present? %>
-        <% favorite_plans_map = FavoritePlan.index_by_plan_id(user: current_user, plan_ids: @plans.map(&:id)) %>
-        <div class="list-page__cards">
-          <% @plans.each do |plan| %>
-            <% is_owner = current_user&.id == plan.user_id %>
-            <%= render "plans/plan_card", plan: plan, favorite_plan: favorite_plans_map[plan.id], can_edit: is_owner, can_delete: is_owner %>
-          <% end %>
-        </div>
-
-        <% if @plans.total_pages > 1 %>
-          <div class="list-page__pagination">
-            <%= paginate @plans %>
-          </div>
-        <% end %>
-      <% else %>
-        <div class="list-page__empty">
-          <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
-            <p>条件に一致するお気に入りプランが見つかりませんでした</p>
-          <% else %>
-            <p>お気に入りプランがありません</p>
-          <% end %>
-        </div>
-      <% end %>
-    <% end %>
-  </div>
-  </div>
+      </div>
+    </div>
+  <% end %>
 </div>

@@ -3,49 +3,35 @@
 <div class="list-page list-page--two-column">
   <h1 class="list-page__title">作ったプラン</h1>
 
-  <div class="list-page__content">
-  <%# 左サイドバー: 検索フォーム %>
-  <div class="list-page__sidebar">
-    <%= render "shared/search_form",
-               form_url: plans_path,
-               show_tabs: false,
-               selected_cities: @selected_cities,
-               cities_by_prefecture: @cities_by_prefecture,
-               genres_by_category: @genres_by_category,
-               selected_genre_ids: @selected_genre_ids,
-               search_query: @search_query %>
+  <%= turbo_frame_tag "plans_content" do %>
+    <div class="list-page__content">
+      <%# 左サイドバー: 検索フォーム %>
+      <div class="list-page__sidebar">
+        <%= render "shared/search_form",
+                   form_url: plans_path,
+                   turbo_frame: "plans_content",
+                   show_tabs: false,
+                   selected_cities: @selected_cities,
+                   cities_by_prefecture: @cities_by_prefecture,
+                   genres_by_category: @genres_by_category,
+                   selected_genre_ids: @selected_genre_ids,
+                   search_query: @search_query %>
 
-    <%= render "shared/results_bar",
-               count: @plans_count,
-               count_label: "プラン",
-               sort: @sort,
-               sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
-  </div>
-
-  <%# 右メイン: カード一覧 + ページネーション %>
-  <div class="list-page__main">
-  <% if @plans.present? %>
-    <div class="list-page__cards">
-      <% @plans.each do |plan| %>
-        <%= render "plans/plan_card", plan: plan, can_edit: true, can_delete: true %>
-      <% end %>
-    </div>
-
-    <%# ページネーション %>
-    <% if @plans.total_pages > 1 %>
-      <div class="list-page__pagination">
-        <%= paginate @plans %>
+        <%= render "shared/results_bar",
+                   count: @plans_count,
+                   count_label: "プラン",
+                   sort: @sort,
+                   sort_options: [["newest", "新しい順"], ["oldest", "古い順"]] %>
       </div>
-    <% end %>
-  <% else %>
-    <div class="list-page__empty">
-      <% if @search_query.present? || @selected_cities.present? || @selected_genre_ids.present? %>
-        <p>条件に一致するプランが見つかりませんでした</p>
-      <% else %>
-        <p>まだプランがありません</p>
-      <% end %>
+
+      <%# 右メイン: カード一覧 + ページネーション %>
+      <div class="list-page__main">
+        <%= render "shared/plan_card_list",
+                   plans: @plans,
+                   owner_mode: true,
+                   empty_message: "まだプランがありません",
+                   empty_search_message: "条件に一致するプランが見つかりませんでした" %>
+      </div>
     </div>
   <% end %>
-  </div>
-  </div>
 </div>

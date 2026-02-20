@@ -8,14 +8,18 @@
   オプション:
     form_id: 送信先フォームID（デフォルト: "community-search-form"）
     show_suffix: true の場合、「を表示」を末尾に追加
+    count_id: 件数表示のID（turbo_stream更新用）
 %>
 <%
   form_id = local_assigns.fetch(:form_id, "community-search-form")
   show_suffix = local_assigns.fetch(:show_suffix, false)
+  count_id = local_assigns.fetch(:count_id, nil)
 %>
 
 <div class="results-bar" data-controller="ui--sort-dropdown">
-  <span class="results-bar__count"><%= count %>件の<%= count_label %><%= "を表示" if show_suffix %></span>
+  <%= tag.span id: count_id, class: "results-bar__count" do %>
+    <%= count %>件の<%= count_label %><%= "を表示" if show_suffix %>
+  <% end %>
   <button type="button"
           class="results-bar__sort"
           data-action="click->ui--sort-dropdown#toggle"
