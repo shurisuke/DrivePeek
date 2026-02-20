@@ -1,6 +1,10 @@
-<div class="plan-entry" data-controller="plan-tab--entry" data-plan-tab--entry-has-plan-value="<%= @latest_plan.present? %>">
-  <%# 既存プランがある場合: モーダル表示 %>
-  <% if @latest_plan %>
+<%# copy_from/add_spot がある場合はモーダルをスキップして自動作成 %>
+<% auto_create = params[:copy_from].present? || params[:add_spot].present? %>
+<% create_url = plans_path(copy_from: params[:copy_from], add_spot: params[:add_spot]) %>
+
+<div class="plan-entry" data-controller="plan-tab--entry" data-plan-tab--entry-has-plan-value="<%= @latest_plan.present? && !auto_create %>">
+  <%# 既存プランがある場合: モーダル表示（copy_from/add_spot時はスキップ） %>
+  <% if @latest_plan && !auto_create %>
     <div class="plan-entry-modal" data-plan-tab--entry-target="modal">
       <div class="plan-entry-modal__overlay"></div>
       <div class="plan-entry-modal__dialog">
@@ -45,6 +49,7 @@
           class="d-none"
           data-plan-tab--entry-target="autoTrigger"
           data-controller="ui--create-plan-trigger"
+          data-ui--create-plan-trigger-url-value="<%= create_url %>"
           data-action="click->ui--create-plan-trigger#create">
   </button>
 </div>

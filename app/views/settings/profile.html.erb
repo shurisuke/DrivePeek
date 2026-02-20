@@ -28,7 +28,7 @@
       <hr class="auth-separator">
 
       <% if params[:from] == "signup" %>
-        <%= f.button :submit, "設定を完了してはじめる", class: "auth-submit" %>
+        <%= f.button :submit, "設定を完了してはじめる", class: "auth-submit", onclick: "showCreatePlanLoading()" %>
       <% else %>
         <%= f.button :submit, "変更を保存", class: "auth-submit" %>
       <% end %>
@@ -36,7 +36,7 @@
 
     <% if params[:from] == "signup" %>
       <div class="auth-skip">
-        <%= link_to "スキップしてはじめる", new_plan_path, class: "auth-skip-link" %>
+        <%= link_to "スキップしてはじめる", @redirect_after_auth || new_plan_path, class: "auth-skip-link", onclick: "showCreatePlanLoading()" %>
       </div>
     <% else %>
       <p class="settings-hint" style="margin-top: 1.5rem; margin-bottom: 0; text-align: center; line-height: 1.7;">
