@@ -114,7 +114,21 @@ RSpec.describe "Plans", type: :request do
 
           new_plan = Plan.last
           expect(new_plan.plan_spots.count).to eq(source_plan.plan_spots.count)
-          expect(new_plan.title).to eq("コピー元プラン")
+        end
+
+        it "タイトルはコピーしない（プライバシー保護）" do
+          post plans_path, params: { lat: 35.6762, lng: 139.6503, copy_from: source_plan.id }
+
+          new_plan = Plan.last
+          expect(new_plan.title).to eq("")
+        end
+
+        it "出発地点はコピーしない（プライバシー保護）" do
+          source_plan.start_point.update!(lat: 36.0, lng: 140.0)
+          post plans_path, params: { lat: 35.6762, lng: 139.6503, copy_from: source_plan.id }
+
+          new_plan = Plan.last
+          expect(new_plan.start_point.lat).not_to eq(36.0)
         end
 
         it "存在しないcopy_fromは無視される" do

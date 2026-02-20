@@ -246,17 +246,10 @@ RSpec.describe Plan, type: :model do
       expect(target_plan.plan_spots.count).to eq(2)
     end
 
-    it "タイトルが空の場合はコピー元のタイトルをコピーする" do
+    it "タイトルはコピーしない（プライバシー保護）" do
       target_plan.copy_spots_from(source_plan)
 
-      expect(target_plan.reload.title).to eq("元のプラン")
-    end
-
-    it "タイトルがある場合はコピーしない" do
-      target_plan.update!(title: "既存のタイトル")
-      target_plan.copy_spots_from(source_plan)
-
-      expect(target_plan.reload.title).to eq("既存のタイトル")
+      expect(target_plan.reload.title).to eq("")
     end
 
     it "sourceがnilの場合は何もしない" do
