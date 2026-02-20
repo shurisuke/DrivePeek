@@ -360,6 +360,15 @@ $card-text-muted: #999;
   }
 }
 
+/* ナビバー内: 削除・編集ボタンを非表示 */
+.navibar .plan-card__actions {
+  display: none;
+}
+
+.navibar .plan-card__detail-link--edit {
+  display: none;
+}
+
 /* 長いコンテンツ時かつ狭いコンテナ時のみマージン調整 */
 @container list-page (max-width: 280px) {
   .plan-card__footer--long {

@@ -126,24 +126,26 @@
       <% end %>
     </div>
     <% if _plan %>
+      <%# 編集リンク（スタンドアロン + 所有者のみ表示、CSSで制御） %>
       <% if _can_edit %>
         <%= link_to edit_plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--edit", data: { turbo_frame: "_top" }, aria: { label: "プランを編集" } do %>
           編集する
           <i class="bi bi-pencil" aria-hidden="true"></i>
         <% end %>
-      <% else %>
-        <%# ルートプレビューボタン（ナビバー内で表示） %>
-        <button type="button"
-                class="plan-card__detail-link plan-card__detail-link--preview"
-                aria-label="ルートをプレビュー"
-                data-controller="community-tab--plan-preview"
-                data-community-tab--plan-preview-spots-value="<%= plan_preview_spots_json(_spots) %>"
-                data-community-tab--plan-preview-polylines-value="<%= plan_preview_polylines_json(_plan) %>"
-                data-action="click->community-tab--plan-preview#show">
-          <i class="bi bi-share" aria-hidden="true"></i>
-          ルート
-        </button>
-        <%# 地図で見るリンク（スタンドアロンページで表示） %>
+      <% end %>
+      <%# ルートプレビューボタン（ナビバー内で表示、CSSで制御） %>
+      <button type="button"
+              class="plan-card__detail-link plan-card__detail-link--preview"
+              aria-label="ルートをプレビュー"
+              data-controller="community-tab--plan-preview"
+              data-community-tab--plan-preview-spots-value="<%= plan_preview_spots_json(_spots) %>"
+              data-community-tab--plan-preview-polylines-value="<%= plan_preview_polylines_json(_plan) %>"
+              data-action="click->community-tab--plan-preview#show">
+        <i class="bi bi-share" aria-hidden="true"></i>
+        ルート
+      </button>
+      <%# 地図で見るリンク（スタンドアロン + 非所有者のみ表示、CSSで制御） %>
+      <% unless _can_edit %>
         <%= link_to plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--view", data: { turbo_frame: "_top" }, aria: { label: "プラン詳細を見る" } do %>
           地図で見る
           <i class="bi bi-chevron-right" aria-hidden="true"></i>
