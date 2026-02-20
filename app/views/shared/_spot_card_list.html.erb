@@ -1,8 +1,7 @@
 <%# スポットカード一覧（ページネーション付き） %>
-<%# locals: spots:, preview_mode: false, empty_message: nil, empty_search_message: nil %>
+<%# locals: spots:, empty_message: nil, empty_search_message: nil %>
 
 <%
-  _preview_mode = local_assigns.fetch(:preview_mode, false)
   _empty_message = local_assigns.fetch(:empty_message, "スポットがありません")
   _empty_search_message = local_assigns.fetch(:empty_search_message, "条件に一致するスポットが見つかりませんでした")
   _has_search_params = @search_query.present? || @selected_cities.present? || @selected_genre_ids.present?
@@ -18,8 +17,7 @@
       <%= render "shared/spot_card",
                  spot: spot,
                  favorite_spot: _user_favorite_spots[spot.id],
-                 spot_stats: _spot_stats[spot.id],
-                 preview_mode: _preview_mode %>
+                 spot_stats: _spot_stats[spot.id] %>
     <% end %>
   </div>
 
