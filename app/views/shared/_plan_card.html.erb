@@ -1,12 +1,11 @@
 <%# プランカード（一覧表示用の共通部品） %>
-<%# locals: plan:, favorite_plan: nil, can_delete: false, can_edit: false, preview_mode: false %>
+<%# locals: plan:, favorite_plan: nil, can_delete: false, can_edit: false %>
 
 <%
   _can_edit = local_assigns.fetch(:can_edit, false)
   _can_delete = local_assigns.fetch(:can_delete, false)
   _plan = plan
   _favorite_plan = local_assigns.fetch(:favorite_plan, nil)
-  _preview_mode = local_assigns.fetch(:preview_mode, false)
   favorite_count = _plan.favorite_plans.size
 
   # planから導出
@@ -21,7 +20,7 @@
   _total_distance = format_distance(_plan.spots_only_distance)
 %>
 
-<div class="plan-card<%= ' plan-card--preview' if _preview_mode %>">
+<div class="plan-card">
   <%# ヘッダー：タイトル・ジャンル + アクション + お気に入り %>
   <div class="plan-card__header">
     <div class="plan-card__title-block">
@@ -75,8 +74,10 @@
     <% if _spots.present? %>
       <% _spots.each_with_index do |spot, index| %>
         <% spot_location = format_spot_location(spot) %>
-        <% if _preview_mode && spot[:lat].present? && spot[:lng].present? %>
-          <div class="plan-card__spot plan-card__spot--clickable"
+        <% has_location = spot[:lat].present? && spot[:lng].present? %>
+        <%# クリック可能版（ナビバー内で表示） %>
+        <% if has_location %>
+          <div class="plan-card__spot plan-card__spot--clickable plan-card__spot--preview"
                data-controller="community-tab--single-spot-preview"
                data-community-tab--single-spot-preview-lat-value="<%= spot[:lat] %>"
                data-community-tab--single-spot-preview-lng-value="<%= spot[:lng] %>"
@@ -93,15 +94,15 @@
               <span class="plan-card__spot-location"><%= spot_location %></span>
             <% end %>
           </div>
-        <% else %>
-          <div class="plan-card__spot">
-            <span class="plan-card__spot-number"><%= index + 1 %></span>
-            <span class="plan-card__spot-name"><%= spot[:name] %></span>
-            <% if spot_location.present? %>
-              <span class="plan-card__spot-location"><%= spot_location %></span>
-            <% end %>
-          </div>
         <% end %>
+        <%# 通常版（スタンドアロンページで表示） %>
+        <div class="plan-card__spot plan-card__spot--view<%= ' plan-card__spot--only' unless has_location %>">
+          <span class="plan-card__spot-number"><%= index + 1 %></span>
+          <span class="plan-card__spot-name"><%= spot[:name] %></span>
+          <% if spot_location.present? %>
+            <span class="plan-card__spot-location"><%= spot_location %></span>
+          <% end %>
+        </div>
       <% end %>
     <% else %>
       <div class="plan-card__no-spots">スポットなし</div>
@@ -125,7 +126,13 @@
       <% end %>
     </div>
     <% if _plan %>
-      <% if _preview_mode %>
+      <% if _can_edit %>
+        <%= link_to edit_plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--edit", data: { turbo_frame: "_top" }, aria: { label: "プランを編集" } do %>
+          編集する
+          <i class="bi bi-pencil" aria-hidden="true"></i>
+        <% end %>
+      <% else %>
+        <%# ルートプレビューボタン（ナビバー内で表示） %>
         <button type="button"
                 class="plan-card__detail-link plan-card__detail-link--preview"
                 aria-label="ルートをプレビュー"
@@ -136,13 +143,8 @@
           <i class="bi bi-share" aria-hidden="true"></i>
           ルート
         </button>
-      <% elsif _can_edit %>
-        <%= link_to edit_plan_path(_plan), class: "plan-card__detail-link", aria: { label: "プランを編集" } do %>
-          編集する
-          <i class="bi bi-pencil" aria-hidden="true"></i>
-        <% end %>
-      <% else %>
-        <%= link_to plan_path(_plan), class: "plan-card__detail-link", aria: { label: "プラン詳細を見る" } do %>
+        <%# 地図で見るリンク（スタンドアロンページで表示） %>
+        <%= link_to plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--view", data: { turbo_frame: "_top" }, aria: { label: "プラン詳細を見る" } do %>
           地図で見る
           <i class="bi bi-chevron-right" aria-hidden="true"></i>
         <% end %>

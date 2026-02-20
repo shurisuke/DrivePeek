@@ -184,4 +184,24 @@ $card-text-muted: #999;
   i {
     font-size: 13px;
   }
+
+  /* デフォルト: リンク版を表示、プレビュー版を非表示 */
+  &--preview {
+    display: none;
+  }
+
+  &--view {
+    display: flex;
+  }
+}
+
+/* ナビバー内: プレビュー版を表示、リンク版を非表示 */
+.navibar .spot-card__map-link {
+  &--preview {
+    display: flex;
+  }
+
+  &--view:not(.spot-card__map-link--only) {
+    display: none;
+  }
 }

@@ -128,6 +128,23 @@
   }
 }
 
+/* ナビバー内（みんなの旅タブ）*/
+.community-tab-content {
+  padding: 20px 16px 16px 16px;
+}
+
+.tab-community {
+  .list-page__cards {
+    justify-items: center;
+  }
+
+  .plan-card,
+  .spot-card {
+    width: 400px;
+    max-width: 100%;
+  }
+}
+
 /* ページネーション */
 .list-page__pagination {
   display: flex;

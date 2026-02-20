@@ -135,7 +135,7 @@
               <h2 class="related-section__title">このエリアの他のプラン</h2>
               <div class="related-section__list">
                 <% @related_plans.each do |related_plan| %>
-                  <%= render "plans/plan_card", plan: related_plan, preview_mode: true %>
+                  <%= render "shared/plan_card", plan: related_plan %>
                 <% end %>
               </div>
             </div>

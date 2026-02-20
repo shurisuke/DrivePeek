@@ -1,0 +1,33 @@
+<%# スポットカード一覧（ページネーション付き） %>
+<%# locals: spots:, empty_message: nil, empty_search_message: nil %>
+
+<%
+  _empty_message = local_assigns.fetch(:empty_message, "スポットがありません")
+  _empty_search_message = local_assigns.fetch(:empty_search_message, "条件に一致するスポットが見つかりませんでした")
+  _has_search_params = @search_query.present? || @selected_cities.present? || @selected_genre_ids.present?
+
+  # お気に入り・統計情報（コントローラーでセット済みの場合はそれを使用）
+  _user_favorite_spots = defined?(@user_favorite_spots) ? @user_favorite_spots : {}
+  _spot_stats = defined?(@spot_stats) ? @spot_stats : {}
+%>
+
+<% if spots.present? %>
+  <div class="list-page__cards">
+    <% spots.each do |spot| %>
+      <%= render "shared/spot_card",
+                 spot: spot,
+                 favorite_spot: _user_favorite_spots[spot.id],
+                 spot_stats: _spot_stats[spot.id] %>
+    <% end %>
+  </div>
+
+  <% if spots.respond_to?(:total_pages) && spots.total_pages > 1 %>
+    <div class="list-page__pagination">
+      <%= paginate spots %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="list-page__empty">
+    <p><%= _has_search_params ? _empty_search_message : _empty_message %></p>
+  </div>
+<% end %>

@@ -152,6 +152,13 @@ const buildSkeletonContent = ({ src, zoomScale, name, address, genres, showButto
           data-action="click->infowindow--spot-action#submit">
           プランに追加
         </button>`
+      } else {
+        // placeIdのみの場合（新規スポット）: 無効化ボタンを表示（Turbo Frame読み込み後に有効化）
+        buttonSlot.innerHTML = `<button type="button"
+          class="dp-infowindow__btn"
+          disabled>
+          プランに追加
+        </button>`
       }
     }
   }

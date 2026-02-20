@@ -1,7 +1,7 @@
 # コミュニティ一覧（みんなの旅）
 #
 # プラン/スポットの検索・一覧表示を担当
-# 編集画面からは Turbo Frame で読み込まれる
+# Turbo Frame リクエスト時も同じHTMLを返し、CSSでレイアウト調整
 #
 class CommunityController < ApplicationController
   SORT_OPTIONS = %w[newest oldest popular].freeze
@@ -36,17 +36,12 @@ class CommunityController < ApplicationController
 
     # 件数を計算（検索結果ラベルに表示）
     calculate_counts(search_params)
-
-    # Turbo Frame リクエストの場合はフレーム用テンプレートを返す
-    if turbo_frame_request?
-      render partial: "community/results", locals: { turbo_frame: true }
-    end
   end
 
   private
 
   def set_filter_variables
-    @search_type = params[:search_type]
+    @search_type = params[:search_type] == "spot" ? "spot" : "plan"
     @search_query = params[:q]
     @selected_cities = Array(params[:cities]).reject(&:blank?)
     @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
