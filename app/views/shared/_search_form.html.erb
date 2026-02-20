@@ -33,8 +33,8 @@
         </div>
       <% end %>
 
-      <%# 円エリア検索（地図画面のみ表示） %>
-      <% if local_assigns[:map_mode] %>
+      <%# 円エリア検索（plan-form内でのみCSS表示） %>
+      <div class="search-filters__circle-area">
         <%# 初期状態：エリアを囲んで選択 %>
         <button type="button"
                 class="search-filters__select-btn"
@@ -54,16 +54,14 @@
           <span>エリア選択中（半径 <%= circle&.dig(:radius_km)&.round(1) || 0 %> km）</span>
           <i class="bi bi-x"></i>
         </button>
-      <% end %>
+      </div>
 
       <div class="search-filters">
-        <%# エリア選択ボタン（地図画面では円エリア検索を使うため非表示） %>
-        <% unless local_assigns[:map_mode] %>
-          <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-filters#showArea">
-            <span data-community-tab--search-filters-target="areaLabel"><%= format_selected_cities(selected_cities, cities_by_prefecture) %></span>
-            <i class="bi bi-plus"></i>
-          </button>
-        <% end %>
+        <%# エリア選択ボタン（plan-form外でのみCSS表示） %>
+        <button type="button" class="search-filters__select-btn search-filters__area-btn" data-action="click->community-tab--search-filters#showArea">
+          <span data-community-tab--search-filters-target="areaLabel"><%= format_selected_cities(selected_cities, cities_by_prefecture) %></span>
+          <i class="bi bi-plus"></i>
+        </button>
 
         <%# ジャンル選択ボタン %>
         <button type="button" class="search-filters__select-btn" data-action="click->community-tab--search-filters#showGenre">
