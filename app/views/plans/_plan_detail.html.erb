@@ -151,7 +151,7 @@
           <button type="button"
                   class="plan-tab-actions__btn plan-tab-actions__btn--copy plan-tab-actions__btn--single"
                   data-controller="ui--create-plan-trigger"
-                  data-ui--create-plan-trigger-copy-from-value="<%= @plan.id %>"
+                  data-ui--create-plan-trigger-url-value="<%= plans_path(copy_from: @plan.id) %>"
                   data-action="click->ui--create-plan-trigger#create">
             このプランで作る
           </button>

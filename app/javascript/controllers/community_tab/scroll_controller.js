@@ -1,15 +1,18 @@
 // ================================================================
 // CommunityScrollController
-// みんなの旅タブ: Turbo Frame更新時のスクロール制御
-// - ページネーション・検索時に結果バー位置までスクロール
-// - ナビバー内でのみ動作（スタンドアロンページでは何もしない）
+// みんなの旅: Turbo Frame更新時のスクロール制御
+// - ナビバー内: 結果バー位置までスクロール
+// - スタンドアロン: ページトップへスクロール
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    this.isInitialLoad = true
+    // ナビバー内: 初回リモート読み込みをスキップ
+    // スタンドアロン: 初回からスクロール（インラインコンテンツなので）
+    const isInNavibar = !!this.element.closest(".navibar__content-scroll")
+    this.isInitialLoad = isInNavibar
     this.handleFrameLoad = this.scrollToResults.bind(this)
     this.element.addEventListener("turbo:frame-load", this.handleFrameLoad)
   }
@@ -26,14 +29,18 @@ export default class extends Controller {
     }
 
     const scrollContainer = this.element.closest(".navibar__content-scroll")
-    if (!scrollContainer) return
-
-    const resultsBar = this.element.querySelector(".results-bar")
-    if (resultsBar) {
-      const offsetTop = resultsBar.offsetTop - 8
-      scrollContainer.scrollTo({ top: offsetTop, behavior: "smooth" })
+    if (scrollContainer) {
+      // ナビバー内: results-barまでスクロール
+      const resultsBar = this.element.querySelector(".results-bar")
+      if (resultsBar) {
+        const offsetTop = resultsBar.offsetTop - 8
+        scrollContainer.scrollTo({ top: offsetTop, behavior: "smooth" })
+      } else {
+        scrollContainer.scrollTo({ top: 0, behavior: "smooth" })
+      }
     } else {
-      scrollContainer.scrollTo({ top: 0, behavior: "smooth" })
+      // スタンドアロン: ページトップへ
+      window.scrollTo({ top: 0, behavior: "smooth" })
     }
   }
 }

@@ -8,8 +8,6 @@
   padding: 16px;
   background: linear-gradient(180deg, #f5f6f5 0%, #fafbfa 100%);
   min-height: 100%;
-  container-type: inline-size;
-  container-name: list-page;
 }
 
 .list-page__title {
@@ -81,7 +79,7 @@
   @media (max-width: 900px) {
     .list-page__content {
       grid-template-columns: 1fr;
-      gap: 24px;
+      gap: 0;
       padding: 0 16px;
     }
 
@@ -155,9 +153,9 @@
   .pagination {
     display: flex;
     align-items: center;
-    gap: 6px;
+    gap: 4px;
     margin: 0;
-    padding: 6px;
+    padding: 6px 6px;
     background: #fff;
     border-radius: 999px;
     box-shadow: 0 4px 12px rgba(0, 0, 0, 0.12), 0 8px 24px rgba(0, 0, 0, 0.1);
