@@ -180,15 +180,12 @@ class Plan < ApplicationRecord
   # スポット操作（採用・並び替え）
   # ================================================================
 
-  # 他のプランからスポットをコピー
+  # 他のプランからスポットをコピー（タイトル・出発地点・帰宅地点はコピーしない）
   # @param source [Plan] コピー元プラン
   def copy_spots_from(source)
     return if source.blank?
 
     transaction do
-      self.title = source.title if title.blank?
-      save! if title_changed?
-
       source.plan_spots.order(:position).each do |ps|
         plan_spots.create!(
           spot_id: ps.spot_id,

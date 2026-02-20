@@ -37,7 +37,7 @@
         このプランで作る
       </button>
     <% else %>
-      <%= link_to new_user_session_path, class: "map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single" do %>
+      <%= link_to new_user_session_path(redirect_to: new_plan_path(copy_from: @plan.id)), class: "map-bottom-actions__btn map-bottom-actions__btn--copy map-bottom-actions__btn--single" do %>
         このプランで作る
       <% end %>
     <% end %>

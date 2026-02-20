@@ -143,7 +143,7 @@
             ここからプランを作る
           </button>
         <% else %>
-          <%= link_to "ここからプランを作る", new_user_session_path, class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
+          <%= link_to "ここからプランを作る", new_user_session_path(redirect_to: new_plan_path(add_spot: spot.id)), class: "dp-infowindow__btn dp-infowindow__btn--create", data: { turbo_frame: "_top" } %>
         <% end %>
       <% elsif show_button && plan_id.present? %>
         <%# 編集画面: プランに追加/削除 %>

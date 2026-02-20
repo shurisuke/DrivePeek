@@ -6,12 +6,14 @@ class SettingsController < ApplicationController
 
   def profile
     @user = current_user
+    @redirect_after_auth = session[:redirect_after_auth]
   end
 
   def update_profile
     if current_user.update(profile_params)
       if params[:from] == "signup"
-        redirect_to new_plan_path, notice: "プロフィールを設定しました"
+        redirect_path = session.delete(:redirect_after_auth) || new_plan_path
+        redirect_to redirect_path, notice: "プロフィールを設定しました"
       else
         redirect_to settings_path, notice: "プロフィールを更新しました"
       end
