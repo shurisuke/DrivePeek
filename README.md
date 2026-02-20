@@ -1,14 +1,24 @@
 # DrivePeek
 
-サービスURL：https://drivepeek.onrender.com/
+サービスURL：https://drivepeek.app/
 
 <img width="1200" alt="DrivePeek サービス画面" src="https://github.com/user-attachments/assets/0dd1465b-ec63-472e-8a4f-e4d1d1830a64" />
 
-# ■ サービス概要
-**3つの探し方で見つけて、計画、そのまま出発。**
 
-DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法でスポットを見つけ、ドライブプランを作成・共有できるアプリです。
-近くを旅した人のプランを参考にしたり、友達とのドライブ計画をURLひとつで共有したり。完成したらGoogle Mapsナビでそのまま出発できます。
+<br>
+
+
+# ■ サービス概要
+
+DrivePeekは、地図探索・AI提案・みんなのプランの3つの方法でスポットを見つけ、
+**ドライブプランを作成・共有できるアプリです。**
+
+近くを旅した人のプランを参考にしたり、
+友達とのドライブ計画をURLひとつで共有したり。
+完成したらGoogle Mapsナビでそのまま出発できます。
+
+
+<br>
 
 
 # ■ 機能紹介
@@ -17,21 +27,22 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
 <table>
   <tr>
     <td width="50%" align="center"><strong>スポットを見つけてプランに追加</strong></td>
-    <td width="50%" align="center"><strong>InfoWindow（スポット詳細）</strong></td>
+    <td width="50%" align="center"><strong>盛り上がりスポット表示</strong></td>
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/485cbd03-15da-4681-862f-0e00aae37b4b" alt="スポットをプランに追加" width="95%">
+      <img src="https://github.com/user-attachments/assets/d86422a9-d6c6-4097-b65d-eaeef1dbcb4b" width="200" alt="スポットを見つけてプランに追加">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/b8e971db-62c1-41d5-ba0c-0f5c9b87d119" alt="InfoWindow" width="95%">
+      <img src="https://github.com/user-attachments/assets/910521c7-c047-4273-b2ac-d6baf2a81c40" width="200" alt="盛り上がりスポット">
     </td>
   </tr>
   <tr>
-    <td width="50%">地図検索・コミュニティ・AI提案、好きな方法でスポットを見つけてプランに追加。<br>並び替えやスケジュール管理も自由自在です。</td>
-    <td width="50%">地図マーカーをクリックするとスポット情報をその場で表示。<br>写真・ジャンル・お気に入り・コメントをまとめて確認できます。</td>
+    <td width="50%">地図検索・コミュニティ・AI提案、好きな方法でスポットを見つけてプランに追加。<br>マーカーをタップすれば写真・ジャンル・コメントをその場で確認できます。</td>
+    <td width="50%">ワンタップで周辺の人気スポットを表示。<br>ユーザーのお気に入り数が多い場所だけを、ジャンルアイコンでわかりやすく地図上に表示します。</td>
   </tr>
 </table>
+
 
 ## 🤖 AI スポット提案
 <table>
@@ -41,10 +52,10 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/532f4a70-ef9d-4576-b46a-8d1c37f5805a" alt="エリア＆ジャンル選択" width="95%">
+      <img src="https://github.com/user-attachments/assets/0ccefb3e-a1ef-4665-8a72-3c1cb7914eea" width="200" alt="AI提案フロー">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/950735bc-411d-4282-a64c-bd7a1d1cc822" alt="AI提案結果" width="95%">
+      <img src="https://github.com/user-attachments/assets/3c37b35c-94f2-464e-945e-9a84187fc665" width="200" alt="プラン一括採用">
     </td>
   </tr>
   <tr>
@@ -61,10 +72,10 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
   <tr>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/e060adf3-3027-45c0-9fcb-1a65d4b134cd" alt="コミュニティ検索" width="95%">
+      <img src="https://github.com/user-attachments/assets/194b079e-04f4-4b70-a17e-34bc1fe5b5dc" width="200" alt="プラン・スポット検索">
     </td>
     <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/e7688dba-634e-41c2-b706-ed055a59a791" alt="気になるプランを地図で追体験" width="95%">
+      <img src="https://github.com/user-attachments/assets/68391ecd-9cd8-4c2a-962c-f90416754980" width="200" alt="気になるプランを地図で追体験">
     </td>
   </tr>
   <tr>
@@ -73,35 +84,25 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
   </tr>
 </table>
 
-## 📱 モバイル対応 & Google Mapsナビ連携
-<table>
-  <tr>
-    <td width="50%" align="center"><strong>モバイル対応</strong></td>
-    <td width="50%" align="center"><strong>Google Mapsナビ連携</strong></td>
-  </tr>
-  <tr>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/f0629f22-8a9d-452b-9bfc-d89a7ca27a95" alt="モバイル対応" height="400">
-    </td>
-    <td width="50%" align="center">
-      <img src="https://github.com/user-attachments/assets/4cde3215-106f-45f4-a95a-a2156e60154b" alt="ナビ連携" height="400">
-    </td>
-  </tr>
-  <tr>
-    <td width="50%">スマートフォンに最適化されたUIで、外出先でもスムーズにプラン作成・スポット探しができます。</td>
-    <td width="50%">完成したプランからGoogle Mapsナビをワンタップ起動。経由地もそのまま引き継がれ、すぐに出発できます。</td>
-  </tr>
-</table>
+
+<br>
+
 
 ## その他の機能
 
 | 機能 | 説明 |
 |------|------|
+| プランコピー | 他ユーザーのプランを自分用に複製して編集可能 |
 | スケジュール自動計算 | 滞在時間・移動時間を加味して予定時間を自動計算 |
-| お気に入り | プラン・スポットをワンタップで保存、一覧管理 |
-| メモ | スポットごとに注意点・買いたいものなどを記録 |
+| Google Mapsナビ連携 | 完成プランからワンタップでナビ起動、経由地もそのまま |
 | SNS ログイン | LINE / X (Twitter) でワンクリック認証 |
 | SNS シェア | プランを LINE / X / URL コピーで共有 |
+| お気に入り | プラン・スポットをワンタップで保存、一覧管理 |
+| メモ | スポットごとに注意点・買いたいものなどを記録 |
+| コメント | スポットに感想・口コミを投稿・閲覧 |
+
+
+<br>
 
 
 # ■ 技術構成について
@@ -121,10 +122,18 @@ DrivePeekは、地図検索・AI提案・みんなのプランの3つの方法�
 | **テスト** | RSpec / Factory Bot / Capybara / SimpleCov |
 | **その他** | Kaminari (ページネーション) / Rack::Attack (レート制限) / Resend (メール) / Kramdown (Markdown) / Flatpickr (日時入力) / Solid Queue (ジョブ) / Solid Cache (キャッシュ) |
 
+
+<br>
+
+
 ## 技術選定の理由
 - **Ruby on Rails**: プランやスポットの管理等、サーバー側の処理はCRUDが中心のため、規約に沿うだけで素早く実装できるRailsを選択
 - **Hotwire (Turbo + Stimulus)**: 地図操作など複雑なUIが必要な箇所はStimulusで対応しつつ、それ以外はTurboによるサーバー主導でJSを最小化。React/Vue等を導入せず、必要な複雑さだけに限定した
 - **Google Maps API**: Mapbox等と比較し、日本のスポットデータの充実度から選択
+
+
+<br>
+
 
 ## Stimulus コントローラ構成
 
@@ -142,9 +151,15 @@ app/javascript/controllers/
 **設計方針**: サーバーがUI状態を決定し、Stimulusは表示制御・API通信に徹する。機能ドメインごとにディレクトリを分け、横断UIは `ui/` に集約。
 
 
+<br>
+
+
 ## ER図
 
-<img alt="ER図" src="https://github.com/user-attachments/assets/bca35b99-5b83-4301-95f1-ab2561062052" />
+<img width="1634" height="845" alt="Image" src="https://github.com/user-attachments/assets/e56b97f9-e82e-402c-a64d-bb7387a7b62b" />
+
+
+<br>
 
 
 ## テスト
@@ -156,71 +171,94 @@ app/javascript/controllers/
 | System spec | E2E（Capybara + Selenium） |
 | Service spec | AI提案サービス |
 | Mailer spec | メール送信 |
-| **合計** | **372 examples, 0 failures** |
+
+**652 examples, 0 failures / カバレッジ 98.26%**
 
 静的解析: RuboCop + Brakeman（セキュリティスキャン）
-
 CI: GitHub ActionsでPRごとにRSpec・RuboCop・Brakemanを自動実行
+
+
+<br>
 
 
 ## 画面遷移図
 Figma：https://www.figma.com/design/k9Qhg0des02wxAjroLW3MA/DrivePeek-%E7%94%BB%E9%9D%A2%E9%81%B7%E7%A7%BB%E5%9B%B3-?node-id=0-1&p=f&t=Y0GH5C5Pvvhz2Ot9-0
 
 
+<br>
+
+
 # ■ 技術的チャレンジ
+
+1. AI提案の3層分離設計
+2. 経路計算と時刻計算の分離
+
+
+<br>
+
+
+## AI提案の3層分離設計
+
+AIにスポット選定を丸投げしていた設計を、3層に分離しました。
+
+| | Before | After |
+|--|--------|-------|
+| **絞り込み** | 地図の表示位置から | エリアを描画して選択、ジャンルは任意で指定 |
+| **候補選定** | DBでランダムに選出 | DBがノイズとなるスポットをジャンルごとに除外。<br>描画エリア内のスポットをお気に入り数順で選出。|
+| **最終判断** | AIが主観的に選定 | AIは季節・ドライブ適性のみを考慮し選定 |
+
+**Before**: ホテルやコンビニなど的外れな提案、ハルシネーションが発生
+
+**After**: ユーザーが意図を伝え、DBがノイズを除き、AIが文脈を読む。各層に適した役割を与えることで精度が向上。
+
+<br>
 
 ## 経路計算と時刻計算の分離
 
-不要なAPI呼び出しを避けるため、経路計算と時刻計算を分離した。
+不要なAPI呼び出しを避けるため、経路計算と時刻計算を分離しました。
 
-<table>
-  <tr>
-    <td><strong>Plan::Route</strong></td>
-    <td>スポット間の距離・移動時間を計算</td>
-  </tr>
-  <tr>
-    <td><strong>Plan::Schedule</strong></td>
-    <td>DBの移動時間を読み、到着・出発時刻を計算</td>
-  </tr>
-  <tr>
-    <td><strong>Plan::Recalculator</strong></td>
-    <td>Route → Schedule の順序を保証するオーケストレータ</td>
-  </tr>
-</table>
+| クラス | 責務 |
+|--------|------|
+| Plan::Recalculator | DrivingとTimetableを使い分ける指揮役 |
+| Plan::Driving | スポット間の距離・移動時間を取得（API呼び出し） |
+| Plan::Timetable | DBの移動時間を読み、到着・出発時刻を計算 |
 
-この分離により、出発時間や滞在時間の変更時は時刻計算のみ実行し、Directions APIの呼び出し回数とコストを削減。ユーザーの操作に即座に反応できる設計とした。
+```ruby
+# Plan::Recalculatorの中身（指揮役）
+# route: true  → 経路再計算（API呼び出し）+ 時刻再計算
+# route: false → 時刻再計算のみ（APIなし）
 
-## AI提案の設計
+class Plan::Recalculator
+  def recalculate!(route: false, schedule: true)
+    Plan::Driving.new(plan).recalculate! if route      # API呼び出し
+    Plan::Timetable.new(plan).recalculate! if schedule # DB内で完結
+  end
+end
+```
 
-当初はAIにスポット選定を全て任せていたが、ホテルやチェーン店など的外れな提案や、ハルシネーションが課題となった。
+この分離により、Directions APIの呼び出し回数とコストを削減。ユーザーの操作へ即座に反応できる設計を意識しました。
 
-**解決策**: 責務を3層に分離し、AIの役割を「候補から文脈に合うものを選ぶ」に限定した。
-
-<table>
-  <tr>
-    <td><strong>ユーザー</strong></td>
-    <td>エリア描画・ジャンル選択で意図を明示</td>
-  </tr>
-  <tr>
-    <td><strong>DB</strong></td>
-    <td>お気に入り数で人気スポットに絞り込み</td>
-  </tr>
-  <tr>
-    <td><strong>AI</strong></td>
-    <td>季節やドライブ適性を考慮して選定</td>
-  </tr>
-</table>
-
-これにより、真冬に海水浴場をおすすめするような的外れな提案を防ぎつつ、ユーザーは文字入力なしの簡単な操作だけで、季節に合った精度の高い提案を受けられるようになった。
-
+<br>
 
 # ■ サービス開発の背景
-私自身、休日のドライブが大好きで日々のリフレッシュになっています。
-しかし計画段階で、いつも同じ悩みにぶつかっていました。
 
-「途中でどこか寄りたいけど、どこかいい所ないかな...」
-「滞在時間を考えると、帰りは何時になるんだろう...」
-「友達と計画する時、ここ行って次ここで...の共有が面倒...」
+### 行きたい場所の"その先"が見つからない
 
-こうした **スポット探し・時間計算・プラン共有** の3つの課題を、**地図 + AI + コミュニティ** で一気に解決したいという思いから開発しました。
-他のユーザーのリアルなプランを参考にしたり、AIにおまかせで提案してもらえる。スポット探しの手間をなくし、「思い立ったらすぐ出発できる」体験を目指しています。
+外出を計画するたびに、一番行きたい場所はすぐ決まるのに、
+その近くの素敵なスポットや飲食店を探すのに迷うことが何度かありました。
+
+この「探す時間」を短縮したいと思い、開発を始めました。
+
+---
+
+### スムーズにドライブ計画を共有したい
+
+友達と計画を立てる時、
+「ここ行って、次ここで、そのあとここに寄って…」と文章で説明するのは意外と大変です。
+
+地図アプリで場所を共有することはできても、
+「複数スポット＋ルート＋スケジュール感」をまとめて送れるツールはまだ多くありません。
+
+URLひとつでプラン全体を共有できて、
+友達も同じツールで一緒に探せたら便利なのではないか。
+そう感じたことも、開発の動機の一つです。
