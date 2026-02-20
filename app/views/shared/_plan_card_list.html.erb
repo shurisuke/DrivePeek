@@ -1,0 +1,37 @@
+<%# プランカード一覧（ページネーション付き） %>
+<%# locals: plans:, owner_mode: false, preview_mode: false, empty_message: nil, empty_search_message: nil %>
+
+<%
+  _owner_mode = local_assigns.fetch(:owner_mode, false)
+  _preview_mode = local_assigns.fetch(:preview_mode, false)
+  _empty_message = local_assigns.fetch(:empty_message, "プランがありません")
+  _empty_search_message = local_assigns.fetch(:empty_search_message, "条件に一致するプランが見つかりませんでした")
+  _has_search_params = @search_query.present? || @selected_cities.present? || @selected_genre_ids.present?
+
+  # お気に入り情報をプリロード
+  _favorite_plans_map = current_user ? FavoritePlan.index_by_plan_id(user: current_user, plan_ids: plans.map(&:id)) : {}
+%>
+
+<% if plans.present? %>
+  <div class="list-page__cards">
+    <% plans.each do |plan| %>
+      <% is_owner = _owner_mode || current_user&.id == plan.user_id %>
+      <%= render "shared/plan_card",
+                 plan: plan,
+                 favorite_plan: _favorite_plans_map[plan.id],
+                 can_edit: is_owner,
+                 can_delete: is_owner,
+                 preview_mode: _preview_mode %>
+    <% end %>
+  </div>
+
+  <% if plans.respond_to?(:total_pages) && plans.total_pages > 1 %>
+    <div class="list-page__pagination">
+      <%= paginate plans %>
+    </div>
+  <% end %>
+<% else %>
+  <div class="list-page__empty">
+    <p><%= _has_search_params ? _empty_search_message : _empty_message %></p>
+  </div>
+<% end %>
