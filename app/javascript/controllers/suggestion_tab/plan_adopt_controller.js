@@ -11,6 +11,7 @@ import { Controller } from "@hotwired/stimulus"
 import {
   getMapInstance,
   clearSuggestionMarkers,
+  clearSuggestionAll,
   addSuggestionMarker,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
@@ -35,6 +36,7 @@ export default class extends Controller {
 
   // 自動でピン表示
   #autoLoadSpots() {
+    clearSuggestionMarkers()  // 前回の提案マーカーをクリア（円は保持）
     this._resolvedSpots = this.#resolveSpots()
     this.#showMarkersOnMap()
   }
@@ -61,7 +63,7 @@ export default class extends Controller {
       btn.classList.add("suggestion-plan-card__adopt-btn--adopted")
 
       // 提案ピンをクリア
-      clearSuggestionMarkers()
+      clearSuggestionAll()
       closeInfoWindow()
       const clearBtn = document.getElementById("suggestion-pin-clear")
       if (clearBtn) clearBtn.hidden = true
