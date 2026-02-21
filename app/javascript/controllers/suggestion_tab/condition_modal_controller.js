@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearSuggestionMarkers } from "map/state"
+import { clearSuggestionAll } from "map/state"
 import { postTurboStream } from "services/navibar_api"
 
 // ================================================================
@@ -46,6 +46,9 @@ export default class extends Controller {
       radius_km: detail.radius_km
     }
 
+    // フォームを初期状態にリセット
+    this.#resetForm()
+
     this.titleTarget.textContent = "プラン条件を設定"
     this.areaInfoTarget.textContent = `選択エリア（半径 ${this.areaData.radius_km.toFixed(1)} km）`
     this.#showModal()
@@ -58,7 +61,7 @@ export default class extends Controller {
 
   // キャンセル時は円も消去
   cancel() {
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     this.close()
   }
 
@@ -124,6 +127,23 @@ export default class extends Controller {
   #showModal() {
     this.element.hidden = false
     document.body.style.overflow = "hidden"
+  }
+
+  // フォームを初期状態にリセット
+  #resetForm() {
+    // スポット数を3にリセット
+    this.spotCountTarget.value = "3"
+
+    // スロットを初期状態にリセット
+    this.slotTargets.forEach((slot, i) => {
+      slot.hidden = i >= 3
+    })
+    this.slotBtnTargets.forEach(btn => {
+      btn.querySelector("span").textContent = "おまかせ"
+    })
+    this.slotInputTargets.forEach(input => {
+      input.value = ""
+    })
   }
 
   async #submitPlanMode() {

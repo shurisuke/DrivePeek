@@ -56,9 +56,15 @@ genre_ids_to_try = [ preferred_id, *queue ].compact
       queue.delete(genre_id)
       used_spot_ids.merge(candidates.map { |c| c[:id] })
 
-      # 使用した主要ジャンルを記録（キュー選択時もnilフォールバック時も同様）
-      primary_genre_id = extract_primary_genre_id(candidates.first)
-      used_genre_ids.add(primary_genre_id) if primary_genre_id
+      # 使用したジャンルを記録
+      # - 特定ジャンル検索時: そのジャンルIDを記録
+      # - nilフォールバック時: 結果の主要ジャンルを記録
+      if genre_id
+        used_genre_ids.add(genre_id)
+      else
+        primary_genre_id = extract_primary_genre_id(candidates.first)
+        used_genre_ids.add(primary_genre_id) if primary_genre_id
+      end
 
       genre = genre_id ? Genre.find_by(id: genre_id) : nil
       return { genre_name: genre&.name || "おすすめ", candidates: candidates }

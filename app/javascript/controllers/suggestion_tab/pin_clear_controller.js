@@ -4,12 +4,12 @@
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { clearSuggestionMarkers } from "map/state"
+import { clearSuggestionAll } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 
 export default class extends Controller {
   clear() {
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     closeInfoWindow()
     this.element.hidden = true
   }

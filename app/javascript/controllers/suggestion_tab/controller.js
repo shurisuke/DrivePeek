@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearSuggestionMarkers } from "map/state"
+import { clearSuggestionAll } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 
 // ================================================================
@@ -66,7 +66,7 @@ export default class extends Controller {
 
   // 会話クリア時に提案マーカーもクリア
   clearConversation() {
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     closeInfoWindow()
     // 提案ピンクリアボタンを非表示に
     const pinClearBtn = document.getElementById("suggestion-pin-clear")

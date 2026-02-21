@@ -78,8 +78,10 @@ class Suggestion::Generator
     # @return [Array<Hash>] 選出されたスポット（descriptionを含む）
     def select_plan_spots(ai_response, all_spots, slot_sizes)
       picks = ai_response[:picks] || []
+      slot_count = slot_sizes.size
 
-      selected = picks.filter_map do |pick|
+      # スロット数を超える選出を防止
+      selected = picks.first(slot_count).filter_map do |pick|
         number = pick[:n]
         description = pick[:d]
         spot = all_spots[number - 1]

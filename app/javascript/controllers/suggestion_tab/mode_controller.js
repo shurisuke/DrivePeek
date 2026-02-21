@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, clearSuggestionMarkers, setSuggestionAreaCircle } from "map/state"
+import { getMapInstance, clearSuggestionAll, setSuggestionAreaCircle } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
 import { postTurboStream } from "services/navibar_api"
 
@@ -33,7 +33,7 @@ export default class extends Controller {
 
   // エリアを選び直す（既存条件保持）
   reselectArea() {
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     this.#dispatchAreaDraw(this.modeValue, {
       condition: this.conditionValue
     })
@@ -41,7 +41,7 @@ export default class extends Controller {
 
   // 条件を変更（同じエリアで再度モーダルを開く）
   changeCondition() {
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     const area = this.areaValue || {}
 
     // 同じエリアで円を再描画してズーム
