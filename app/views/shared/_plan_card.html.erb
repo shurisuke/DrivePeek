@@ -15,7 +15,7 @@
       lat: ps.spot.lat, lng: ps.spot.lng, address: ps.spot.address,
       place_id: ps.spot.place_id, genres: ps.spot.genres.map(&:name) }
   end
-  _genres = _plan.spots.flat_map { |s| s.genres.map(&:name) }.uniq.first(3)
+  _genres = _spots.flat_map { |s| s[:genres] }.uniq.first(3)
   _total_duration = format_move_time(_plan.spots_only_move_time)
   _total_distance = format_distance(_plan.spots_only_distance)
 %>
