@@ -4,7 +4,7 @@ import {
   setCommunityPreviewMarkers,
   setCommunityPreviewPolylines,
   clearCommunityPreview,
-  clearSuggestionMarkers,
+  clearSuggestionAll,
   getPlanSpotMarkers,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
@@ -76,7 +76,7 @@ export default class extends Controller {
 
   hide() {
     clearCommunityPreview()
-    clearSuggestionMarkers()  // 円エリアもクリア
+    clearSuggestionAll()  // 円エリアもクリア
     hideCloseButton()
 
     // search_filters_controller に円クリアを通知

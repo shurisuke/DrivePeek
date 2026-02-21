@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearSuggestionMarkers } from "map/state"
+import { clearSuggestionAll, getCommunityPreviewMarkers } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
@@ -209,11 +209,14 @@ export default class extends Controller {
   // 「エリア選択を解除」ボタンクリック
   clearCircle() {
     // 地図上の円をクリア
-    clearSuggestionMarkers()
+    clearSuggestionAll()
 
-    // 地図上の削除ボタンを非表示
+    // コミュニティプレビューがない場合のみ削除ボタンを非表示
+    // （プレビュー表示中はボタンを残す）
     const clearBtn = document.getElementById("community-preview-close")
-    if (clearBtn) clearBtn.hidden = true
+    if (clearBtn && getCommunityPreviewMarkers().length === 0) {
+      clearBtn.hidden = true
+    }
 
     this.resetCircleState()
     this.submitForm()

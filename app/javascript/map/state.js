@@ -177,12 +177,17 @@ export const setPopularSpotMarkers = (markers) => {
 };
 
 // --- 提案マーカー ---
-// 全クリア（マーカー + パルス + 円）
+// マーカーのみクリア（円は保持）
 export const clearSuggestionMarkers = () => {
   suggestionMarkers.forEach((m) => m.setMap(null));
   suggestionMarkers = [];
   suggestionOverlays.forEach((o) => o.setMap(null));
   suggestionOverlays = [];
+};
+
+// 全クリア（マーカー + パルス + 円）
+export const clearSuggestionAll = () => {
+  clearSuggestionMarkers();
   suggestionAreaCircles.forEach(c => c.setMap(null));
   suggestionAreaCircles = [];
 };

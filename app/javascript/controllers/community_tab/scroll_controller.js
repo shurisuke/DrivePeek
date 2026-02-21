@@ -1,32 +1,44 @@
 // ================================================================
 // CommunityScrollController
 // みんなの旅: Turbo Frame更新時のスクロール制御
-// - ナビバー内: 結果バー位置までスクロール
-// - スタンドアロン: ページトップへスクロール
+// - ページネーションクリック時のみスクロール
+// - 検索フォーム操作時はスクロールしない
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
 
 export default class extends Controller {
   connect() {
-    // ナビバー内: 初回リモート読み込みをスキップ
-    // スタンドアロン: 初回からスクロール（インラインコンテンツなので）
-    const isInNavibar = !!this.element.closest(".navibar__content-scroll")
-    this.isInitialLoad = isInNavibar
+    this.shouldScroll = false
+
+    // ページネーションクリックを検知
+    this.handlePaginationClick = this.markPaginationClick.bind(this)
+    this.element.addEventListener("click", this.handlePaginationClick)
+
+    // フレーム読み込み完了時にスクロール判定
     this.handleFrameLoad = this.scrollToResults.bind(this)
     this.element.addEventListener("turbo:frame-load", this.handleFrameLoad)
   }
 
   disconnect() {
+    this.element.removeEventListener("click", this.handlePaginationClick)
     this.element.removeEventListener("turbo:frame-load", this.handleFrameLoad)
   }
 
+  // ページネーションリンクがクリックされたらフラグを立てる
+  markPaginationClick(event) {
+    const pagination = event.target.closest("[data-pagination]")
+    if (pagination) {
+      this.shouldScroll = true
+    }
+  }
+
   scrollToResults() {
-    // 初回読み込みはスキップ（タブ切り替え時）
-    if (this.isInitialLoad) {
-      this.isInitialLoad = false
+    // ページネーション以外の操作ではスクロールしない
+    if (!this.shouldScroll) {
       return
     }
+    this.shouldScroll = false
 
     const scrollContainer = this.element.closest(".navibar__content-scroll")
     if (scrollContainer) {
