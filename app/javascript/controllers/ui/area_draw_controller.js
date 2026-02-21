@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { getMapInstance, setSuggestionAreaCircle, clearSuggestionMarkers } from "map/state"
+import { getMapInstance, setSuggestionAreaCircle, clearSuggestionAll } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
 
@@ -51,7 +51,7 @@ export default class extends Controller {
     if (!this.map) return
 
     // 既存の提案（円+ピン）をクリア
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     closeInfoWindow()
     const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = true
@@ -420,7 +420,7 @@ export default class extends Controller {
 
   cancel() {
     // 円+ピンをクリア（enterDrawModeで既にクリア済みだが、念のため）
-    clearSuggestionMarkers()
+    clearSuggestionAll()
     const clearBtn = document.getElementById("suggestion-pin-clear")
     if (clearBtn) clearBtn.hidden = true
 
