@@ -1,7 +1,7 @@
 class FavoriteSpot < ApplicationRecord
   # Associations
   belongs_to :user
-  belongs_to :spot
+  belongs_to :spot, counter_cache: true
 
   # Validations
   validates :user_id, uniqueness: { scope: :spot_id }

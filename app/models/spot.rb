@@ -130,7 +130,7 @@ class Spot < ApplicationRecord
     when "oldest"
       order(created_at: :asc)
     when "popular"
-      order(Arel.sql("(SELECT COUNT(*) FROM favorite_spots WHERE favorite_spots.spot_id = spots.id) DESC, spots.created_at DESC"))
+      order(favorite_spots_count: :desc, created_at: :desc)
     else # newest
       order(created_at: :desc)
     end
@@ -163,11 +163,12 @@ class Spot < ApplicationRecord
 
   # ジャンルで絞り込み（複数対応）
   # 親ジャンル選択時は子ジャンルも、子ジャンル選択時は親ジャンルも含めて検索
+  # EXISTS方式でDISTINCT + ORDER BYの衝突を回避
   scope :filter_by_genres, ->(genre_ids) {
     expanded_ids = Genre.expand_family(genre_ids)
     return all if expanded_ids.empty?
 
-    joins(:spot_genres).where(spot_genres: { genre_id: expanded_ids }).distinct
+    where("EXISTS (SELECT 1 FROM spot_genres WHERE spot_genres.spot_id = spots.id AND spot_genres.genre_id IN (?))", expanded_ids)
   }
 
   # キーワード検索（スポット名/住所で部分一致）

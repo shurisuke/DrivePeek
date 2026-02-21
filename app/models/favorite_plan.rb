@@ -1,7 +1,7 @@
 class FavoritePlan < ApplicationRecord
   # Associations
   belongs_to :user
-  belongs_to :plan
+  belongs_to :plan, counter_cache: true
 
   # Validations
   validates :user_id, uniqueness: { scope: :plan_id }

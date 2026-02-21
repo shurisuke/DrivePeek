@@ -159,6 +159,50 @@ RSpec.describe Spot, type: :model do
         expect(Spot.filter_by_genres([])).to include(spot_with_parent, spot_with_child, spot_without_genre)
       end
     end
+
+    describe ".for_community" do
+      let!(:genre) { create(:genre, slug: "nature") }
+      let!(:spot) { create(:spot, prefecture: "東京都", city: "渋谷区", lat: 35.6, lng: 139.7) }
+
+      before do
+        spot.genres << genre
+      end
+
+      context "フィルター + ソートの組み合わせ" do
+        it "キーワード検索 + ソートでエラーが発生しない" do
+          expect {
+            Spot.for_community(keyword: "テスト", sort: "popular").to_a
+          }.not_to raise_error
+        end
+
+        it "ジャンル検索 + ソートでエラーが発生しない" do
+          expect {
+            Spot.for_community(genre_ids: [genre.id], sort: "popular").to_a
+          }.not_to raise_error
+        end
+
+        it "エリア検索 + ソートでエラーが発生しない" do
+          expect {
+            Spot.for_community(
+              circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
+              sort: "popular"
+            ).to_a
+          }.not_to raise_error
+        end
+
+        it "全フィルター + ソートの組み合わせでエラーが発生しない" do
+          expect {
+            Spot.for_community(
+              keyword: "テスト",
+              genre_ids: [genre.id],
+              cities: ["東京都/渋谷区"],
+              circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
+              sort: "popular"
+            ).to_a
+          }.not_to raise_error
+        end
+      end
+    end
   end
 
   describe ".find_or_create_from_location" do

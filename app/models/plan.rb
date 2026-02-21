@@ -28,19 +28,22 @@ class Plan < ApplicationRecord
   has_many :suggestions, dependent: :destroy
 
   # Scopes
-  scope :with_multiple_spots, -> {
-    where("(SELECT COUNT(*) FROM plan_spots WHERE plan_spots.plan_id = plans.id) >= 2")
-  }
+  scope :with_multiple_spots, -> { where("plan_spots_count >= 2") }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
   # 円内のスポットを含むプランを検索
   # @param center_lat [Float] 中心緯度
   # @param center_lng [Float] 中心経度
   # @param radius_km [Float] 半径（km）
+  # EXISTS方式でDISTINCT + ORDER BYの衝突を回避
   scope :within_circle, ->(center_lat, center_lng, radius_km) {
     return all if center_lat.blank? || center_lng.blank? || radius_km.blank?
 
-    joins(:spots).merge(Spot.within_circle(center_lat, center_lng, radius_km)).distinct
+    distance_sql = sanitize_sql_array([
+      "SQRT(POW((spots.lat - ?) * 111.0, 2) + POW((spots.lng - ?) * 91.0, 2)) <= ?",
+      center_lat, center_lng, radius_km
+    ])
+    where("EXISTS (SELECT 1 FROM plan_spots JOIN spots ON spots.id = plan_spots.spot_id WHERE plan_spots.plan_id = plans.id AND #{distance_sql})")
   }
 
   # みんなのプラン用のベースRelation（検索・includes・並び順を含む）
@@ -57,7 +60,7 @@ class Plan < ApplicationRecord
     base = base.liked_by(liked_by_user) if liked_by_user
     base = base.within_circle(circle[:center_lat], circle[:center_lng], circle[:radius_km]) if circle.present?
 
-    base.includes(:user, :start_point, plan_spots: { spot: :genres })
+    base.preload(:user, :start_point, plan_spots: { spot: :genres })
         .sort_by_option(sort)
   }
 
@@ -67,7 +70,7 @@ class Plan < ApplicationRecord
     when "oldest"
       order(created_at: :asc)
     when "popular"
-      order(Arel.sql("(SELECT COUNT(*) FROM favorite_plans WHERE favorite_plans.plan_id = plans.id) DESC, plans.created_at DESC"))
+      order(favorite_plans_count: :desc, created_at: :desc)
     else # newest
       order(created_at: :desc)
     end
@@ -75,6 +78,7 @@ class Plan < ApplicationRecord
 
   # 市区町村で絞り込み（複数対応）
   # cities は "都道府県/市区町村" 形式の配列
+  # EXISTS方式でDISTINCT + ORDER BYの衝突を回避
   scope :filter_by_cities, ->(cities) {
     valid_cities = Array(cities).reject(&:blank?)
     return all if valid_cities.empty?
@@ -88,7 +92,7 @@ class Plan < ApplicationRecord
       end
     end
 
-    joins(:spots).where(conditions.join(" OR ")).distinct
+    where("EXISTS (SELECT 1 FROM plan_spots JOIN spots ON spots.id = plan_spots.spot_id WHERE plan_spots.plan_id = plans.id AND (#{conditions.join(' OR ')}))")
   }
 
   # 特定ユーザーがお気に入りしたプランのみ
@@ -100,22 +104,25 @@ class Plan < ApplicationRecord
 
   # ジャンルで絞り込み（複数対応）
   # 親ジャンル選択時は子ジャンルも、子ジャンル選択時は親ジャンルも含めて検索
+  # EXISTS方式でDISTINCT + ORDER BYの衝突を回避
   scope :filter_by_genres, ->(genre_ids) {
     expanded_ids = Genre.expand_family(genre_ids)
     return all if expanded_ids.empty?
 
-    joins(spots: :spot_genres).where(spot_genres: { genre_id: expanded_ids }).distinct
+    where("EXISTS (SELECT 1 FROM plan_spots JOIN spot_genres ON spot_genres.spot_id = plan_spots.spot_id WHERE plan_spots.plan_id = plans.id AND spot_genres.genre_id IN (?))", expanded_ids)
   }
 
   # キーワード検索（プラン名/スポット名/住所で部分一致）
+  # EXISTS方式でDISTINCT + ORDER BYの衝突を回避
   scope :search_keyword, ->(q) {
     return all if q.blank?
 
     keyword = "%#{sanitize_sql_like(q)}%"
 
-    left_joins(:spots)
-      .where("plans.title ILIKE :q OR spots.name ILIKE :q OR spots.address ILIKE :q", q: keyword)
-      .distinct
+    where(
+      "plans.title ILIKE :q OR EXISTS (SELECT 1 FROM plan_spots JOIN spots ON spots.id = plan_spots.spot_id WHERE plan_spots.plan_id = plans.id AND (spots.name ILIKE :q OR spots.address ILIKE :q))",
+      q: keyword
+    )
   }
 
   # 空プランを除外（タイトル空 + スポット0件）

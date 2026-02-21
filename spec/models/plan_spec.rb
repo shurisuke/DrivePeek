@@ -225,6 +225,67 @@ RSpec.describe Plan, type: :model do
     end
   end
 
+  describe ".for_community" do
+    let!(:active_user) { create(:user, status: :active) }
+    let!(:genre1) { create(:genre, slug: "nature") }
+    let!(:genre2) { create(:genre, slug: "gourmet") }
+    let!(:spot1) { create(:spot, prefecture: "東京都", city: "渋谷区", lat: 35.6, lng: 139.7) }
+    let!(:spot2) { create(:spot, prefecture: "東京都", city: "新宿区", lat: 35.7, lng: 139.8) }
+    let!(:plan) { create(:plan, user: active_user, title: "テストプラン") }
+
+    before do
+      # スポットに複数ジャンルを設定
+      create(:spot_genre, spot: spot1, genre: genre1)
+      create(:spot_genre, spot: spot1, genre: genre2)
+      create(:spot_genre, spot: spot2, genre: genre1)
+      # プランに複数スポットを設定
+      create(:plan_spot, plan: plan, spot: spot1, position: 1)
+      create(:plan_spot, plan: plan, spot: spot2, position: 2)
+    end
+
+    context "フィルター + ソートの組み合わせ" do
+      it "重複したIDを返さない（JOINによる行増殖を防ぐ）" do
+        result = Plan.for_community(sort: "popular")
+        ids = result.pluck(:id)
+
+        expect(ids).to eq(ids.uniq)
+      end
+
+      it "キーワード検索 + ソートでエラーが発生しない" do
+        expect {
+          Plan.for_community(keyword: "テスト", sort: "popular").to_a
+        }.not_to raise_error
+      end
+
+      it "ジャンル検索 + ソートでエラーが発生しない" do
+        expect {
+          Plan.for_community(genre_ids: [genre1.id], sort: "popular").to_a
+        }.not_to raise_error
+      end
+
+      it "エリア検索 + ソートでエラーが発生しない" do
+        expect {
+          Plan.for_community(
+            circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
+            sort: "popular"
+          ).to_a
+        }.not_to raise_error
+      end
+
+      it "全フィルター + ソートの組み合わせでエラーが発生しない" do
+        expect {
+          Plan.for_community(
+            keyword: "テスト",
+            genre_ids: [genre1.id],
+            cities: ["東京都/渋谷区"],
+            circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
+            sort: "popular"
+          ).to_a
+        }.not_to raise_error
+      end
+    end
+  end
+
   describe "#copy_spots_from" do
     let(:source_plan) { create(:plan, user: user, title: "元のプラン") }
     let(:target_plan) { create(:plan, user: user, title: "") }
