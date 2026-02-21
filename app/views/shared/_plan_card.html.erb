@@ -4,20 +4,17 @@
 <%
   _can_edit = local_assigns.fetch(:can_edit, false)
   _can_delete = local_assigns.fetch(:can_delete, false)
-  _plan = plan
   _favorite_plan = local_assigns.fetch(:favorite_plan, nil)
-  favorite_count = _plan.favorite_plans.size
 
-  # planから導出
-  _plan_title = plan_title(_plan)
-  _spots = _plan.plan_spots.includes(spot: :genres).order(:position).map do |ps|
-    { name: ps.spot.name, prefecture: ps.spot.prefecture, city: ps.spot.city,
-      lat: ps.spot.lat, lng: ps.spot.lng, address: ps.spot.address,
-      place_id: ps.spot.place_id, genres: ps.spot.genres.map(&:name) }
-  end
-  _genres = _spots.flat_map { |s| s[:genres] }.uniq.first(3)
-  _total_duration = format_move_time(_plan.spots_only_move_time)
-  _total_distance = format_distance(_plan.spots_only_distance)
+  # ヘルパーでデータを一括取得（N+1防止）
+  _card = plan_card_data(plan)
+  _plan_title = _card[:title]
+  _spots = _card[:spots]
+  _genres = _card[:genres]
+  _total_duration = _card[:total_duration]
+  _total_distance = _card[:total_distance]
+  _favorite_count = _card[:favorite_count]
+  _long_duration = _card[:long_duration]
 %>
 
 <div class="plan-card">
@@ -36,8 +33,8 @@
     <div class="plan-card__header-actions">
       <% if _can_delete %>
         <div class="plan-card__actions">
-          <% if _can_delete && _plan %>
-            <%= button_to plan_path(_plan), method: :delete,
+          <% if plan %>
+            <%= button_to plan_path(plan), method: :delete,
                   class: "plan-card__action plan-card__action--delete",
                   aria: { label: "プランを削除" },
                   data: { turbo_confirm: "このプランを削除しますか？" } do %>
@@ -47,22 +44,22 @@
         </div>
       <% end %>
       <%# 共有ボタン（スポットがある場合のみ） %>
-      <% if _plan&.plan_spots&.any? %>
+      <% if _spots.present? %>
         <button type="button"
                 class="plan-card__action plan-card__action--share"
                 aria-label="シェア"
                 data-controller="ui--share-modal"
-                data-ui--share-modal-url-value="<%= plan_url(_plan) %>"
-                data-ui--share-modal-text-value="<%= share_text_for_plan(_plan) %>"
+                data-ui--share-modal-url-value="<%= plan_url(plan) %>"
+                data-ui--share-modal-text-value="<%= share_text_for_plan(plan) %>"
                 data-action="click->ui--share-modal#open">
           <i class="bi bi-three-dots" aria-hidden="true"></i>
         </button>
       <% end %>
-      <% if _plan %>
+      <% if plan %>
         <div class="plan-card__stats">
           <div class="plan-card__stat">
-            <%= render "favorite_plans/button", plan: _plan, favorite_plan: _favorite_plan %>
-            <span id="<%= dom_id(_plan, :favorite_count) %>" class="plan-card__stat-count"><%= favorite_count %></span>
+            <%= render "favorite_plans/button", plan: plan, favorite_plan: _favorite_plan %>
+            <span id="<%= dom_id(plan, :favorite_count) %>" class="plan-card__stat-count"><%= _favorite_count %></span>
           </div>
         </div>
       <% end %>
@@ -110,7 +107,7 @@
   </div>
 
   <%# フッター %>
-  <div class="plan-card__footer<%= ' plan-card__footer--long' if long_duration?(_plan.spots_only_move_time) %>">
+  <div class="plan-card__footer<%= ' plan-card__footer--long' if _long_duration %>">
     <div class="plan-card__totals">
       <% if _total_duration.present? %>
         <span class="plan-card__total-item">
@@ -125,10 +122,10 @@
         </span>
       <% end %>
     </div>
-    <% if _plan %>
+    <% if plan %>
       <%# 編集リンク（スタンドアロン + 所有者のみ表示、CSSで制御） %>
       <% if _can_edit %>
-        <%= link_to edit_plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--edit", data: { turbo_frame: "_top" }, aria: { label: "プランを編集" } do %>
+        <%= link_to edit_plan_path(plan), class: "plan-card__detail-link plan-card__detail-link--edit", data: { turbo_frame: "_top" }, aria: { label: "プランを編集" } do %>
           編集する
           <i class="bi bi-pencil" aria-hidden="true"></i>
         <% end %>
@@ -139,14 +136,14 @@
               aria-label="ルートをプレビュー"
               data-controller="community-tab--plan-preview"
               data-community-tab--plan-preview-spots-value="<%= plan_preview_spots_json(_spots) %>"
-              data-community-tab--plan-preview-polylines-value="<%= plan_preview_polylines_json(_plan) %>"
+              data-community-tab--plan-preview-polylines-value="<%= plan_preview_polylines_json(plan) %>"
               data-action="click->community-tab--plan-preview#show">
         <i class="bi bi-share" aria-hidden="true"></i>
         ルート
       </button>
       <%# 地図で見るリンク（スタンドアロン + 非所有者のみ表示、CSSで制御） %>
       <% unless _can_edit %>
-        <%= link_to plan_path(_plan), class: "plan-card__detail-link plan-card__detail-link--view", data: { turbo_frame: "_top" }, aria: { label: "プラン詳細を見る" } do %>
+        <%= link_to plan_path(plan), class: "plan-card__detail-link plan-card__detail-link--view", data: { turbo_frame: "_top" }, aria: { label: "プラン詳細を見る" } do %>
           地図で見る
           <i class="bi bi-chevron-right" aria-hidden="true"></i>
         <% end %>

@@ -1,4 +1,33 @@
 module PlansHelper
+  # プランカード表示用のデータを生成
+  # ビューのロジックを集約し、N+1を防ぐ
+  def plan_card_data(plan)
+    spots = plan.plan_spots.includes(spot: :genres).order(:position).map do |ps|
+      {
+        name: ps.spot.name,
+        prefecture: ps.spot.prefecture,
+        city: ps.spot.city,
+        lat: ps.spot.lat,
+        lng: ps.spot.lng,
+        address: ps.spot.address,
+        place_id: ps.spot.place_id,
+        genres: ps.spot.genres.map(&:name)
+      }
+    end
+
+    move_time = plan.spots_only_move_time
+
+    {
+      title: plan_title(plan),
+      spots: spots,
+      genres: spots.flat_map { |s| s[:genres] }.uniq.first(3),
+      total_duration: format_move_time(move_time),
+      total_distance: format_distance(plan.spots_only_distance),
+      favorite_count: plan.favorite_plans_count,
+      long_duration: long_duration?(move_time)
+    }
+  end
+
   # プランタイトルを表示用にフォーマット
   # - タイトルが設定されていればそのまま表示
   # - 未設定の場合、スポットの市区町村から自動生成
