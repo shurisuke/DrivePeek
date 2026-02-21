@@ -1,6 +1,6 @@
 class PlanSpot < ApplicationRecord
   # Associations
-  belongs_to :plan
+  belongs_to :plan, counter_cache: true
   belongs_to :spot
 
   # 順序管理（plan スコープで position を自動採番）

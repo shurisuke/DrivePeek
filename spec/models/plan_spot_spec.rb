@@ -65,4 +65,23 @@ RSpec.describe PlanSpot, type: :model do
       expect(PlanSpot::MAX_STAY_DURATION).to eq(1200)
     end
   end
+
+  describe "counter_cache" do
+    let(:plan) { create(:plan) }
+    let(:spot) { create(:spot) }
+
+    it "作成時にplan_spots_countが増加する" do
+      expect {
+        create(:plan_spot, plan: plan, spot: spot)
+      }.to change { plan.reload.plan_spots_count }.by(1)
+    end
+
+    it "削除時にplan_spots_countが減少する" do
+      plan_spot = create(:plan_spot, plan: plan, spot: spot)
+
+      expect {
+        plan_spot.destroy
+      }.to change { plan.reload.plan_spots_count }.by(-1)
+    end
+  end
 end

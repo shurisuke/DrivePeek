@@ -28,9 +28,7 @@ class Plan < ApplicationRecord
   has_many :suggestions, dependent: :destroy
 
   # Scopes
-  scope :with_multiple_spots, -> {
-    where("(SELECT COUNT(*) FROM plan_spots WHERE plan_spots.plan_id = plans.id) >= 2")
-  }
+  scope :with_multiple_spots, -> { where("plan_spots_count >= 2") }
   scope :publicly_visible, -> { joins(:user).where(users: { status: :active }) }
 
   # 円内のスポットを含むプランを検索
@@ -57,7 +55,7 @@ class Plan < ApplicationRecord
     base = base.liked_by(liked_by_user) if liked_by_user
     base = base.within_circle(circle[:center_lat], circle[:center_lng], circle[:radius_km]) if circle.present?
 
-    base.includes(:user, :start_point, plan_spots: { spot: :genres })
+    base.preload(:user, :start_point, plan_spots: { spot: :genres })
         .sort_by_option(sort)
   }
 
@@ -67,7 +65,7 @@ class Plan < ApplicationRecord
     when "oldest"
       order(created_at: :asc)
     when "popular"
-      order(Arel.sql("(SELECT COUNT(*) FROM favorite_plans WHERE favorite_plans.plan_id = plans.id) DESC, plans.created_at DESC"))
+      order(favorite_plans_count: :desc, created_at: :desc)
     else # newest
       order(created_at: :desc)
     end
@@ -79,16 +77,17 @@ class Plan < ApplicationRecord
     valid_cities = Array(cities).reject(&:blank?)
     return all if valid_cities.empty?
 
+    spots_table = Spot.arel_table
     conditions = valid_cities.map do |city|
-      prefecture, city_name = city.split("/", 2)
+      pref, city_name = city.split("/", 2)
       if city_name.present?
-        sanitize_sql_array([ "(spots.prefecture = ? AND spots.city = ?)", prefecture, city_name ])
+        spots_table[:prefecture].eq(pref).and(spots_table[:city].eq(city_name))
       else
-        sanitize_sql_array([ "spots.prefecture = ?", prefecture ])
+        spots_table[:prefecture].eq(pref)
       end
     end
 
-    joins(:spots).where(conditions.join(" OR ")).distinct
+    joins(:spots).where(conditions.reduce(:or)).distinct
   }
 
   # 特定ユーザーがお気に入りしたプランのみ

@@ -130,7 +130,7 @@ class Spot < ApplicationRecord
     when "oldest"
       order(created_at: :asc)
     when "popular"
-      order(Arel.sql("(SELECT COUNT(*) FROM favorite_spots WHERE favorite_spots.spot_id = spots.id) DESC, spots.created_at DESC"))
+      order(favorite_spots_count: :desc, created_at: :desc)
     else # newest
       order(created_at: :desc)
     end
