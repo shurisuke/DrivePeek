@@ -259,7 +259,7 @@ RSpec.describe Plan, type: :model do
 
       it "ジャンル検索 + ソートでエラーが発生しない" do
         expect {
-          Plan.for_community(genre_ids: [genre1.id], sort: "popular").to_a
+          Plan.for_community(genre_ids: [ genre1.id ], sort: "popular").to_a
         }.not_to raise_error
       end
 
@@ -276,8 +276,8 @@ RSpec.describe Plan, type: :model do
         expect {
           Plan.for_community(
             keyword: "テスト",
-            genre_ids: [genre1.id],
-            cities: ["東京都/渋谷区"],
+            genre_ids: [ genre1.id ],
+            cities: [ "東京都/渋谷区" ],
             circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
             sort: "popular"
           ).to_a

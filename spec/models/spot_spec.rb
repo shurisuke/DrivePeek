@@ -177,7 +177,7 @@ RSpec.describe Spot, type: :model do
 
         it "ジャンル検索 + ソートでエラーが発生しない" do
           expect {
-            Spot.for_community(genre_ids: [genre.id], sort: "popular").to_a
+            Spot.for_community(genre_ids: [ genre.id ], sort: "popular").to_a
           }.not_to raise_error
         end
 
@@ -194,8 +194,8 @@ RSpec.describe Spot, type: :model do
           expect {
             Spot.for_community(
               keyword: "テスト",
-              genre_ids: [genre.id],
-              cities: ["東京都/渋谷区"],
+              genre_ids: [ genre.id ],
+              cities: [ "東京都/渋谷区" ],
               circle: { center_lat: 35.6, center_lng: 139.7, radius_km: 50 },
               sort: "popular"
             ).to_a
