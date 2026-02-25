@@ -283,6 +283,11 @@ RSpec.describe Plan, type: :model do
           ).to_a
         }.not_to raise_error
       end
+
+      it "exclude_plan_idで指定したプランを除外する" do
+        result = Plan.for_community(exclude_plan_id: plan.id)
+        expect(result).not_to include(plan)
+      end
     end
   end
 

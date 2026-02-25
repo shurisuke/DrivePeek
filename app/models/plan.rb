@@ -45,7 +45,8 @@ class Plan < ApplicationRecord
   # スポットが2つ以上あるプランのみ表示
   # @param circle [Hash, nil] { center_lat:, center_lng:, radius_km: }
   # @param sort [String] "newest" | "oldest" | "popular"
-  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil, circle: nil, sort: "newest") {
+  # @param exclude_plan_id [Integer, nil] 除外するプランID（編集中のプランを除外）
+  scope :for_community, ->(keyword: nil, cities: nil, genre_ids: nil, liked_by_user: nil, circle: nil, sort: "newest", exclude_plan_id: nil) {
     base = publicly_visible
       .with_multiple_spots
       .search_keyword(keyword)
@@ -54,6 +55,7 @@ class Plan < ApplicationRecord
 
     base = base.liked_by(liked_by_user) if liked_by_user
     base = base.within_circle(circle[:center_lat], circle[:center_lng], circle[:radius_km]) if circle.present?
+    base = base.where.not(id: exclude_plan_id) if exclude_plan_id.present?
 
     base.preload(:user, :start_point, plan_spots: { spot: :genres })
         .sort_by_option(sort)

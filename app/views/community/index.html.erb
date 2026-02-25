@@ -16,7 +16,8 @@
                    genres_by_category: @genres_by_category,
                    selected_genre_ids: @selected_genre_ids,
                    search_query: @search_query,
-                   circle: @circle %>
+                   circle: @circle,
+                   exclude_plan_id: @exclude_plan_id %>
 
         <%= render "shared/results_bar",
                    count: @search_type == "spot" ? @spots_count : @plans_count,

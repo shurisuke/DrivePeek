@@ -11,6 +11,9 @@ export default class extends Controller {
   static targets = ["button", "content", "footer"]
 
   connect() {
+    // タブごとのスクロール位置を保存
+    this.scrollPositions = {}
+
     // 外部からタブ切替を要求するイベントを購読
     this.handleActivateTab = this.handleActivateTab.bind(this)
     document.addEventListener("navibar:activate-tab", this.handleActivateTab)
@@ -50,6 +53,14 @@ export default class extends Controller {
   }
 
   activateTab(tabName) {
+    const scrollContainer = this.element.querySelector(".navibar__content-scroll")
+
+    // 現在のタブのスクロール位置を保存
+    const currentTab = this.getActiveTabName()
+    if (scrollContainer) {
+      this.scrollPositions[currentTab] = scrollContainer.scrollTop
+    }
+
     // ボタンの active 状態を切り替え
     this.buttonTargets.forEach((btn) => {
       btn.classList.toggle("active", btn.dataset.tab === tabName)
@@ -68,6 +79,11 @@ export default class extends Controller {
       const isActive = footer.dataset.tab === tabName
       footer.classList.toggle("is-hidden", !isActive)
     })
+
+    // 新しいタブのスクロール位置を復元
+    if (scrollContainer) {
+      scrollContainer.scrollTop = this.scrollPositions[tabName] || 0
+    }
   }
 
   switch(event) {

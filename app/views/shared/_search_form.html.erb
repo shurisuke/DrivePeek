@@ -16,6 +16,11 @@
     <%= hidden_field_tag :center_lng, circle&.dig(:center_lng), data: { "community-tab--search-filters-target": "centerLng" } %>
     <%= hidden_field_tag :radius_km, circle&.dig(:radius_km), data: { "community-tab--search-filters-target": "radiusKm" } %>
 
+    <%# 編集中のプランを除外（プラン編集画面からのアクセス時） %>
+    <% if local_assigns[:exclude_plan_id].present? %>
+      <%= hidden_field_tag :exclude_plan_id, local_assigns[:exclude_plan_id] %>
+    <% end %>
+
     <%# ========== 通常モード ========== %>
     <div data-community-tab--search-filters-target="main">
       <% if local_assigns.fetch(:show_tabs, true) %>
@@ -47,12 +52,12 @@
 
         <%# 選択後：解除ボタン %>
         <button type="button"
-                class="search-filters__select-btn"
+                class="search-filters__select-btn search-filters__select-btn--clear"
                 <%= 'hidden' unless has_circle %>
                 data-community-tab--search-filters-target="circleClearButton"
                 data-action="click->community-tab--search-filters#clearCircle">
           <span>エリア選択中（半径 <%= circle&.dig(:radius_km)&.round(1) || 0 %> km）</span>
-          <i class="bi bi-x"></i>
+          <span class="search-filters__clear-label">選択解除</span>
         </button>
       </div>
 
