@@ -22,6 +22,9 @@ class CommunityController < ApplicationController
       sort: @sort
     }
 
+    # プラン検索用の追加パラメータ（編集中のプランを除外）
+    plan_search_params = search_params.merge(exclude_plan_id: params[:exclude_plan_id])
+
     # 検索タイプに応じてプランまたはスポットを取得
     if @search_type == "spot"
       @community_spots = Spot.for_community(**search_params).page(params[:page]).per(10)
@@ -31,11 +34,11 @@ class CommunityController < ApplicationController
       @spot_stats = preload_data[:spot_stats]
       @user_favorite_spots = preload_data[:user_favorite_spots]
     else
-      @community_plans = Plan.for_community(**search_params).page(params[:page]).per(10)
+      @community_plans = Plan.for_community(**plan_search_params).page(params[:page]).per(10)
     end
 
     # 件数を計算（検索結果ラベルに表示）
-    calculate_counts(search_params)
+    calculate_counts(search_params, plan_search_params)
   end
 
   private
@@ -49,6 +52,7 @@ class CommunityController < ApplicationController
     @sort = SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "newest"
     @genres_by_category = Genre.grouped_by_category
     @cities_by_prefecture = Spot.cities_by_prefecture
+    @exclude_plan_id = params[:exclude_plan_id]
 
     # 円エリア検索パラメータ
     @circle = circle_params
@@ -66,8 +70,8 @@ class CommunityController < ApplicationController
   end
 
   # 件数を計算（現在の検索条件での総件数）
-  def calculate_counts(search_params)
+  def calculate_counts(search_params, plan_search_params)
     @spots_count = Spot.for_community(**search_params).count
-    @plans_count = Plan.for_community(**search_params).count
+    @plans_count = Plan.for_community(**plan_search_params).count
   end
 end

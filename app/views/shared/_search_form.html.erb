@@ -16,6 +16,11 @@
     <%= hidden_field_tag :center_lng, circle&.dig(:center_lng), data: { "community-tab--search-filters-target": "centerLng" } %>
     <%= hidden_field_tag :radius_km, circle&.dig(:radius_km), data: { "community-tab--search-filters-target": "radiusKm" } %>
 
+    <%# 編集中のプランを除外（プラン編集画面からのアクセス時） %>
+    <% if local_assigns[:exclude_plan_id].present? %>
+      <%= hidden_field_tag :exclude_plan_id, local_assigns[:exclude_plan_id] %>
+    <% end %>
+
     <%# ========== 通常モード ========== %>
     <div data-community-tab--search-filters-target="main">
       <% if local_assigns.fetch(:show_tabs, true) %>
