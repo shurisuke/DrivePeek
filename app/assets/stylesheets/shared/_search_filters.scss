@@ -465,6 +465,14 @@
     line-height: 1;
     margin: -3px 0;
   }
+
+}
+
+// 選択解除ラベル
+.search-filters__select-btn .search-filters__clear-label {
+  flex: none;
+  color: #e74c3c;
+  font-size: 12px;
 }
 
 /* 円エリア検索: デフォルト非表示、plan-form内で表示 */

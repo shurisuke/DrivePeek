@@ -52,12 +52,12 @@
 
         <%# 選択後：解除ボタン %>
         <button type="button"
-                class="search-filters__select-btn"
+                class="search-filters__select-btn search-filters__select-btn--clear"
                 <%= 'hidden' unless has_circle %>
                 data-community-tab--search-filters-target="circleClearButton"
                 data-action="click->community-tab--search-filters#clearCircle">
           <span>エリア選択中（半径 <%= circle&.dig(:radius_km)&.round(1) || 0 %> km）</span>
-          <i class="bi bi-x"></i>
+          <span class="search-filters__clear-label">選択解除</span>
         </button>
       </div>
 

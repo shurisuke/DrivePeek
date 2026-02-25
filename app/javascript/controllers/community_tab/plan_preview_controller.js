@@ -76,11 +76,7 @@ export default class extends Controller {
 
   hide() {
     clearCommunityPreview()
-    clearSuggestionAll()  // 円エリアもクリア
     hideCloseButton()
-
-    // search_filters_controller に円クリアを通知
-    document.dispatchEvent(new CustomEvent("community:circleCleared"))
   }
 
   // --- Private methods ---

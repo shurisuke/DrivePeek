@@ -185,10 +185,6 @@ export default class extends Controller {
     // UI更新：ボタン切り替え、ステータス表示
     this.updateCircleUI(true, radius_km)
 
-    // 地図上の削除ボタンを表示
-    const clearBtn = document.getElementById("community-preview-close")
-    if (clearBtn) clearBtn.hidden = false
-
     // モバイル: ボトムシートを半分展開 → 円全体が見えるようにフィット
     const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
     const bottomSheet = this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
