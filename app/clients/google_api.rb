@@ -29,10 +29,11 @@ module GoogleApi
       JSON.parse(response.body)
     end
 
-    # Google Maps API キーを取得
+    # Google API キーを取得（バックエンド用: Geocoding, Directions）
+    # フロントエンド用は GOOGLE_FRONTEND_API_KEY を使用（application.html.erb）
     # @return [String, nil]
     def api_key
-      ENV["GOOGLE_MAPS_API_KEY"]
+      ENV["GOOGLE_BACKEND_API_KEY"]
     end
 
     # 住所を正規化（国名・郵便番号を除去）
