@@ -4,9 +4,9 @@ require "rails_helper"
 
 RSpec.describe GoogleApi do
   describe ".api_key" do
-    it "GOOGLE_MAPS_API_KEYを返す" do
+    it "GOOGLE_BACKEND_API_KEYを返す" do
       allow(ENV).to receive(:[]).and_call_original
-      allow(ENV).to receive(:[]).with("GOOGLE_MAPS_API_KEY").and_return("test-api-key")
+      allow(ENV).to receive(:[]).with("GOOGLE_BACKEND_API_KEY").and_return("test-api-key")
 
       expect(GoogleApi.api_key).to eq("test-api-key")
     end
