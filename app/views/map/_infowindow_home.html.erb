@@ -42,7 +42,9 @@
              class="dp-infowindow__edit-input"
              placeholder="住所を入力..."
              data-infowindow--point-editor-target="input"
-             data-action="keydown->infowindow--point-editor#onKeydown">
+             data-action="keydown->infowindow--point-editor#onKeydown
+                          compositionstart->infowindow--point-editor#compositionStart
+                          compositionend->infowindow--point-editor#compositionEnd">
       <button type="button"
               class="dp-infowindow__edit-submit"
               data-action="click->infowindow--point-editor#search">
