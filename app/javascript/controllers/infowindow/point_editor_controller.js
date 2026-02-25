@@ -20,7 +20,7 @@ import { closeInfoWindow } from "map/infowindow"
 import { panToVisualCenter } from "map/visual_center"
 
 export default class extends Controller {
-  static targets = ["displayMode", "editMode", "input"]
+  static targets = ["displayMode", "editMode", "input", "submitBtn", "submitText", "spinner"]
   static values = {
     editMode: String,  // "start_point" | "goal_point"
     planId: String,
@@ -77,6 +77,8 @@ export default class extends Controller {
       return
     }
 
+    this.showLoading()
+
     try {
       // サーバーに address_query を送信（サーバー側でジオコーディング）
       await this.persist({ planId, addressQuery: query })
@@ -108,7 +110,22 @@ export default class extends Controller {
 
     } catch (err) {
       console.error("[infowindow-point-editor] update failed", err)
+      this.hideLoading()
     }
+  }
+
+  showLoading() {
+    this.inputTarget.disabled = true
+    this.submitBtnTarget.disabled = true
+    this.submitTextTarget.hidden = true
+    this.spinnerTarget.hidden = false
+  }
+
+  hideLoading() {
+    this.inputTarget.disabled = false
+    this.submitBtnTarget.disabled = false
+    this.submitTextTarget.hidden = false
+    this.spinnerTarget.hidden = true
   }
 
   updateMarker(map, location) {

@@ -45,8 +45,10 @@
                           compositionend->infowindow--point-editor#compositionEnd">
       <button type="button"
               class="dp-infowindow__edit-submit"
+              data-infowindow--point-editor-target="submitBtn"
               data-action="click->infowindow--point-editor#search">
-        変更
+        <span data-infowindow--point-editor-target="submitText">変更</span>
+        <div class="dp-infowindow__spinner dp-infowindow__spinner--small" hidden data-infowindow--point-editor-target="spinner"></div>
       </button>
     </div>
   </div>
