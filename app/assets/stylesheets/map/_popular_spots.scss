@@ -53,7 +53,6 @@
     align-items: center;
     justify-content: space-between;
     padding: 16px 20px;
-    border-bottom: 1px solid #eee;
   }
 
   &__title {
@@ -80,6 +79,18 @@
     i {
       font-size: 16px;
       color: #666;
+    }
+  }
+
+  &__description {
+    margin: 0;
+    padding: 0 20px 12px;
+    font-size: 13px;
+    line-height: 1.6;
+    color: #666;
+
+    i {
+      color: #F97316;
     }
   }
 

@@ -11,7 +11,7 @@
       <input
         id="places-search-box"
         type="text"
-        placeholder="      検索"
+        placeholder="      GoogleMap で検索"
         class="map-header-bar__search-input"
       >
     </div>
@@ -21,7 +21,7 @@
       <button type="button"
               class="map-header-bar__pill-left"
               data-action="click->ui--popular-spots#openModal"
-              title="話題のスポットを探す">
+              title="人気スポット検索 - ジャンル選択">
         <i class="bi bi-sliders"></i>
       </button>
       <button type="button"
@@ -88,13 +88,17 @@
         <div class="popular-spots-modal__handle-bar"></div>
       </div>
       <div class="popular-spots-modal__header">
-        <h3 class="popular-spots-modal__title">話題のスポットを探す</h3>
+        <h3 class="popular-spots-modal__title">人気スポット検索 - ジャンル選択</h3>
         <button type="button"
                 class="popular-spots-modal__close-btn"
                 data-action="click->ui--popular-spots#closeModal">
           <i class="bi bi-x-lg"></i>
         </button>
       </div>
+      <p class="popular-spots-modal__description">
+        地図を好きな場所に移動して<i class="bi bi-fire"></i>ボタンを押すと、ここで選択したジャンルで人気スポットを再検索できます。<br>
+        ※未選択時は全ジャンルで検索
+      </p>
 
       <div class="selection-list popular-spots-modal__list">
         <% genres_by_category.each do |category, groups| %>
