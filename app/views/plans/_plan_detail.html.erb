@@ -94,9 +94,9 @@
         </div>
         <div class="navibar__blocks">
           <%# ✅ 2カラムレイアウト: スポットブロック + 時刻レール（readonly） %>
-          <div class="plan-tab-layout plan-tab-layout--readonly" data-controller="myroute-tab--time-rail-sync">
+          <div class="myroute-tab-layout myroute-tab-layout--readonly" data-controller="myroute-tab--time-rail-sync">
             <%# 左カラム: スポットブロック %>
-            <div class="plan-tab-content">
+            <div class="myroute-tab-content">
               <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
               <% spot_ids = plan_spots.map(&:spot_id) %>
               <% favorite_spots_map = current_user ? FavoriteSpot.index_by_spot_id(user: current_user, spot_ids: spot_ids) : {} %>
@@ -124,7 +124,7 @@
             </div>
 
             <%# 右カラム: 時刻レール %>
-            <div class="plan-tab-time-rail">
+            <div class="myroute-tab-time-rail">
               <%= render "plans/time_rail", plan: @plan, readonly: true %>
             </div>
           </div>
@@ -145,11 +145,11 @@
     </div>
 
     <div class="navibar__footer">
-      <%# ✅ アクションボタン（plan-tab-actions と同じ形式） %>
-      <div class="plan-tab-actions">
-        <div class="plan-tab-actions__group">
+      <%# ✅ アクションボタン（myroute-tab-actions と同じ形式） %>
+      <div class="myroute-tab-actions">
+        <div class="myroute-tab-actions__group">
           <button type="button"
-                  class="plan-tab-actions__btn plan-tab-actions__btn--copy plan-tab-actions__btn--single"
+                  class="myroute-tab-actions__btn myroute-tab-actions__btn--copy myroute-tab-actions__btn--single"
                   data-controller="ui--create-plan-trigger"
                   data-ui--create-plan-trigger-url-value="<%= plans_path(copy_from: @plan.id) %>"
                   data-action="click->ui--create-plan-trigger#create">

@@ -12,13 +12,13 @@
   <%= render "plans/myroute_tab_guide" %>
 <% else %>
   <%# 帰宅地点表示コントローラーのスコープ（トグルが帰宅ブロックを制御） %>
-  <div class="plan-tab-wrapper"
+  <div class="myroute-tab-wrapper"
        data-controller="myroute-tab--goal-point-visibility"
        data-myroute-tab--goal-point-visibility-plan-id-value="<%= @plan.id %>">
 
-    <div class="plan-tab-layout" data-controller="myroute-tab--time-rail-sync">
+    <div class="myroute-tab-layout" data-controller="myroute-tab--time-rail-sync">
       <%# ✅ 左カラム: ブロックコンテンツ %>
-      <div class="plan-tab-content">
+      <div class="myroute-tab-content">
         <%= render "plans/start_point_block_edit" %>
 
         <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
@@ -41,7 +41,7 @@
       </div>
 
       <%# ✅ 右カラム: 時刻レール %>
-      <div class="plan-tab-time-rail">
+      <div class="myroute-tab-time-rail">
         <%= render "plans/time_rail", plan: @plan %>
       </div>
     </div>

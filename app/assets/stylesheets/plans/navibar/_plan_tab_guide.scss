@@ -3,7 +3,7 @@
    iOS/macOS風のモダンなデザイン
 ========================================== */
 
-.plan-tab-guide {
+.myroute-tab-guide {
   padding: 20px 12px;
   margin: 0;
 }
@@ -11,7 +11,7 @@
 /* ------------------------------------------
    ヒーローセクション: メインの案内
 ------------------------------------------ */
-.plan-tab-guide__hero {
+.myroute-tab-guide__hero {
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -22,7 +22,7 @@
   box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
 }
 
-.plan-tab-guide__hero-icon {
+.myroute-tab-guide__hero-icon {
   width: 64px;
   height: 64px;
   background: linear-gradient(135deg, #506d53 0%, #6b8e6e 100%);
@@ -38,7 +38,7 @@
   }
 }
 
-.plan-tab-guide__hero-text {
+.myroute-tab-guide__hero-text {
   margin: 0;
   font-size: 15px;
   font-weight: 500;
@@ -52,7 +52,7 @@
   }
 }
 
-.plan-tab-guide__hero-arrow {
+.myroute-tab-guide__hero-arrow {
   margin-top: 4px;
   animation: bounce 2s infinite;
 
@@ -78,7 +78,7 @@
 /* ------------------------------------------
    区切り: または
 ------------------------------------------ */
-.plan-tab-guide__divider {
+.myroute-tab-guide__divider {
   display: flex;
   align-items: center;
   justify-content: center;
@@ -94,13 +94,13 @@
 /* ------------------------------------------
    代替オプション: 検索・AI・みんなの旅
 ------------------------------------------ */
-.plan-tab-guide__options {
+.myroute-tab-guide__options {
   display: flex;
   justify-content: center;
   gap: 10px;
 }
 
-.plan-tab-guide__option {
+.myroute-tab-guide__option {
   flex: 1;
   display: flex;
   flex-direction: column;
@@ -132,24 +132,24 @@
 /* ------------------------------------------
    ヒント: 追加後の操作
 ------------------------------------------ */
-.plan-tab-guide__tips {
+.myroute-tab-guide__tips {
   margin-top: 28px;
   display: flex;
   justify-content: center;
 }
 
-.plan-tab-guide__tips-title {
+.myroute-tab-guide__tips-title {
   display: none;
 }
 
-.plan-tab-guide__tips-list {
+.myroute-tab-guide__tips-list {
   display: flex;
   flex-direction: column;
   gap: 0;
   width: 220px;
 }
 
-.plan-tab-guide__tip {
+.myroute-tab-guide__tip {
   display: flex;
   align-items: center;
   gap: 10px;

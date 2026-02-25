@@ -4,7 +4,7 @@
 
    【余白の方向まとめ】
    ┌─────────────────────────────────────────┐
-   │  .plan-tab-content                      │
+   │  .myroute-tab-content                      │
    │  ├─ padding-left  : 時刻レール側        │
    │  └─ padding-right : ナビバー端側        │
    │                                         │
@@ -20,7 +20,7 @@
    - padding-left  : 時刻レール側（初期5px→0px縮小 + 360px以降拡大）
    - padding-right : ナビバー右端側（360px以降拡大）
 ------------------------------------------ */
-.plan-tab-content {
+.myroute-tab-content {
   padding-left: calc(
     max(0px, 5px - (var(--navibar-width, 360px) - 360px) * 0.025)
     + max(0px, (var(--navibar-width, 360px) - 360px) * 0.25)
