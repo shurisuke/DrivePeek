@@ -33,13 +33,16 @@ RSpec.describe GoogleApi::Geocoder do
           }.to_json)
       end
 
-      it "緯度経度と都道府県を返す" do
+      it "緯度経度と住所詳細を返す" do
         result = GoogleApi::Geocoder.forward("東京都千代田区")
 
         expect(result).to eq({
           lat: 35.6812,
           lng: 139.7671,
-          prefecture: "東京都"
+          address: nil,
+          prefecture: "東京都",
+          city: nil,
+          town: nil
         })
       end
     end

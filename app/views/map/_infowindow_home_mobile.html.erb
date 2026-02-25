@@ -40,11 +40,15 @@
              class="dp-infowindow__edit-input"
              placeholder="住所を入力..."
              data-infowindow--point-editor-target="input"
-             data-action="keydown->infowindow--point-editor#onKeydown">
+             data-action="keydown->infowindow--point-editor#onKeydown
+                          compositionstart->infowindow--point-editor#compositionStart
+                          compositionend->infowindow--point-editor#compositionEnd">
       <button type="button"
               class="dp-infowindow__edit-submit"
+              data-infowindow--point-editor-target="submitBtn"
               data-action="click->infowindow--point-editor#search">
-        変更
+        <span data-infowindow--point-editor-target="submitText">変更</span>
+        <div class="dp-infowindow__spinner dp-infowindow__spinner--small" hidden data-infowindow--point-editor-target="spinner"></div>
       </button>
     </div>
   </div>

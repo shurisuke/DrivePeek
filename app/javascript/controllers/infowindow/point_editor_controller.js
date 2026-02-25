@@ -2,8 +2,8 @@
 // ================================================================
 // PointEditorController
 // 用途: InfoWindow内で出発地点・帰宅地点の住所を編集
-//   - 住所入力 → Geocode API で座標取得
-//   - マーカー更新 + サーバー保存（Turbo Stream）
+//   - 住所入力 → サーバーでジオコーディング → Turbo Stream でDOM更新
+//   - DOM更新後に座標を読み取りマーカー更新
 //   - editModeValue: "start_point" | "goal_point"
 // ================================================================
 
@@ -15,13 +15,12 @@ import {
   clearEndPointMarker,
   setEndPointMarker,
 } from "map/state"
-import { geocodeAddress, normalizeDisplayAddress } from "map/geocoder"
 import { patchTurboStream } from "services/navibar_api"
 import { closeInfoWindow } from "map/infowindow"
-import { panToVisualCenter, fitBoundsWithPadding } from "map/visual_center"
+import { panToVisualCenter } from "map/visual_center"
 
 export default class extends Controller {
-  static targets = ["displayMode", "editMode", "input"]
+  static targets = ["displayMode", "editMode", "input", "submitBtn", "submitText", "spinner"]
   static values = {
     editMode: String,  // "start_point" | "goal_point"
     planId: String,
@@ -78,47 +77,55 @@ export default class extends Controller {
       return
     }
 
+    this.showLoading()
+
     try {
-      const geo = await geocodeAddress(query)
-
-      const formattedAddress = geo?.formattedAddress || geo?.address || query
-      const displayAddress = normalizeDisplayAddress(formattedAddress)
-
-      const location =
-        geo?.location ||
-        (typeof geo?.lat === "number" && typeof geo?.lng === "number"
-          ? { lat: geo.lat, lng: geo.lng }
-          : null)
-
-      const viewport = geo?.viewport || null
-
-      if (!location) throw new Error("geocode result has no location")
-
-      const lat = typeof location.lat === "function" ? location.lat() : location.lat
-      const lng = typeof location.lng === "function" ? location.lng() : location.lng
-
-      // マーカー更新
-      this.updateMarker(map, { lat, lng })
-
-      // サーバーに保存
-      await this.persist({ planId, lat, lng, address: displayAddress || query })
+      // サーバーに address_query を送信（サーバー側でジオコーディング）
+      await this.persist({ planId, addressQuery: query })
 
       // InfoWindowを閉じる
       closeInfoWindow()
 
-      // 地図を移動（ボトムシート考慮）- InfoWindow閉じた後に実行
+      // DOM更新後に座標を読み取ってマーカー更新
       requestAnimationFrame(() => {
-        if (viewport) {
-          fitBoundsWithPadding(viewport)
-        } else {
+        requestAnimationFrame(() => {
+          const selector = this.editModeValue === "start_point"
+            ? ".start-point-block"
+            : ".goal-point-block"
+          const block = document.querySelector(selector)
+          if (!block) return
+
+          const lat = parseFloat(block.dataset.lat)
+          const lng = parseFloat(block.dataset.lng)
+          if (isNaN(lat) || isNaN(lng)) return
+
+          // マーカー更新
+          this.updateMarker(map, { lat, lng })
+
+          // 地図を移動（ボトムシート考慮）
           map.setZoom(16)
           panToVisualCenter({ lat, lng })
-        }
+        })
       })
 
     } catch (err) {
       console.error("[infowindow-point-editor] update failed", err)
+      this.hideLoading()
     }
+  }
+
+  showLoading() {
+    this.inputTarget.disabled = true
+    this.submitBtnTarget.disabled = true
+    this.submitTextTarget.hidden = true
+    this.spinnerTarget.hidden = false
+  }
+
+  hideLoading() {
+    this.inputTarget.disabled = false
+    this.submitBtnTarget.disabled = false
+    this.submitTextTarget.hidden = false
+    this.spinnerTarget.hidden = true
   }
 
   updateMarker(map, location) {
@@ -146,12 +153,12 @@ export default class extends Controller {
     }
   }
 
-  async persist({ planId, lat, lng, address }) {
+  async persist({ planId, addressQuery }) {
     const isStartPoint = this.editModeValue === "start_point"
     const url = isStartPoint ? `/plans/${planId}/start_point` : `/plans/${planId}/goal_point`
     const key = isStartPoint ? "start_point" : "goal_point"
 
-    await patchTurboStream(url, { [key]: { lat, lng, address } })
+    await patchTurboStream(url, { [key]: { address_query: addressQuery } })
   }
 
   detectPlanId() {

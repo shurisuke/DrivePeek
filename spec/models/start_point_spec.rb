@@ -130,22 +130,21 @@ RSpec.describe StartPoint do
   end
 
   describe "geocode_if_needed (before_save callback)" do
-    context "lat/lngが変更された場合" do
+    context "prefecture/city/townがすでに存在する場合" do
       let(:start_point) do
-        create(:start_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都")
+        create(:start_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都",
+               prefecture: "東京都", city: "渋谷区", town: "渋谷")
       end
 
-      it "Geocoderを呼び出してprefecture/city/townを更新する" do
-        # rails_helper.rbでスタブ済み、呼び出しを検証
-        expect(GoogleApi::Geocoder).to receive(:reverse).with(lat: 36.0, lng: 140.0).and_return({
-          lat: 36.0, lng: 140.0, address: "新住所", prefecture: "新県", city: "新市", town: "新町"
-        })
+      it "lat/lngが変更されてもGeocoderを呼び出さない（スキップ）" do
+        expect(GoogleApi::Geocoder).not_to receive(:reverse)
 
         start_point.update!(lat: 36.0, lng: 140.0)
 
-        expect(start_point.prefecture).to eq("新県")
-        expect(start_point.city).to eq("新市")
-        expect(start_point.town).to eq("新町")
+        # 既存の値が維持される
+        expect(start_point.prefecture).to eq("東京都")
+        expect(start_point.city).to eq("渋谷区")
+        expect(start_point.town).to eq("渋谷")
       end
     end
 

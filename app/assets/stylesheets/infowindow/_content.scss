@@ -178,6 +178,15 @@
   border-top-color: #8e8e93;
   border-radius: 50%;
   animation: dp-btn-spin 0.8s linear infinite;
+
+  /* ボタン内用の小さいサイズ（白色） */
+  &--small {
+    width: 14px;
+    height: 14px;
+    border-width: 2px;
+    border-color: rgba(255, 255, 255, 0.3);
+    border-top-color: #fff;
+  }
 }
 
 /* ==========================================

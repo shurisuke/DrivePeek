@@ -46,13 +46,10 @@ class StartPoint < ApplicationRecord
 
   private
 
-  # lat/lng 変更時、または prefecture/city/town が未設定なら GoogleApi::Geocoder で補完
+  # prefecture/city/town が未設定なら GoogleApi::Geocoder で補完
   def geocode_if_needed
     return unless lat.present? && lng.present?
-
-    # lat/lng が変更された場合、または必須項目が未設定なら再 geocode
-    needs_geocode = lat_changed? || lng_changed? || prefecture.blank? || city.blank? || town.blank?
-    return unless needs_geocode
+    return if prefecture.present? && city.present? && town.present?
 
     result = GoogleApi::Geocoder.reverse(lat: lat, lng: lng)
     return unless result

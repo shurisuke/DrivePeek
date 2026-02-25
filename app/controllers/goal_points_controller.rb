@@ -6,7 +6,7 @@ class GoalPointsController < ApplicationController
   # PATCH /plans/:plan_id/goal_point
   def update
     @goal_point = @plan.goal_point || @plan.build_goal_point
-    @goal_point.update!(goal_point_params)
+    @goal_point.update!(build_update_params)
     @plan.recalculate_for!(@goal_point)
     reload_plan
 
@@ -25,7 +25,17 @@ class GoalPointsController < ApplicationController
   end
 
   def goal_point_params
-    params.require(:goal_point).permit(:address, :lat, :lng)
+    params.require(:goal_point).permit(:address, :lat, :lng, :address_query)
+  end
+
+  # address_query がある場合はジオコーディングして座標を取得
+  def build_update_params
+    permitted = goal_point_params.to_h.symbolize_keys
+    query = permitted.delete(:address_query)
+    return permitted if query.blank?
+
+    geocoded = GoogleApi::Geocoder.forward(query)
+    permitted.merge(geocoded&.slice(:lat, :lng, :address) || { address: query })
   end
 
   def reload_plan

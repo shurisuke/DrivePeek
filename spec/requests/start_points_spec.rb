@@ -34,7 +34,8 @@ RSpec.describe "StartPoints", type: :request do
       end
 
       it "既存の出発地点を更新する" do
-        create(:start_point, plan: plan, address: "旧住所")
+        # plan ファクトリで start_point が自動作成されるので、それを使用
+        plan.start_point.update!(address: "旧住所")
 
         patch plan_start_point_path(plan), params: start_point_params, headers: turbo_stream_headers
 
@@ -43,7 +44,8 @@ RSpec.describe "StartPoints", type: :request do
       end
 
       it "toll_usedのみを更新できる" do
-        create(:start_point, plan: plan, toll_used: false)
+        # plan ファクトリで start_point が自動作成されるので、それを使用
+        plan.start_point.update!(toll_used: false)
 
         patch plan_start_point_path(plan),
               params: { start_point: { toll_used: true } },

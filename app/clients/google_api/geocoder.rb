@@ -14,7 +14,7 @@ class GoogleApi::Geocoder
   class << self
     # 住所から緯度経度を取得（Forward Geocoding）
     # @param address [String] 住所文字列
-    # @return [Hash, nil] { lat:, lng:, prefecture: } or nil
+    # @return [Hash, nil] { lat:, lng:, address:, prefecture:, city:, town: } or nil
     def forward(address)
       return nil if address.blank?
 
@@ -26,9 +26,14 @@ class GoogleApi::Geocoder
         location = result.dig("geometry", "location")
         components = result["address_components"] || []
 
-        prefecture = components.find { |c| c["types"].include?("administrative_area_level_1") }&.dig("long_name")
-
-        { lat: location["lat"], lng: location["lng"], prefecture: prefecture }
+        {
+          lat: location["lat"],
+          lng: location["lng"],
+          address: GoogleApi.normalize_address(result["formatted_address"].to_s),
+          prefecture: extract_component(components, "administrative_area_level_1"),
+          city: extract_component(components, "locality", "sublocality_level_1"),
+          town: extract_component(components, "sublocality_level_2", "sublocality_level_3", "neighborhood")
+        }
       else
         Rails.logger.warn "[GoogleApi::Geocoder] forward failed: #{json['status']}"
         nil

@@ -6,11 +6,12 @@ class StartPointsController < ApplicationController
 
   # PATCH /plans/:plan_id/start_point
   def update
-    @start_point.update!(start_point_params)
+    update_params = build_update_params
+    @start_point.update!(update_params)
 
     # 経路影響（lat, lng, address, toll_used）→ 経路再計算
     # 時間影響（departure_time）→ スケジュール再計算のみ
-    if route_affecting_params?
+    if route_affecting?(update_params)
       @plan.recalculate_for!(@start_point, action: :reorder)
     else
       @plan.recalculate_for!(@start_point, action: :update)
@@ -36,12 +37,22 @@ class StartPointsController < ApplicationController
   end
 
   def start_point_params
-    params.require(:start_point).permit(:lat, :lng, :address, :prefecture, :city, :toll_used, :departure_time)
+    params.require(:start_point).permit(:lat, :lng, :address, :prefecture, :city, :town, :toll_used, :departure_time, :address_query)
   end
 
-  def route_affecting_params?
-    route_attrs = %w[lat lng address toll_used]
-    (start_point_params.keys & route_attrs).any?
+  # address_query がある場合はジオコーディングして全情報を取得
+  def build_update_params
+    permitted = start_point_params.to_h.symbolize_keys
+    query = permitted.delete(:address_query)
+    return permitted if query.blank?
+
+    geocoded = GoogleApi::Geocoder.forward(query)
+    permitted.merge(geocoded || { address: query })
+  end
+
+  def route_affecting?(update_params)
+    route_attrs = %i[lat lng address toll_used]
+    (update_params.keys & route_attrs).any?
   end
 
   def reload_plan
