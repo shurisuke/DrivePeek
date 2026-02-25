@@ -4,8 +4,8 @@ import {
   setCommunityPreviewMarkers,
   setCommunityPreviewPolylines,
   clearCommunityPreview,
-  clearSuggestionAll,
   getPlanSpotMarkers,
+  getSuggestionAreaCircles,
 } from "map/state"
 import { showInfoWindowWithFrame, closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
@@ -172,6 +172,18 @@ export default class extends Controller {
         pointCount++
       }
     })
+
+    // コミュニティ検索円がある場合はその範囲も含める
+    const circles = getSuggestionAreaCircles()
+    if (circles.length > 0) {
+      circles.forEach((circle) => {
+        const circleBounds = circle.getBounds()
+        if (circleBounds) {
+          bounds.union(circleBounds)
+          pointCount++
+        }
+      })
+    }
 
     if (pointCount === 0) return
 

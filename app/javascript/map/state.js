@@ -212,3 +212,5 @@ export const addSuggestionOverlay = (overlay) => {
 };
 
 export const getSuggestionMarkers = () => suggestionMarkers;
+
+export const getSuggestionAreaCircles = () => suggestionAreaCircles;
