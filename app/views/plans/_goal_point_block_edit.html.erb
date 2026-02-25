@@ -1,13 +1,13 @@
 <%# app/views/plans/_goal_point_block_edit.html.erb %>
-<%# 帰宅地点ブロック（親の plan-tab-wrapper コントローラーから制御される） %>
+<%# 帰宅地点ブロック（親の myroute-tab-wrapper コントローラーから制御される） %>
 <% plan ||= @plan %>
 <% goal_point = plan.goal_point %>
 
-<div data-plan-tab--goal-point-visibility-target="blockArea" hidden>
+<div data-myroute-tab--goal-point-visibility-target="blockArea" hidden>
   <div class="goal-point-block"
        data-lat="<%= goal_point&.lat %>"
        data-lng="<%= goal_point&.lng %>"
-       data-plan-tab--time-rail-sync-target="content"
+       data-myroute-tab--time-rail-sync-target="content"
        data-time-rail-sync="goal-point">
     <%# ✅ 上部：帰宅コンテンツ %>
     <div class="goal-content">

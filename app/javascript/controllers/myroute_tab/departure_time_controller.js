@@ -1,4 +1,4 @@
-// app/javascript/controllers/plan_tab/departure_time_controller.js
+// app/javascript/controllers/myroute_tab/departure_time_controller.js
 // ================================================================
 // DepartureTimeController
 // 用途: 出発ブロックの「出発時間」をホイールピッカーで入力し、

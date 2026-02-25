@@ -1,4 +1,4 @@
-// app/javascript/controllers/plan_tab/stay_duration_controller.js
+// app/javascript/controllers/myroute_tab/stay_duration_controller.js
 // ================================================================
 // StayDurationController
 // 用途: スポットブロックの「滞在時間」をiOS風ホイールピッカーで入力し、

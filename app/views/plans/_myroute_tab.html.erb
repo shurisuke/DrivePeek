@@ -9,16 +9,16 @@
   <div class="start-point-block" hidden
        data-lat="<%= @plan.start_point&.lat %>"
        data-lng="<%= @plan.start_point&.lng %>"></div>
-  <%= render "plans/plan_tab_guide" %>
+  <%= render "plans/myroute_tab_guide" %>
 <% else %>
   <%# 帰宅地点表示コントローラーのスコープ（トグルが帰宅ブロックを制御） %>
-  <div class="plan-tab-wrapper"
-       data-controller="plan-tab--goal-point-visibility"
-       data-plan-tab--goal-point-visibility-plan-id-value="<%= @plan.id %>">
+  <div class="myroute-tab-wrapper"
+       data-controller="myroute-tab--goal-point-visibility"
+       data-myroute-tab--goal-point-visibility-plan-id-value="<%= @plan.id %>">
 
-    <div class="plan-tab-layout" data-controller="plan-tab--time-rail-sync">
+    <div class="myroute-tab-layout" data-controller="myroute-tab--time-rail-sync">
       <%# ✅ 左カラム: ブロックコンテンツ %>
-      <div class="plan-tab-content">
+      <div class="myroute-tab-content">
         <%= render "plans/start_point_block_edit" %>
 
         <% spot_ids = @plan.plan_spots.pluck(:spot_id) %>
@@ -41,7 +41,7 @@
       </div>
 
       <%# ✅ 右カラム: 時刻レール %>
-      <div class="plan-tab-time-rail">
+      <div class="myroute-tab-time-rail">
         <%= render "plans/time_rail", plan: @plan %>
       </div>
     </div>
@@ -56,8 +56,8 @@
           role="switch"
           id="goal-point-visibility-switch-<%= @plan.id %>"
           aria-label="帰宅地点の表示を切り替える"
-          data-plan-tab--goal-point-visibility-target="switch"
-          data-action="change->plan-tab--goal-point-visibility#toggle"
+          data-myroute-tab--goal-point-visibility-target="switch"
+          data-action="change->myroute-tab--goal-point-visibility#toggle"
         >
       </div>
       <div class="plan-settings-card__summary">
@@ -88,6 +88,6 @@
       </div>
     </div>
 
-    <%= render "plans/plan_tab_actions", plan: @plan %>
+    <%= render "plans/myroute_tab_actions", plan: @plan %>
   </div>
 <% end %>

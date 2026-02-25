@@ -221,7 +221,13 @@
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) {
   position: relative;
   margin-top: 8px !important;
-  padding: 0 10px !important;
+  margin-left: auto;
+  margin-right: auto;
+  padding: 0 !important;
+
+  /* 有料道路行・次の場所まで行と同じ幅管理 */
+  width: min(260px, calc(220px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
+  box-sizing: border-box;
 
   background: transparent !important;
   border: 0 !important;
@@ -229,6 +235,12 @@
 
   min-height: 0 !important;
   overflow: visible !important;
+
+  /* モバイル時 */
+  @media (max-width: 767px) {
+    width: calc(100% - 70px);
+    max-width: 260px;
+  }
 }
 
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__content {
@@ -252,62 +264,6 @@
 
 .spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__content p {
   margin: 0;
-}
-
-/* 削除ボタン：デフォルト非表示 */
-.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor) .spot-memo__delete {
-  display: none;
-}
-
-/* 削除ボタン：編集中（is-editing）時のみ表示 */
-.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete {
-  display: inline-flex;
-
-  position: absolute;
-  top: 50%;
-  /* レスポンシブright は _navibar_responsive.scss に集約 */
-  right: 5px;
-  transform: translateY(-50%);
-
-  z-index: 30;
-
-  width: 24px;
-  height: 24px;
-
-  align-items: center;
-  justify-content: center;
-
-  border: 0;
-  border-radius: 9999px;
-
-  background: #dc3545;
-  box-shadow: 0 2px 6px rgba(220, 53, 69, 0.35);
-
-  color: #fff;
-  font-size: 14px;
-  font-weight: 700;
-  line-height: 1;
-
-  padding: 0;
-  cursor: pointer;
-
-  transition: background-color 0.12s, box-shadow 0.12s, transform 0.12s;
-}
-
-.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:hover {
-  background: #c82333;
-  box-shadow: 0 3px 8px rgba(220, 53, 69, 0.45);
-  transform: translateY(-50%) scale(1.08);
-}
-
-.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:active {
-  transform: translateY(-50%) scale(0.96);
-  box-shadow: 0 1px 4px rgba(220, 53, 69, 0.3);
-}
-
-.spot-block .spot-memo.spot-memo--pin:not(.spot-memo--editor).is-editing .spot-memo__delete:focus-visible {
-  outline: none;
-  box-shadow: none;
 }
 
 .spot-block .spot-detail,
@@ -513,23 +469,30 @@
   border: 0 !important;
   box-shadow: none !important;
 
-  padding: 30px 18px 24px !important;
+  padding: 30px 0 24px !important;
   margin: 0 auto !important;
 
-  min-width: 280px;
-  max-width: 500px;
+  /* 有料道路行・次の場所まで行と同じ幅管理 */
+  width: min(260px, calc(220px + max(0px, (var(--navibar-width, 360px) - 300px) * 0.05)));
+  box-sizing: border-box;
 
   min-height: auto !important;
   overflow: visible !important;
+
+  /* モバイル時：時刻レール + 入れ替えボタン分を考慮 */
+  @media (max-width: 767px) {
+    width: calc(100% - 70px);
+    max-width: 260px;
+  }
 }
 
 .spot-block .spot-memo.spot-memo--pin.spot-memo--editor::before {
   content: "";
   position: absolute;
   top: 15px;
-  right: 15px;
+  right: 0;
   bottom: 10px;
-  left: 15px;
+  left: 0;
 
   background: #ffffff;
   border: 1px solid rgba(0, 0, 0, 0.10);
@@ -580,28 +543,79 @@
 .spot-block .spot-memo__editor-actions {
   width: 100%;
   display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-top: 12px;
+  padding: 0 16px;
+  box-sizing: border-box;
+}
+
+/* キャンセルリンク（左側） */
+.spot-block .spot-memo__editor-link {
+  background: none;
+  border: none;
+  padding: 0;
+  color: #666;
+  font-size: 0.8rem;
+  cursor: pointer;
+  transition: color 0.15s;
+
+  &:hover {
+    color: #333;
+  }
+}
+
+/* 右側ボタングループ */
+.spot-block .spot-memo__editor-buttons {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+/* 削除ボタン（button_toのformラッパー対応） */
+.spot-block .spot-memo__editor-buttons form {
+  display: contents;
+}
+
+/* ボタン共通 */
+.spot-block .spot-memo__editor-btn {
+  display: inline-flex;
+  align-items: center;
   justify-content: center;
-  gap: 12px;
-  margin-top: 10px;
+  height: 32px;
+  border-radius: 6px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  cursor: pointer;
+  transition: all 0.15s;
+  box-sizing: border-box;
 }
 
-.spot-block .spot-memo__editor-actions .btn {
-  min-width: 60px !important;
-  padding: 0.5rem 0.7rem !important;
-  font-weight: 700 !important;
-  box-shadow: none !important;
-  font-size: 0.8rem !important;
-  border-radius: 6px !important;
+/* 保存ボタン */
+.spot-block .spot-memo__editor-btn--save {
+  padding: 0 14px;
+  background: #435e50;
+  border: 1px solid #435e50;
+  color: #fff;
+
+  &:hover {
+    background: #3a5246;
+  }
 }
 
-.spot-block .spot-memo__editor-actions .btn.btn-outline-secondary {
-  border-width: 2px !important;
-}
+/* 削除ボタン（アイコンのみ） */
+.spot-block .spot-memo__editor-btn--delete {
+  width: 32px;
+  padding: 0;
+  background: transparent;
+  border: 1px solid #ddd;
+  color: #999;
 
-.spot-block .spot-memo__editor-actions .btn.btn-personal {
-  background: #435e50 !important;
-  border: 1px solid #435e50 !important;
-  color: #fff !important;
+  &:hover {
+    border-color: #dc3545;
+    color: #dc3545;
+    background: rgba(220, 53, 69, 0.05);
+  }
 }
 
 

@@ -96,7 +96,7 @@ export default class extends Controller {
     if (scrollable) return
 
     // タブボタンはドラッグ対象として許可
-    const isTabButton = target.closest(".tab-btn, .plan-tab-nav")
+    const isTabButton = target.closest(".tab-btn, .myroute-tab-nav")
     if (!isTabButton) {
       // その他のボタンやリンクからのタッチは無視
       const interactive = target.closest("button, a, input, textarea, select")

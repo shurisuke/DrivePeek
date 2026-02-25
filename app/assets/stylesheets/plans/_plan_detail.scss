@@ -137,8 +137,8 @@ body.no-footer .plan-detail {
     flex-shrink: 0;
     z-index: 10;
 
-    /* plan-tab-actions を含む場合はパディング不要 */
-    &:has(.plan-tab-actions) {
+    /* myroute-tab-actions を含む場合はパディング不要 */
+    &:has(.myroute-tab-actions) {
       padding: 0;
       border-top: none;
     }
