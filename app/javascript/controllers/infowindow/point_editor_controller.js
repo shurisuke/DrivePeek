@@ -16,7 +16,7 @@ import {
   setEndPointMarker,
 } from "map/state"
 import { patchTurboStream } from "services/navibar_api"
-import { closeInfoWindow } from "map/infowindow"
+import { closeInfoWindow, showInfoWindowWithFrame } from "map/infowindow"
 import { panToVisualCenter } from "map/visual_center"
 
 export default class extends Controller {
@@ -131,6 +131,7 @@ export default class extends Controller {
   updateMarker(map, location) {
     const iconUrl = "/icons/house-pin.png"
     const iconSize = new google.maps.Size(50, 55)
+    const planId = this.planIdValue || this.detectPlanId()
 
     if (this.editModeValue === "start_point") {
       clearStartPointMarker()
@@ -140,6 +141,14 @@ export default class extends Controller {
         title: "出発地点",
         icon: { url: iconUrl, scaledSize: iconSize, anchor: new google.maps.Point(25, 40) },
       })
+      marker.addListener("click", () => {
+        showInfoWindowWithFrame({
+          anchor: marker,
+          name: "出発",
+          editMode: "start_point",
+          planId
+        })
+      })
       setStartPointMarker(marker)
     } else if (this.editModeValue === "goal_point") {
       clearEndPointMarker()
@@ -148,6 +157,14 @@ export default class extends Controller {
         position: location,
         title: "帰宅地点",
         icon: { url: iconUrl, scaledSize: iconSize, anchor: new google.maps.Point(25, 40) },
+      })
+      marker.addListener("click", () => {
+        showInfoWindowWithFrame({
+          anchor: marker,
+          name: "帰宅",
+          editMode: "goal_point",
+          planId
+        })
       })
       setEndPointMarker(marker)
     }
