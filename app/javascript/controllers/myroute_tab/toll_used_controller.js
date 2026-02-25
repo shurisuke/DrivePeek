@@ -1,4 +1,4 @@
-// app/javascript/controllers/plan_tab/toll_used_controller.js
+// app/javascript/controllers/myroute_tab/toll_used_controller.js
 // ================================================================
 // TollUsedController
 // 用途: 有料道路スイッチの変更をRailsへ保存

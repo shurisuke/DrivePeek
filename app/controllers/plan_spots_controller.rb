@@ -13,7 +13,7 @@ class PlanSpotsController < ApplicationController
     reload_plan
 
     respond_to do |format|
-      format.turbo_stream { render "plans/refresh_plan_tab" }
+      format.turbo_stream { render "plans/refresh_myroute_tab" }
     end
   end
 
@@ -30,7 +30,7 @@ class PlanSpotsController < ApplicationController
     reload_plan
 
     respond_to do |format|
-      format.turbo_stream { render "plans/refresh_plan_tab" }
+      format.turbo_stream { render "plans/refresh_myroute_tab" }
     end
   end
 
@@ -42,7 +42,7 @@ class PlanSpotsController < ApplicationController
     reload_plan
 
     respond_to do |format|
-      format.turbo_stream { render "plans/refresh_plan_tab" }
+      format.turbo_stream { render "plans/refresh_myroute_tab" }
       format.html { redirect_to edit_plan_path(@plan), notice: "スポットを削除しました" }
     end
   end

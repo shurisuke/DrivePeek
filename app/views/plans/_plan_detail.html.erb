@@ -94,7 +94,7 @@
         </div>
         <div class="navibar__blocks">
           <%# ✅ 2カラムレイアウト: スポットブロック + 時刻レール（readonly） %>
-          <div class="plan-tab-layout plan-tab-layout--readonly" data-controller="plan-tab--time-rail-sync">
+          <div class="plan-tab-layout plan-tab-layout--readonly" data-controller="myroute-tab--time-rail-sync">
             <%# 左カラム: スポットブロック %>
             <div class="plan-tab-content">
               <% plan_spots = @plan.plan_spots.includes(spot: :genres).order(:position).to_a %>
@@ -111,7 +111,7 @@
 
               <%# 帰宅ラベル（時刻レール用スペーサー付き） %>
               <div class="goal-point-block goal-point-block--label-only"
-                   data-plan-tab--time-rail-sync-target="content"
+                   data-myroute-tab--time-rail-sync-target="content"
                    data-time-rail-sync="goal-label">
                 <div class="goal-content">
                   <div class="goal-header">

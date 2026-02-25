@@ -8,7 +8,7 @@
      data-polyline="<%= plan.start_point&.polyline %>"
      data-lat="<%= plan.start_point&.lat %>"
      data-lng="<%= plan.start_point&.lng %>"
-     data-plan-tab--time-rail-sync-target="content"
+     data-myroute-tab--time-rail-sync-target="content"
      data-time-rail-sync="start-point">
   <% start_detail_open = defined?(@start_point_detail_open) && @start_point_detail_open %>
 
@@ -78,10 +78,10 @@
             type="checkbox"
             role="switch"
             aria-label="有料道路の使用を切り替える（出発）"
-            data-controller="plan-tab--toll-used"
-            data-plan-tab--toll-used-type-value="start_point"
-            data-plan-tab--toll-used-plan-id-value="<%= plan.id %>"
-            data-action="change->plan-tab--toll-used#toggle"
+            data-controller="myroute-tab--toll-used"
+            data-myroute-tab--toll-used-type-value="start_point"
+            data-myroute-tab--toll-used-plan-id-value="<%= plan.id %>"
+            data-action="change->myroute-tab--toll-used#toggle"
             <%= 'checked="checked"' if plan.start_point&.toll_used? %>
           >
         </div>

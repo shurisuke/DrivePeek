@@ -1,6 +1,6 @@
 <%# プランタブを更新（ボタンも含まれる） %>
-<%= turbo_stream.update "plan_tab_content" do %>
-  <%= render "plans/plan_tab", plan: @plan %>
+<%= turbo_stream.update "myroute_tab_content" do %>
+  <%= render "plans/myroute_tab", plan: @plan %>
 <% end %>
 
 <%# デスクトップ用アクションボタンを更新（ナビURL含む） %>

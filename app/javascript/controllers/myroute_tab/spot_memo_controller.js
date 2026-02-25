@@ -1,18 +1,16 @@
-// app/javascript/controllers/plan_tab/spot_memo_controller.js
+// app/javascript/controllers/myroute_tab/spot_memo_controller.js
 // ================================================================
 // SpotMemoController
 // 用途: スポットブロック内のメモ編集UI
 //   - メモの表示/編集切り替え
-//   - メモ保存（PATCH）・削除
 //   - トグル収納時に自動でエディタを閉じる
+//   - turbo_stream経由でサーバーがUI更新
 // ================================================================
 
 import { Controller } from "@hotwired/stimulus"
-import { patch } from "services/api_client"
 
 export default class extends Controller {
   static targets = ["detail", "editor", "textarea", "memoDisplay", "memoContent"]
-  static values = { url: String }
 
   connect() {
     // ✅ トグル収納時にメモエディタを閉じる
@@ -87,45 +85,22 @@ export default class extends Controller {
     }
   }
 
-  async submit(event) {
+  // turbo:submit-end イベントハンドラ（フォーム送信完了後）
+  onSubmitEnd(event) {
+    if (!event.detail.success) return
+
+    // エディタを閉じる
+    this.editorTarget.classList.add("d-none")
+    this.memoDisplayTarget.classList.remove("is-editing")
+
+    // メモ表示の更新はturbo_streamで行われるため、ここでは閉じるだけ
+  }
+
+  // メモをクリアしてフォーム送信（削除ボタン用）
+  clearAndSubmit(event) {
     event.preventDefault()
-
-    const memo = this.textareaTarget.value
-    const data = await this._patchMemo(memo)
-    if (!data) return
-
-    this.memoContentTarget.innerHTML = data.memo_html
-
-    if (data.memo_present) {
-      this.memoDisplayTarget.classList.remove("d-none")
-    } else {
-      this.memoDisplayTarget.classList.add("d-none")
-    }
-
-    this.memoDisplayTarget.classList.remove("is-editing")
-    this.editorTarget.classList.add("d-none")
-  }
-
-  async clear(event) {
-    event.stopPropagation()
-
-    const data = await this._patchMemo("")
-    if (!data) return
-
     this.textareaTarget.value = ""
-    this.memoContentTarget.innerHTML = ""
-    this.memoDisplayTarget.classList.add("d-none")
-    this.memoDisplayTarget.classList.remove("is-editing")
-    this.editorTarget.classList.add("d-none")
-  }
-
-  async _patchMemo(memo) {
-    try {
-      return await patch(this.urlValue, { memo })
-    } catch (error) {
-      console.error("メモ保存エラー:", error)
-      return null
-    }
+    this.textareaTarget.form.requestSubmit()
   }
 
   _showCollapse(element) {
