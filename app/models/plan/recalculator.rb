@@ -10,10 +10,10 @@
 # 呼び出し元: Controller（必要なタイミングで明示的に呼ぶ）
 #
 # 使用例:
-#   - 出発時間変更     → recalculate!(schedule: true)
-#   - 滞在時間変更     → recalculate!(schedule: true)
-#   - スポット追加/削除 → recalculate!(route: true, schedule: true) ※将来
-#   - 有料道路切替     → recalculate!(route: true, schedule: true) ※将来
+#   - 出発時間変更     → recalculate!(timetable: true)
+#   - 滞在時間変更     → recalculate!(timetable: true)
+#   - スポット追加/削除 → recalculate!(driving: true, timetable: true)
+#   - 有料道路切替     → recalculate!(driving: true, timetable: true)
 #
 class Plan::Recalculator
   attr_reader :plan
@@ -22,22 +22,22 @@ class Plan::Recalculator
     @plan = plan
   end
 
-  # @param route [Boolean] 経路再計算するか（default: false）
-  # @param schedule [Boolean] 時刻再計算するか（default: true）
+  # @param driving [Boolean] 経路再計算するか（default: false）
+  # @param timetable [Boolean] 時刻再計算するか（default: true）
   # @return [Boolean] 成功したか
-  def recalculate!(route: false, schedule: true)
+  def recalculate!(driving: false, timetable: true)
     success = true
 
     ActiveRecord::Base.transaction do
-      # 必ず route → schedule の順（route で move_time が決まってから schedule）
-      if route
+      # 必ず driving → timetable の順（driving で move_time が決まってから timetable）
+      if driving
         unless Plan::Driving.new(plan).recalculate!
           success = false
           raise ActiveRecord::Rollback
         end
       end
 
-      if schedule
+      if timetable
         unless Plan::Timetable.new(plan).recalculate!
           success = false
           raise ActiveRecord::Rollback

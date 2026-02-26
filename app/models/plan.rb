@@ -229,7 +229,7 @@ class Plan < ApplicationRecord
     case action
     when :create, :destroy, :reorder
       # 追加・削除・並び替えは常に経路再計算
-      recalculator.recalculate!(route: true, schedule: true)
+      recalculator.recalculate!(driving: true, timetable: true)
     when :update
       recalculate_for_update!(changed_model)
     end
@@ -249,9 +249,9 @@ class Plan < ApplicationRecord
 
   def recalculate_for_update!(changed_model)
     if changed_model.route_affecting_changes?
-      recalculator.recalculate!(route: true, schedule: true)
+      recalculator.recalculate!(driving: true, timetable: true)
     elsif changed_model.schedule_affecting_changes?
-      recalculator.recalculate!(schedule: true)
+      recalculator.recalculate!(timetable: true)
     end
   end
 
