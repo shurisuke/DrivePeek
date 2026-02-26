@@ -16,7 +16,7 @@ RSpec.describe Plan::Recalculator do
       allow(Plan::Timetable).to receive(:new).with(plan).and_return(timetable_instance)
     end
 
-    context "デフォルト（schedule: true, route: false）" do
+    context "デフォルト（timetable: true, driving: false）" do
       it "Timetableのみ再計算する" do
         recalculator.recalculate!
 
@@ -30,9 +30,9 @@ RSpec.describe Plan::Recalculator do
       end
     end
 
-    context "route: true の場合" do
+    context "driving: true の場合" do
       it "DrivingとTimetableの両方を再計算する" do
-        recalculator.recalculate!(route: true)
+        recalculator.recalculate!(driving: true)
 
         expect(Plan::Driving).to have_received(:new).with(plan)
         expect(driving_instance).to have_received(:recalculate!)
@@ -45,23 +45,23 @@ RSpec.describe Plan::Recalculator do
         allow(driving_instance).to receive(:recalculate!) { call_order << :driving; true }
         allow(timetable_instance).to receive(:recalculate!) { call_order << :timetable; true }
 
-        recalculator.recalculate!(route: true)
+        recalculator.recalculate!(driving: true)
 
         expect(call_order).to eq([ :driving, :timetable ])
       end
     end
 
-    context "schedule: false の場合" do
+    context "timetable: false の場合" do
       it "Timetableを再計算しない" do
-        recalculator.recalculate!(schedule: false)
+        recalculator.recalculate!(timetable: false)
 
         expect(Plan::Timetable).not_to have_received(:new)
       end
     end
 
-    context "route: true, schedule: false の場合" do
+    context "driving: true, timetable: false の場合" do
       it "Drivingのみ再計算する" do
-        recalculator.recalculate!(route: true, schedule: false)
+        recalculator.recalculate!(driving: true, timetable: false)
 
         expect(Plan::Driving).to have_received(:new).with(plan)
         expect(driving_instance).to have_received(:recalculate!)
@@ -75,11 +75,11 @@ RSpec.describe Plan::Recalculator do
       end
 
       it "falseを返す" do
-        expect(recalculator.recalculate!(route: true)).to be false
+        expect(recalculator.recalculate!(driving: true)).to be false
       end
 
       it "Timetableは実行しない" do
-        recalculator.recalculate!(route: true)
+        recalculator.recalculate!(driving: true)
 
         expect(Plan::Timetable).not_to have_received(:new)
       end
