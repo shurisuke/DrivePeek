@@ -68,7 +68,7 @@ Rails.application.routes.draw do
   # ========================================
   # InfoWindow
   # ========================================
-  resource :infowindow, only: %i[show create]
+  resource :infowindow, only: :show
 
   # ========================================
   # コミュニティ・お気に入り

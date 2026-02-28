@@ -2,28 +2,13 @@
 
 # InfoWindowは認証不要（公開プラン閲覧時にも使用）
 # ログイン状態に応じてUIを出し分ける
-# createのみ認証必須（スポット作成・API呼び出しコスト保護）
 class InfowindowsController < ApplicationController
-  before_action :authenticate_user!, only: :create
   # GET /infowindow
   # Turbo Frame用：spotId または place_id でInfoWindow HTMLを返す
   def show
     return render_guest unless user_signed_in?
     return render_home if edit_mode?
     render_spot
-  end
-
-  # POST /infowindow
-  # JS fetch用（既存互換：クライアントから photo_urls を受け取る）
-  def create
-    @spot, _ = find_spot_and_photos
-    @photo_urls = params[:photo_urls] || []
-    @show_button = params[:show_button].to_s != "false"
-    @button_label = params[:button_label]
-    @map_mode = params[:map_mode]
-    @plan_spot_id = find_plan_spot_id
-
-    render partial: "map/infowindow_spot", locals: infowindow_locals
   end
 
   private
