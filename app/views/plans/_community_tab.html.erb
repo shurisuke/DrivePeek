@@ -2,6 +2,9 @@
 <%# locals: plan: nil %>
 
 <div class="community-tab-content">
+  <div class="demo-notice">
+    ※ 現在、関東地方のみデモデータを導入しています
+  </div>
   <%= turbo_frame_tag "community_content",
                       src: community_path(exclude_plan_id: plan&.id),
                       data: { controller: "community-tab--scroll" } %>

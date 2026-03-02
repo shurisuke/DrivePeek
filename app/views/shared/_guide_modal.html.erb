@@ -1,0 +1,154 @@
+<%# ================================================================
+    機能説明モーダル
+    用途: 各機能の使い方を説明するモーダル
+================================================================ %>
+
+<%# 地図から追加の説明 %>
+<div id="feature-guide-modal-map"
+     class="feature-guide-modal"
+     hidden>
+  <div class="feature-guide-modal__overlay"></div>
+  <div class="feature-guide-modal__dialog">
+    <div class="feature-guide-modal__header">
+      <div class="feature-guide-modal__icon feature-guide-modal__icon--map">
+        <i class="bi bi-geo-alt"></i>
+      </div>
+      <h3 class="feature-guide-modal__title">地図から追加</h3>
+    </div>
+    <div class="feature-guide-modal__content">
+      <p>地図上でスポットを探して、<br>直接プランに追加できます。</p>
+      <div class="feature-guide-modal__steps">
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">1</span>
+          <span>地図を探索して気になる場所を探す</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">2</span>
+          <span>地図上の施設名やマーカーをタップ</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">3</span>
+          <span>「プランに追加」ボタンで追加</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-guide-modal__footer">
+      <button type="button" class="feature-guide-modal__btn">OK</button>
+    </div>
+  </div>
+</div>
+
+<%# 人気スポット検索の説明 %>
+<div id="feature-guide-modal-popular"
+     class="feature-guide-modal"
+     hidden>
+  <div class="feature-guide-modal__overlay"></div>
+  <div class="feature-guide-modal__dialog">
+    <div class="feature-guide-modal__header">
+      <div class="feature-guide-modal__icon feature-guide-modal__icon--fire">
+        <i class="bi bi-fire"></i>
+      </div>
+      <h3 class="feature-guide-modal__title">人気スポット検索</h3>
+    </div>
+    <div class="feature-guide-modal__content">
+      <p>人気スポットをワンタップで地図上に表示。</p>
+      <div class="feature-guide-modal__btn-preview">
+        <div class="feature-guide-modal__pill-sample">
+          <span class="feature-guide-modal__pill-left">
+            <i class="bi bi-sliders"></i>
+          </span>
+          <span class="feature-guide-modal__pill-right">
+            <i class="bi bi-fire"></i>
+          </span>
+        </div>
+      </div>
+      <div class="feature-guide-modal__steps">
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">1</span>
+          <span>地図右上の<i class="bi bi-fire"></i>ボタンをタップ</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">2</span>
+          <span>地図上に人気スポットが表示される</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">3</span>
+          <span><i class="bi bi-sliders"></i> ボタンからジャンルで絞り込み可能</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-guide-modal__footer">
+      <button type="button" class="feature-guide-modal__btn">OK</button>
+    </div>
+  </div>
+</div>
+
+<%# AI提案の説明 %>
+<div id="feature-guide-modal-ai"
+     class="feature-guide-modal"
+     hidden>
+  <div class="feature-guide-modal__overlay"></div>
+  <div class="feature-guide-modal__dialog">
+    <div class="feature-guide-modal__header">
+      <div class="feature-guide-modal__icon feature-guide-modal__icon--ai">
+        <i class="bi bi-stars"></i>
+      </div>
+      <h3 class="feature-guide-modal__title">AI提案</h3>
+    </div>
+    <div class="feature-guide-modal__content">
+      <p>人気スポットをベースに<br>おすすめのプランを提案します。</p>
+      <div class="feature-guide-modal__steps">
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">1</span>
+          <span>ナビバーから「AI提案」を選択</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">2</span>
+          <span>「プランを提案してもらう」をクリック</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">3</span>
+          <span>エリアとジャンルを選択するだけ</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-guide-modal__footer">
+      <button type="button" class="feature-guide-modal__btn">OK</button>
+    </div>
+  </div>
+</div>
+
+<%# みんなの旅の説明 %>
+<div id="feature-guide-modal-community"
+     class="feature-guide-modal"
+     hidden>
+  <div class="feature-guide-modal__overlay"></div>
+  <div class="feature-guide-modal__dialog">
+    <div class="feature-guide-modal__header">
+      <div class="feature-guide-modal__icon feature-guide-modal__icon--community">
+        <i class="bi bi-people-fill"></i>
+      </div>
+      <h3 class="feature-guide-modal__title">みんなの旅</h3>
+    </div>
+    <div class="feature-guide-modal__content">
+      <p>他ユーザーのプランを参考に、<br>気になるスポットを探そう。</p>
+      <div class="feature-guide-modal__steps">
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">1</span>
+          <span>ナビバーから「みんなの旅」を選択</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">2</span>
+          <span>エリアやジャンルで絞り込み</span>
+        </div>
+        <div class="feature-guide-modal__step">
+          <span class="feature-guide-modal__step-num">3</span>
+          <span>気に入ったスポットをプランに追加</span>
+        </div>
+      </div>
+    </div>
+    <div class="feature-guide-modal__footer">
+      <button type="button" class="feature-guide-modal__btn">OK</button>
+    </div>
+  </div>
+</div>

@@ -1,59 +1,107 @@
 <%# ================================================================
     スポット未追加時の案内パーシャル
-    用途: プランにスポットが0件のとき、操作方法を案内する
+    用途: プランにスポットが0件のとき、探し方を表示
 ================================================================ %>
 
-<div class="myroute-tab-guide">
-  <%# ヒーローセクション: 地図からタップ %>
-  <div class="myroute-tab-guide__hero">
-    <div class="myroute-tab-guide__hero-icon">
-      <i class="bi bi-geo-alt-fill"></i>
+<div class="myroute-tab-guide" data-controller="myroute-tab--guide-modal">
+  <%# 使い方カード（3ステップ + 説明文） %>
+  <div class="myroute-tab-guide__intro-card">
+    <div class="myroute-tab-guide__steps">
+      <div class="myroute-tab-guide__step">
+        <div class="myroute-tab-guide__step-icon">
+          <i class="bi bi-search"></i>
+        </div>
+        <div class="myroute-tab-guide__step-label">探す</div>
+      </div>
+      <div class="myroute-tab-guide__step-arrow">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <div class="myroute-tab-guide__step">
+        <div class="myroute-tab-guide__step-icon">
+          <i class="bi bi-plus-lg"></i>
+        </div>
+        <div class="myroute-tab-guide__step-label">追加</div>
+      </div>
+      <div class="myroute-tab-guide__step-arrow">
+        <i class="bi bi-chevron-right"></i>
+      </div>
+      <div class="myroute-tab-guide__step">
+        <div class="myroute-tab-guide__step-icon">
+          <i class="bi bi-sliders"></i>
+        </div>
+        <div class="myroute-tab-guide__step-label">調整</div>
+      </div>
     </div>
-    <p class="myroute-tab-guide__hero-text">
-      <strong>地図</strong>上の行きたい場所を<br>タップしてスポットを追加
-    </p>
-    <div class="myroute-tab-guide__hero-arrow">
-      <i class="bi bi-chevron-down"></i>
+    <div class="myroute-tab-guide__desc">
+      好きな方法でスポットを見つけてプランに追加、<br>お好みで順番や時間を調整できます
     </div>
   </div>
 
-  <%# 区切り %>
-  <div class="myroute-tab-guide__divider">
-    <span>または</span>
+  <%# 視線誘導アロー %>
+  <div class="myroute-tab-guide__scroll-hint">
+    <i class="bi bi-chevron-down"></i>
   </div>
 
-  <%# 代替オプション: みんなの旅・検索・AI提案 %>
-  <div class="myroute-tab-guide__options">
-    <div class="myroute-tab-guide__option">
-      <i class="bi bi-people-fill"></i>
-      <span>みんなの旅</span>
-    </div>
-    <div class="myroute-tab-guide__option">
-      <i class="bi bi-search"></i>
-      <span>検索</span>
-    </div>
-    <div class="myroute-tab-guide__option">
-      <i class="bi bi-stars"></i>
-      <span>AI提案</span>
-    </div>
-  </div>
+  <%# 探し方セクション %>
+  <div class="myroute-tab-guide__alternatives">
+    <div class="myroute-tab-guide__alternatives-title">スポットの探し方</div>
 
-  <%# ヒント: 追加後の操作 %>
-  <div class="myroute-tab-guide__tips">
-    <p class="myroute-tab-guide__tips-title">スポット追加後は...</p>
-    <div class="myroute-tab-guide__tips-list">
-      <div class="myroute-tab-guide__tip">
-        <i class="bi bi-clock"></i>
-        <span>時計アイコンで時間設定</span>
-      </div>
-      <div class="myroute-tab-guide__tip">
-        <i class="bi bi-arrow-left-right"></i>
-        <span>バー端をドラッグで幅調整</span>
-      </div>
-      <div class="myroute-tab-guide__tip">
-        <i class="bi bi-list-ol"></i>
-        <span>ドラッグでスポットを並び替え</span>
-      </div>
+    <div class="myroute-tab-guide__cards">
+      <%# 地図から追加 %>
+      <button type="button"
+              class="myroute-tab-guide__card"
+              data-action="click->myroute-tab--guide-modal#showModal"
+              data-feature="map">
+        <div class="myroute-tab-guide__card-icon myroute-tab-guide__card-icon--map">
+          <i class="bi bi-geo-alt"></i>
+        </div>
+        <div class="myroute-tab-guide__card-content">
+          <div class="myroute-tab-guide__card-title">地図から追加</div>
+        </div>
+        <i class="bi bi-chevron-right myroute-tab-guide__card-arrow"></i>
+      </button>
+
+      <%# 人気スポット %>
+      <button type="button"
+              class="myroute-tab-guide__card"
+              data-action="click->myroute-tab--guide-modal#showModal"
+              data-feature="popular">
+        <div class="myroute-tab-guide__card-icon myroute-tab-guide__card-icon--fire">
+          <i class="bi bi-fire"></i>
+        </div>
+        <div class="myroute-tab-guide__card-content">
+          <div class="myroute-tab-guide__card-title">人気スポット検索</div>
+        </div>
+        <i class="bi bi-chevron-right myroute-tab-guide__card-arrow"></i>
+      </button>
+
+      <%# AI提案 %>
+      <button type="button"
+              class="myroute-tab-guide__card"
+              data-action="click->myroute-tab--guide-modal#showModal"
+              data-feature="ai">
+        <div class="myroute-tab-guide__card-icon myroute-tab-guide__card-icon--ai">
+          <i class="bi bi-stars"></i>
+        </div>
+        <div class="myroute-tab-guide__card-content">
+          <div class="myroute-tab-guide__card-title">AI提案</div>
+        </div>
+        <i class="bi bi-chevron-right myroute-tab-guide__card-arrow"></i>
+      </button>
+
+      <%# みんなの旅 %>
+      <button type="button"
+              class="myroute-tab-guide__card"
+              data-action="click->myroute-tab--guide-modal#showModal"
+              data-feature="community">
+        <div class="myroute-tab-guide__card-icon myroute-tab-guide__card-icon--community">
+          <i class="bi bi-people-fill"></i>
+        </div>
+        <div class="myroute-tab-guide__card-content">
+          <div class="myroute-tab-guide__card-title">みんなの旅</div>
+        </div>
+        <i class="bi bi-chevron-right myroute-tab-guide__card-arrow"></i>
+      </button>
     </div>
   </div>
 </div>
