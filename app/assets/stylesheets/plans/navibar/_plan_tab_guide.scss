@@ -1,175 +1,481 @@
 /* ==========================================
    スポット未追加時の案内ブロック
-   iOS/macOS風のモダンなデザイン
+   カード形式の機能一覧デザイン
 ========================================== */
 
-.myroute-tab-guide {
-  padding: 20px 12px;
-  margin: 0;
+/* ------------------------------------------
+   アニメーション定義
+------------------------------------------ */
+@keyframes slideUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(15px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes pulse {
+  0%, 100% {
+    transform: scale(1);
+  }
+  50% {
+    transform: scale(1.05);
+  }
+}
+
+@keyframes glow {
+  0%, 100% {
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+  }
+  50% {
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.15);
+  }
 }
 
 /* ------------------------------------------
-   ヒーローセクション: メインの案内
+   メインコンテナ
 ------------------------------------------ */
-.myroute-tab-guide__hero {
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 12px;
-  padding: 24px 16px;
-  background: linear-gradient(135deg, #f5f9f5 0%, #eef4ee 100%);
-  border-radius: 16px;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.15);
+.myroute-tab-guide {
+  padding: 16px 12px;
+  animation: slideUp 0.4s ease-out;
 }
 
-.myroute-tab-guide__hero-icon {
-  width: 64px;
-  height: 64px;
-  background: linear-gradient(135deg, #506d53 0%, #6b8e6e 100%);
-  border-radius: 50%;
+/* ------------------------------------------
+   使い方カード（3ステップ + 説明文）
+------------------------------------------ */
+.myroute-tab-guide__intro-card {
+  background: #f8f9fa;
+  border-radius: 16px;
+  padding: 20px 16px 16px;
+  margin-bottom: 20px;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.06);
+  animation: fadeIn 0.4s ease;
+}
+
+.myroute-tab-guide__steps {
   display: flex;
   align-items: center;
   justify-content: center;
-  box-shadow: 0 4px 12px rgba(80, 109, 83, 0.3);
+  gap: 12px;
+  margin-bottom: 12px;
+}
+
+.myroute-tab-guide__step {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 6px;
+}
+
+.myroute-tab-guide__step-icon {
+  width: 44px;
+  height: 44px;
+  border-radius: 12px;
+  background: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.1);
 
   i {
-    font-size: 28px;
+    font-size: 18px;
+    color: #666;
+  }
+}
+
+.myroute-tab-guide__step-label {
+  font-size: 11px;
+  color: #888;
+  font-weight: 500;
+}
+
+.myroute-tab-guide__step-arrow {
+  color: #999;
+  font-size: 12px;
+  margin-bottom: 18px;
+}
+
+/* ------------------------------------------
+   説明文
+------------------------------------------ */
+.myroute-tab-guide__desc {
+  text-align: center;
+  font-size: 12px;
+  color: #888;
+  line-height: 1.5;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to { opacity: 1; }
+}
+
+@keyframes bounce {
+  0%, 100% {
+    transform: translateY(0);
+  }
+  50% {
+    transform: translateY(6px);
+  }
+}
+
+/* ------------------------------------------
+   視線誘導アロー
+------------------------------------------ */
+.myroute-tab-guide__scroll-hint {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 16px;
+
+  i {
+    font-size: 16px;
+    color: #bbb;
+    animation: bounce 1.5s ease-in-out infinite;
+  }
+}
+
+/* ------------------------------------------
+   代替手段セクション
+------------------------------------------ */
+.myroute-tab-guide__alternatives {
+  margin-top: 8px;
+}
+
+.myroute-tab-guide__alternatives-title {
+  font-size: 12px;
+  color: #999;
+  margin-bottom: 12px;
+  text-align: center;
+}
+
+.myroute-tab-guide__cards {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* ------------------------------------------
+   カードスタイル
+------------------------------------------ */
+.myroute-tab-guide__card {
+  display: flex;
+  align-items: center;
+  gap: 14px;
+  padding: 16px;
+  background: #fff;
+  border: none;
+  border-radius: 16px;
+  box-shadow: 0 0 24px rgba(0, 0, 0, 0.15), 0 4px 8px rgba(0, 0, 0, 0.06);
+  cursor: pointer;
+  text-align: left;
+  transition: all 0.2s ease;
+  opacity: 0;
+  animation: fadeInUp 0.4s ease forwards;
+
+  &:nth-child(1) { animation-delay: 0.1s; }
+  &:nth-child(2) { animation-delay: 0.2s; }
+  &:nth-child(3) { animation-delay: 0.3s; }
+  &:nth-child(4) { animation-delay: 0.4s; }
+
+  &:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.12);
+  }
+
+  &:active {
+    transform: scale(0.98);
+  }
+}
+
+/* ------------------------------------------
+   アイコン
+------------------------------------------ */
+.myroute-tab-guide__card-icon {
+  width: 48px;
+  height: 48px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+  animation: pulse 3s ease-in-out infinite, glow 3s ease-in-out infinite;
+
+  i {
+    font-size: 22px;
+    color: #fff;
+  }
+
+  // 地図から追加: 緑のグラデーション
+  &--map {
+    background: linear-gradient(135deg, #5a9c69 0%, #4a7c59 100%);
+  }
+
+  // 人気スポット: オレンジ〜赤のグラデーション
+  &--fire {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  }
+
+  // AI提案: 紫〜ピンクのグラデーション
+  &--ai {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  // みんなの旅: 青のグラデーション
+  &--community {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+}
+
+/* ------------------------------------------
+   コンテンツ（タイトル + 説明）
+------------------------------------------ */
+.myroute-tab-guide__card-content {
+  flex: 1;
+  min-width: 0;
+}
+
+.myroute-tab-guide__card-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+}
+
+/* ------------------------------------------
+   矢印
+------------------------------------------ */
+.myroute-tab-guide__card-arrow {
+  font-size: 16px;
+  color: #ccc;
+  flex-shrink: 0;
+  transition: transform 0.2s ease;
+
+  .myroute-tab-guide__card:hover & {
+    transform: translateX(3px);
+    color: #999;
+  }
+}
+
+/* ------------------------------------------
+   機能説明モーダル（iOS風）
+------------------------------------------ */
+.feature-guide-modal {
+  position: fixed;
+  inset: 0;
+  z-index: 1000;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 16px;
+
+  &[hidden] {
+    display: none;
+  }
+}
+
+.feature-guide-modal__overlay {
+  position: absolute;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.4);
+}
+
+.feature-guide-modal__dialog {
+  position: relative;
+  background: rgba(255, 255, 255, 0.95);
+  backdrop-filter: blur(20px);
+  -webkit-backdrop-filter: blur(20px);
+  padding: 0;
+  border-radius: 14px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
+  max-width: 360px;
+  width: 100%;
+  overflow: hidden;
+  animation: fadeInUp 0.3s ease;
+}
+
+.feature-guide-modal__header {
+  padding: 30px 16px 16px;
+  text-align: center;
+}
+
+.feature-guide-modal__icon {
+  width: 56px;
+  height: 56px;
+  border-radius: 14px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto 12px;
+
+  i {
+    font-size: 26px;
+    color: #fff;
+  }
+
+  &--map {
+    background: linear-gradient(135deg, #5a9c69 0%, #4a7c59 100%);
+  }
+
+  &--fire {
+    background: linear-gradient(135deg, #ff6b35 0%, #f7931e 100%);
+  }
+
+  &--ai {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+  }
+
+  &--community {
+    background: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+  }
+}
+
+.feature-guide-modal__title {
+  font-size: 17px;
+  font-weight: 600;
+  color: #000;
+  text-align: center;
+  margin: 0 0 8px;
+  letter-spacing: -0.3px;
+}
+
+.feature-guide-modal__content {
+  padding: 0 16px 16px;
+
+  p {
+    font-size: 13px;
+    color: #666;
+    text-align: center;
+    margin: 0 0 16px;
+    line-height: 1.5;
+  }
+}
+
+.feature-guide-modal__btn-preview {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin-bottom: 16px;
+}
+
+.feature-guide-modal__pill-sample {
+  display: flex;
+  height: 36px;
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12);
+}
+
+.feature-guide-modal__pill-left {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  background: rgba(255, 255, 255, 0.95);
+  border: 1px solid #ccc;
+  border-right: none;
+  border-radius: 8px 0 0 8px;
+
+  i {
+    font-size: 14px;
+    color: #666;
+  }
+}
+
+.feature-guide-modal__pill-right {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 36px;
+  background: linear-gradient(135deg, #F97316 0%, #EA580C 100%);
+  border-radius: 0 8px 8px 0;
+
+  i {
+    font-size: 16px;
     color: #fff;
   }
 }
 
-.myroute-tab-guide__hero-text {
-  margin: 0;
-  font-size: 15px;
-  font-weight: 500;
-  line-height: 1.6;
-  color: #444;
-  text-align: center;
-
-  strong {
-    color: #506d53;
-    font-weight: 600;
-  }
-}
-
-.myroute-tab-guide__hero-arrow {
-  margin-top: 4px;
-  animation: bounce 2s infinite;
-
-  i {
-    font-size: 20px;
-    color: #506d53;
-    opacity: 0.6;
-  }
-}
-
-@keyframes bounce {
-  0%, 20%, 50%, 80%, 100% {
-    transform: translateY(0);
-  }
-  40% {
-    transform: translateY(6px);
-  }
-  60% {
-    transform: translateY(3px);
-  }
-}
-
-/* ------------------------------------------
-   区切り: または
------------------------------------------- */
-.myroute-tab-guide__divider {
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  padding: 24px 0 20px;
-
-  span {
-    font-size: 12px;
-    font-weight: 500;
-    color: #aaa;
-  }
-}
-
-/* ------------------------------------------
-   代替オプション: 検索・AI・みんなの旅
------------------------------------------- */
-.myroute-tab-guide__options {
-  display: flex;
-  justify-content: center;
-  gap: 10px;
-}
-
-.myroute-tab-guide__option {
-  flex: 1;
-  display: flex;
-  flex-direction: column;
-  align-items: center;
-  gap: 8px;
-  padding: 18px 12px;
-  background: #f8f8f8;
-  border-radius: 14px;
-  transition: all 0.15s ease;
-  box-shadow: 0 4px 16px rgba(0, 0, 0, 0.18);
-
-  &:hover {
-    background: #f0f4f0;
-    box-shadow: 0 6px 20px rgba(0, 0, 0, 0.25);
-  }
-
-  i {
-    font-size: 26px;
-    color: #506d53;
-  }
-
-  span {
-    font-size: 12px;
-    font-weight: 500;
-    color: #555;
-  }
-}
-
-/* ------------------------------------------
-   ヒント: 追加後の操作
------------------------------------------- */
-.myroute-tab-guide__tips {
-  margin-top: 28px;
-  display: flex;
-  justify-content: center;
-}
-
-.myroute-tab-guide__tips-title {
-  display: none;
-}
-
-.myroute-tab-guide__tips-list {
+.feature-guide-modal__steps {
   display: flex;
   flex-direction: column;
   gap: 0;
-  width: 220px;
+  background: rgba(0, 0, 0, 0.03);
+  border-radius: 10px;
+  overflow: hidden;
 }
 
-.myroute-tab-guide__tip {
+.feature-guide-modal__step {
   display: flex;
   align-items: center;
   gap: 10px;
-  padding: 8px 0;
-  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+  padding: 12px 14px;
+  font-size: 13px;
+  color: #1c1c1e;
 
-  &:last-child {
-    border-bottom: none;
+  &:not(:last-child) {
+    border-bottom: 1px solid rgba(0, 0, 0, 0.08);
   }
 
   i {
-    font-size: 15px;
-    color: #999;
-    width: 20px;
-    text-align: center;
-    flex-shrink: 0;
+    font-size: 12px;
+    color: #888;
+  }
+}
+
+.feature-guide-modal__step-num {
+  width: 20px;
+  height: 20px;
+  background: #007aff;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 11px;
+  font-weight: 600;
+  color: #fff;
+  flex-shrink: 0;
+}
+
+.feature-guide-modal__footer {
+  border-top: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.feature-guide-modal__btn {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  border: none;
+  background: transparent;
+  color: #007aff;
+  font-size: 17px;
+  font-weight: 500;
+  cursor: pointer;
+  transition: background 0.15s;
+
+  &:hover {
+    background: rgba(0, 0, 0, 0.04);
   }
 
-  span {
-    font-size: 13px;
-    color: #777;
+  &:active {
+    background: rgba(0, 0, 0, 0.08);
   }
+}
+
+/* ------------------------------------------
+   モーダル表示時のbody制御
+------------------------------------------ */
+body.feature-guide-modal-open {
+  overflow: hidden;
 }
