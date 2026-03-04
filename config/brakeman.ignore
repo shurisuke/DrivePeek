@@ -3,12 +3,8 @@
     {
       "fingerprint": "74cb5442153732897f09d5ba81fd46d4d423fe7dd0a046ead49ad5bd6e726ed9",
       "note": "False positive: avatar_color_for returns a safe CSS class name"
-    },
-    {
-      "fingerprint": "40be17ee84017c91503dab23873e24bdd71665ab665bf6f351cfc09ff83e6582",
-      "note": "Ruby 3.2.2 EOL warning - will upgrade Ruby separately (#610)"
     }
   ],
-  "updated": "2026-03-02",
+  "updated": "2026-03-04",
   "brakeman_version": "8.0.2"
 }
