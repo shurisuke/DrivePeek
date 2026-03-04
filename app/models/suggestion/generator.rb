@@ -80,31 +80,43 @@ class Suggestion::Generator
       picks = ai_response[:picks] || []
       slot_count = slot_sizes.size
 
-      # スロット数を超える選出を防止
-      selected = picks.first(slot_count).filter_map do |pick|
+      # 各スロットの開始インデックスを計算
+      slot_offsets = []
+      offset = 0
+      slot_sizes.each do |size|
+        slot_offsets << offset
+        offset += size
+      end
+
+      # AIが選んだスポットを取得（どのスロットから選ばれたかも記録）
+      selected = []
+      selected_slot_indices = Set.new
+
+      picks.first(slot_count).each do |pick|
         number = pick[:n]
         description = pick[:d]
         spot = all_spots[number - 1]
         next unless spot
 
-        spot.merge(description: description)
+        # このスポットがどのスロットに属するか特定
+        slot_index = slot_offsets.rindex { |o| number > o }
+        next if slot_index.nil? || selected_slot_indices.include?(slot_index)
+
+        selected_slot_indices.add(slot_index)
+        selected << spot.merge(description: description)
       end
 
-      # フォールバック: 選出がない場合は各スロットの人気1位を採用
-      return selected if selected.any?
+      # フォールバック: 選出がないスロットは人気1位で補完
+      if selected.size < slot_count
+        slot_sizes.each_with_index do |size, i|
+          next if selected_slot_indices.include?(i) || size == 0
 
-      fallback_for_plan(all_spots, slot_sizes)
-    end
-
-    # プランモードのフォールバック: 各スロットの人気1位を採用
-    def fallback_for_plan(all_spots, slot_sizes)
-      result = []
-      offset = 0
-      slot_sizes.each do |size|
-        result << all_spots[offset] if size > 0
-        offset += size
+          fallback_spot = all_spots[slot_offsets[i]]
+          selected << fallback_spot if fallback_spot
+        end
       end
-      result.compact
+
+      selected
     end
 
     # 提案レスポンスを構築
