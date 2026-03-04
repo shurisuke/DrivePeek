@@ -29,7 +29,7 @@
   box-shadow: 0 8px 32px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 400px;
-  height: 500px;
+  min-height: 400px;
   max-height: 70vh;
   display: flex;
   flex-direction: column;
@@ -95,21 +95,23 @@
 
 // セクション
 .suggestion-condition-modal__section {
-  padding: 16px 20px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  padding: 24px 20px 16px;
 }
 
 .suggestion-condition-modal__label {
-  display: block;
-  margin-bottom: 8px;
-  font-size: 14px;
+  padding-right: 4px;
+  font-size: 15px;
   font-weight: 600;
   color: #555;
 }
 
 .suggestion-condition-modal__select,
 .suggestion-condition-modal__slot-select {
-  width: 100%;
-  padding: 8px 12px;
+  padding: 8px 32px 8px 12px;
   font-size: 16px; // iOS zoom防止
   border: 1px solid #ddd;
   border-radius: 6px;
@@ -123,9 +125,17 @@
   }
 }
 
+.suggestion-condition-modal__select {
+  border-color: #aaa;
+}
+
+.suggestion-condition-modal__slot-select {
+  width: 100%;
+}
+
 // スロット一覧
 .suggestion-condition-modal__slots {
-  padding: 0 20px 12px;
+  padding: 0 20px;
 }
 
 .suggestion-condition-modal__slot {
@@ -152,7 +162,6 @@
   display: flex;
   gap: 12px;
   padding: 16px 20px;
-  border-top: 1px solid #eee;
   margin-top: auto;
 }
 
@@ -396,12 +405,27 @@
   100% { left: 100%; }
 }
 
-// メインビュー / ジャンル選択ビュー共通
-[data-suggestion-tab--condition-modal-target="mainView"],
-[data-suggestion-tab--condition-modal-target="genreView"] {
+// メインビュー（常にレイアウトを維持してダイアログの高さを決定）
+[data-suggestion-tab--condition-modal-target="mainView"] {
   display: flex;
   flex-direction: column;
   flex: 1;
+  overflow: hidden;
+
+  &[hidden] {
+    display: flex !important;
+    visibility: hidden;
+  }
+}
+
+// ジャンル選択ビュー（mainViewに重なる）
+[data-suggestion-tab--condition-modal-target="genreView"] {
+  position: absolute;
+  inset: 0;
+  display: flex;
+  flex-direction: column;
+  background: #fff;
+  border-radius: 16px;
   overflow: hidden;
 
   &[hidden] {
@@ -560,7 +584,6 @@
 
   .suggestion-condition-modal__dialog {
     max-width: 100%;
-    height: 500px;
     max-height: 85vh;
     border-radius: 16px 16px 0 0;
   }

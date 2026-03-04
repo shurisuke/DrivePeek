@@ -125,8 +125,15 @@ export default class extends Controller {
   // ============================================
 
   #showModal() {
+    this.#getBottomSheetController()?.adjustToMid()
     this.element.hidden = false
     document.body.style.overflow = "hidden"
+  }
+
+  #getBottomSheetController() {
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return null
+    return this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
   }
 
   // フォームを初期状態にリセット

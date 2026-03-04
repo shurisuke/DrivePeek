@@ -238,4 +238,11 @@ export default class extends Controller {
     const state = params.state || "min"
     this.setSnapPosition(state, true)
   }
+
+  // モバイル時にmidに調整（外部から呼び出し用）
+  adjustToMid() {
+    if (!this.isMobile) return false
+    this.setSnapPosition("mid", true)
+    return true
+  }
 }
