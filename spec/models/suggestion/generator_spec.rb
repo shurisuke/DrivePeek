@@ -160,5 +160,101 @@ RSpec.describe Suggestion::Generator do
         expect(spot_names).to include("グルメスポット", "温泉スポット")
       end
     end
+
+    context "スロット数に応じた提案数" do
+      let!(:genre1) { create(:genre, name: "観光名所", slug: "sightseeing") }
+      let!(:genre2) { create(:genre, name: "ごはん", slug: "food") }
+      let!(:genre3) { create(:genre, name: "道の駅", slug: "roadside_station") }
+      let!(:genre4) { create(:genre, name: "温泉", slug: "bath") }
+      let!(:spot1) { create(:spot, lat: 35.6770, lng: 139.6510, name: "観光スポット") }
+      let!(:spot2) { create(:spot, lat: 35.6771, lng: 139.6511, name: "グルメスポット") }
+      let!(:spot3) { create(:spot, lat: 35.6772, lng: 139.6512, name: "道の駅スポット") }
+      let!(:spot4) { create(:spot, lat: 35.6773, lng: 139.6513, name: "温泉スポット") }
+
+      before do
+        spot1.genres << genre1
+        spot2.genres << genre2
+        spot3.genres << genre3
+        spot4.genres << genre4
+
+        allow(ENV).to receive(:[]).and_call_original
+        allow(ENV).to receive(:[]).with("OPENAI_API_KEY").and_return("test-key")
+      end
+
+      it "2スロット指定で2件提案される" do
+        stub_openai_chat(response_content: {
+          picks: [ { n: 1, d: "説明1" }, { n: 2, d: "説明2" } ],
+          intro: "紹介文",
+          closing: "締めの文"
+        }.to_json)
+
+        result = described_class.generate(
+          plan: plan,
+          center_lat: center_lat,
+          center_lng: center_lng,
+          radius_km: radius_km,
+          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id } ]
+        )
+
+        expect(result[:spots].length).to eq(2)
+      end
+
+      it "3スロット指定で3件提案される" do
+        stub_openai_chat(response_content: {
+          picks: [ { n: 1, d: "説明1" }, { n: 2, d: "説明2" }, { n: 3, d: "説明3" } ],
+          intro: "紹介文",
+          closing: "締めの文"
+        }.to_json)
+
+        result = described_class.generate(
+          plan: plan,
+          center_lat: center_lat,
+          center_lng: center_lng,
+          radius_km: radius_km,
+          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id }, { genre_id: genre3.id } ]
+        )
+
+        expect(result[:spots].length).to eq(3)
+      end
+
+      it "4スロット指定で4件提案される" do
+        stub_openai_chat(response_content: {
+          picks: [ { n: 1, d: "説明1" }, { n: 2, d: "説明2" }, { n: 3, d: "説明3" }, { n: 4, d: "説明4" } ],
+          intro: "紹介文",
+          closing: "締めの文"
+        }.to_json)
+
+        result = described_class.generate(
+          plan: plan,
+          center_lat: center_lat,
+          center_lng: center_lng,
+          radius_km: radius_km,
+          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id }, { genre_id: genre3.id }, { genre_id: genre4.id } ]
+        )
+
+        expect(result[:spots].length).to eq(4)
+      end
+
+      it "AIが不足件数を返した場合フォールバックで補完される" do
+        # 3スロット指定だがAIは2件しか返さない
+        stub_openai_chat(response_content: {
+          picks: [ { n: 1, d: "説明1" }, { n: 2, d: "説明2" } ],
+          intro: "紹介文",
+          closing: "締めの文"
+        }.to_json)
+
+        result = described_class.generate(
+          plan: plan,
+          center_lat: center_lat,
+          center_lng: center_lng,
+          radius_km: radius_km,
+          slots: [ { genre_id: genre1.id }, { genre_id: genre2.id }, { genre_id: genre3.id } ]
+        )
+
+        expect(result[:spots].length).to eq(3)
+        spot_names = result[:spots].map { |s| s[:name] }
+        expect(spot_names).to include("道の駅スポット")
+      end
+    end
   end
 end
