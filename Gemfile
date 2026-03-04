@@ -1,6 +1,6 @@
 source "https://rubygems.org"
 
-ruby "3.2.2"
+ruby "3.3.8"
 
 # Rails本体
 gem "rails", "~> 8.1.2"
