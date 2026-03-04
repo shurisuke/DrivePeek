@@ -42,7 +42,7 @@ genre_ids_to_try = [ preferred_id, *queue ].compact
     genre_ids_to_try << nil  # お任せフォールバック
 
     genre_ids_to_try.each do |genre_id|
-      candidates = fetch_candidates(genre_id, 5, excluded_genre_ids: genre_id.nil? ? used_genre_ids : nil)
+      candidates = fetch_candidates(genre_id, 10, excluded_genre_ids: genre_id.nil? ? used_genre_ids : nil)
       candidates.reject! { |c| used_spot_ids.include?(c[:id]) }
 
       # 主要ジャンルが使用済みのスポットを除外（全ケース共通）

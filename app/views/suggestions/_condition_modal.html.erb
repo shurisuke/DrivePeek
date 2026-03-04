@@ -35,7 +35,7 @@
           <select class="suggestion-condition-modal__select"
                   data-suggestion-tab--condition-modal-target="spotCount"
                   data-action="change->suggestion-tab--condition-modal#updateSlots">
-            <% (2..4).each do |n| %>
+            <% (2..5).each do |n| %>
               <option value="<%= n %>" <%= 'selected' if n == 3 %>><%= n %>箇所</option>
             <% end %>
           </select>
@@ -43,7 +43,7 @@
 
         <%# スロット一覧 %>
         <div class="suggestion-condition-modal__slots">
-          <% 4.times do |i| %>
+          <% 5.times do |i| %>
             <div class="suggestion-condition-modal__slot"
                  data-suggestion-tab--condition-modal-target="slot"
                  data-slot-index="<%= i %>"
