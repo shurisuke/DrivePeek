@@ -172,7 +172,7 @@ app/javascript/controllers/
 | Service spec | AI提案サービス |
 | Mailer spec | メール送信 |
 
-**652 examples, 0 failures / カバレッジ 98.26%**
+**669 examples, 0 failures / カバレッジ 98.04%**
 
 静的解析: RuboCop + Brakeman（セキュリティスキャン）
 CI: GitHub ActionsでPRごとにRSpec・RuboCop・Brakemanを自動実行
