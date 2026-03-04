@@ -41,20 +41,31 @@ export default class extends Controller {
 
   // 条件を変更（同じエリアで再度モーダルを開く）
   changeCondition() {
-    clearSuggestionAll()
-    const area = this.areaValue || {}
+    const adjusted = this.#getBottomSheetController()?.adjustToMid() || false
 
-    // 同じエリアで円を再描画してズーム
-    this.#drawAreaCircle(area)
+    const execute = () => {
+      clearSuggestionAll()
+      const area = this.areaValue || {}
 
-    document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
-      detail: {
-        mode: this.modeValue,
-        center_lat: area.center_lat,
-        center_lng: area.center_lng,
-        radius_km: area.radius_km
-      }
-    }))
+      // 同じエリアで円を再描画してズーム
+      this.#drawAreaCircle(area)
+
+      document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
+        detail: {
+          mode: this.modeValue,
+          center_lat: area.center_lat,
+          center_lng: area.center_lng,
+          radius_km: area.radius_km
+        }
+      }))
+    }
+
+    if (adjusted) {
+      // ボトムシートのアニメーション完了後に円を描画（地図の表示範囲が確定してから）
+      setTimeout(execute, 320)
+    } else {
+      execute()
+    }
   }
 
   // エリア円を描画してズーム（グロー効果付き）
@@ -123,5 +134,11 @@ export default class extends Controller {
     document.dispatchEvent(new CustomEvent("ui:startAreaDraw", {
       detail: { mode, ...options }
     }))
+  }
+
+  #getBottomSheetController() {
+    const navibar = document.querySelector("[data-controller~='ui--bottom-sheet']")
+    if (!navibar) return null
+    return this.application.getControllerForElementAndIdentifier(navibar, "ui--bottom-sheet")
   }
 }
