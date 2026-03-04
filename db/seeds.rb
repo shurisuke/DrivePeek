@@ -24,7 +24,8 @@ GENRES = [
   # ==========================================
   # 買う
   # ==========================================
-  { name: "道の駅・SA/PA", slug: "roadside_station", category: "買う", visible: true, emoji: "🚗" },
+  { name: "道の駅", slug: "roadside_station", category: "買う", visible: true, emoji: "🚗" },
+  { name: "SA/PA", slug: "service_area", category: "買う", visible: true, emoji: "🚗" },
   # ショッピング（親ジャンル・子ジャンルは非表示）
   { name: "ショッピング", slug: "shopping", category: "買う", visible: true, emoji: "🛍️" },
   { name: "雑貨屋", slug: "variety_store", category: "買う", visible: false, parent_slug: "shopping", emoji: "🛍️" },
