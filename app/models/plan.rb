@@ -11,7 +11,7 @@
 #   - 統括     → Plan::Recalculator
 #
 # 原則:
-#   - スポット操作（追加・削除・並替）後は recalculate_for! を呼ぶ
+#   - スポット操作（追加・削除・並替）後は Plan::Recalculator で再計算
 #   - 集計（総距離・総時間）は Plan::Totals concern で提供
 #
 class Plan < ApplicationRecord
@@ -195,7 +195,7 @@ class Plan < ApplicationRecord
         )
       end
 
-      recalculate_for!(nil, action: :create)
+      Plan::Recalculator.new(self).recalculate!(driving: true, timetable: true)
     end
   end
 
@@ -205,7 +205,7 @@ class Plan < ApplicationRecord
     transaction do
       plan_spots.destroy_all
       spot_ids.each { |id| plan_spots.create!(spot_id: id) }
-      recalculate_for!(nil, action: :create)
+      Plan::Recalculator.new(self).recalculate!(driving: true, timetable: true)
     end
   end
 
@@ -214,24 +214,7 @@ class Plan < ApplicationRecord
   def reorder_spots!(ordered_ids)
     transaction do
       PlanSpot.reorder_for_plan!(plan: self, ordered_ids: ordered_ids.map(&:to_i))
-      recalculate_for!(nil, action: :reorder)
-    end
-  end
-
-  # ================================================================
-  # 再計算
-  # ================================================================
-
-  # 関連モデルの変更に応じて再計算を実行する
-  # @param changed_model [StartPoint, GoalPoint, PlanSpot] 変更されたモデル
-  # @param action [Symbol] :update, :create, :destroy, :reorder
-  def recalculate_for!(changed_model, action: :update)
-    case action
-    when :create, :destroy, :reorder
-      # 追加・削除・並び替えは常に経路再計算
-      recalculator.recalculate!(driving: true, timetable: true)
-    when :update
-      recalculate_for_update!(changed_model)
+      Plan::Recalculator.new(self).recalculate!(driving: true, timetable: true)
     end
   end
 
@@ -241,18 +224,6 @@ class Plan < ApplicationRecord
   # preload済みならRubyでソート、未ロードならSQLでorder
   def ordered_plan_spots
     plan_spots.loaded? ? plan_spots.sort_by(&:position) : plan_spots.order(:position).to_a
-  end
-
-  def recalculator
-    Plan::Recalculator.new(self)
-  end
-
-  def recalculate_for_update!(changed_model)
-    if changed_model.route_affecting_changes?
-      recalculator.recalculate!(driving: true, timetable: true)
-    elsif changed_model.schedule_affecting_changes?
-      recalculator.recalculate!(timetable: true)
-    end
   end
 
   def lat_lng_hash(record)

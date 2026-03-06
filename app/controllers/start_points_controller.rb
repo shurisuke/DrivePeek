@@ -12,9 +12,9 @@ class StartPointsController < ApplicationController
     # 経路影響（lat, lng, address, toll_used）→ 経路再計算
     # 時間影響（departure_time）→ スケジュール再計算のみ
     if route_affecting?(update_params)
-      @plan.recalculate_for!(@start_point, action: :reorder)
+      Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
     else
-      @plan.recalculate_for!(@start_point, action: :update)
+      Plan::Recalculator.new(@plan).recalculate!(driving: false, timetable: true)
     end
     reload_plan
 

@@ -47,7 +47,7 @@ class PlansController < ApplicationController
       spot = Spot.find_by(id: params[:add_spot])
       if spot
         @plan.plan_spots.create!(spot: spot)
-        @plan.recalculate_for!(nil, action: :create)
+        Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
       end
     end
 
