@@ -84,7 +84,6 @@ RSpec.describe Plan::Timetable, type: :model do
         end
       end
     end
-
   end
 
   describe "DUMMY_DATE" do

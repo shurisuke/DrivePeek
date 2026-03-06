@@ -54,7 +54,6 @@ RSpec.describe Plan::Driving, type: :model do
         expect(driving.api_call_count).to eq(3)
       end
     end
-
   end
 
   describe "#recalculate_segments!" do
