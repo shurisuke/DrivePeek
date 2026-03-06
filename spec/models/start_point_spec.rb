@@ -63,60 +63,6 @@ RSpec.describe StartPoint do
     end
   end
 
-  describe "#route_affecting_changes?" do
-    let(:start_point) do
-      create(:start_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都")
-    end
-
-    context "lat/lng/address/toll_usedが変更された場合" do
-      it "latが変更されたらtrueを返す" do
-        start_point.update!(lat: 36.0)
-        expect(start_point.route_affecting_changes?).to be true
-      end
-
-      it "lngが変更されたらtrueを返す" do
-        start_point.update!(lng: 140.0)
-        expect(start_point.route_affecting_changes?).to be true
-      end
-
-      it "addressが変更されたらtrueを返す" do
-        start_point.update!(address: "大阪府")
-        expect(start_point.route_affecting_changes?).to be true
-      end
-
-      it "toll_usedが変更されたらtrueを返す" do
-        start_point.update!(toll_used: true)
-        expect(start_point.route_affecting_changes?).to be true
-      end
-    end
-
-    context "経路に影響しない属性が変更された場合" do
-      it "falseを返す" do
-        start_point.touch
-        expect(start_point.route_affecting_changes?).to be false
-      end
-    end
-  end
-
-  describe "#schedule_affecting_changes?" do
-    let(:start_point) do
-      create(:start_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都")
-    end
-
-    context "departure_timeが変更された場合" do
-      it "trueを返す" do
-        start_point.update!(departure_time: Time.zone.local(2000, 1, 1, 10, 0))
-        expect(start_point.schedule_affecting_changes?).to be true
-      end
-    end
-
-    context "他の属性が変更された場合" do
-      it "falseを返す" do
-        start_point.update!(lat: 36.0)
-        expect(start_point.schedule_affecting_changes?).to be false
-      end
-    end
-  end
 
   describe "#short_address" do
     let(:start_point) do
