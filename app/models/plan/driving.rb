@@ -1,21 +1,17 @@
 # app/models/plan/driving.rb
 # frozen_string_literal: true
 
-# 責務: 経路情報（move_time / move_distance / polyline）を計算・保存
+# 責務: Google Directions API で経路情報を取得し、move_time / move_distance / polyline を保存
 #
-# 保存先ルール（不変）:
+# 保存先ルール:
 #   - 「次の区間までの情報は出発側に保存する」
-#   - start_point → 最初のplan_spot: start_points に保存
-#   - plan_spot → 次のplan_spot or goal_point: plan_spots に保存
-#   - goal_point は「到着側」であり、区間情報は保持しない
+#   - start_point.move_time = start → first_spot
+#   - plan_spot[n].move_time = spot[n] → spot[n+1] or goal
+#   - goal_point には保存しない（到着側のため）
 #
-# 制約:
-#   - arrival_time / departure_time には一切触らない（時刻計算は Plan::Timetable の責務）
-#
-# Phase 2:
-#   - Google Directions API を呼び出して経路計算
-#   - 同一区間（segment_key）はキャッシュして1回だけAPI呼び出し
-#   - toll_used を区間ごとに反映
+# 注意:
+#   - 時刻（arrival_time / departure_time）には触らない → Plan::Timetable の責務
+#   - 同一区間はキャッシュして API 呼び出しを最小化
 #
 class Plan::Driving
   attr_reader :plan, :segment_cache, :api_call_count
@@ -36,11 +32,15 @@ class Plan::Driving
   # 全区間を再計算して保存
   # @return [Boolean] 成功したか
   def recalculate!
-    return false unless valid_for_calculation?
-
     ActiveRecord::Base.transaction do
-      segments = build_all_segments
-      process_segments(segments)
+      build_all_segments.each do |segment|
+        route_data = fetch_or_calculate_route(segment)
+        segment[:from_record].update!(
+          move_time: route_data[:move_time],
+          move_distance: route_data[:move_distance],
+          polyline: route_data[:polyline]
+        )
+      end
     end
 
     true
@@ -53,7 +53,14 @@ class Plan::Driving
     return true if segments.empty?
 
     ActiveRecord::Base.transaction do
-      process_segments(segments)
+      segments.each do |segment|
+        route_data = fetch_or_calculate_route(segment)
+        segment[:from_record].update!(
+          move_time: route_data[:move_time],
+          move_distance: route_data[:move_distance],
+          polyline: route_data[:polyline]
+        )
+      end
     end
 
     true
@@ -61,23 +68,15 @@ class Plan::Driving
 
   private
 
-  # 計算可能な状態かチェック
-  def valid_for_calculation?
-    plan.start_point.present?
-  end
-
   # 全区間のセグメントリストを構築
   # @return [Array<Hash>] セグメント配列
   def build_all_segments
     segments = []
-    # アソシエーションキャッシュをクリアして最新のデータを取得
-    plan_spots = plan.plan_spots.reload.includes(:spot).order(:position).to_a
+    start_point = plan.start_point
+    plan_spots = plan.plan_spots.includes(:spot).order(:position).to_a
 
-    # start_point が存在し、plan_spots がある場合
+    # plan_spots がある場合（start_pointはrecalculate!で確認済み）
     if plan_spots.any?
-      # start_point もリロードして最新のデータを取得
-      start_point = plan.start_point.reload
-
       # 区間1: start_point → plan_spots[0]
       segments << build_segment(
         from_record: start_point,
@@ -140,16 +139,7 @@ class Plan::Driving
     "#{from_key}-#{to_key}-#{toll_used}"
   end
 
-  # セグメントを処理（キャッシュ利用）
-  # @param segments [Array<Hash>]
-  def process_segments(segments)
-    segments.each do |segment|
-      route_data = fetch_or_calculate_route(segment)
-      save_route_data(segment[:from_record], route_data)
-    end
-  end
-
-  # キャッシュから取得、なければ計算
+  # キャッシュから取得、なければAPI呼び出し
   # @param segment [Hash]
   # @return [Hash] route_data
   def fetch_or_calculate_route(segment)
@@ -157,32 +147,15 @@ class Plan::Driving
 
     return segment_cache[key] if segment_cache.key?(key)
 
-    route_data = calculate_route(segment)
-    segment_cache[key] = route_data
-    route_data
-  end
-
-  # 経路を計算（Google Directions API を呼び出し）
-  # @param segment [Hash]
-  # @return [Hash] { move_time:, move_distance:, polyline: }
-  def calculate_route(segment)
+    # API呼び出し
     @api_call_count += 1
-
-    GoogleApi::Directions.fetch(
+    route_data = GoogleApi::Directions.fetch(
       origin: segment[:from_location],
       destination: segment[:to_location],
       toll_used: segment[:toll_used]
     ) || FALLBACK_ROUTE_DATA.dup
-  end
 
-  # 経路データを出発側レコードに保存
-  # @param from_record [StartPoint, PlanSpot]
-  # @param route_data [Hash]
-  def save_route_data(from_record, route_data)
-    from_record.update!(
-      move_time: route_data[:move_time],
-      move_distance: route_data[:move_distance],
-      polyline: route_data[:polyline]
-    )
+    segment_cache[key] = route_data
+    route_data
   end
 end
