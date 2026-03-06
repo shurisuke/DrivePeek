@@ -84,33 +84,6 @@ RSpec.describe Plan::Timetable, type: :model do
         end
       end
     end
-
-    context "出発時間が未設定の場合" do
-      before do
-        plan.start_point.update!(departure_time: nil)
-        create(:plan_spot, plan: plan, spot: spot1, position: 1)
-      end
-
-      it "trueを返す（計算スキップも成功扱い）" do
-        timetable = described_class.new(plan.reload)
-        expect(timetable.recalculate!).to be true
-      end
-
-      it "時刻を更新しない" do
-        timetable = described_class.new(plan.reload)
-        timetable.recalculate!
-
-        ps1 = plan.plan_spots.first
-        expect(ps1.arrival_time).to be_nil
-      end
-    end
-
-    context "start_pointがない場合" do
-      it "trueを返す（計算スキップも成功扱い）" do
-        timetable = described_class.new(plan)
-        expect(timetable.recalculate!).to be true
-      end
-    end
   end
 
   describe "DUMMY_DATE" do

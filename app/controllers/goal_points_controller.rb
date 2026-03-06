@@ -7,7 +7,7 @@ class GoalPointsController < ApplicationController
   def update
     @goal_point = @plan.goal_point || @plan.build_goal_point
     @goal_point.update!(build_update_params)
-    @plan.recalculate_for!(@goal_point)
+    Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
     reload_plan
 
     respond_to do |format|

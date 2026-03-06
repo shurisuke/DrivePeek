@@ -9,7 +9,7 @@ class PlanSpotsController < ApplicationController
     @spot = Spot.find(params[:spot_id])
     @plan_spot = @plan.plan_spots.create!(spot: @spot)
 
-    @plan.recalculate_for!(@plan_spot, action: :create)
+    Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
     reload_plan
 
     respond_to do |format|
@@ -22,9 +22,9 @@ class PlanSpotsController < ApplicationController
     @plan_spot.update!(plan_spot_params)
 
     if params.key?(:toll_used)
-      @plan.recalculate_for!(@plan_spot, action: :reorder)
+      Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
     elsif params.key?(:stay_duration)
-      @plan.recalculate_for!(@plan_spot, action: :update)
+      Plan::Recalculator.new(@plan).recalculate!(driving: false, timetable: true)
     end
 
     reload_plan
@@ -38,7 +38,7 @@ class PlanSpotsController < ApplicationController
   def destroy
     @spot = @plan_spot.spot
     @plan_spot.destroy!
-    @plan.recalculate_for!(@plan_spot, action: :destroy)
+    Plan::Recalculator.new(@plan).recalculate!(driving: true, timetable: true)
     reload_plan
 
     respond_to do |format|

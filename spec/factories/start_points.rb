@@ -18,10 +18,6 @@ FactoryBot.define do
       toll_used { true }
     end
 
-    trait :no_departure_time do
-      departure_time { nil }
-    end
-
     trait :in_ibaraki do
       address { "茨城県水戸市中央1-1-1" }
       lat { 36.3418 }

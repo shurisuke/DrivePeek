@@ -54,37 +54,6 @@ RSpec.describe GoalPoint do
     end
   end
 
-  describe "#route_affecting_changes?" do
-    let(:goal_point) do
-      create(:goal_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都")
-    end
-
-    context "lat/lng/addressが変更された場合" do
-      it "trueを返す" do
-        goal_point.update!(lat: 36.0)
-        expect(goal_point.route_affecting_changes?).to be true
-      end
-    end
-
-    context "他の属性が変更された場合" do
-      it "falseを返す" do
-        goal_point.touch
-        expect(goal_point.route_affecting_changes?).to be false
-      end
-    end
-  end
-
-  describe "#schedule_affecting_changes?" do
-    let(:goal_point) do
-      create(:goal_point, plan: plan, lat: 35.0, lng: 139.0, address: "東京都")
-    end
-
-    it "常にfalseを返す" do
-      goal_point.update!(lat: 36.0, address: "大阪府")
-      expect(goal_point.schedule_affecting_changes?).to be false
-    end
-  end
-
   describe "#display_address" do
     # rails_helper.rbでGoogleApi::Geocoder.reverseがスタブされ、
     # 常に「東京都渋谷区渋谷」を返す

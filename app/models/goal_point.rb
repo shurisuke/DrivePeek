@@ -9,16 +9,6 @@ class GoalPoint < ApplicationRecord
     )
   end
 
-  # GoalPoint の変更は常に経路に影響
-  def route_affecting_changes?
-    saved_changes.keys.any? { |k| %w[lat lng address].include?(k) }
-  end
-
-  # スケジュールのみに影響する変更はない
-  def schedule_affecting_changes?
-    false
-  end
-
   # 表示用住所（出発地点と同じならshort_address、違えばaddress）
   def display_address
     start_point = plan.start_point

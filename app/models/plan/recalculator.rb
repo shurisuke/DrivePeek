@@ -1,19 +1,15 @@
 # app/models/plan/recalculator.rb
 # frozen_string_literal: true
 
-# 責務: Driving と Timetable を適切な順序で呼び出す薄いオーケストレータ
+# 責務: 経路/時刻の再計算を実行するオーケストレータ
 #
 # 実行順序（絶対条件）:
 #   1. 経路再計算（Plan::Driving）— move_time 等を確定
 #   2. 時刻再計算（Plan::Timetable）— 確定した move_time を読んで時刻を計算
 #
-# 呼び出し元: Controller（必要なタイミングで明示的に呼ぶ）
-#
-# 使用例:
-#   - 出発時間変更     → recalculate!(timetable: true)
-#   - 滞在時間変更     → recalculate!(timetable: true)
-#   - スポット追加/削除 → recalculate!(driving: true, timetable: true)
-#   - 有料道路切替     → recalculate!(driving: true, timetable: true)
+# 使い方:
+#   - 位置が変わる操作（追加/削除/並び替え） → recalculate!(driving: true, timetable: true)
+#   - スケジュールが変わる操作（出発時刻/滞在時間） → recalculate!(driving: false, timetable: true)
 #
 class Plan::Recalculator
   attr_reader :plan

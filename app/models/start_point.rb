@@ -7,9 +7,6 @@ class StartPoint < ApplicationRecord
   # Callbacks
   before_save :geocode_if_needed
 
-  # 経路計算に影響する属性
-  ROUTE_AFFECTING_ATTRIBUTES = %w[lat lng address toll_used].freeze
-
   # デフォルト出発時間（09:00）
   DEFAULT_DEPARTURE_TIME = Time.zone.local(2000, 1, 1, 9, 0)
 
@@ -27,16 +24,6 @@ class StartPoint < ApplicationRecord
     attrs = GoogleApi::Geocoder.reverse(lat: lat, lng: lng) || FALLBACK_LOCATION.dup
     attrs[:departure_time] = DEFAULT_DEPARTURE_TIME
     plan.build_start_point(attrs)
-  end
-
-  # 経路に影響する変更があったか
-  def route_affecting_changes?
-    (saved_changes.keys & ROUTE_AFFECTING_ATTRIBUTES).any?
-  end
-
-  # スケジュールに影響する変更があったか
-  def schedule_affecting_changes?
-    saved_change_to_departure_time?
   end
 
   # 短縮住所（県+市+町）

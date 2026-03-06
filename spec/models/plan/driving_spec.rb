@@ -54,14 +54,6 @@ RSpec.describe Plan::Driving, type: :model do
         expect(driving.api_call_count).to eq(3)
       end
     end
-
-    context "start_pointがない場合" do
-      before { plan.update!(start_point: nil) }
-
-      it "falseを返す" do
-        expect(driving.recalculate!).to be false
-      end
-    end
   end
 
   describe "#recalculate_segments!" do

@@ -21,9 +21,6 @@ class PlanSpot < ApplicationRecord
     allow_nil: true
   }
 
-  # 経路計算に影響する属性
-  ROUTE_AFFECTING_ATTRIBUTES = %w[toll_used].freeze
-
   # plan配下のplan_spotsだけを対象に、指定順で position を振り直す
   def self.reorder_for_plan!(plan:, ordered_ids:)
     ActiveRecord::Base.transaction do
@@ -32,15 +29,5 @@ class PlanSpot < ApplicationRecord
         plan_spot.update!(position: index + 1)
       end
     end
-  end
-
-  # 経路に影響する変更があったか
-  def route_affecting_changes?
-    (saved_changes.keys & ROUTE_AFFECTING_ATTRIBUTES).any?
-  end
-
-  # スケジュールに影響する変更があったか
-  def schedule_affecting_changes?
-    saved_change_to_stay_duration?
   end
 end
