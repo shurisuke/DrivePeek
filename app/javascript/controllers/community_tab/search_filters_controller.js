@@ -1,5 +1,5 @@
 import { Controller } from "@hotwired/stimulus"
-import { clearSuggestionAll, getCommunityPreviewMarkers } from "map/state"
+import { clearSuggestionAll, getCommunityPreviewMarkers, getSuggestionAreaCircles } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
 
 // ================================================================
@@ -191,10 +191,11 @@ export default class extends Controller {
     if (bottomSheet?.isMobile) {
       bottomSheet.setState({ params: { state: "mid" } })
       setTimeout(() => {
-        // 円の bounds を計算して fitBounds（ボトムシート展開後の正しいパディングで）
-        const center = new google.maps.LatLng(center_lat, center_lng)
-        const circle = new google.maps.Circle({ center, radius: radius_km * 1000 })
-        fitBoundsWithPadding(circle.getBounds())
+        // stateから円を取得してfitBounds（ボトムシート展開後の正しいパディングで）
+        const circles = getSuggestionAreaCircles()
+        if (circles?.length > 0) {
+          fitBoundsWithPadding(circles[circles.length - 1].getBounds())
+        }
       }, 350) // ボトムシートアニメーション完了後
     }
 

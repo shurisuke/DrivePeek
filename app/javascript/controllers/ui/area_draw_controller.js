@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, setSuggestionAreaCircle, clearSuggestionAll } from "map/state"
 import { closeInfoWindow } from "map/infowindow"
 import { fitBoundsWithPadding } from "map/visual_center"
+import { AREA_CIRCLE_STYLES, GRADIENTS } from "map/constants"
 
 // ================================================================
 // AreaDrawController
@@ -17,8 +18,7 @@ export default class extends Controller {
   // ============================================
   // 状態（thisで保持）
   // ============================================
-  // this.mode        - "plan" | "spots"
-  // this.condition   - 既存条件（エリア選び直し時）
+  // this.mode        - "suggestion" | "community"
   // this.isDrawing   - 描画中フラグ
   // this.drawPath    - 描画軌跡 [{lat, lng}, ...]
   // this.polyline    - Google Maps Polyline
@@ -41,8 +41,7 @@ export default class extends Controller {
   // ============================================
 
   handleStart(e) {
-    this.mode = e.detail?.mode || "spots"
-    this.condition = e.detail?.condition || {}
+    this.mode = e.detail?.mode || "suggestion"
     this.enterDrawMode()
   }
 
@@ -105,7 +104,6 @@ export default class extends Controller {
   startDraw(e) {
     // 既存の描画線・円があれば削除
     this.polyline?.setMap(null)
-    this.polylineGlow?.setMap(null)
     this.circles?.forEach(c => c.setMap(null))
     this.switchToDrawMode()
 
@@ -121,6 +119,10 @@ export default class extends Controller {
     this.drawPath = []
 
     // ポリライン作成（リアルタイム描画用）- ダッシュライン
+    const lineColor = this.mode === "community"
+      ? GRADIENTS.COMMUNITY.inner
+      : GRADIENTS.SUGGESTION.inner
+
     this.polyline = new google.maps.Polyline({
       map: this.map,
       path: [],
@@ -130,7 +132,7 @@ export default class extends Controller {
         icon: {
           path: "M 0,-1 0,1",
           strokeOpacity: 0.9,
-          strokeColor: "#667eea",
+          strokeColor: lineColor,
           strokeWeight: 3,
           scale: 4
         },
@@ -138,7 +140,6 @@ export default class extends Controller {
         repeat: "14px"
       }]
     })
-    this.polylineGlow = null
 
     this.addPoint(e)
   }
@@ -163,7 +164,6 @@ export default class extends Controller {
     // 点が少なすぎる場合は無視
     if (this.drawPath.length < 3) {
       this.polyline?.setMap(null)
-      this.polylineGlow?.setMap(null)
       return
     }
 
@@ -172,7 +172,6 @@ export default class extends Controller {
 
     // ポリライン消去 → 円表示
     this.polyline?.setMap(null)
-    this.polylineGlow?.setMap(null)
     this.showCircle()
 
     // 確定パネル表示
@@ -197,7 +196,6 @@ export default class extends Controller {
     this.drawPath.push(latLng)
     const path = this.drawPath.map(p => new google.maps.LatLng(p.lat, p.lng))
     this.polyline.setPath(path)
-    this.polylineGlow?.setPath(path)
   }
 
   getLatLngFromEvent(e) {
@@ -299,9 +297,7 @@ export default class extends Controller {
 
     // 描画途中のポリラインを消去
     this.polyline?.setMap(null)
-    this.polylineGlow?.setMap(null)
     this.polyline = null
-    this.polylineGlow = null
     this.isDrawing = false
     this.drawPath = []
 
@@ -327,58 +323,29 @@ export default class extends Controller {
   }
 
   showCircle() {
-    const center = this.circleData.center
+    const { center } = this.circleData
     const radius = this.circleData.radius_km * 1000
-    this.circles = []
+    const { shadow } = AREA_CIRCLE_STYLES
+    const layers = AREA_CIRCLE_STYLES[this.mode === "community" ? "community" : "suggestion"]
 
-    // 影（ぼかし効果）
-    const shadow = new google.maps.Circle({
-      map: this.map,
-      center,
-      radius: radius + 20,
-      strokeColor: "#000",
-      strokeWeight: 12,
-      strokeOpacity: 0.08,
-      fillOpacity: 0,
-      clickable: false,
-      zIndex: 0
-    })
-    this.circles.push(shadow)
+    // 影 + グラデーション3層の円を作成
+    this.circles = [
+      this.createCircle(center, radius + shadow.offset, shadow.color, shadow.weight, shadow.opacity, 0),
+      ...layers.map((layer, i) =>
+        this.createCircle(center, radius + layer.offset, layer.color, i === layers.length - 1 ? 2 : 3, layer.opacity, i + 1)
+      )
+    ]
 
-    // グラデーション風の太い縁（外側から内側へ色を重ねる）
-    // モードに応じて色を変更: suggestion=紫、community=青
-    const strokeLayers = this.mode === "community"
-      ? [
-          { offset: 8, color: "#1565C0", opacity: 0.3 },  // 外側：濃い青
-          { offset: 4, color: "#1E88E5", opacity: 0.5 },  // 中間
-          { offset: 0, color: "#42A5F5", opacity: 0.9 },  // 内側：明るい青
-        ]
-      : [
-          { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
-          { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
-          { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
-        ]
-
-    strokeLayers.forEach((layer, index) => {
-      const circle = new google.maps.Circle({
-        map: this.map,
-        center,
-        radius: radius + layer.offset,
-        strokeColor: layer.color,
-        strokeWeight: index === strokeLayers.length - 1 ? 2 : 3,
-        strokeOpacity: layer.opacity,
-        fillOpacity: 0,
-        clickable: false,
-        zIndex: index + 1
-      })
-      this.circles.push(circle)
-    })
-
-    // メインの円を参照用に保持
     this.circle = this.circles[this.circles.length - 1]
-
-    // 円に合わせてズーム（UI要素を考慮したパディング付き）
     fitBoundsWithPadding(this.circle.getBounds())
+  }
+
+  createCircle(center, radius, color, weight, opacity, zIndex) {
+    return new google.maps.Circle({
+      map: this.map, center, radius,
+      strokeColor: color, strokeWeight: weight, strokeOpacity: opacity,
+      fillOpacity: 0, clickable: false, zIndex
+    })
   }
 
   // ============================================
@@ -400,11 +367,9 @@ export default class extends Controller {
 
     document.dispatchEvent(new CustomEvent(eventName, {
       detail: {
-        mode: this.mode,
         center_lat: this.circleData.center.lat,
         center_lng: this.circleData.center.lng,
-        radius_km: this.circleData.radius_km,
-        condition: this.condition
+        radius_km: this.circleData.radius_km
       }
     }))
     this.exitDrawMode()
@@ -443,9 +408,7 @@ export default class extends Controller {
 
   cleanup() {
     this.polyline?.setMap(null)
-    this.polylineGlow?.setMap(null)
     this.polyline = null
-    this.polylineGlow = null
     this.circles?.forEach(c => c.setMap(null))
     this.circles = null
     this.circle = null

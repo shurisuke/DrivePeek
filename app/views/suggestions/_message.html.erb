@@ -1,14 +1,12 @@
-<%# locals: content:, role:, spots: [], plan_data: nil, plan: nil, intro: "", closing: "", response_type: nil, auto_show: false, area_data: {}, condition_data: {} %>
+<%# locals: content:, role:, spots: [], plan: nil, intro: "", closing: "", response_type: nil, auto_show: false, area_data: {} %>
 <%# プラン内スポットのplace_idを一度だけ取得（N+1回避） %>
 <% existing_place_ids = plan&.spots&.pluck(:place_id) || [] %>
 <% spots = local_assigns.fetch(:spots, []) %>
-<% plan_data = local_assigns.fetch(:plan_data, nil) %>
 <% intro = local_assigns.fetch(:intro, "") %>
 <% closing = local_assigns.fetch(:closing, "") %>
 <% response_type = local_assigns.fetch(:response_type, nil) %>
 <% auto_show_value = local_assigns.fetch(:auto_show, false) %>
 <% area_data = local_assigns.fetch(:area_data, {}) %>
-<% condition_data = local_assigns.fetch(:condition_data, {}) %>
 
 <%# スポット関連データを一括プリロード（N+1回避） %>
 <% spot_ids = spots.map { |s| s[:spot_id] }.compact %>
@@ -72,7 +70,7 @@
             <%= closing %>
           </div>
         <% end %>
-        <%= render "suggestions/action_buttons", mode: mode, area_data: area_data, condition_data: condition_data, plan: plan %>
+        <%= render "suggestions/action_buttons", mode: mode, area_data: area_data, plan: plan %>
         <div class="suggestion__meta">
           <span class="suggestion__time"><%= Time.current.strftime("%H:%M") %></span>
         </div>
@@ -92,28 +90,7 @@
       <% end %>
       <div class="suggestion__content">
 
-        <% if response_type == "answer" %>
-          <%# 詳細説明モード %>
-          <% if content.present? %>
-            <div class="suggestion__bubble">
-              <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
-            </div>
-          <% end %>
-          <% if spots.present? %>
-            <div class="suggestion__related-spots">
-              <small class="suggestion__related-label">関連スポット</small>
-              <% spots.each_with_index do |spot, index| %>
-                <%= render "suggestions/spot_suggestion", spot: spot, plan: plan, number: index + 1, compact: true, existing_place_ids: existing_place_ids, preloaded_spots: preloaded_spots, user_favorite_spots: user_favorite_spots %>
-              <% end %>
-            </div>
-          <% end %>
-          <% if closing.present? %>
-            <div class="suggestion__bubble suggestion__bubble--closing">
-              <%= closing %>
-            </div>
-          <% end %>
-
-        <% elsif response_type == "mode_select" %>
+        <% if response_type == "mode_select" %>
           <%# モード選択UI %>
           <% if content.present? %>
             <div class="suggestion__bubble">
@@ -122,15 +99,19 @@
           <% end %>
           <%= render "suggestions/mode_select" %>
 
-        <% else %>
-          <%# 会話モード %>
+        <% elsif response_type == "error" %>
+          <%# エラー応答 %>
           <% if content.present? %>
             <div class="suggestion__bubble">
-              <% if role == "assistant" %>
-                <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
-              <% else %>
-                <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
-              <% end %>
+              <%= Kramdown::Document.new(content.to_s, hard_wrap: true).to_html.html_safe %>
+            </div>
+          <% end %>
+
+        <% else %>
+          <%# ユーザーメッセージ %>
+          <% if content.present? %>
+            <div class="suggestion__bubble">
+              <%= simple_format(content.to_s, {}, wrapper_tag: nil) %>
             </div>
           <% end %>
         <% end %>

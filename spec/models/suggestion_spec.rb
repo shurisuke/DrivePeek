@@ -76,20 +76,8 @@ RSpec.describe Suggestion, type: :model do
       expect(log.response_type).to be_nil
     end
 
-    it "#display_planはnilを返す" do
-      expect(log.display_plan).to be_nil
-    end
-
     it "#area_dataは空ハッシュを返す" do
       expect(log.area_data).to eq({})
-    end
-
-    it "#condition_dataは空ハッシュを返す" do
-      expect(log.condition_data).to eq({})
-    end
-
-    it "#display_modeはplanを返す" do
-      expect(log.display_mode).to eq("plan")
     end
   end
 
@@ -97,14 +85,12 @@ RSpec.describe Suggestion, type: :model do
     context "有効なJSONコンテンツ" do
       let(:content) do
         {
-          type: "spots",
+          type: "plan",
           message: "おすすめスポットです",
           intro: "こんにちは",
           closing: "いかがでしょうか",
           spots: [ { spot_id: 1, name: "テストスポット" } ],
-          area_data: { center_lat: 35.0, center_lng: 139.0, radius_km: 5 },
-          condition_data: { genre_id: 1 },
-          mode: "spots"
+          area_data: { center_lat: 35.0, center_lng: 139.0, radius_km: 5 }
         }.to_json
       end
 
@@ -127,60 +113,19 @@ RSpec.describe Suggestion, type: :model do
       end
 
       it "#response_typeはtypeを返す" do
-        expect(log.response_type).to eq("spots")
+        expect(log.response_type).to eq("plan")
       end
 
       it "#area_dataはエリア情報を返す" do
         expect(log.area_data).to eq({ center_lat: 35.0, center_lng: 139.0, radius_km: 5 })
       end
-
-      it "#condition_dataは条件情報を返す" do
-        expect(log.condition_data).to eq({ genre_id: 1 })
-      end
-
-      it "#display_modeはmodeを返す" do
-        expect(log.display_mode).to eq("spots")
-      end
     end
 
-    context "planモードのコンテンツ" do
-      let(:content) do
-        {
-          type: "plan",
-          theme: "海沿いドライブ",
-          description: "海を楽しむプラン",
-          spots: [ { spot_id: 1, name: "海岸" } ]
-        }.to_json
-      end
-
-      let(:log) { create(:suggestion, user: user, plan: plan, role: "assistant", content: content) }
-
-      it "#display_planはプラン情報を返す" do
-        expect(log.display_plan).to eq({
-          theme: "海沿いドライブ",
-          description: "海を楽しむプラン",
-          spots: [ { spot_id: 1, name: "海岸" } ]
-        })
-      end
-    end
-
-    context "typeがない場合のフォールバック" do
-      it "themeがあればplanと判定" do
-        content = { theme: "テーマ" }.to_json
-        log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
-        expect(log.response_type).to eq("plan")
-      end
-
-      it "introとspotsがあればspotsと判定" do
-        content = { intro: "導入", spots: [ { id: 1 } ] }.to_json
-        log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
-        expect(log.response_type).to eq("spots")
-      end
-
-      it "どちらもなければconversationと判定" do
+    context "typeがない場合" do
+      it "nilを返す" do
         content = { message: "普通の会話" }.to_json
         log = create(:suggestion, user: user, plan: plan, role: "assistant", content: content)
-        expect(log.response_type).to eq("conversation")
+        expect(log.response_type).to be_nil
       end
     end
 
