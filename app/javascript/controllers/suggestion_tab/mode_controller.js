@@ -2,6 +2,7 @@ import { Controller } from "@hotwired/stimulus"
 import { getMapInstance, clearSuggestionAll, setSuggestionAreaCircle } from "map/state"
 import { fitBoundsWithPadding } from "map/visual_center"
 import { postTurboStream } from "services/navibar_api"
+import { AREA_CIRCLE_STYLES } from "map/constants"
 
 // ================================================================
 // SuggestModeController
@@ -14,7 +15,6 @@ export default class extends Controller {
   static values = {
     mode: String,        // "plan"
     area: Object,        // { center_lat, center_lng, radius_km }
-    condition: Object,   // { slot_count, slots: [...] }
     planId: Number,      // プランID（終了API用）
   }
 
@@ -31,12 +31,10 @@ export default class extends Controller {
   // 応答後アクション
   // ============================================
 
-  // エリアを選び直す（既存条件保持）
+  // エリアを選び直す
   reselectArea() {
     clearSuggestionAll()
-    this.#dispatchAreaDraw(this.modeValue, {
-      condition: this.conditionValue
-    })
+    this.#dispatchAreaDraw(this.modeValue)
   }
 
   // 条件を変更（同じエリアで再度モーダルを開く）
@@ -52,7 +50,6 @@ export default class extends Controller {
 
       document.dispatchEvent(new CustomEvent("suggestion:areaSelected", {
         detail: {
-          mode: this.modeValue,
           center_lat: area.center_lat,
           center_lng: area.center_lng,
           radius_km: area.radius_km
@@ -75,43 +72,35 @@ export default class extends Controller {
 
     const center = { lat: area.center_lat, lng: area.center_lng }
     const radius = area.radius_km * 1000
-    const circles = []
+    const { shadow } = AREA_CIRCLE_STYLES
+    const layers = AREA_CIRCLE_STYLES.suggestion
 
-    // 影（ぼかし効果）
-    const shadow = new google.maps.Circle({
-      map,
-      center,
-      radius: radius + 20,
-      strokeColor: "#000",
-      strokeWeight: 12,
-      strokeOpacity: 0.08,
-      fillOpacity: 0,
-      clickable: false,
-      zIndex: 0
-    })
-    circles.push(shadow)
-
-    // グラデーション風の太い縁（外側から内側へ色を重ねる）
-    const strokeLayers = [
-      { offset: 8, color: "#764ba2", opacity: 0.3 },  // 外側：紫
-      { offset: 4, color: "#7164c0", opacity: 0.5 },  // 中間
-      { offset: 0, color: "#667eea", opacity: 0.9 },  // 内側：青紫
-    ]
-
-    strokeLayers.forEach((layer, index) => {
-      const c = new google.maps.Circle({
+    const circles = [
+      // 影（ぼかし効果）
+      new google.maps.Circle({
+        map,
+        center,
+        radius: radius + shadow.offset,
+        strokeColor: shadow.color,
+        strokeWeight: shadow.weight,
+        strokeOpacity: shadow.opacity,
+        fillOpacity: 0,
+        clickable: false,
+        zIndex: 0
+      }),
+      // グラデーション風の縁
+      ...layers.map((layer, i) => new google.maps.Circle({
         map,
         center,
         radius: radius + layer.offset,
         strokeColor: layer.color,
-        strokeWeight: index === strokeLayers.length - 1 ? 2 : 3,
+        strokeWeight: i === layers.length - 1 ? 2 : 3,
         strokeOpacity: layer.opacity,
         fillOpacity: 0,
         clickable: false,
-        zIndex: index + 1
-      })
-      circles.push(c)
-    })
+        zIndex: i + 1
+      }))
+    ]
 
     setSuggestionAreaCircle(circles)
     fitBoundsWithPadding(circles[circles.length - 1].getBounds())
