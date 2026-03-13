@@ -17,6 +17,25 @@ export const COLORS = {
   SUGGESTION: "#9333EA",    // パープル（提案）
 }
 
+// ================================================================
+// グラデーションカラー（円・ピン用）
+// - outer: 外側（薄め）
+// - mid: 中間
+// - inner: 内側（濃いめ）
+// ================================================================
+export const GRADIENTS = {
+  SUGGESTION: {
+    outer: "#764ba2",
+    mid: "#7164c0",
+    inner: "#667eea"
+  },
+  COMMUNITY: {
+    outer: "#1565C0",
+    mid: "#1E88E5",
+    inner: "#42A5F5"
+  }
+}
+
 /**
  * 経路ポリラインのスタイル（自分のプラン用）
  */
@@ -38,6 +57,23 @@ export const COMMUNITY_ROUTE_STYLE = {
 }
 
 /**
+ * エリア選択円のスタイル（影 + グラデーション3層）
+ */
+export const AREA_CIRCLE_STYLES = {
+  shadow: { offset: 20, color: "#000", weight: 12, opacity: 0.08 },
+  suggestion: [
+    { offset: 8, color: GRADIENTS.SUGGESTION.outer, opacity: 0.3 },
+    { offset: 4, color: GRADIENTS.SUGGESTION.mid, opacity: 0.5 },
+    { offset: 0, color: GRADIENTS.SUGGESTION.inner, opacity: 0.9 }
+  ],
+  community: [
+    { offset: 8, color: GRADIENTS.COMMUNITY.outer, opacity: 0.3 },
+    { offset: 4, color: GRADIENTS.COMMUNITY.mid, opacity: 0.5 },
+    { offset: 0, color: GRADIENTS.COMMUNITY.inner, opacity: 0.9 }
+  ]
+}
+
+/**
  * 提案スポット用のグラデーションピンSVGを生成
  * @param {number} number - ピンに表示する番号
  * @returns {string} data URI形式のSVG
@@ -47,8 +83,8 @@ export const createSuggestionPinSvg = (number) => {
     <svg xmlns="http://www.w3.org/2000/svg" width="36" height="36" viewBox="0 0 36 36">
       <defs>
         <linearGradient id="suggestionGradient" x1="0%" y1="0%" x2="100%" y2="100%">
-          <stop offset="0%" style="stop-color:#667eea"/>
-          <stop offset="100%" style="stop-color:#764ba2"/>
+          <stop offset="0%" style="stop-color:${GRADIENTS.SUGGESTION.inner}"/>
+          <stop offset="100%" style="stop-color:${GRADIENTS.SUGGESTION.outer}"/>
         </linearGradient>
       </defs>
       <circle cx="18" cy="18" r="17" fill="url(#suggestionGradient)"/>
