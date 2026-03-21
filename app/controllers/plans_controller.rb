@@ -27,7 +27,10 @@ class PlansController < ApplicationController
   end
 
   def new
-    @latest_plan = current_user.plans.order(updated_at: :desc).first
+    @latest_plan = current_user.plans
+      .includes(plan_spots: :spot)
+      .order(updated_at: :desc).first
+    @latest_plan_spots = @latest_plan&.plan_spots&.order(:position) || []
   end
 
   def create

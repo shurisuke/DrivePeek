@@ -11,14 +11,30 @@
         <h2 class="plan-entry-modal__title">プランを作成しますか？</h2>
 
         <div class="plan-entry-modal__latest">
-          <div class="plan-entry-modal__latest-icon">
-            <i class="fa-solid fa-file-lines"></i>
+          <p class="plan-entry-modal__latest-label">前回のプラン</p>
+          <div class="plan-entry-modal__latest-header">
+            <div class="plan-entry-modal__latest-icon">
+              <i class="fa-solid fa-file-lines"></i>
+            </div>
+            <div class="plan-entry-modal__latest-info">
+              <p class="plan-entry-modal__latest-title"><%= plan_title(@latest_plan) %></p>
+              <p class="plan-entry-modal__latest-date"><%= format_datetime(@latest_plan.updated_at) %> 更新</p>
+            </div>
           </div>
-          <div class="plan-entry-modal__latest-info">
-            <p class="plan-entry-modal__latest-label">前回のプラン</p>
-            <p class="plan-entry-modal__latest-title"><%= plan_title(@latest_plan) %></p>
-            <p class="plan-entry-modal__latest-date"><%= format_datetime(@latest_plan.updated_at) %> 更新</p>
-          </div>
+
+          <% if @latest_plan_spots.any? %>
+            <div class="plan-entry-modal__spots">
+              <% @latest_plan_spots.first(3).each.with_index(1) do |plan_spot, i| %>
+                <div class="plan-entry-modal__spot-item">
+                  <span class="plan-entry-modal__spot-number"><%= i %></span>
+                  <span><%= plan_spot.spot.name %></span>
+                </div>
+              <% end %>
+              <% if @latest_plan_spots.size > 3 %>
+                <p class="plan-entry-modal__spots-more">他 <%= @latest_plan_spots.size - 3 %>件</p>
+              <% end %>
+            </div>
+          <% end %>
         </div>
 
         <div class="plan-entry-modal__actions">

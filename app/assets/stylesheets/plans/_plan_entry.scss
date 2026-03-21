@@ -48,13 +48,16 @@
 
   /* 前回のプラン情報 */
   &__latest {
-    display: flex;
-    align-items: flex-start;
-    gap: 1rem;
     padding: 1rem;
     background: #f8f9fa;
     border-radius: 10px;
     margin-bottom: 1.5rem;
+  }
+
+  &__latest-header {
+    display: flex;
+    align-items: flex-start;
+    gap: 1rem;
   }
 
   &__latest-icon {
@@ -78,7 +81,8 @@
   &__latest-label {
     font-size: 0.75rem;
     color: #888;
-    margin: 0 0 0.25rem;
+    margin: 0 0 0.5rem;
+    text-align: center;
   }
 
   &__latest-title {
@@ -97,7 +101,50 @@
     margin: 0;
   }
 
-  /* ボタン */
+  /* スポット一覧 */
+  &__spots {
+    margin-top: 0.75rem;
+  }
+
+  &__spot-item {
+    display: flex;
+    align-items: center;
+    gap: 0.5rem;
+    padding: 0.35rem 0;
+    font-size: 0.875rem;
+    color: #333;
+
+    > span:last-child {
+      flex: 1;
+      min-width: 0;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+  }
+
+  &__spot-number {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 1.375rem;
+    height: 1.375rem;
+    background: var(--personal, #506d53);
+    color: #fff;
+    font-size: 0.75rem;
+    font-weight: 600;
+    border-radius: 50%;
+  }
+
+  &__spots-more {
+    margin: 0.25rem 0 0;
+    padding-left: 1.5rem;
+    font-size: 0.75rem;
+    color: #888;
+  }
+
+  /* ボタン（Mac/iOSライク） */
   &__actions {
     display: flex;
     gap: 0.75rem;
@@ -105,30 +152,41 @@
 
   &__btn {
     flex: 1;
-    padding: 0.75rem 1rem;
-    font-size: 0.95rem;
-    font-weight: 600;
-    border-radius: 8px;
-    transition: all 0.15s ease;
+    padding: 0.875rem 1.25rem;
+    font-size: 0.9375rem;
+    font-weight: 500;
+    border-radius: 12px;
+    border: none;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    letter-spacing: -0.01em;
 
     &--continue {
       background: var(--personal, #506d53);
       color: #fff;
-      border: none;
 
       &:hover {
-        background: darken(#506d53, 8%);
+        background: var(--personal-dark, #3d5440);
         color: #fff;
+      }
+
+      &:active {
+        background: var(--personal-dark, #3d5440);
+        transform: scale(0.98);
       }
     }
 
     &--new {
-      background: #fff;
-      color: var(--personal, #506d53);
-      border: 2px solid var(--personal, #506d53);
+      background: #e5e5ea;
+      color: #1c1c1e;
 
       &:hover {
-        background: rgba(80, 109, 83, 0.08);
+        background: #d1d1d6;
+      }
+
+      &:active {
+        background: #c7c7cc;
+        transform: scale(0.98);
       }
     }
   }
