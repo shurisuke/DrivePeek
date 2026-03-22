@@ -420,30 +420,6 @@
   }
 }
 
-.guide-slide__swipe-hint {
-  display: inline-flex;
-  align-items: center;
-  gap: 0.75rem;
-  font-size: 1.25rem;
-  color: #777;
-}
-
-.guide-slide__swipe-hint-text {
-  font-weight: 500;
-}
-
-.guide-slide__swipe-hint-arrow {
-  display: inline-block;
-  font-size: 1.75rem;
-  color: var(--personal);
-  animation: arrowBounce 1.2s ease-in-out infinite;
-}
-
-@keyframes arrowBounce {
-  0%, 100% { transform: translateX(0); opacity: 0.6; }
-  50% { transform: translateX(8px); opacity: 1; }
-}
-
 /* レスポンシブ - タブレット */
 @media (max-width: 768px) {
   .guide-swipe-zone {
