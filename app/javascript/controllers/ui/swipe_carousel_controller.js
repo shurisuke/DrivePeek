@@ -64,7 +64,7 @@ export default class extends Controller {
   }
 
   handlePointerDown(e) {
-    if (e.target.closest("a, button")) return
+    if (e.target.closest("a, button, .guide-swipe-zone, .guide-carousel__nav-btn")) return
 
     this.startX = e.clientX
     this.isDragging = true
