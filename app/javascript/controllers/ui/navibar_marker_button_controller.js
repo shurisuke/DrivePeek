@@ -36,7 +36,7 @@ export default class extends Controller {
     // DOMからスポット情報を取得
     const spotId = spotBlock.dataset.spotId
     const placeId = spotBlock.dataset.placeId
-    const planId = spotBlock.dataset["planTab-SpotDeletePlanIdValue"]
+    const planId = spotBlock.dataset.planId
     const planSpotId = spotBlock.dataset.planSpotId
     const nameEl = spotBlock.querySelector(".spot-name")
     const addressEl = spotBlock.querySelector(".spot-address")
