@@ -15,20 +15,4 @@ namespace :spots do
     importer = SpotImporter::KantoImporter.new
     importer.run(test_mode: true)
   end
-
-  desc "グルメスポットにAIでジャンル判定"
-  task detect_gourmet_genres: :environment do
-    spots = Spot.left_joins(:spot_genres).where(spot_genres: { id: nil })
-    total = spots.count
-
-    puts "ジャンル未設定スポット: #{total}件"
-
-    spots.find_each.with_index(1) do |spot, index|
-      print "\r[#{index}/#{total}] #{spot.name.truncate(30)}"
-      spot.detect_genres!
-      sleep(0.1)
-    end
-
-    puts "\n完了"
-  end
 end
