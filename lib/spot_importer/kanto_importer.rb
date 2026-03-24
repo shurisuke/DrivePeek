@@ -11,7 +11,7 @@ module SpotImporter
   class KantoImporter
     # 検索ジャンルの定義
     # query: Google Text Search用のクエリ
-    # genre_slug: 紐付けるジャンルのslug（nilの場合はAI判定）
+    # genre_slug: 紐付けるジャンルのslug
     SEARCH_GENRES = [
       { query: "グルメ 飲食店", genre_slug: "food" },
       { query: "カフェ スイーツ", genre_slug: "sweets_cafe" },
@@ -154,7 +154,7 @@ module SpotImporter
     end
 
     def assign_genre(spot, genre_slug)
-      return if genre_slug.nil?  # AI判定は後で別途実行
+      return if genre_slug.nil?
 
       genre = find_genre(genre_slug)
       return unless genre
