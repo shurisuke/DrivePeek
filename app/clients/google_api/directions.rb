@@ -12,14 +12,14 @@ class GoogleApi::Directions
 
   class << self
     # 2点間の経路を取得
-    # @param origin [Hash] { lat:, lng: }
-    # @param destination [Hash] { lat:, lng: }
+    # @param start_point [Hash] { lat:, lng: }
+    # @param goal_point [Hash] { lat:, lng: }
     # @param toll_used [Boolean] 有料道路を使用するか
     # @return [Hash, nil] { move_time:, move_distance:, polyline: } or nil
-    def fetch(origin:, destination:, toll_used: false)
-      return nil unless valid_coordinates?(origin, destination)
+    def fetch(start_point:, goal_point:, toll_used: false)
+      return nil unless valid_coordinates?(start_point, goal_point)
 
-      uri = build_uri(origin, destination, toll_used)
+      uri = build_uri(start_point, goal_point, toll_used)
       response = GoogleApi.fetch_json(uri, timeout: 10)
       parse_response(response)
     rescue StandardError => e
@@ -29,16 +29,16 @@ class GoogleApi::Directions
 
     private
 
-    def valid_coordinates?(origin, destination)
-      [ origin[:lat], origin[:lng], destination[:lat], destination[:lng] ].all?(&:present?)
+    def valid_coordinates?(start_point, goal_point)
+      [ start_point[:lat], start_point[:lng], goal_point[:lat], goal_point[:lng] ].all?(&:present?)
     end
 
-    def build_uri(origin, destination, toll_used)
+    def build_uri(start_point, goal_point, toll_used)
       uri = URI.parse(API_URL)
 
       params = {
-        origin: "#{origin[:lat]},#{origin[:lng]}",
-        destination: "#{destination[:lat]},#{destination[:lng]}",
+        origin: "#{start_point[:lat]},#{start_point[:lng]}",
+        destination: "#{goal_point[:lat]},#{goal_point[:lng]}",
         mode: "driving",
         language: "ja",
         region: "jp",
