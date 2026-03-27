@@ -150,8 +150,8 @@ class Plan::Driving
     # API呼び出し
     @api_call_count += 1
     route_data = GoogleApi::Directions.fetch(
-      origin: segment[:from_location],
-      destination: segment[:to_location],
+      start_point: segment[:from_location],
+      goal_point: segment[:to_location],
       toll_used: segment[:toll_used]
     ) || FALLBACK_ROUTE_DATA.dup
 

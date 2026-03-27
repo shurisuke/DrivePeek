@@ -4,16 +4,16 @@ require "rails_helper"
 
 RSpec.describe GoogleApi::Directions do
   describe ".fetch" do
-    let(:origin) { { lat: 35.6812, lng: 139.7671 } }
-    let(:destination) { { lat: 35.7100, lng: 139.8107 } }
+    let(:start_point) { { lat: 35.6812, lng: 139.7671 } }
+    let(:goal_point) { { lat: 35.7100, lng: 139.8107 } }
 
     context "座標が空の場合" do
-      it "originが空ならnilを返す" do
-        expect(GoogleApi::Directions.fetch(origin: { lat: nil, lng: nil }, destination: destination)).to be_nil
+      it "start_pointが空ならnilを返す" do
+        expect(GoogleApi::Directions.fetch(start_point: { lat: nil, lng: nil }, goal_point: goal_point)).to be_nil
       end
 
-      it "destinationが空ならnilを返す" do
-        expect(GoogleApi::Directions.fetch(origin: origin, destination: { lat: nil, lng: nil })).to be_nil
+      it "goal_pointが空ならnilを返す" do
+        expect(GoogleApi::Directions.fetch(start_point: start_point, goal_point: { lat: nil, lng: nil })).to be_nil
       end
     end
 
@@ -33,7 +33,7 @@ RSpec.describe GoogleApi::Directions do
       end
 
       it "移動時間・距離・ポリラインを返す" do
-        result = GoogleApi::Directions.fetch(origin: origin, destination: destination)
+        result = GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point)
 
         expect(result[:move_time]).to eq(30)
         expect(result[:move_distance]).to eq(15.0)
@@ -41,14 +41,14 @@ RSpec.describe GoogleApi::Directions do
       end
 
       it "toll_used=falseの場合、avoid=tollsパラメータを送信する" do
-        GoogleApi::Directions.fetch(origin: origin, destination: destination, toll_used: false)
+        GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point, toll_used: false)
 
         expect(WebMock).to have_requested(:get, /maps.googleapis.com/)
           .with(query: hash_including(avoid: "tolls"))
       end
 
       it "toll_used=trueの場合、avoidパラメータを送信しない" do
-        GoogleApi::Directions.fetch(origin: origin, destination: destination, toll_used: true)
+        GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point, toll_used: true)
 
         expect(WebMock).to have_requested(:get, /maps.googleapis.com/)
           .with { |req| !req.uri.query.include?("avoid=") }
@@ -71,7 +71,7 @@ RSpec.describe GoogleApi::Directions do
       end
 
       it "秒を分に変換し、切り上げる" do
-        result = GoogleApi::Directions.fetch(origin: origin, destination: destination)
+        result = GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point)
 
         expect(result[:move_time]).to eq(3) # 125秒 = 2.08分 → 切り上げて3分
         expect(result[:move_distance]).to eq(0.5)
@@ -85,7 +85,7 @@ RSpec.describe GoogleApi::Directions do
       end
 
       it "nilを返す" do
-        expect(GoogleApi::Directions.fetch(origin: origin, destination: destination)).to be_nil
+        expect(GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point)).to be_nil
       end
     end
 
@@ -96,7 +96,7 @@ RSpec.describe GoogleApi::Directions do
       end
 
       it "nilを返す" do
-        expect(GoogleApi::Directions.fetch(origin: origin, destination: destination)).to be_nil
+        expect(GoogleApi::Directions.fetch(start_point: start_point, goal_point: goal_point)).to be_nil
       end
     end
   end
