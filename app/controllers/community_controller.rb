@@ -49,7 +49,7 @@ class CommunityController < ApplicationController
     @selected_cities = Array(params[:cities]).reject(&:blank?)
     @selected_genre_ids = Array(params[:genre_ids]).map(&:to_i).reject(&:zero?)
     @favorites_only = params[:favorites_only] == "1"
-    @sort = SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "newest"
+    @sort = SORT_OPTIONS.include?(params[:sort]) ? params[:sort] : "popular"
     @genres_by_category = Genre.grouped_by_category
     @cities_by_prefecture = Spot.cities_by_prefecture
     @exclude_plan_id = params[:exclude_plan_id]
