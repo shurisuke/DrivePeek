@@ -44,7 +44,7 @@ RSpec.describe "Community", type: :request do
         expect(response.body.index("古いプラン")).to be < response.body.index("新しいプラン")
       end
 
-      it "無効なsortパラメータはデフォルト（newest）になる" do
+      it "無効なsortパラメータはデフォルト（popular）になる" do
         get community_path, params: { sort: "invalid" }
         expect(response).to have_http_status(:ok)
       end
