@@ -2,7 +2,7 @@
 #
 # 主な機能:
 #   - Google Places API との連携（検索・詳細取得）
-#   - 位置情報による検索（円内検索・近傍検索）
+#   - 位置情報による検索（円内検索）
 #   - ジャンル・市区町村によるフィルタリング
 #   - AIによるジャンル自動判定
 #
@@ -27,9 +27,6 @@ class Spot < ApplicationRecord
   validates :lat, presence: true
   validates :lng, presence: true
 
-  # 近傍検索の閾値（0.001度 ≈ 約100m）
-  PROXIMITY_THRESHOLD = 0.001
-
   # 表示範囲内の人気スポットを取得（お気に入り数順）
   scope :popular_in_bounds, ->(north:, south:, east:, west:, genre_ids: nil, limit: 10) {
     base = where(lat: south..north, lng: west..east)
@@ -40,12 +37,6 @@ class Spot < ApplicationRecord
            .limit(limit)
 
     genre_ids.present? ? base.filter_by_genres(genre_ids.map(&:to_i)) : base
-  }
-
-  # 近傍のSpotを検索
-  scope :nearby, ->(lat:, lng:, threshold: PROXIMITY_THRESHOLD) {
-    where(lat: (lat - threshold)..(lat + threshold))
-      .where(lng: (lng - threshold)..(lng + threshold))
   }
 
   # 円内のスポットを検索（緯度1度≈111km、経度1度≈91km で概算）
@@ -79,28 +70,6 @@ class Spot < ApplicationRecord
     end
 
     [ spot, details&.dig(:photo_urls) || [] ]
-  end
-
-  # 座標から既存Spotを検索、なければPlaces APIで検索して作成
-  # @return [Spot, nil]
-  def self.find_or_create_from_location(name:, address:, lat:, lng:)
-    return nil if name.blank? || lat.zero? || lng.zero?
-
-    # 1. 近傍の既存Spotを検索
-    existing = nearby(lat: lat, lng: lng).first
-    return existing if existing
-
-    # 2. Google Places APIで検索
-    place = GoogleApi::Places.find_by_name(name, lat: lat, lng: lng)
-    return nil unless place
-
-    # 3. place_idで検索、なければ作成
-    find_or_create_by!(place_id: place[:place_id]) do |spot|
-      spot.name = place[:name] || name
-      spot.address = address
-      spot.lat = place[:lat] || lat
-      spot.lng = place[:lng] || lng
-    end
   end
 
   # Callbacks
