@@ -36,23 +36,6 @@ RSpec.describe Spot, type: :model do
   end
 
   describe "scopes" do
-    describe ".nearby" do
-      let!(:center_spot) { create(:spot, lat: 35.6762, lng: 139.6503) }
-      let!(:nearby_spot) { create(:spot, lat: 35.6763, lng: 139.6504) }
-      let!(:far_spot) { create(:spot, lat: 36.0, lng: 140.0) }
-
-      it "閾値内のスポットを返す" do
-        result = Spot.nearby(lat: 35.6762, lng: 139.6503)
-        expect(result).to include(center_spot, nearby_spot)
-        expect(result).not_to include(far_spot)
-      end
-
-      it "カスタム閾値を指定できる" do
-        result = Spot.nearby(lat: 35.6762, lng: 139.6503, threshold: 0.5)
-        expect(result).to include(center_spot, nearby_spot, far_spot)
-      end
-    end
-
     describe ".within_circle" do
       let!(:center_spot) { create(:spot, lat: 35.6762, lng: 139.6503) }
       let!(:nearby_spot) { create(:spot, lat: 35.68, lng: 139.65) }  # 約0.5km
@@ -205,56 +188,6 @@ RSpec.describe Spot, type: :model do
     end
   end
 
-  describe ".find_or_create_from_location" do
-    let(:name) { "テストスポット" }
-    let(:address) { "東京都渋谷区" }
-    let(:lat) { 35.6580 }
-    let(:lng) { 139.7016 }
-
-    before do
-      stub_google_places_api
-      stub_google_geocoding_api
-      # GoogleApi::Placesのモック
-      allow(GoogleApi::Places).to receive(:find_by_name).and_return({
-        place_id: "ChIJtest_new_place",
-        name: name,
-        lat: lat,
-        lng: lng
-      })
-    end
-
-    context "近傍に既存スポットがある場合" do
-      let!(:existing_spot) { create(:spot, lat: lat, lng: lng) }
-
-      it "既存スポットを返す" do
-        result = Spot.find_or_create_from_location(name: name, address: address, lat: lat, lng: lng)
-        expect(result).to eq(existing_spot)
-      end
-    end
-
-    context "近傍にスポットがない場合" do
-      it "新しいスポットを作成する" do
-        expect {
-          Spot.find_or_create_from_location(name: name, address: address, lat: lat, lng: lng)
-        }.to change(Spot, :count).by(1)
-      end
-    end
-
-    context "nameが空の場合" do
-      it "nilを返す" do
-        result = Spot.find_or_create_from_location(name: "", address: address, lat: lat, lng: lng)
-        expect(result).to be_nil
-      end
-    end
-
-    context "座標が0の場合" do
-      it "nilを返す" do
-        result = Spot.find_or_create_from_location(name: name, address: address, lat: 0, lng: 0)
-        expect(result).to be_nil
-      end
-    end
-  end
-
   describe ".cities_by_prefecture" do
     before do
       create(:spot, prefecture: "東京都", city: "港区")
@@ -333,12 +266,6 @@ RSpec.describe Spot, type: :model do
 
         expect(spot.genres.reload.pluck(:slug)).to include("facility")
       end
-    end
-  end
-
-  describe "PROXIMITY_THRESHOLD" do
-    it "0.001度である" do
-      expect(Spot::PROXIMITY_THRESHOLD).to eq(0.001)
     end
   end
 
