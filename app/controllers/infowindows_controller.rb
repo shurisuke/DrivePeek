@@ -54,9 +54,7 @@ class InfowindowsController < ApplicationController
   # @return [Array(Spot, Array)] [spot, photo_urls]
   def find_spot_and_photos
     if params[:spot_id].present?
-      spot = Spot.find(params[:spot_id])
-      details = GoogleApi::Places.fetch_details(spot.place_id, include_photos: true)
-      [ spot, details&.dig(:photo_urls) || [] ]
+      Spot.find_with_photos(params[:spot_id])
     elsif params[:place_id].present?
       Spot.find_or_create_with_photos(
         place_id: params[:place_id],
