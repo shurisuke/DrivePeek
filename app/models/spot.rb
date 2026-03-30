@@ -72,6 +72,15 @@ class Spot < ApplicationRecord
     [ spot, details&.dig(:photo_urls) || [] ]
   end
 
+  # spot_idからSpotを取得し、写真URLも返す
+  # @param spot_id [Integer] Spot ID
+  # @return [Array(Spot, Array)] [spot, photo_urls]
+  def self.find_with_photos(spot_id)
+    spot = find(spot_id)
+    details = GoogleApi::Places.fetch_details(spot.place_id, include_photos: true)
+    [ spot, details&.dig(:photo_urls) || [] ]
+  end
+
   # Callbacks
   after_commit :geocode_if_needed, on: %i[create update]
   after_commit :clear_cities_cache, if: :should_clear_cities_cache?
