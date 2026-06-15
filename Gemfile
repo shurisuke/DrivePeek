@@ -43,7 +43,7 @@ gem "kamal", require: false
 gem "thruster", require: false
 
 # 画像処理
-gem "image_processing", "~> 1.2"
+gem "image_processing", "~> 2.0"
 
 # フォーム支援
 gem "simple_form"
